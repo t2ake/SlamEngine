@@ -13,8 +13,7 @@ project("Slam")
 	-- Set definitions.
 	defines
 	{
-		-- To avoid warning C4996 from fmt in spdlog.
-		"_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
+		"SPDLOG_USE_STD_FORMAT",
 		"SPDLOG_NO_EXCEPTIONS",
 	}
 	
