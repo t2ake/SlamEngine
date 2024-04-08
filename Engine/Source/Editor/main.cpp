@@ -1,0 +1,17 @@
+#include <iostream>
+
+#include "Log/Log.h"
+
+int main()
+{
+	sl::Log::Init();
+
+	SL_ENGINE_TRACE("SL_ENGINE_TRACE");
+	SL_ENGINE_DEBUG("SL_ENGINE_DEBUG");
+	SL_ENGINE_INFO("SL_ENGINE_INFO");
+	SL_ENGINE_WARN("SL_ENGINE_WARN");
+	SL_ENGINE_ERROR("SL_ENGINE_ERROR");
+	SL_ENGINE_FATAL("SL_ENGINE_FATAL");
+
+	return 0;
+}
