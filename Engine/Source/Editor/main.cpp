@@ -1,3 +1,4 @@
+#include "Event/KeyEvent.h"
 #include "Log/Log.h"
 
 #include <iostream>
@@ -6,12 +7,16 @@ int main()
 {
 	sl::Log::Init();
 
-	SL_ENGINE_TRACE("SL_ENGINE_TRACE");
-	SL_ENGINE_DEBUG("SL_ENGINE_DEBUG");
-	SL_ENGINE_INFO("SL_ENGINE_INFO");
-	SL_ENGINE_WARN("SL_ENGINE_WARN");
-	SL_ENGINE_ERROR("SL_ENGINE_ERROR");
-	SL_ENGINE_FATAL("SL_ENGINE_FATAL");
+	auto lambda = [](sl::Event& event)
+	{
+		SL_EDITOR_DEBUG(event.ToString());
+		return true;
+	};
+
+	sl::KeyPressedEvent event{ 42 };
+	sl::EventDispatcher dis{ event };
+	dis.Dispatch<sl::KeyPressedEvent>(lambda);
+	dis.Dispatch<sl::KeyReleasedEvent>(lambda);
 
 	return 0;
 }
