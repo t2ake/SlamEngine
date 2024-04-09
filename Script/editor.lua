@@ -14,17 +14,16 @@ project("Editor")
 	-- Set definitions.
 	defines
 	{
-		"SPDLOG_USE_STD_FORMAT",
-		"SPDLOG_NO_EXCEPTIONS",
+		"SPDLOG_USE_STD_FORMAT", "SPDLOG_NO_EXCEPTIONS",
 	}
 	
-	filter "configurations:Debug"
+	filter { "configurations:Debug" }
 		defines { "SL_DEBUG" }
-	filter "configurations:Release"
+	filter { "configurations:Release" }
 		defines { "SL_RELEASE" }
-	filter "configurations:Final"
+	filter { "configurations:Final" }
 		defines { "SL_FINAL" }
-	filter "system:Windows"
+	filter { "system:Windows" }
 		defines { "SL_WINDOWS" }
 	filter {}
 	
@@ -34,7 +33,6 @@ project("Editor")
 		EnginePath,
 		EditorPath,
 		ThirdPartyPath,
-		
 		path.join(ThirdPartyPath, "spdlog/include"),
 	}
 	
@@ -56,6 +54,34 @@ project("Editor")
 	}
 	
 	-- Link to thirdparty libs.
+	filter { "configurations:Debug" }
+		libdirs
+		{
+			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
+		}
+		links
+		{
+			"Slam",
+		}
+	filter { "configurations:Release" }
+		libdirs
+		{
+			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
+		}
+		links
+		{
+			"Slam",
+		}
+	filter { "configurations:Final" }
+		libdirs
+		{
+			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
+		}
+		links
+		{
+			"Slam",
+		}
+	filter {}
 	
 	-- Use /MT and /MTd.
 	staticruntime "on"
@@ -67,22 +93,14 @@ project("Editor")
 		runtime("Release") -- /MT
 	filter {}
 	
-	-- Some optimize.
-	justmycode("Off")
-	editAndContinue("Off")
-	exceptionhandling("Off")
 	rtti("Off")
-	
-	-- Strict.
-	warnings("Default")
-	externalwarnings("Off")
+	exceptionhandling("Off")
 	
 	flags
 	{
-		-- Compiler uses multiple thread.
-		"MultiProcessorCompile",
-		-- treat warnings as errors
+		-- Treat all warnings as errors.
 		"FatalWarnings",
+		-- Enable Visual Studio to use multiple compiler processes when building.
+		"MultiProcessorCompile",
 	}
 	
-print("")
