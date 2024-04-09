@@ -10,12 +10,12 @@ class Log final
 public:
 	static void Init();
 
-	static std::shared_ptr<spdlog::logger> GetEngineLogger() { return s_engineLogger; }
-	static std::shared_ptr<spdlog::logger> GetEditorLogger() { return s_editorLogger; }
+	static std::shared_ptr<spdlog::logger> GetEngineLogger() { return s_pEngineLogger; }
+	static std::shared_ptr<spdlog::logger> GetEditorLogger() { return s_pEditorLogger; }
 
 private:
-	static std::shared_ptr<spdlog::logger> s_engineLogger;
-	static std::shared_ptr<spdlog::logger> s_editorLogger;
+	static std::shared_ptr<spdlog::logger> s_pEngineLogger;
+	static std::shared_ptr<spdlog::logger> s_pEditorLogger;
 };
 
 }
