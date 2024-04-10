@@ -1,7 +1,12 @@
 #pragma once
 
 #ifndef SL_FINAL
-	#include <spdlog/spdlog.h>
+	#pragma warning(push)
+	#pragma warning(disable:4996)
+	#pragma warning(disable:4541)
+		#include <spdlog/spdlog.h>
+		#include <spdlog/fmt/ostr.h>
+	#pragma warning(pop) 
 #endif
 
 namespace sl

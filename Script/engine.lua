@@ -13,7 +13,7 @@ project("Slam")
 	-- Set definitions.
 	defines
 	{
-		"SPDLOG_USE_STD_FORMAT", "SPDLOG_NO_EXCEPTIONS",
+		"SPDLOG_NO_EXCEPTIONS",
 	}
 	
 	filter { "configurations:Debug" }

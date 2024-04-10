@@ -9,7 +9,7 @@ int main()
 
 	auto lambda = [](sl::Event& event)
 	{
-		SL_EDITOR_DEBUG(event.ToString());
+		SL_EDITOR_DEBUG(event);
 		return true;
 	};
 
