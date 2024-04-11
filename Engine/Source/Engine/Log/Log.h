@@ -1,15 +1,12 @@
 #pragma once
 
 #ifndef SL_FINAL
-	#pragma warning(push)
-	// For deprecated stdext::checked_array_iterator
-	#pragma warning(disable:4996)
-	// For rtti dynamic_cast
-	#pragma warning(disable:4541)
-		#include <spdlog/spdlog.h>
-		#include <spdlog/fmt/ostr.h>
-	#pragma warning(pop) 
-#endif
+
+#include "Event/Event.h"
+
+#include <spdlog/spdlog.h>
+
+#include <format>
 
 namespace sl
 {
@@ -19,8 +16,6 @@ class Log final
 public:
 	static void Init();
 
-#ifndef SL_FINAL
-
 	static std::shared_ptr<spdlog::logger> GetEngineLogger() { return s_pEngineLogger; }
 	static std::shared_ptr<spdlog::logger> GetEditorLogger() { return s_pEditorLogger; }
 
@@ -28,11 +23,32 @@ private:
 	static std::shared_ptr<spdlog::logger> s_pEngineLogger;
 	static std::shared_ptr<spdlog::logger> s_pEditorLogger;
 
-#endif
-
 };
 
 } // namespace sl
+
+// Specializations of std::formatter for user defined types.
+template<>
+struct std::formatter<sl::Event> : std::formatter<std::string>
+{
+	auto format(const sl::Event &e, std::format_context &ctx) const
+	{
+		return formatter<string>::format(e.ToString(), ctx);
+	}
+};
+
+#else
+
+namespace sl
+{
+class Log final
+{
+public:
+	static void Init() {}
+};
+}
+
+#endif
 
 #ifndef SL_FINAL
 	// Engine logger macros.

@@ -70,9 +70,5 @@ private:
 	Event &m_event;
 };
 
-inline std::ostream &operator<<(std::ostream &os, const Event &event)
-{
-	return os << event.ToString();
-}
-
 } // namespace sl
+

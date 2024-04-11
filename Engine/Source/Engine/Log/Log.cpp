@@ -1,14 +1,12 @@
+#ifndef SL_FINAL
+
 #include "Log.h"
 
-#ifndef SL_FINAL
-	#include <spdlog/sinks/basic_file_sink.h>
-	#include <spdlog/sinks/stdout_color_sinks.h>
-#endif
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace sl
 {
-
-#ifndef SL_FINAL
 
 std::shared_ptr<spdlog::logger> Log::s_pEngineLogger;
 std::shared_ptr<spdlog::logger> Log::s_pEditorLogger;
@@ -32,10 +30,6 @@ void Log::Init()
 	s_pEditorLogger->set_level(spdlog::level::trace);
 }
 
-#else
-
-void Log::Init() {}
+} // namespace sl
 
 #endif
-
-} // namespace sl

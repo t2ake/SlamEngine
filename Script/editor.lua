@@ -14,7 +14,7 @@ project("Editor")
 	-- Set definitions.
 	defines
 	{
-		"SPDLOG_NO_EXCEPTIONS",
+		"SPDLOG_NO_EXCEPTIONS", "SPDLOG_USE_STD_FORMAT",
 	}
 	
 	filter { "configurations:Debug" }
@@ -41,16 +41,6 @@ project("Editor")
 	{
 		path.join(EditorPath, "**.*"),
 		path.join(ThirdPartyPath, "spdlog/include/**.*"),
-	}
-	
-	-- Link to engine.
-	libdirs
-	{
-		path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
-	}
-	links
-	{
-		"Slam",
 	}
 	
 	-- Link to thirdparty libs.

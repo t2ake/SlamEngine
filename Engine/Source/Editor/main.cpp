@@ -4,9 +4,11 @@
 
 int main()
 {
-	auto pApp = std::make_unique<Editor>();
+	Editor *pApp = new Editor;
 
 	pApp->Init();
+
+	delete pApp;
 
 	return 0;
 }
