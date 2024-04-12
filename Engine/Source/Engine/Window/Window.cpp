@@ -75,7 +75,7 @@ void Window::Init()
 			}
 			default:
 			{
-				// assert(false);
+				SL_ENGINE_ASSERT(false);
 			}
 		}
 	});

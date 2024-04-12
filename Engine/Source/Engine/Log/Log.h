@@ -51,21 +51,27 @@ public:
 #endif
 
 #ifndef SL_FINAL
-	// Engine logger macros.
+	// Engine logger macros
 	#define SL_ENGINE_TRACE(...) ::sl::Log::GetEngineLogger()->trace(__VA_ARGS__)
 	#define SL_ENGINE_DEBUG(...) ::sl::Log::GetEngineLogger()->debug(__VA_ARGS__)
 	#define SL_ENGINE_INFO(...)  ::sl::Log::GetEngineLogger()->info(__VA_ARGS__)
 	#define SL_ENGINE_WARN(...)  ::sl::Log::GetEngineLogger()->warn(__VA_ARGS__)
 	#define SL_ENGINE_ERROR(...) ::sl::Log::GetEngineLogger()->error(__VA_ARGS__)
 	#define SL_ENGINE_FATAL(...) ::sl::Log::GetEngineLogger()->critical(__VA_ARGS__)
-	
-	// Editor logger macros.
+
+	// Editor logger macros
 	#define SL_EDITOR_TRACE(...) ::sl::Log::GetEditorLogger()->trace(__VA_ARGS__)
 	#define SL_EDITOR_DEBUG(...) ::sl::Log::GetEngineLogger()->debug(__VA_ARGS__)
 	#define SL_EDITOR_INFO(...)  ::sl::Log::GetEditorLogger()->info(__VA_ARGS__)
 	#define SL_EDITOR_WARN(...)  ::sl::Log::GetEditorLogger()->warn(__VA_ARGS__)
 	#define SL_EDITOR_ERROR(...) ::sl::Log::GetEditorLogger()->error(__VA_ARGS__)
 	#define SL_EDITOR_FATAL(...) ::sl::Log::GetEditorLogger()->critical(__VA_ARGS__)
+
+	// Assertions
+	#define SL_ENGINE_ASSERT(x) {if(!(x)){__debugbreak();}}
+	#define SL_ENGINE_ASSERT_INFO(x, ...) {if(!(x)){SL_ENGINE_FATAL(__VA_ARGS__); __debugbreak();}}
+	#define SL_EDITOR_ASSERT(x) {if(!(x)){__debugbreak();}}
+	#define SL_EDITOR_ASSERT_INFO(x, ...) {if(!(x)){SL_ENGINE_FATAL(__VA_ARGS__); __debugbreak();}}
 #else
 	#define SL_ENGINE_TRACE(...)
 	#define SL_ENGINE_DEBUG(...)
@@ -79,4 +85,8 @@ public:
 	#define SL_EDITOR_WARN(...)
 	#define SL_EDITOR_ERROR(...)
 	#define SL_EDITOR_FATAL(...)
+	#define SL_ENGINE_ASSERT(x)
+	#define SL_ENGINE_ASSERT_INFO(x, ...)
+	#define SL_EDITOR_ASSERT(x)
+	#define SL_EDITOR_ASSERT_INFO(x, ...)
 #endif
