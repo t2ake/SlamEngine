@@ -2,26 +2,27 @@
 
 #include "Event/KeyEvent.h"
 #include "Log/Log.h"
+#include "Window/Window.h"
+
+Editor::~Editor()
+{
+	Shutdown();
+}
 
 void Editor::Init()
 {
 	sl::Log::Init();
 
-	auto lambda = [](sl::Event &event)
-	{
-		SL_EDITOR_DEBUG(event);
-		return true;
-	};
-
-	sl::KeyPressedEvent event{ 42 };
-	sl::EventDispatcher dis{ event };
-	dis.Dispatch<sl::KeyPressedEvent>(lambda);
-	dis.Dispatch<sl::KeyReleasedEvent>(lambda);
+	m_pWindow = new sl::Window{ "Slam Engine", 1280, 720, true };
 }
 
 void Editor::Update()
 {
-
+	while(true)
+	{
+		m_pWindow->Update();
+		Render();
+	}
 }
 
 void Editor::Render()
@@ -31,5 +32,6 @@ void Editor::Render()
 
 void Editor::Shutdown()
 {
-
+	m_pWindow->Shutdown();
+	delete m_pWindow;
 }

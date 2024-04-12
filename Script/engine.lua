@@ -32,6 +32,7 @@ project("Slam")
 		EnginePath,
 		ThirdPartyPath,
 		path.join(ThirdPartyPath, "spdlog/include"),
+		path.join(ThirdPartyPath, "glfw/include"),
 	}
 	
 	-- Set files.
@@ -39,9 +40,43 @@ project("Slam")
 	{
 		path.join(EnginePath, "**.*"),
 		path.join(ThirdPartyPath, "spdlog/include/**.*"),
+		path.join(ThirdPartyPath, "glfw/include/**.*"),
+	}
+	
+	removefiles
+	{
+		path.join(ThirdPartyPath, "spdlog/include/spdlog/fmt/**.*"),
 	}
 	
 	-- Link to thirdparty libs.
+	filter { "configurations:Debug" }
+		libdirs
+		{
+			path.join(ThirdPartyPath, "glfw/build/src/Debug"),
+		}
+		links
+		{
+			"glfw3",
+		}
+	filter { "configurations:Release" }
+		libdirs
+		{
+			path.join(ThirdPartyPath, "glfw/build/src/Release"),
+		}
+		links
+		{
+			"glfw3",
+		}
+	filter { "configurations:Final" }
+		libdirs
+		{
+			path.join(ThirdPartyPath, "glfw/build/src/Release"),
+		}
+		links
+		{
+			"glfw3",
+		}
+	filter {}
 	
 	-- Use /MT and /MTd.
 	staticruntime "on"

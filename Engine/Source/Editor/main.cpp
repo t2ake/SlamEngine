@@ -1,12 +1,14 @@
 #include "Editor.h"
 
-#include <memory>
-
 int main()
 {
 	Editor *pApp = new Editor;
 
 	pApp->Init();
+
+	pApp->Update();
+
+	pApp->Shutdown();
 
 	delete pApp;
 

@@ -13,4 +13,13 @@ for /f "usebackq tokens=*" %%i in (`"%VSWHERE_PATH%" -latest -requires Microsoft
 )
 echo Found MSBuild at: %MSBUILD_PATH%
 
+rem glfw
+set "GLFW_PATH=%THIRD_PARTY_PATH%\glfw"
+echo [ glfw ] path: %GLFW_PATH%
+cd %GLFW_PATH%
+
+cmake -B build -DCMAKE_CONFIGURATION_TYPES="Release;Debug" -DUSE_MSVC_RUNTIME_LIBRARY_DLL=OFF
+cmake --build build --target glfw --config Release
+cmake --build build --target glfw --config Debug
+
 pause

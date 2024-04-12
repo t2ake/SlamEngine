@@ -38,7 +38,7 @@ public:
 		return category & GetCategories();
 	}
 
-	void SetIsHandled(bool handled) { m_handled = handled; }
+	void SetHandled(bool handled) { m_handled = handled; }
 	bool &GetIsHandled() { return m_handled; }
 	bool GetIsHandled() const { return m_handled; }
 
