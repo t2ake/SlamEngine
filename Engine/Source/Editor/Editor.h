@@ -1,30 +1,47 @@
 #pragma once
 
-#include <memory>
+#include <cstdint>
+#include <string>
 
 namespace sl
 {
 
+class Event;
 class Window;
 
 }
 
+struct EditorInitor
+{
+	std::string title;
+	uint32_t m_width;
+	uint32_t m_height;
+};
+
 class Editor
 {
 public:
-	Editor() = default;
+	Editor() = delete;
 	Editor(const Editor &) = delete;
 	Editor &operator=(const Editor &) = delete;
 	Editor(Editor &&) = delete;
 	Editor &operator=(Editor &&) = delete;
 
+	Editor(EditorInitor initor);
 	~Editor();
 
-	void Init();
 	void Update();
-	void Render();
-	void Shutdown();
 
 private:
-	sl::Window *m_pWindow;
+	void Init(EditorInitor initor);
+	void Shutdown();
+
+	void Render();
+
+	void OnEvent(sl::Event &e);
+	bool OnWindowClose(sl::Event &e);
+
+	bool m_isRunning = true;
+
+	sl::Window *m_pWindow = nullptr;
 };

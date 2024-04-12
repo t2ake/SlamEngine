@@ -31,9 +31,9 @@ private:
 template<>
 struct std::formatter<sl::Event> : std::formatter<std::string>
 {
-	auto format(const sl::Event &e, std::format_context &ctx) const
+	auto format(const sl::Event &event, std::format_context &context) const
 	{
-		return formatter<string>::format(e.ToString(), ctx);
+		return formatter<string>::format(event.ToString(), context);
 	}
 };
 

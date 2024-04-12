@@ -70,5 +70,7 @@ private:
 	Event &m_event;
 };
 
+using EventCallback = std::function<void(Event &)>;
+
 } // namespace sl
 

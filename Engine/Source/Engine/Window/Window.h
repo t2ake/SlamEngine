@@ -1,7 +1,6 @@
 #pragma once
 
-#include <cstdint>
-#include <string>
+#include "Event/Event.h"
 
 struct GLFWwindow;
 
@@ -37,6 +36,9 @@ public:
 	bool &GetIsVSync() { return m_isVSync; }
 	bool GetIsVSync() const { return m_isVSync; }
 
+	void SetEventCallback(EventCallback cb) { m_eventCallback = std::move(cb); }
+	void DespatchEvent(Event &event) { m_eventCallback(event); }
+
 private:
 	std::string m_title;
 	uint32_t m_width;
@@ -44,6 +46,7 @@ private:
 	bool m_isVSync;
 
 	GLFWwindow *m_pWindow = nullptr;
+	EventCallback m_eventCallback;
 };
 
 } // namespace sl
