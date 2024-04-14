@@ -2,9 +2,9 @@
 
 rem Set path
 set "ROOT_PATH=%~dp0"
-set "SCRIPT_PATH=%ROOT_PATH%Script"
-set "THIRD_PARTY_PATH=%ROOT_PATH%Engine\Source\ThirdParty"
-set "THIRD_PARTY_BUILD_PATH=%ROOT_PATH%Engine\Source\ThirdParty\build"
+set "SCRIPT_PATH=%ROOT_PATH%\Script"
+set "THIRD_PARTY_PATH=%ROOT_PATH%\Engine\Source\ThirdParty"
+set "THIRD_PARTY_BUILD_PATH=%ROOT_PATH%\Engine\Source\ThirdParty\build"
 
 echo Root path: %ROOT_PATH%
 echo Script path: %SCRIPT_PATH%

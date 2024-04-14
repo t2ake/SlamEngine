@@ -8,22 +8,27 @@ workspace("SlamThirdparty")
 	
 	architecture("x64")
 	configurations{ "Debug", "Release"}
+	staticruntime "on"
 	
 	-- No optimization in Debug mode.
 	filter { "configurations:Debug" }
 		symbols("On")
 		optimize("Off")
+		runtime("Debug") -- /MTd
 		
 	-- Full optimization in Release maode.
 	filter { "configurations:Release" }
 		symbols("Off")
 		optimize("Full")
+		runtime("Release") -- /MT
 		
 	filter { "system:Windows" }
 		systemversion("latest")
 		
 	filter {}
 	
+GladPath = path.join(ThirdPartyPath, "glad")
+print("[ glad ] path: "..GladPath)
 project("glad")
 	kind("StaticLib")
 	language("C++")
@@ -32,19 +37,11 @@ project("glad")
 	
 	includedirs
 	{
-		path.join(ThirdPartyPath, "glad/include"),
+		path.join(GladPath, "include"),
 	}
 	
 	files
 	{
-		path.join(ThirdPartyPath, "glad/**.*"),
+		path.join(GladPath, "**.*"),
 	}
-	
-	-- Use /MT and /MTd.
-	staticruntime "on"
-	filter { "configurations:Debug" }
-		runtime("Debug") -- /MTd
-	filter { "configurations:Release" }
-		runtime("Release") -- /MT
-	filter {}
 	
