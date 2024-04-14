@@ -33,6 +33,7 @@ project("Slam")
 		ThirdPartyPath,
 		path.join(ThirdPartyPath, "spdlog/include"),
 		path.join(ThirdPartyPath, "glfw/include"),
+		path.join(ThirdPartyPath, "glad/include"),
 	}
 	
 	-- Set files.
@@ -41,6 +42,7 @@ project("Slam")
 		path.join(EnginePath, "**.*"),
 		path.join(ThirdPartyPath, "spdlog/include/**.*"),
 		path.join(ThirdPartyPath, "glfw/include/**.*"),
+		path.join(ThirdPartyPath, "glad/**.*"),
 	}
 	
 	removefiles

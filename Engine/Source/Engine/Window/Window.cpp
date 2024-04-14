@@ -5,6 +5,7 @@
 #include "Event/WindowEvent.h"
 #include "Log/Log.h"
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 namespace sl
@@ -28,6 +29,9 @@ void Window::Init()
 	glfwInit();
 	m_pWindow = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
 	glfwMakeContextCurrent(m_pWindow);
+
+	gladLoadGLLoader(GLADloadproc(glfwGetProcAddress));
+
 	glfwSwapInterval(m_isVSync);
 	glfwSetWindowUserPointer(m_pWindow, this);
 

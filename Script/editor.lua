@@ -35,6 +35,7 @@ project("Editor")
 		ThirdPartyPath,
 		path.join(ThirdPartyPath, "spdlog/include"),
 		path.join(ThirdPartyPath, "glfw/include"),
+		path.join(ThirdPartyPath, "glad/include"),
 	}
 	
 	-- Set files.
@@ -43,6 +44,7 @@ project("Editor")
 		path.join(EditorPath, "**.*"),
 		path.join(ThirdPartyPath, "spdlog/include/**.*"),
 		path.join(ThirdPartyPath, "glfw/include/**.*"),
+		path.join(ThirdPartyPath, "glad/**.*"),
 	}
 	
 	removefiles
