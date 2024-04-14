@@ -11,7 +11,7 @@ class Window final
 {
 
 public:
-	Window() = default;
+	Window() = delete;
 	Window(const Window &) = delete;
 	Window &operator=(const Window &) = delete;
 	Window(Window &&) = delete;
@@ -20,9 +20,7 @@ public:
 	Window(std::string title, uint32_t width, uint32_t height, bool VSync);
 	~Window();
 
-	void Init();
 	void Update();
-	void Shutdown();
 
 	void SetWidth(uint32_t width) { m_width = width; }
 	uint32_t &GetWidth() { return m_width; }
@@ -40,6 +38,9 @@ public:
 	void DespatchEvent(Event &event) { m_eventCallback(event); }
 
 private:
+	void Init();
+	void Shutdown();
+
 	std::string m_title;
 	uint32_t m_width;
 	uint32_t m_height;

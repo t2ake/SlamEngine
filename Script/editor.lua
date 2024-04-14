@@ -34,8 +34,6 @@ project("Editor")
 		EditorPath,
 		ThirdPartyPath,
 		path.join(ThirdPartyPath, "spdlog/include"),
-		path.join(ThirdPartyPath, "glfw/include"),
-		path.join(ThirdPartyPath, "glad/include"),
 	}
 	
 	-- Set files.
@@ -43,8 +41,6 @@ project("Editor")
 	{
 		path.join(EditorPath, "**.*"),
 		path.join(ThirdPartyPath, "spdlog/include/**.*"),
-		path.join(ThirdPartyPath, "glfw/include/**.*"),
-		path.join(ThirdPartyPath, "glad/**.*"),
 	}
 	
 	removefiles
@@ -58,30 +54,33 @@ project("Editor")
 		{
 			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
 			path.join(ThirdPartyPath, "glfw/build/src/Debug"),
+			path.join(ThirdPartyPath, "build/glad/bin/Debug"),
 		}
 		links
 		{
-			"Slam", "glfw3",
+			"Slam", "glfw3", "glad",
 		}
 	filter { "configurations:Release" }
 		libdirs
 		{
 			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
 			path.join(ThirdPartyPath, "glfw/build/src/Release"),
+			path.join(ThirdPartyPath, "build/glad/bin/Release"),
 		}
 		links
 		{
-			"Slam", "glfw3",
+			"Slam", "glfw3", "glad",
 		}
 	filter { "configurations:Final" }
 		libdirs
 		{
 			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
 			path.join(ThirdPartyPath, "glfw/build/src/Release"),
+			path.join(ThirdPartyPath, "build/glad/bin/Release"),
 		}
 		links
 		{
-			"Slam", "glfw3",
+			"Slam", "glfw3", "glad",
 		}
 	filter {}
 	

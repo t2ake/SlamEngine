@@ -42,7 +42,7 @@ project("Slam")
 		path.join(EnginePath, "**.*"),
 		path.join(ThirdPartyPath, "spdlog/include/**.*"),
 		path.join(ThirdPartyPath, "glfw/include/**.*"),
-		path.join(ThirdPartyPath, "glad/**.*"),
+		path.join(ThirdPartyPath, "glad/include/**.*"),
 	}
 	
 	removefiles
@@ -55,28 +55,31 @@ project("Slam")
 		libdirs
 		{
 			path.join(ThirdPartyPath, "glfw/build/src/Debug"),
+			path.join(ThirdPartyPath, "build/glad/bin/Debug"),
 		}
 		links
 		{
-			"glfw3",
+			"glfw3", "glad",
 		}
 	filter { "configurations:Release" }
 		libdirs
 		{
 			path.join(ThirdPartyPath, "glfw/build/src/Release"),
+			path.join(ThirdPartyPath, "build/glad/bin/Release"),
 		}
 		links
 		{
-			"glfw3",
+			"glfw3", "glad",
 		}
 	filter { "configurations:Final" }
 		libdirs
 		{
 			path.join(ThirdPartyPath, "glfw/build/src/Release"),
+			path.join(ThirdPartyPath, "build/glad/bin/Release"),
 		}
 		links
 		{
-			"glfw3",
+			"glfw3", "glad",
 		}
 	filter {}
 	
