@@ -1,7 +1,6 @@
 #pragma once
 
-#include <cstdint>
-#include <string>
+#include "Layer/LayerStack.h"
 
 namespace sl
 {
@@ -44,4 +43,6 @@ private:
 	bool m_isRunning = true;
 
 	sl::Window *m_pWindow = nullptr;
+
+	sl::LayerStack m_layerStack;
 };

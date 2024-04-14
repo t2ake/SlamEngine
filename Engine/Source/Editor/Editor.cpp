@@ -30,8 +30,12 @@ void Editor::Update()
 {
 	while (m_isRunning)
 	{
+		for (sl::Layer* pLayer : m_layerStack)
+		{
+			pLayer->OnUpdate();
+		}
+
 		m_pWindow->Update();
-		Render();
 	}
 }
 
@@ -51,6 +55,16 @@ void Editor::OnEvent(sl::Event &event)
 
 	sl::EventDispatcher dispatcher{ event };
 	dispatcher.Dispatch<sl::WindowCloseEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowClose));
+
+	// Iterate layers from end to begin.
+	for (auto it = std::make_reverse_iterator(m_layerStack.end()); it != std::make_reverse_iterator(m_layerStack.begin()); ++it)
+	{
+		(*it)->OnEvent(event);
+		if (event.GetIsHandled())
+		{
+			break;
+		}
+	}
 }
 
 bool Editor::OnWindowClose(sl::Event &event)
