@@ -64,19 +64,19 @@ void Window::Init()
 		{
 			case GLFW_PRESS:
 			{
-				KeyPressedEvent event{ uint32_t(key) , false};
+				KeyPressedEvent event{ key , false};
 				pWindow->DespatchEvent(event);
 				break;
 			}
 			case GLFW_RELEASE:
 			{
-				KeyReleasedEvent event{ uint32_t(key) };
+				KeyReleasedEvent event{ key };
 				pWindow->DespatchEvent(event);
 				break;
 			}
 			case GLFW_REPEAT:
 			{
-				KeyPressedEvent event{ uint32_t(key) , true };
+				KeyPressedEvent event{ key , true };
 				pWindow->DespatchEvent(event);
 				break;
 			}
@@ -90,7 +90,7 @@ void Window::Init()
 	glfwSetCharCallback(m_pWindow, [](GLFWwindow *window, unsigned int codepoint)
 	{
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
-		KeyTypedEvent event{ uint32_t(codepoint) };
+		KeyTypedEvent event{ int(codepoint) };
 		pWindow->DespatchEvent(event);
 	});
 

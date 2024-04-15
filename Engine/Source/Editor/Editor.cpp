@@ -6,6 +6,7 @@
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiLayer.h"
 #include "Log/Log.h"
+#include "Window/Input.h"
 #include "Window/Window.h"
 
 Editor::Editor(EditorInitor initor)
@@ -25,6 +26,8 @@ void Editor::Init(EditorInitor initor)
 	m_pWindow = new sl::Window{ std::move(initor.title), initor.m_width, initor.m_height, true };
 	m_pWindow->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
+	sl::Input::GetInstance().SetWindow(m_pWindow);
+
 	PushLayer(new sl::ImGuiLayer{ m_pWindow });
 }
 
@@ -38,6 +41,9 @@ void Editor::Update()
 		{
 			pLayer->OnUpdate();
 		}
+
+		auto [x, y] = sl::Input::GetMousePos();
+		SL_EDITOR_DEBUG("{}, {}", x, y);
 	}
 }
 

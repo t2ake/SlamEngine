@@ -12,7 +12,7 @@ class KeyPressedEvent : public Event
 public:
 	using Event::Event;
 
-	KeyPressedEvent(uint32_t keycode, bool isRepeat = false)
+	KeyPressedEvent(int keycode, bool isRepeat = false)
 		: m_keyCode(keycode), m_isRepeat(isRepeat) {}
 
 	static EventType GetStaticEventType()
@@ -37,11 +37,11 @@ public:
 		return EventCategoryInput | EventCategoryKeyboard;
 	}
 
-	uint32_t GetKeyCode() const { return m_keyCode; }
+	int GetKeyCode() const { return m_keyCode; }
 	bool IsRepeat() const { return m_isRepeat; }
 
 private:
-	uint32_t m_keyCode;
+	int m_keyCode;
 	bool m_isRepeat;
 };
 
@@ -50,7 +50,7 @@ class KeyReleasedEvent : public Event
 public:
 	using Event::Event;
 
-	KeyReleasedEvent(const uint32_t keycode) : m_keyCode(keycode) {}
+	KeyReleasedEvent(int keycode) : m_keyCode(keycode) {}
 
 	static EventType GetStaticEventType()
 	{
@@ -74,10 +74,10 @@ public:
 		return EventCategoryInput | EventCategoryKeyboard;
 	}
 
-	uint32_t GetKeyCode() const { return m_keyCode; }
+	int GetKeyCode() const { return m_keyCode; }
 
 private:
-	uint32_t m_keyCode;
+	int m_keyCode;
 };
 
 class KeyTypedEvent : public Event
@@ -85,7 +85,7 @@ class KeyTypedEvent : public Event
 public:
 	using Event::Event;
 
-	KeyTypedEvent(const uint32_t keycode) : m_keyCode(keycode) {}
+	KeyTypedEvent(int keycode) : m_keyCode(keycode) {}
 
 
 	static EventType GetStaticEventType()
@@ -110,10 +110,10 @@ public:
 		return EventCategoryInput | EventCategoryKeyboard;
 	}
 
-	uint32_t GetKeyCode() const { return m_keyCode; }
+	int GetKeyCode() const { return m_keyCode; }
 
 private:
-	uint32_t m_keyCode;
+	int m_keyCode;
 };
 
 } // namespace sl
