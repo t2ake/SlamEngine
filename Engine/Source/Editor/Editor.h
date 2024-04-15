@@ -40,6 +40,9 @@ private:
 	void OnEvent(sl::Event &e);
 	bool OnWindowClose(sl::Event &e);
 
+	void PushLayer(sl::Layer *pLayer);
+	void PopLayer(sl::Layer *pLayer);
+
 	bool m_isRunning = true;
 
 	sl::Window *m_pWindow = nullptr;

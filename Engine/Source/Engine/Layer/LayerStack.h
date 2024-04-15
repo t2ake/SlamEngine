@@ -20,6 +20,10 @@ public:
 	void PushLayer(Layer *pLayer);
 	void PopLayer(Layer *pLayer);
 
+	void ClearLayers() { m_pLayers.clear(); }
+	std::vector<Layer *> &GetLayers() { return m_pLayers; }
+	const std::vector<Layer *> &GetLayers() const { return m_pLayers; }
+
 	auto begin() { return m_pLayers.begin(); }
 	auto end() { return m_pLayers.end(); }
 

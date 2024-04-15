@@ -5,6 +5,7 @@
 #include "Event/WindowEvent.h"
 #include "Log/Log.h"
 #include "Window/Window.h"
+#include "ImGui/ImGuiLayer.h"
 
 #define BIND_EVENT_CALLBACK(fun) std::bind(&fun, this, std::placeholders::_1)
 
@@ -24,18 +25,20 @@ void Editor::Init(EditorInitor initor)
 
 	m_pWindow = new sl::Window{ std::move(initor.title), initor.m_width, initor.m_height, true };
 	m_pWindow->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
+
+	PushLayer(new sl::ImGuiLayer{ m_pWindow });
 }
 
 void Editor::Update()
 {
 	while (m_isRunning)
 	{
+		m_pWindow->Update();
+
 		for (sl::Layer* pLayer : m_layerStack)
 		{
 			pLayer->OnUpdate();
 		}
-
-		m_pWindow->Update();
 	}
 }
 
@@ -46,6 +49,12 @@ void Editor::Render()
 
 void Editor::Shutdown()
 {
+	for (sl::Layer *pLayer : m_layerStack)
+	{
+		delete pLayer;
+	}
+	m_layerStack.ClearLayers();
+
 	delete m_pWindow;
 }
 
@@ -71,4 +80,16 @@ bool Editor::OnWindowClose(sl::Event &event)
 {
 	m_isRunning = false;
 	return true;
+}
+
+void Editor::PushLayer(sl::Layer *pLayer)
+{
+	m_layerStack.PushLayer(pLayer);
+	pLayer->OnAttach();
+}
+
+void Editor::PopLayer(sl::Layer *pLayer)
+{
+	m_layerStack.PopLayer(pLayer);
+	pLayer->OnDetach();
 }

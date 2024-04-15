@@ -7,8 +7,10 @@ namespace sl
 
 class Layer
 {
-public:
+protected:
 	Layer() = default;
+
+public:
 	Layer(const Layer &) = delete;
 	Layer &operator=(const Layer &) = delete;
 	Layer(Layer &&) = delete;

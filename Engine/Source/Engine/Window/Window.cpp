@@ -30,6 +30,9 @@ void Window::Init()
 	m_pWindow = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
 	glfwMakeContextCurrent(m_pWindow);
 
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+
 	gladLoadGLLoader(GLADloadproc(glfwGetProcAddress));
 
 	glfwSwapInterval(m_isVSync);
@@ -125,7 +128,7 @@ void Window::Init()
 
 	glfwSetErrorCallback([](int error_code, const char *description)
 	{
-		SL_ENGINE_ERROR("GLFW error ({}): {}", error_code, description);
+		SL_ENGINE_ERROR("GLFW error {}: {}", error_code, description);
 	});
 }
 
@@ -133,6 +136,9 @@ void Window::Update()
 {
 	glfwPollEvents();
 	glfwSwapBuffers(m_pWindow);
+
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void Window::Shutdown()

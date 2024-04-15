@@ -45,3 +45,22 @@ project("glad")
 		path.join(GladPath, "**.*"),
 	}
 	
+ImGuiPath = path.join(ThirdPartyPath, "imgui")
+print("[ imgui ] path: "..ImGuiPath)
+project("imgui")
+	kind("StaticLib")
+	language("C++")
+	cppdialect("C++20")
+	location(path.join(ThirdPartyBuildPath, "imgui"))
+	
+	includedirs
+	{
+		ImGuiPath,
+	}
+	
+	files
+	{
+		path.join(ImGuiPath, "*.h"),
+		path.join(ImGuiPath, "*.cpp"),
+	}
+	

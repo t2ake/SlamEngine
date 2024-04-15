@@ -22,6 +22,8 @@ public:
 
 	void Update();
 
+	GLFWwindow *GetWindow() const { return m_pWindow; }
+
 	void SetWidth(uint32_t width) { m_width = width; }
 	uint32_t &GetWidth() { return m_width; }
 	uint32_t GetWidth() const { return m_width; }
@@ -41,12 +43,13 @@ private:
 	void Init();
 	void Shutdown();
 
+	GLFWwindow *m_pWindow = nullptr;
+
 	std::string m_title;
 	uint32_t m_width;
 	uint32_t m_height;
 	bool m_isVSync;
 
-	GLFWwindow *m_pWindow = nullptr;
 	EventCallback m_eventCallback;
 };
 

@@ -34,6 +34,7 @@ project("Slam")
 		path.join(ThirdPartyPath, "spdlog/include"),
 		path.join(ThirdPartyPath, "glfw/include"),
 		path.join(ThirdPartyPath, "glad/include"),
+		path.join(ThirdPartyPath, "imgui"),
 	}
 	
 	-- Set files.
@@ -41,8 +42,6 @@ project("Slam")
 	{
 		path.join(EnginePath, "**.*"),
 		path.join(ThirdPartyPath, "spdlog/include/**.*"),
-		path.join(ThirdPartyPath, "glfw/include/**.*"),
-		path.join(ThirdPartyPath, "glad/include/**.*"),
 	}
 	
 	removefiles
@@ -56,30 +55,33 @@ project("Slam")
 		{
 			path.join(ThirdPartyPath, "glfw/build/src/Debug"),
 			path.join(ThirdPartyPath, "build/glad/bin/Debug"),
+			path.join(ThirdPartyPath, "build/imgui/bin/Debug"),
 		}
 		links
 		{
-			"glfw3", "glad",
+			"glfw3", "glad", "imgui",
 		}
 	filter { "configurations:Release" }
 		libdirs
 		{
 			path.join(ThirdPartyPath, "glfw/build/src/Release"),
 			path.join(ThirdPartyPath, "build/glad/bin/Release"),
+			path.join(ThirdPartyPath, "build/imgui/bin/Release"),
 		}
 		links
 		{
-			"glfw3", "glad",
+			"glfw3", "glad", "imgui",
 		}
 	filter { "configurations:Final" }
 		libdirs
 		{
 			path.join(ThirdPartyPath, "glfw/build/src/Release"),
 			path.join(ThirdPartyPath, "build/glad/bin/Release"),
+			path.join(ThirdPartyPath, "build/imgui/bin/Release"),
 		}
 		links
 		{
-			"glfw3", "glad",
+			"glfw3", "glad", "imgui",
 		}
 	filter {}
 	

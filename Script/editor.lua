@@ -34,6 +34,7 @@ project("Editor")
 		EditorPath,
 		ThirdPartyPath,
 		path.join(ThirdPartyPath, "spdlog/include"),
+		path.join(ThirdPartyPath, "imgui"),
 	}
 	
 	-- Set files.
@@ -55,10 +56,11 @@ project("Editor")
 			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
 			path.join(ThirdPartyPath, "glfw/build/src/Debug"),
 			path.join(ThirdPartyPath, "build/glad/bin/Debug"),
+			path.join(ThirdPartyPath, "build/imgui/bin/Debug"),
 		}
 		links
 		{
-			"Slam", "glfw3", "glad",
+			"Slam", "glfw3", "glad", "imgui",
 		}
 	filter { "configurations:Release" }
 		libdirs
@@ -66,10 +68,11 @@ project("Editor")
 			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
 			path.join(ThirdPartyPath, "glfw/build/src/Release"),
 			path.join(ThirdPartyPath, "build/glad/bin/Release"),
+			path.join(ThirdPartyPath, "build/imgui/bin/Release"),
 		}
 		links
 		{
-			"Slam", "glfw3", "glad",
+			"Slam", "glfw3", "glad", "imgui",
 		}
 	filter { "configurations:Final" }
 		libdirs
@@ -77,10 +80,11 @@ project("Editor")
 			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
 			path.join(ThirdPartyPath, "glfw/build/src/Release"),
 			path.join(ThirdPartyPath, "build/glad/bin/Release"),
+			path.join(ThirdPartyPath, "build/imgui/bin/Release"),
 		}
 		links
 		{
-			"Slam", "glfw3", "glad",
+			"Slam", "glfw3", "glad", "imgui",
 		}
 	filter {}
 	
