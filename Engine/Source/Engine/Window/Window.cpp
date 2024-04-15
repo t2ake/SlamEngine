@@ -87,6 +87,13 @@ void Window::Init()
 		}
 	});
 
+	glfwSetCharCallback(m_pWindow, [](GLFWwindow *window, unsigned int codepoint)
+	{
+		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
+		KeyTypedEvent event{ uint32_t(codepoint) };
+		pWindow->DespatchEvent(event);
+	});
+
 	glfwSetMouseButtonCallback(m_pWindow, [](GLFWwindow *window, int button, int action, int mods)
 	{
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));

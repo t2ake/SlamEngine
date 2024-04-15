@@ -13,7 +13,7 @@ public:
 	using Layer::Layer;
 
 	ImGuiLayer(Window *pWindow);
-	~ImGuiLayer();
+	virtual ~ImGuiLayer() override;
 
 	virtual void OnAttach() override;
 	virtual void OnDetach() override;

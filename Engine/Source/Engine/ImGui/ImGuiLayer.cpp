@@ -3,15 +3,13 @@
 #include "Log/Log.h"
 #include "Window/Window.h"
 
-#include <GLFW/glfw3.h>
-#include <ImGui/imgui_impl_glfw.h>
-#include <ImGui/imgui_impl_opengl3.h>
+#include "ImGui/imgui_impl_glfw.h"
+#include "ImGui/imgui_impl_opengl3.h"
 
 namespace sl
 {
 
-ImGuiLayer::ImGuiLayer(Window *pWindow)
-	: m_pWindow(pWindow)
+ImGuiLayer::ImGuiLayer(Window *pWindow) : m_pWindow(pWindow)
 {
 	SetName("ImGuiLayer");
 }
@@ -45,8 +43,6 @@ void ImGuiLayer::OnDetach()
 
 void ImGuiLayer::OnUpdate()
 {
-
-
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();

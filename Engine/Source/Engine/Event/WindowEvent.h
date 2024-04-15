@@ -10,6 +10,8 @@ namespace sl
 class WindowResizeEvent : public Event
 {
 public:
+	using Event::Event;
+
 	WindowResizeEvent(uint32_t width, uint32_t height) : m_width(width), m_height(height) {}
 
 	static EventType GetStaticEventType()
@@ -44,6 +46,8 @@ private:
 class WindowCloseEvent : public Event
 {
 public:
+	using Event::Event;
+
 	static EventType GetStaticEventType()
 	{
 		return EventType::WindowClose;
@@ -68,6 +72,8 @@ public:
 class WindowFocusEvent : public Event
 {
 public:
+	using Event::Event;
+
 	static EventType GetStaticEventType()
 	{
 		return EventType::WindowFocus;
@@ -92,6 +98,8 @@ public:
 class WindowLostFocusEvent : public Event
 {
 public:
+	using Event::Event;
+
 	static EventType GetStaticEventType()
 	{
 		return EventType::WindowLostFocus;

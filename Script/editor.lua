@@ -34,7 +34,6 @@ project("Editor")
 		EditorPath,
 		ThirdPartyPath,
 		path.join(ThirdPartyPath, "spdlog/include"),
-		path.join(ThirdPartyPath, "imgui"),
 	}
 	
 	-- Set files.

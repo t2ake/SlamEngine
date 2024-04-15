@@ -10,6 +10,8 @@ namespace sl
 class KeyPressedEvent : public Event
 {
 public:
+	using Event::Event;
+
 	KeyPressedEvent(uint32_t keycode, bool isRepeat = false)
 		: m_keyCode(keycode), m_isRepeat(isRepeat) {}
 
@@ -46,6 +48,8 @@ private:
 class KeyReleasedEvent : public Event
 {
 public:
+	using Event::Event;
+
 	KeyReleasedEvent(const uint32_t keycode) : m_keyCode(keycode) {}
 
 	static EventType GetStaticEventType()
@@ -79,6 +83,8 @@ private:
 class KeyTypedEvent : public Event
 {
 public:
+	using Event::Event;
+
 	KeyTypedEvent(const uint32_t keycode) : m_keyCode(keycode) {}
 
 

@@ -1,13 +1,12 @@
 #include "Editor.h"
 
+#include "Core.h"
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
+#include "ImGui/ImGuiLayer.h"
 #include "Log/Log.h"
 #include "Window/Window.h"
-#include "ImGui/ImGuiLayer.h"
-
-#define BIND_EVENT_CALLBACK(fun) std::bind(&fun, this, std::placeholders::_1)
 
 Editor::Editor(EditorInitor initor)
 {

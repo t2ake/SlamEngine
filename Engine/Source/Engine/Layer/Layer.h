@@ -17,10 +17,10 @@ public:
 	Layer &operator=(Layer &&) = delete;
 	virtual ~Layer() = default;
 
-	virtual void OnAttach() {}
-	virtual void OnDetach() {}
-	virtual void OnUpdate() {}
-	virtual void OnEvent(Event &event) {}
+	virtual void OnAttach() = 0;
+	virtual void OnDetach() = 0;
+	virtual void OnUpdate() = 0;
+	virtual void OnEvent(Event &event) = 0;
 
 	void SetName(std::string name) { m_name = std::move(name); }
 	std::string &GetName() { return m_name; }

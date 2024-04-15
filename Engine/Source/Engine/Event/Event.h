@@ -26,7 +26,14 @@ enum EventCategory : uint8_t
 
 class Event
 {
+protected:
+	Event() = default;
+
 public:
+	Event(const Event &) = delete;
+	Event &operator=(const Event &) = delete;
+	Event(Event &&) = delete;
+	Event &operator=(Event &&) = delete;
 	virtual ~Event() = default;
 
 	virtual EventType GetEventType() const = 0;
