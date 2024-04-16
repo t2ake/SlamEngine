@@ -12,7 +12,7 @@ class MouseButtonPressedEvent : public Event
 public:
 	using Event::Event;
 
-	MouseButtonPressedEvent(uint32_t button) : m_button(button) {}
+	MouseButtonPressedEvent(int button) : m_button(button) {}
 
 	static EventType GetStaticEventType()
 	{
@@ -36,10 +36,10 @@ public:
 		return EventCategoryInput | EventCategoryMouse;
 	}
 
-	uint32_t GetButton() const { return m_button; }
+	int GetButton() const { return m_button; }
 
 private:
-	uint32_t m_button;
+	int m_button;
 };
 
 class MouseButtonReleasedEvent : public Event
@@ -47,7 +47,7 @@ class MouseButtonReleasedEvent : public Event
 public:
 	using Event::Event;
 
-	MouseButtonReleasedEvent(const uint32_t button) : m_button(button) {}
+	MouseButtonReleasedEvent(const int button) : m_button(button) {}
 
 	static EventType GetStaticEventType()
 	{
@@ -71,10 +71,10 @@ public:
 		return EventCategoryInput | EventCategoryMouse;
 	}
 
-	uint32_t GetButton() const { return m_button; }
+	int GetButton() const { return m_button; }
 
 private:
-	uint32_t m_button;
+	int m_button;
 };
 
 class MouseMovedEvent : public Event

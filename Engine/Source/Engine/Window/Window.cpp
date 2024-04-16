@@ -102,13 +102,13 @@ void Window::Init()
 		{
 			case GLFW_PRESS:
 			{
-				MouseButtonPressedEvent event{ uint32_t(button) };
+				MouseButtonPressedEvent event{ button };
 				pWindow->DespatchEvent(event);
 				break;
 			}
 			case GLFW_RELEASE:
 			{
-				MouseButtonReleasedEvent event{ uint32_t(button) };
+				MouseButtonReleasedEvent event{ button };
 				pWindow->DespatchEvent(event);
 				break;
 			}

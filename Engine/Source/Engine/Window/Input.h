@@ -10,6 +10,9 @@ class Window;
 
 class Input final
 {
+private:
+	Input() = default;
+
 public:
 	static Input &GetInstance()
 	{
