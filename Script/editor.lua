@@ -34,18 +34,13 @@ project("Editor")
 		EditorPath,
 		ThirdPartyPath,
 		path.join(ThirdPartyPath, "spdlog/include"),
+		path.join(ThirdPartyPath, "glm"),
 	}
 	
 	-- Set files.
 	files
 	{
 		path.join(EditorPath, "**.*"),
-		path.join(ThirdPartyPath, "spdlog/include/**.*"),
-	}
-	
-	removefiles
-	{
-		path.join(ThirdPartyPath, "spdlog/include/spdlog/fmt/**.*"),
 	}
 	
 	-- Link to thirdparty libs.

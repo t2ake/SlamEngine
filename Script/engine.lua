@@ -35,18 +35,13 @@ project("Slam")
 		path.join(ThirdPartyPath, "glfw/include"),
 		path.join(ThirdPartyPath, "glad/include"),
 		path.join(ThirdPartyPath, "imgui"),
+		path.join(ThirdPartyPath, "glm"),
 	}
 	
 	-- Set files.
 	files
 	{
 		path.join(EnginePath, "**.*"),
-		path.join(ThirdPartyPath, "spdlog/include/**.*"),
-	}
-	
-	removefiles
-	{
-		path.join(ThirdPartyPath, "spdlog/include/spdlog/fmt/**.*"),
 	}
 	
 	-- Link to thirdparty libs.
