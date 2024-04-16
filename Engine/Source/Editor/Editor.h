@@ -35,7 +35,9 @@ private:
 	void Init(EditorInitor initor);
 	void Shutdown();
 
+	void BegineFrame();
 	void Render();
+	void EndFrame();
 
 	void OnEvent(sl::Event &e);
 	bool OnWindowClose(sl::Event &e);

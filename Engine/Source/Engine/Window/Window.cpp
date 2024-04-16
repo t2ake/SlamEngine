@@ -139,19 +139,29 @@ void Window::Init()
 	});
 }
 
-void Window::Update()
+void Window::Shutdown()
+{
+	glfwDestroyWindow(m_pWindow);
+	glfwTerminate();
+}
+
+void Window::BegineFrame()
 {
 	glfwPollEvents();
-	glfwSwapBuffers(m_pWindow);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void Window::Shutdown()
+void Window::Update()
 {
-	glfwDestroyWindow(m_pWindow);
-	glfwTerminate();
+
+}
+
+void Window::EndFrame()
+{
+	glfwMakeContextCurrent(m_pWindow);
+	glfwSwapBuffers(m_pWindow);
 }
 
 } // namespace sl

@@ -19,8 +19,12 @@ public:
 
 	virtual void OnAttach() = 0;
 	virtual void OnDetach() = 0;
-	virtual void OnUpdate() = 0;
 	virtual void OnEvent(Event &event) = 0;
+	
+	virtual void BeginFrame() = 0;
+	virtual void OnUpdate() = 0;
+	virtual void OnRender() = 0;
+	virtual void EndFrame() = 0;
 
 	void SetName(std::string name) { m_name = std::move(name); }
 	std::string &GetName() { return m_name; }

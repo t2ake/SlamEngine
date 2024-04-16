@@ -20,7 +20,9 @@ public:
 	Window(std::string title, uint32_t width, uint32_t height, bool VSync);
 	~Window();
 
+	void BegineFrame();
 	void Update();
+	void EndFrame();
 
 	GLFWwindow *GetWindow() const { return m_pWindow; }
 

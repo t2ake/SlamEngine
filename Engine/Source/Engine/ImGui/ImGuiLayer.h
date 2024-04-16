@@ -17,8 +17,12 @@ public:
 
 	virtual void OnAttach() override;
 	virtual void OnDetach() override;
-	virtual void OnUpdate() override;
 	virtual void OnEvent(Event &event) override;
+
+	virtual void BeginFrame() override;
+	virtual void OnUpdate() override;
+	virtual void OnRender() override;
+	virtual void EndFrame() override;
 
 private:
 	Window *m_pWindow = nullptr;

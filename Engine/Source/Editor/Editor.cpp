@@ -30,24 +30,6 @@ void Editor::Init(EditorInitor initor)
 	PushLayer(new sl::ImGuiLayer{ m_pWindow });
 }
 
-void Editor::Update()
-{
-	while (m_isRunning)
-	{
-		m_pWindow->Update();
-
-		for (sl::Layer* pLayer : m_layerStack)
-		{
-			pLayer->OnUpdate();
-		}
-	}
-}
-
-void Editor::Render()
-{
-
-}
-
 void Editor::Shutdown()
 {
 	for (sl::Layer *pLayer : m_layerStack)
@@ -57,6 +39,49 @@ void Editor::Shutdown()
 	m_layerStack.ClearLayers();
 
 	delete m_pWindow;
+}
+
+void Editor::Update()
+{
+	while (m_isRunning)
+	{
+		BegineFrame();
+
+		m_pWindow->Update();
+		for (sl::Layer *pLayer : m_layerStack)
+		{
+			pLayer->OnUpdate();
+		}
+
+		Render();
+		EndFrame();
+	}
+}
+
+void Editor::BegineFrame()
+{
+	m_pWindow->BegineFrame();
+	for (sl::Layer *pLayer : m_layerStack)
+	{
+		pLayer->BeginFrame();
+	}
+}
+
+void Editor::Render()
+{
+	for (sl::Layer *pLayer : m_layerStack)
+	{
+		pLayer->OnRender();
+	}
+}
+
+void Editor::EndFrame()
+{
+	m_pWindow->EndFrame();
+	for (sl::Layer *pLayer : m_layerStack)
+	{
+		pLayer->EndFrame();
+	}
 }
 
 void Editor::OnEvent(sl::Event &event)
