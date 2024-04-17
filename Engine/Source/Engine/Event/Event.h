@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <format>
 #include <functional>
 #include <string>
 
@@ -10,7 +11,7 @@ namespace sl
 enum class EventType
 {
 	None = 0,
-	WindowClose, WindowResize, WindowFocus, WindowLostFocus,
+	WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowDrop,
 	KeyPressed, KeyReleased, KeyTyped,
 	MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 };
@@ -81,3 +82,11 @@ using EventCallback = std::function<void(Event &)>;
 
 } // namespace sl
 
+template<>
+struct std::formatter<sl::Event> : std::formatter<std::string>
+{
+	auto format(const sl::Event &event, std::format_context &context) const
+	{
+		return formatter<string>::format(event.ToString(), context);
+	}
+};

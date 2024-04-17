@@ -1,11 +1,13 @@
 #pragma once
 
-#include "Layer/LayerStack.h"
+#include <cstdint>
+#include <string>
 
 namespace sl
 {
 
 class Event;
+class LayerStack;
 class Window;
 
 }
@@ -17,7 +19,7 @@ struct EditorInitor
 	uint32_t m_height;
 };
 
-class Editor
+class Editor final
 {
 public:
 	Editor() = delete;
@@ -42,12 +44,7 @@ private:
 	void OnEvent(sl::Event &e);
 	bool OnWindowClose(sl::Event &e);
 
-	void PushLayer(sl::Layer *pLayer);
-	void PopLayer(sl::Layer *pLayer);
-
 	bool m_isRunning = true;
-
 	sl::Window *m_pWindow = nullptr;
-
-	sl::LayerStack m_layerStack;
+	sl::LayerStack *m_pLayerStack = nullptr;
 };

@@ -6,8 +6,6 @@
 
 #include <spdlog/spdlog.h>
 
-#include <format>
-
 namespace sl
 {
 
@@ -26,16 +24,6 @@ private:
 };
 
 } // namespace sl
-
-// Specializations of std::formatter for user defined types.
-template<>
-struct std::formatter<sl::Event> : std::formatter<std::string>
-{
-	auto format(const sl::Event &event, std::format_context &context) const
-	{
-		return formatter<string>::format(event.ToString(), context);
-	}
-};
 
 #else
 

@@ -2,9 +2,6 @@
 
 // From glfw3.h
 
-namespace sl
-{
-
 #define SL_MOUSE_BUTTON_1      0
 #define SL_MOUSE_BUTTON_2      1
 #define SL_MOUSE_BUTTON_3      2
@@ -17,5 +14,3 @@ namespace sl
 #define SL_MOUSE_BUTTON_LEFT   SL_MOUSE_BUTTON_1
 #define SL_MOUSE_BUTTON_RIGHT  SL_MOUSE_BUTTON_2
 #define SL_MOUSE_BUTTON_MIDDLE SL_MOUSE_BUTTON_3
-
-} // namespace sl

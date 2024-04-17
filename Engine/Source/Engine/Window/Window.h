@@ -22,6 +22,7 @@ public:
 
 	void BegineFrame();
 	void Update();
+	void Render();
 	void EndFrame();
 
 	GLFWwindow *GetWindow() const { return m_pWindow; }
@@ -34,7 +35,7 @@ public:
 	uint32_t &GetHeight() { return m_height; }
 	uint32_t GetHeight() const { return m_height; }
 
-	void SetVSync(bool VSync) { m_isVSync = VSync; }
+	void SetVSync(bool VSync);
 	bool &GetIsVSync() { return m_isVSync; }
 	bool GetIsVSync() const { return m_isVSync; }
 
@@ -44,6 +45,8 @@ public:
 private:
 	void Init();
 	void Shutdown();
+
+	void SetCallbacks();
 
 	GLFWwindow *m_pWindow = nullptr;
 

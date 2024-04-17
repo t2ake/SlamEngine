@@ -2,9 +2,6 @@
 
 // From glfw3.h
 
-namespace sl
-{
-
 #define SL_KEY_UNKNOWN       -1
 
 // Printable keys
@@ -131,5 +128,3 @@ namespace sl
 #define SL_KEY_RIGHT_SUPER   347
 #define SL_KEY_MENU          348
 #define SL_KEY_LAST          SL_KEY_MENU
-
-} // namespace sl

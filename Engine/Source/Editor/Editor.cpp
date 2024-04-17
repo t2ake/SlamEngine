@@ -5,6 +5,7 @@
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiLayer.h"
+#include "Layer/LayerStack.h"
 #include "Log/Log.h"
 #include "Window/Input.h"
 #include "Window/Window.h"
@@ -27,17 +28,14 @@ void Editor::Init(EditorInitor initor)
 	m_pWindow->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 	sl::Input::GetInstance().SetWindow(m_pWindow);
 
-	PushLayer(new sl::ImGuiLayer{ m_pWindow });
+	// PENDIGN: Use pointer of every layer directly instead of layer stack.
+	m_pLayerStack = new sl::LayerStack;
+	m_pLayerStack->PushLayer(new sl::ImGuiLayer{ m_pWindow });
 }
 
 void Editor::Shutdown()
 {
-	for (sl::Layer *pLayer : m_layerStack)
-	{
-		delete pLayer;
-	}
-	m_layerStack.ClearLayers();
-
+	delete m_pLayerStack;
 	delete m_pWindow;
 }
 
@@ -47,8 +45,7 @@ void Editor::Update()
 	{
 		BegineFrame();
 
-		m_pWindow->Update();
-		for (sl::Layer *pLayer : m_layerStack)
+		for (sl::Layer *pLayer : *m_pLayerStack)
 		{
 			pLayer->OnUpdate();
 		}
@@ -61,7 +58,7 @@ void Editor::Update()
 void Editor::BegineFrame()
 {
 	m_pWindow->BegineFrame();
-	for (sl::Layer *pLayer : m_layerStack)
+	for (sl::Layer *pLayer : *m_pLayerStack)
 	{
 		pLayer->BeginFrame();
 	}
@@ -69,7 +66,7 @@ void Editor::BegineFrame()
 
 void Editor::Render()
 {
-	for (sl::Layer *pLayer : m_layerStack)
+	for (sl::Layer *pLayer : *m_pLayerStack)
 	{
 		pLayer->OnRender();
 	}
@@ -78,7 +75,7 @@ void Editor::Render()
 void Editor::EndFrame()
 {
 	m_pWindow->EndFrame();
-	for (sl::Layer *pLayer : m_layerStack)
+	for (sl::Layer *pLayer : *m_pLayerStack)
 	{
 		pLayer->EndFrame();
 	}
@@ -92,7 +89,7 @@ void Editor::OnEvent(sl::Event &event)
 	dispatcher.Dispatch<sl::WindowCloseEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowClose));
 
 	// Iterate layers from end to begin.
-	for (auto it = std::make_reverse_iterator(m_layerStack.end()); it != std::make_reverse_iterator(m_layerStack.begin()); ++it)
+	for (auto it = std::make_reverse_iterator(m_pLayerStack->end()); it != std::make_reverse_iterator(m_pLayerStack->begin()); ++it)
 	{
 		(*it)->OnEvent(event);
 		if (event.GetIsHandled())
@@ -106,16 +103,4 @@ bool Editor::OnWindowClose(sl::Event &event)
 {
 	m_isRunning = false;
 	return true;
-}
-
-void Editor::PushLayer(sl::Layer *pLayer)
-{
-	m_layerStack.PushLayer(pLayer);
-	pLayer->OnAttach();
-}
-
-void Editor::PopLayer(sl::Layer *pLayer)
-{
-	m_layerStack.PopLayer(pLayer);
-	pLayer->OnDetach();
 }

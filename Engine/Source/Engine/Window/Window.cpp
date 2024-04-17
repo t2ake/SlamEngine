@@ -5,6 +5,7 @@
 #include "Event/WindowEvent.h"
 #include "Log/Log.h"
 
+// TODO: Remove it to something like "Renderer" class.
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -26,19 +27,62 @@ void Window::Init()
 {
 	SL_ENGINE_INFO("Creating window \"{}\" ({}, {})", m_title, m_width, m_height);
 
-	glfwInit();
-	m_pWindow = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
-	glfwMakeContextCurrent(m_pWindow);
+	bool success = glfwInit();
+	SL_ENGINE_ASSERT_INFO(success, "GLFW init failed!");
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	gladLoadGLLoader(GLADloadproc(glfwGetProcAddress));
+	m_pWindow = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
+	SL_ENGINE_ASSERT_INFO(m_pWindow, "GLFW creat window failed!");
+	glfwMakeContextCurrent(m_pWindow);
 
-	glfwSwapInterval(m_isVSync);
+	success = gladLoadGLLoader(GLADloadproc(glfwGetProcAddress));
+	SL_ENGINE_ASSERT_INFO(success, "GLAD init context failed!");
+
 	glfwSetWindowUserPointer(m_pWindow, this);
+	glfwSwapInterval(m_isVSync ? 1 : 0);
+	SetCallbacks();
+}
 
-	// Callbacks
+void Window::Shutdown()
+{
+	glfwDestroyWindow(m_pWindow);
+	glfwTerminate();
+}
+
+void Window::BegineFrame()
+{
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Window::Update()
+{
+
+}
+
+void Window::Render()
+{
+
+}
+
+void Window::EndFrame()
+{
+	glfwMakeContextCurrent(m_pWindow);
+	glfwSwapBuffers(m_pWindow);
+	glfwPollEvents();
+}
+
+void Window::SetVSync(bool VSync)
+{
+	m_isVSync = VSync;
+	glfwSwapInterval(m_isVSync ? 1 : 0);
+}
+
+void Window::SetCallbacks()
+{
 	glfwSetWindowSizeCallback(m_pWindow, [](GLFWwindow *window, int width, int height)
 	{
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
@@ -64,7 +108,7 @@ void Window::Init()
 		{
 			case GLFW_PRESS:
 			{
-				KeyPressedEvent event{ key , false};
+				KeyPressedEvent event{ key , false };
 				pWindow->DespatchEvent(event);
 				break;
 			}
@@ -133,35 +177,39 @@ void Window::Init()
 		pWindow->DespatchEvent(event);
 	});
 
+	glfwSetWindowFocusCallback(m_pWindow, [](GLFWwindow *window, int focused)
+	{
+		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
+		if (GLFW_TRUE == focused)
+		{
+			WindowFocusEvent event;
+			pWindow->DespatchEvent(event);
+		}
+		if(GLFW_FALSE == focused)
+		{
+			WindowLostFocusEvent event;
+			pWindow->DespatchEvent(event);
+		}
+	});
+
+	glfwSetDropCallback(m_pWindow, [](GLFWwindow *window, int path_count, const char *paths[])
+	{
+		if (path_count > 1)
+		{
+			SL_ENGINE_ERROR("Only support droping one file at a time.");
+			return;
+		}
+		SL_ENGINE_ASSERT(1 == path_count);
+
+		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
+		WindowDropEvent event{ paths[0] };
+		pWindow->DespatchEvent(event);
+	});
+
 	glfwSetErrorCallback([](int error_code, const char *description)
 	{
 		SL_ENGINE_ERROR("GLFW error {}: {}", error_code, description);
 	});
-}
-
-void Window::Shutdown()
-{
-	glfwDestroyWindow(m_pWindow);
-	glfwTerminate();
-}
-
-void Window::BegineFrame()
-{
-	glfwPollEvents();
-
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-}
-
-void Window::Update()
-{
-
-}
-
-void Window::EndFrame()
-{
-	glfwMakeContextCurrent(m_pWindow);
-	glfwSwapBuffers(m_pWindow);
 }
 
 } // namespace sl

@@ -1,6 +1,9 @@
 #pragma once
 
-#include <utility>
+#include "Window/KeyCode.h"
+#include "Window/MouseButtonCode.h"
+
+#include <glm/vec2.hpp>
 
 namespace sl
 {
@@ -24,7 +27,7 @@ public:
 
 	static bool IsKeyPressed(int key);
 	static bool IsMouseButtonPressed(int button);
-	static std::pair<float, float> GetMousePos();
+	static glm::vec2 GetMousePos();
 
 private:
 	static Window *m_pWindow;

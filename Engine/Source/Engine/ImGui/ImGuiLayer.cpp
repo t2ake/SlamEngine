@@ -3,6 +3,7 @@
 #include "Log/Log.h"
 #include "Window/Window.h"
 
+// TODO: Compile them into imgui.lib
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
@@ -23,27 +24,28 @@ ImGuiLayer::~ImGuiLayer()
 
 void ImGuiLayer::OnAttach()
 {
+	// 1. Init imgui
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO &io = ImGui::GetIO(); (void)io;
+
+	// 2. Set flags
+	ImGuiIO &io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable Docking
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi Viewport Windows
-	// io.ConfigViewportsNoAutoMerge = true;
-	// io.ConfigViewportsNoTaskBarIcon = true;
+	io.ConfigViewportsNoTaskBarIcon = true;
 
+	// 3. Load font
+
+	// 4. Set style
 	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsLight();
-
+	// For docking
 	ImGuiStyle &style = ImGui::GetStyle();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		style.WindowRounding = 0.0f;
-		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-	}
+	style.WindowRounding = 0.0f;
+	style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 
-	SL_ENGINE_ASSERT(m_pWindow);
+	// 5. Init platform and Rendering backend
 	ImGui_ImplGlfw_InitForOpenGL(m_pWindow->GetWindow(), true);
 	ImGui_ImplOpenGL3_Init("#version 130");
 }
@@ -76,12 +78,9 @@ void ImGuiLayer::OnRender()
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-	ImGuiIO &io = ImGui::GetIO();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-	}
+	// For docking
+	ImGui::UpdatePlatformWindows();
+	ImGui::RenderPlatformWindowsDefault();
 }
 
 void ImGuiLayer::EndFrame()

@@ -105,8 +105,6 @@ public:
 		return EventType::WindowLostFocus;
 	}
 
-	WindowLostFocusEvent() = default;
-
 	virtual EventType GetEventType() const override
 	{
 		return GetStaticEventType();
@@ -121,6 +119,41 @@ public:
 	{
 		return EventCategoryWindow;
 	}
+};
+
+class WindowDropEvent : public Event
+{
+public:
+	using Event::Event;
+
+	WindowDropEvent(std::string path) : m_path(std::move(path)) {}
+
+	static EventType GetStaticEventType()
+	{
+		return EventType::WindowDrop;
+	}
+
+	virtual EventType GetEventType() const override
+	{
+		return GetStaticEventType();
+	}
+
+	virtual std::string ToString() const override
+	{
+		std::stringstream ss;
+		ss << "WindowDropEvent: " << m_path;
+		return ss.str();
+	}
+
+	virtual uint8_t GetCategories() const override
+	{
+		return EventCategoryWindow;
+	}
+
+	const std::string &GetPath() const { return m_path; }
+
+private:
+	std::string m_path;
 };
 
 } // namespace sl
