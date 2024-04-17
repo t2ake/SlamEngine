@@ -45,6 +45,7 @@ void Editor::Update()
 	{
 		BegineFrame();
 
+		m_pWindow->Update();
 		for (sl::Layer *pLayer : *m_pLayerStack)
 		{
 			pLayer->OnUpdate();
@@ -83,8 +84,6 @@ void Editor::EndFrame()
 
 void Editor::OnEvent(sl::Event &event)
 {
-	SL_EDITOR_TRACE(event);
-
 	sl::EventDispatcher dispatcher{ event };
 	dispatcher.Dispatch<sl::WindowCloseEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowClose));
 

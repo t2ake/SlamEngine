@@ -4,9 +4,9 @@
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
 #include "Log/Log.h"
+#include "Platform/OpenGL/OpenGLContext.h"
 
-// TODO: Remove it to something like "Renderer" class.
-#include <glad/glad.h>
+#include <glad/glad.h> // TEMPORARY
 #include <GLFW/glfw3.h>
 
 namespace sl
@@ -30,37 +30,60 @@ void Window::Init()
 	bool success = glfwInit();
 	SL_ENGINE_ASSERT_INFO(success, "GLFW init failed!");
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+	m_pRenderingContext = new OpenGLContext;
 	m_pWindow = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
 	SL_ENGINE_ASSERT_INFO(m_pWindow, "GLFW creat window failed!");
-	glfwMakeContextCurrent(m_pWindow);
-
-	success = gladLoadGLLoader(GLADloadproc(glfwGetProcAddress));
-	SL_ENGINE_ASSERT_INFO(success, "GLAD init context failed!");
+	m_pRenderingContext->Init(m_pWindow);
 
 	glfwSetWindowUserPointer(m_pWindow, this);
 	glfwSwapInterval(m_isVSync ? 1 : 0);
 	SetCallbacks();
+
+	// TEMPORARY
+	{
+		uint32_t m_vertexArray, m_vertexBuffer, m_indexBuffer;
+
+		glGenVertexArrays(1, &m_vertexArray);
+		glBindVertexArray(m_vertexArray);
+
+		glGenBuffers(1, &m_vertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
+		constexpr float vertices[9] =
+		{
+			-0.5f, -0.5f, 0.0f,
+			0.5f, -0.5f, 0.0f,
+			0.0f, 0.5f, 0.0f,
+		};
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+
+		glGenBuffers(1, &m_indexBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
+		constexpr uint32_t indices[3] = { 0, 1, 2 };
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	}
 }
 
 void Window::Shutdown()
 {
 	glfwDestroyWindow(m_pWindow);
 	glfwTerminate();
+
+	delete m_pRenderingContext;
 }
 
 void Window::BegineFrame()
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	// TEMPORARY
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void Window::Update()
 {
-
+	// TEMPORARY
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 }
 
 void Window::Render()
@@ -71,7 +94,8 @@ void Window::Render()
 void Window::EndFrame()
 {
 	glfwMakeContextCurrent(m_pWindow);
-	glfwSwapBuffers(m_pWindow);
+
+	m_pRenderingContext->SwapBuffers();
 	glfwPollEvents();
 }
 

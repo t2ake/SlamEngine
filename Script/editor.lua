@@ -15,7 +15,6 @@ project("Editor")
 	defines
 	{
 		"SPDLOG_NO_EXCEPTIONS", "SPDLOG_USE_STD_FORMAT",
-		-- "GLM_FORCE_INLINE"
 	}
 	
 	filter { "configurations:Debug" }

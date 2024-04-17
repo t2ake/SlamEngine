@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Event/Event.h"
+#include "RenderCore/RenderingContext.h"
 
 struct GLFWwindow;
 
@@ -49,6 +50,8 @@ private:
 	void SetCallbacks();
 
 	GLFWwindow *m_pWindow = nullptr;
+	// PENDIGN
+	RenderingContext *m_pRenderingContext = nullptr;
 
 	std::string m_title;
 	uint32_t m_width;
