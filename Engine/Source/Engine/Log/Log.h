@@ -2,9 +2,12 @@
 
 #ifndef SL_FINAL
 
-#include "Event/Event.h"
-
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 #include <spdlog/spdlog.h>
+
+#include <sstream>
 
 namespace sl
 {
@@ -24,6 +27,63 @@ private:
 };
 
 } // namespace sl
+
+template<>
+struct std::formatter<glm::vec2> : std::formatter<std::string>
+{
+	auto format(const glm::vec2 &vec, std::format_context &context) const
+	{
+		return formatter<string>::format(std::format("vec2({}, {})", vec.x, vec.y), context);
+	}
+};
+
+template<>
+struct std::formatter<glm::vec3> : std::formatter<std::string>
+{
+	auto format(const glm::vec3 &vec, std::format_context &context) const
+	{
+		return formatter<string>::format(std::format("vec3({}, {}, {})", vec.x, vec.y, vec.z), context);
+	}
+};
+
+template<>
+struct std::formatter<glm::vec4> : std::formatter<std::string>
+{
+	auto format(const glm::vec4 &vec, std::format_context &context) const
+	{
+		return formatter<string>::format(std::format("vec4({}, {}, {}, {})", vec.x, vec.y, vec.z, vec.w), context);
+	}
+};
+
+// TODO: Such a dirty implementation, improve it.
+template<glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+struct std::formatter<glm::mat<C, R, T, Q>> : std::formatter<std::string>
+{
+	auto format(const glm::mat<C, R, T, Q> &mat, std::format_context &context) const
+	{
+		std::stringstream ss;
+		ss << "mat" << C << "x" << R << "(";
+		for (glm::length_t i = 0; i < C; ++i)
+		{
+			for (glm::length_t j = 0; j < R; ++j)
+			{
+				ss << mat[i][j];
+				if (j < R - 1)
+				{
+					ss << ", ";
+				}
+			}
+			if (i < C - 1)
+			{
+				// To approach [xx:xx:xx] Logger: matCxR(
+				ss << "\n" << "                          ";
+			}
+		}
+		ss << ")";
+
+		return formatter<string>::format(ss.str(), context);
+	}
+};
 
 #else
 

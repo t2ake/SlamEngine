@@ -31,6 +31,10 @@ void Editor::Init(EditorInitor initor)
 	// PENDIGN: Use pointer of every layer directly instead of layer stack.
 	m_pLayerStack = new sl::LayerStack;
 	m_pLayerStack->PushLayer(new sl::ImGuiLayer{ m_pWindow });
+
+	SL_ENGINE_DEBUG(glm::vec2{ 2.2f });
+	SL_ENGINE_DEBUG(glm::vec3{ 3.3f });
+	SL_ENGINE_DEBUG(glm::vec4{ 4.4f });	
 }
 
 void Editor::Shutdown()
