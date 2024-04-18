@@ -3,6 +3,9 @@
 #include "Event/Event.h"
 #include "RenderCore/RenderingContext.h"
 
+// TEMPORARY
+#include "RenderCore/Shader.h"
+
 struct GLFWwindow;
 
 namespace sl
@@ -21,6 +24,7 @@ public:
 	Window(std::string title, uint32_t width, uint32_t height, bool VSync);
 	~Window();
 
+	// PENDING
 	void BegineFrame();
 	void Update();
 	void Render();
@@ -59,6 +63,9 @@ private:
 	bool m_isVSync;
 
 	EventCallback m_eventCallback;
+
+	// TEMPORARY
+	Shader *m_pShader;
 };
 
 } // namespace sl

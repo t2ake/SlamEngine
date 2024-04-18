@@ -6,7 +6,9 @@
 #include "Log/Log.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 
-#include <glad/glad.h> // TEMPORARY
+// TEMPORARY
+#include <glad/glad.h>
+
 #include <GLFW/glfw3.h>
 
 namespace sl
@@ -62,6 +64,31 @@ void Window::Init()
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
 		constexpr uint32_t indices[3] = { 0, 1, 2 };
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+		std::string vsSrc = R"(
+			#version 330 core
+			layout(location = 0) in vec3 a_position;
+			out vec3 v_position;
+
+			void main()
+			{
+				v_position = a_position;
+				gl_Position = vec4(a_position, 1.0);
+			}
+		)";
+
+		std::string fsSrc = R"(
+			#version 330 core
+			in vec3 v_position;
+			out vec4 color;
+
+			void main()
+			{
+				color = vec4(v_position * 0.5 + 0.5, 1.0);
+			}
+		)";
+
+		m_pShader = new Shader{ std::move(vsSrc), std::move(fsSrc) };
 	}
 }
 
@@ -83,6 +110,7 @@ void Window::BegineFrame()
 void Window::Update()
 {
 	// TEMPORARY
+	m_pShader->Bind();
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 }
 
