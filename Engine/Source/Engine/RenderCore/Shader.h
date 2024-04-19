@@ -1,29 +1,21 @@
 #pragma once
 
-#include <cstdint>
 #include <string>
 
 namespace sl
 {
 
 // TODO: Shader resource
-class Shader final
+class Shader
 {
 public:
-	Shader(std::string vertexSrc, std::string fragmentSrc);
-	~Shader();
+	static Shader *Creat(std::string vsSrc, std::string fsSrc);
 
-	void Bind();
-	void Unbind();
+public:
+	virtual ~Shader() = default;
 
-private:
-	bool CompileShader(std::string src, uint32_t shaderType);
-	bool CompileProgram();
-
-	// TODO: Set a "InvalidHandle" as uint32_t::max, or 0?
-	uint32_t m_vertexShaderHandle = 0;
-	uint32_t m_fragmentShaderHandle = 0;
-	uint32_t m_programHandle = 0;
+	virtual void Bind() const = 0;
+	virtual void Unbind() const = 0;
 };
 
 } // namespace sl

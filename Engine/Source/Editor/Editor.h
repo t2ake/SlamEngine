@@ -1,7 +1,13 @@
 #pragma once
 
+#include "RenderCore/RenderDefines.h"
+
 #include <cstdint>
 #include <string>
+
+// TEMPORARY
+#include "RenderCore/Shader.h"
+#include "RenderCore/VertexArray.h"
 
 namespace sl
 {
@@ -17,6 +23,7 @@ struct EditorInitor
 	std::string title;
 	uint32_t m_width;
 	uint32_t m_height;
+	sl::GraphicsBackend m_backend;
 };
 
 class Editor final
@@ -47,4 +54,8 @@ private:
 	bool m_isRunning = true;
 	sl::Window *m_pWindow = nullptr;
 	sl::LayerStack *m_pLayerStack = nullptr;
+
+	// TEMPORARY
+	sl::VertexArray *m_pVertexArray;
+	sl::Shader *m_pShader;
 };

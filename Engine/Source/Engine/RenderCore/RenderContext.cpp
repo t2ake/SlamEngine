@@ -1,13 +1,13 @@
-#include "Shader.h"
+#include "RenderContext.h"
 
 #include "Log/Log.h"
-#include "Platform/OpenGL/OpenGLShader.h"
+#include "Platform/OpenGL/OpenGLContext.h"
 #include "RenderCore/RenderCore.h"
 
 namespace sl
 {
 
-Shader *Shader::Creat(std::string vsSrc, std::string fsSrc)
+RenderContext *RenderContext::Create(GLFWwindow *pWindow)
 {
 	switch (RenderCore::GetInstance().GetBackend())
 	{
@@ -18,7 +18,7 @@ Shader *Shader::Creat(std::string vsSrc, std::string fsSrc)
 		}
 		case GraphicsBackend::OpenGL:
 		{
-			return new OpenGLShader(std::move(vsSrc), std::move(fsSrc));
+			return new OpenGLContext{ pWindow };
 			break;
 		}
 		default:

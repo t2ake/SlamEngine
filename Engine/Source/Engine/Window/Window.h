@@ -1,10 +1,7 @@
 #pragma once
 
 #include "Event/Event.h"
-#include "RenderCore/RenderingContext.h"
-
-// TEMPORARY
-#include "RenderCore/Shader.h"
+#include "RenderCore/RenderContext.h"
 
 struct GLFWwindow;
 
@@ -24,10 +21,6 @@ public:
 	Window(std::string title, uint32_t width, uint32_t height, bool VSync);
 	~Window();
 
-	// PENDING
-	void BegineFrame();
-	void Update();
-	void Render();
 	void EndFrame();
 
 	GLFWwindow *GetWindow() const { return m_pWindow; }
@@ -54,8 +47,7 @@ private:
 	void SetCallbacks();
 
 	GLFWwindow *m_pWindow = nullptr;
-	// PENDIGN
-	RenderingContext *m_pRenderingContext = nullptr;
+	RenderContext *m_pRenderContext = nullptr;
 
 	std::string m_title;
 	uint32_t m_width;
@@ -63,9 +55,6 @@ private:
 	bool m_isVSync;
 
 	EventCallback m_eventCallback;
-
-	// TEMPORARY
-	Shader *m_pShader;
 };
 
 } // namespace sl

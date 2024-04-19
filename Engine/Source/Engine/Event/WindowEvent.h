@@ -33,7 +33,7 @@ public:
 
 	virtual uint8_t GetCategories() const override
 	{
-		return EventCategoryWindow;
+		return SL_EVENT_CATEGORY_WINDOW;
 	}
 
 	uint32_t GetWidth() const { return m_width; }
@@ -65,7 +65,7 @@ public:
 
 	virtual uint8_t GetCategories() const override
 	{
-		return EventCategoryWindow;
+		return SL_EVENT_CATEGORY_WINDOW;
 	}
 };
 
@@ -91,7 +91,7 @@ public:
 
 	virtual uint8_t GetCategories() const override
 	{
-		return EventCategoryWindow;
+		return SL_EVENT_CATEGORY_WINDOW;
 	}
 };
 
@@ -117,7 +117,7 @@ public:
 
 	virtual uint8_t GetCategories() const override
 	{
-		return EventCategoryWindow;
+		return SL_EVENT_CATEGORY_WINDOW;
 	}
 };
 
@@ -147,7 +147,7 @@ public:
 
 	virtual uint8_t GetCategories() const override
 	{
-		return EventCategoryWindow;
+		return SL_EVENT_CATEGORY_WINDOW;
 	}
 
 	const std::string &GetPath() const { return m_path; }

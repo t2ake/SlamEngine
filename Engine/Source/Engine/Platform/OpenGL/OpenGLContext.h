@@ -1,20 +1,19 @@
 #pragma once
 
-#include "RenderCore/RenderingContext.h"
+#include "RenderCore/RenderContext.h"
 
 struct GLFWwindow;
 
 namespace sl
 {
 
-class OpenGLContext : public RenderingContext
+class OpenGLContext : public RenderContext
 {
 public:
-	OpenGLContext();
+	OpenGLContext(GLFWwindow *pWindow);
 
-	virtual void Init(GLFWwindow *pWindow) override;
+	virtual void Bind() override;
 	virtual void SwapBuffers() override;
-	virtual void Shutdown() override;
 
 private:
 	GLFWwindow *m_pWindow = nullptr;

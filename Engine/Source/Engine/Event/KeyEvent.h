@@ -34,7 +34,7 @@ public:
 
 	virtual uint8_t GetCategories() const override
 	{
-		return EventCategoryInput | EventCategoryKeyboard;
+		return SL_EVENT_CATEGORY_INPUT | SL_EVENT_CATEGORY_KEYBOARD;
 	}
 
 	int GetKeyCode() const { return m_keyCode; }
@@ -71,7 +71,7 @@ public:
 
 	virtual uint8_t GetCategories() const override
 	{
-		return EventCategoryInput | EventCategoryKeyboard;
+		return SL_EVENT_CATEGORY_INPUT | SL_EVENT_CATEGORY_KEYBOARD;
 	}
 
 	int GetKeyCode() const { return m_keyCode; }
@@ -107,7 +107,7 @@ public:
 	virtual
 		uint8_t GetCategories() const override
 	{
-		return EventCategoryInput | EventCategoryKeyboard;
+		return SL_EVENT_CATEGORY_INPUT | SL_EVENT_CATEGORY_KEYBOARD;
 	}
 
 	int GetKeyCode() const { return m_keyCode; }

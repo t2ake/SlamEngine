@@ -33,7 +33,7 @@ public:
 
 	virtual uint8_t GetCategories() const override
 	{
-		return EventCategoryInput | EventCategoryMouse;
+		return SL_EVENT_CATEGORY_INPUT | SL_EVENT_CATEGORY_MOUSE;
 	}
 
 	int GetButton() const { return m_button; }
@@ -68,7 +68,7 @@ public:
 
 	virtual uint8_t GetCategories() const override
 	{
-		return EventCategoryInput | EventCategoryMouse;
+		return SL_EVENT_CATEGORY_INPUT | SL_EVENT_CATEGORY_MOUSE;
 	}
 
 	int GetButton() const { return m_button; }
@@ -103,7 +103,7 @@ public:
 
 	virtual uint8_t GetCategories() const override
 	{
-		return EventCategoryInput | EventCategoryMouse;
+		return SL_EVENT_CATEGORY_INPUT | SL_EVENT_CATEGORY_MOUSE;
 	}
 
 	float GetPosX() const { return m_posX; }
@@ -139,7 +139,7 @@ public:
 
 	virtual uint8_t GetCategories() const override
 	{
-		return EventCategoryInput | EventCategoryMouse;
+		return SL_EVENT_CATEGORY_INPUT | SL_EVENT_CATEGORY_MOUSE;
 	}
 
 	float GetOffsetX() const { return m_offsetX; }

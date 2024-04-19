@@ -16,14 +16,11 @@ enum class EventType
 	MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 };
 
-enum EventCategory : uint8_t
-{
-	None = 0,
-	EventCategoryWindow   = 1 << 0,
-	EventCategoryInput    = 1 << 1,
-	EventCategoryKeyboard = 1 << 2,
-	EventCategoryMouse    = 1 << 3,
-};
+#define SL_EVENT_CATEGORY_NONE     UINT8_C(0x00)
+#define SL_EVENT_CATEGORY_WINDOW   UINT8_C(0x01)
+#define SL_EVENT_CATEGORY_INPUT    UINT8_C(0x02)
+#define SL_EVENT_CATEGORY_KEYBOARD UINT8_C(0x04)
+#define SL_EVENT_CATEGORY_MOUSE    UINT8_C(0x08)
 
 class Event
 {
@@ -41,7 +38,7 @@ public:
 	virtual std::string ToString() const = 0;
 
 	virtual uint8_t GetCategories() const = 0;
-	bool IsInCategory(EventCategory category) const
+	bool IsInCategory(uint8_t category) const
 	{
 		return category & GetCategories();
 	}

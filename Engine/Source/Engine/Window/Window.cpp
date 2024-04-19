@@ -6,9 +6,6 @@
 #include "Log/Log.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 
-// TEMPORARY
-#include <glad/glad.h>
-
 #include <GLFW/glfw3.h>
 
 namespace sl
@@ -32,64 +29,17 @@ void Window::Init()
 	bool success = glfwInit();
 	SL_ENGINE_ASSERT_INFO(success, "GLFW init failed!");
 
-	m_pRenderingContext = new OpenGLContext;
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 	m_pWindow = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
 	SL_ENGINE_ASSERT_INFO(m_pWindow, "GLFW creat window failed!");
-	m_pRenderingContext->Init(m_pWindow);
+	m_pRenderContext = RenderContext::Create(m_pWindow);
 
 	glfwSetWindowUserPointer(m_pWindow, this);
 	glfwSwapInterval(m_isVSync ? 1 : 0);
 	SetCallbacks();
-
-	// TEMPORARY
-	{
-		uint32_t m_vertexArray, m_vertexBuffer, m_indexBuffer;
-
-		glGenVertexArrays(1, &m_vertexArray);
-		glBindVertexArray(m_vertexArray);
-
-		glGenBuffers(1, &m_vertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
-		constexpr float vertices[9] =
-		{
-			-0.5f, -0.5f, 0.0f,
-			0.5f, -0.5f, 0.0f,
-			0.0f, 0.5f, 0.0f,
-		};
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-
-		glGenBuffers(1, &m_indexBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
-		constexpr uint32_t indices[3] = { 0, 1, 2 };
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-		std::string vsSrc = R"(
-			#version 330 core
-			layout(location = 0) in vec3 a_position;
-			out vec3 v_position;
-
-			void main()
-			{
-				v_position = a_position;
-				gl_Position = vec4(a_position, 1.0);
-			}
-		)";
-
-		std::string fsSrc = R"(
-			#version 330 core
-			in vec3 v_position;
-			out vec4 color;
-
-			void main()
-			{
-				color = vec4(v_position * 0.5 + 0.5, 1.0);
-			}
-		)";
-
-		m_pShader = new Shader{ std::move(vsSrc), std::move(fsSrc) };
-	}
 }
 
 void Window::Shutdown()
@@ -97,33 +47,13 @@ void Window::Shutdown()
 	glfwDestroyWindow(m_pWindow);
 	glfwTerminate();
 
-	delete m_pRenderingContext;
-}
-
-void Window::BegineFrame()
-{
-	// TEMPORARY
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-}
-
-void Window::Update()
-{
-	// TEMPORARY
-	m_pShader->Bind();
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
-}
-
-void Window::Render()
-{
-
+	delete m_pRenderContext;
 }
 
 void Window::EndFrame()
 {
-	glfwMakeContextCurrent(m_pWindow);
-
-	m_pRenderingContext->SwapBuffers();
+	m_pRenderContext->Bind();
+	m_pRenderContext->SwapBuffers();
 	glfwPollEvents();
 }
 

@@ -7,17 +7,11 @@
 
 namespace sl
 {
-OpenGLContext::OpenGLContext()
-{
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-}
 
-void OpenGLContext::Init(GLFWwindow *pWindow)
+OpenGLContext::OpenGLContext(GLFWwindow *pWindow) : m_pWindow(pWindow)
 {
-	m_pWindow = pWindow;
 	glfwMakeContextCurrent(m_pWindow);
+
 	bool success = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	SL_ENGINE_ASSERT_INFO(success, "GLAD init context failed!");
 
@@ -27,14 +21,14 @@ void OpenGLContext::Init(GLFWwindow *pWindow)
 	SL_ENGINE_INFO("  Version: {}", (const char *)glGetString(GL_VERSION));
 }
 
+void OpenGLContext::Bind()
+{
+	glfwMakeContextCurrent(m_pWindow);
+}
+
 void OpenGLContext::SwapBuffers()
 {
 	glfwSwapBuffers(m_pWindow);
-}
-
-void OpenGLContext::Shutdown()
-{
-
 }
 
 } // namespace sl

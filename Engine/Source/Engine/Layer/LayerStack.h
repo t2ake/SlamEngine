@@ -26,6 +26,8 @@ public:
 
 	auto begin() { return m_pLayers.begin(); }
 	auto end() { return m_pLayers.end(); }
+	auto begin() const { return m_pLayers.cbegin(); }
+	auto end() const { return m_pLayers.cend(); }
 
 private:
 	std::vector<Layer *> m_pLayers;
