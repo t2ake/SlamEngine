@@ -46,6 +46,7 @@ bool OpenGLShader::CompileShader(std::string src, uint32_t shaderType)
 	glShaderSource(shaderHandle, 1, &source, 0);
 	glCompileShader(shaderHandle);
 
+#ifndef SL_FINAL
 	GLint isCompiled = 0;
 	glGetShaderiv(shaderHandle, GL_COMPILE_STATUS, &isCompiled);
 	if (GL_FALSE == isCompiled)
@@ -66,6 +67,7 @@ bool OpenGLShader::CompileShader(std::string src, uint32_t shaderType)
 
 		return false;
 	}
+#endif
 
 	if (GL_VERTEX_SHADER == shaderType)
 	{
@@ -87,6 +89,7 @@ bool OpenGLShader::CompileProgram()
 	glAttachShader(programHandle, m_fragmentShaderHandle);
 	glLinkProgram(programHandle);
 
+#ifndef SL_FINAL
 	GLint isLinked = 0;
 	glGetProgramiv(programHandle, GL_LINK_STATUS, &isLinked);
 	if (isLinked == GL_FALSE)
@@ -105,6 +108,7 @@ bool OpenGLShader::CompileProgram()
 
 		return false;
 	}
+#endif
 
 	glDetachShader(programHandle, m_vertexShaderHandle);
 	glDetachShader(programHandle, m_fragmentShaderHandle);
