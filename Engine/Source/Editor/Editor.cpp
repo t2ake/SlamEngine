@@ -53,10 +53,12 @@ void Editor::Init(EditorInitor initor)
 			layout(location = 1) in vec4 a_color;
 			out vec4 v_color;
 
+			uniform mat4 u_ModelViewProjection;
+
 			void main()
 			{
 				v_color = a_color;
-				gl_Position = vec4(a_position, 1.0);
+				gl_Position = u_ModelViewProjection * vec4(a_position, 1.0);
 			}
 		)";
 
@@ -84,6 +86,11 @@ void Editor::Init(EditorInitor initor)
 		m_pVertexArray->SetIndexBuffer(pIndexBuffer);
 
 		m_pShader = sl::Shader::Creat(std::move(vsSrc), std::move(fsSrc));
+
+		m_camera.GetData().SetPosition(glm::vec3{ 0.0f, 0.0f, 2.0f });
+		m_camera.GetData().SetRotationDegrees(glm::vec3{ 0.0f, -90.0f, 0.0f });
+		m_camera.GetData().DirDirty();
+		m_camera.GetData().MatDirty();
 	}
 }
 
@@ -106,6 +113,7 @@ void Editor::Update()
 		{
 			pLayer->OnUpdate();
 		}
+		m_camera.Update();
 
 		Render();
 		EndFrame();
@@ -125,6 +133,9 @@ void Editor::BegineFrame()
 void Editor::Render()
 {
 	// TEMPORARY
+	glm::mat4 mvp{ 1.0f };
+	mvp = m_camera.GetData().GetProjection() * m_camera.GetData().GetView() * mvp;
+	m_pShader->UploadUniformMat4("u_ModelViewProjection", std::move(mvp));
 	sl::RenderCore::GetInstance().Submit(m_pVertexArray, m_pShader);
 
 	for (sl::Layer *pLayer : *m_pLayerStack)

@@ -6,6 +6,7 @@
 #include <string>
 
 // TEMPORARY
+#include "Camera/Camera.h"
 #include "RenderCore/Shader.h"
 #include "RenderCore/VertexArray.h"
 
@@ -58,4 +59,5 @@ private:
 	// TEMPORARY
 	sl::VertexArray *m_pVertexArray;
 	sl::Shader *m_pShader;
+	sl::Camera m_camera;
 };

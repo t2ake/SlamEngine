@@ -3,6 +3,7 @@
 #include "Log/Log.h"
 
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <vector>
 
@@ -35,6 +36,14 @@ void OpenGLShader::Bind() const
 
 void OpenGLShader::Unbind() const
 {
+	glUseProgram(0);
+}
+
+void OpenGLShader::UploadUniformMat4(std::string name, glm::mat4 mat) const
+{
+	glUseProgram(m_programHandle);
+	GLint location = glGetUniformLocation(m_programHandle, name.c_str());
+	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
 	glUseProgram(0);
 }
 

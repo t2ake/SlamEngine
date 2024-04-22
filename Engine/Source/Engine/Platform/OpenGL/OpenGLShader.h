@@ -17,6 +17,8 @@ public:
 	virtual void Bind() const override;
 	virtual void Unbind() const override;
 
+	virtual void UploadUniformMat4(std::string name, glm::mat4 mat) const override;
+
 private:
 	bool CompileShader(std::string src, uint32_t shaderType);
 	bool CompileProgram();
