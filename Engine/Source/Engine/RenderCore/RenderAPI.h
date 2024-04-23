@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RenderCore/RenderDefines.h"
+#include "Core/Defines.h"
 #include "RenderCore/VertexArray.h"
 
 namespace sl

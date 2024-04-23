@@ -5,12 +5,9 @@
 #include "RenderCore/Shader.h"
 #include "RenderCore/VertexArray.h"
 
+#include "Core/Defines.h"
 #include "Core/Timmer.h"
 #include "Layer/LayerStack.h"
-#include "RenderCore/RenderDefines.h"
-
-#include <cstdint>
-#include <string>
 
 namespace sl
 {
