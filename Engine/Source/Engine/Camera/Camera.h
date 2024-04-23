@@ -37,7 +37,7 @@ private:
 	Window *m_pWindow = nullptr;
 
 	float m_moveSpeed = 8.0f;
-	float m_rotateSpeed = 0.25f;
+	float m_rotateSpeed = 0.125f;
 	glm::vec2 m_mousePrePos;
 
 	// TODO: Postprocessing stuff

@@ -11,6 +11,9 @@
 #include "Window/Input.h"
 #include "Window/Window.h"
 
+// TEMPLATE
+#include <glm/gtc/matrix_transform.hpp>
+
 Editor::Editor(EditorInitor initor)
 {
 	Init(std::move(initor));
@@ -84,7 +87,7 @@ void Editor::Init(EditorInitor initor)
 		m_pVertexArray->SetVertexBuffer(pVertexBuffer);
 		m_pVertexArray->SetIndexBuffer(pIndexBuffer);
 
-		m_pShader = sl::Shader::Creat(std::move(vsSrc), std::move(fsSrc));
+		m_pShader = sl::Shader::Creat("Test Shader", std::move(vsSrc), std::move(fsSrc));
 
 		m_camera.SetWindow(m_pWindow);
 		m_camera.GetData().SetPosition(glm::vec3{ 0.0f, 0.0f, 5.0f });
@@ -139,7 +142,7 @@ void Editor::Render()
 			glm::vec3 trans{ i, j, 0.0f };
 			glm::mat4 modelMat = glm::translate(glm::mat4{ 1.0f }, trans * 0.1f);
 			glm::mat4 mvp = m_camera.GetData().GetProjection() * m_camera.GetData().GetView() * modelMat;
-			m_pShader->UploadUniformMat4("u_ModelViewProjection", std::move(mvp));
+			m_pShader->UploadUniform("u_ModelViewProjection", std::move(mvp));
 			sl::RenderCore::GetInstance().Submit(m_pVertexArray, m_pShader);
 		}
 	}

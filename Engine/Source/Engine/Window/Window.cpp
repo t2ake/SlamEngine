@@ -38,7 +38,11 @@ void Window::Init()
 	m_pRenderContext = RenderContext::Create(m_pWindow);
 
 	glfwSetWindowUserPointer(m_pWindow, this);
+#ifdef SL_FINAL
+	m_isVSync = false;
+#endif
 	glfwSwapInterval(m_isVSync ? 1 : 0);
+
 	SetCallbacks();
 }
 
@@ -59,8 +63,10 @@ void Window::EndFrame()
 
 void Window::SetVSync(bool VSync)
 {
+#ifndef SL_FINAL
 	m_isVSync = VSync;
 	glfwSwapInterval(m_isVSync ? 1 : 0);
+#endif
 }
 
 void Window::DisableCursor() const

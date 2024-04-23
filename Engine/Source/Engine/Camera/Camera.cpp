@@ -18,8 +18,8 @@ void Camera::Update(float deltaTime)
 		UpdateFPSCamera(deltaTime);
 	}
 	// Camera editor mode.
-	else if (Input::GetInstance().IsMouseButtonPressed(SL_KEY_LEFT_ALT) &&
-		Input::GetInstance().IsKeyPressed(SL_MOUSE_BUTTON_1))
+	else if (Input::GetInstance().IsKeyPressed(SL_KEY_LEFT_ALT) &&
+		Input::GetInstance().IsMouseButtonPressed(SL_MOUSE_BUTTON_1))
 	{
 		UpdateEditorCamera(deltaTime);
 	}
@@ -56,14 +56,15 @@ void Camera::UpdateFPSCamera(float deltaTime)
 	glm::vec2 crtPos = Input::GetInstance().GetMousePos();
 	float offsetX = crtPos.x - m_mousePrePos.x;
 	float offsetY = m_mousePrePos.y - crtPos.y;
+	m_mousePrePos = Input::GetInstance().GetMousePos();
 
-	m_data.GetRotation() += glm::vec3{ offsetY, offsetX, 0.0f } * m_rotateSpeed * deltaTime;
+	m_data.GetRotation() += glm::vec3{ offsetY * m_rotateSpeed * deltaTime, offsetX * m_rotateSpeed * deltaTime, 0.0f };
 	m_data.GetRotation().x = std::min(m_data.GetRotation().x, glm::radians(89.9f));
 	m_data.GetRotation().x = std::max(m_data.GetRotation().x, glm::radians(-89.9f));
 	m_data.RecalculateDir();
 
 	float finalSpeed = m_moveSpeed * deltaTime *
-		(Input::GetInstance().IsKeyPressed(SL_KEY_LEFT_SHIFT) ? 2.0f : 1.0f);
+		(Input::GetInstance().IsKeyPressed(SL_KEY_LEFT_SHIFT) ? 3.0f : 1.0f);
 	if (Input::GetInstance().IsKeyPressed(SL_KEY_W))
 	{
 		m_data.GetPosition() += m_data.GetFrontDir() * finalSpeed;
@@ -89,8 +90,6 @@ void Camera::UpdateFPSCamera(float deltaTime)
 		m_data.GetPosition() -= CameraData::WorldUp * finalSpeed;
 	}
 	m_data.RecalculateMat();
-
-	m_mousePrePos = Input::GetInstance().GetMousePos();
 }
 
 } // namespace sl
