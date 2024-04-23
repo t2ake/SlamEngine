@@ -21,6 +21,7 @@ void LayerStack::PopLayer(Layer *pLayer)
 
 void LayerStack::Shutdown()
 {
+	// PENDING: Should I iterate them from the top to the bottom?
 	for (Layer *pLayer : m_pLayers)
 	{
 		delete pLayer;

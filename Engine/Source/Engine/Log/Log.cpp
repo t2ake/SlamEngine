@@ -29,7 +29,7 @@ void Log::Init()
 	s_pEditorLogger = std::make_shared<spdlog::logger>("Editor", sinks.begin(), sinks.end());
 	s_pEditorLogger->set_level(spdlog::level::trace);
 
-	SL_EDITOR_INFO("Init logger");
+	SL_ENGINE_INFO("Init logger");
 }
 
 } // namespace sl

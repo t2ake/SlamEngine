@@ -7,30 +7,23 @@ namespace sl
 
 const glm::mat4 &CameraData::GetView()
 {
-	if (m_dirDirty)
-	{
-		RecalculateDir();
-	}
-	if (m_matDirty)
-	{
-		RecalculateMat();
-	}
+	CheckDirty();
 
 	return m_viewMat;
 }
 
 const glm::mat4 &CameraData::GetProjection()
 {
-	if (m_dirDirty)
-	{
-		RecalculateDir();
-	}
-	if (m_matDirty)
-	{
-		RecalculateMat();
-	}
+	CheckDirty();
 
 	return m_projectionMat;
+}
+
+const glm::mat4 &CameraData::GetViewProjection()
+{
+	CheckDirty();
+
+	return m_viewProjectionMat;
 }
 
 void CameraData::RecalculateDir()
@@ -52,8 +45,21 @@ void CameraData::RecalculateMat()
 
 	m_viewMat = glm::lookAt(m_position, m_position + m_frontDir, m_upDir);
 	m_projectionMat = glm::perspective(glm::radians(m_fov), m_aspect, m_nearPlane, m_farPlane);
+	m_viewProjectionMat = m_projectionMat * m_viewMat;
 
 	m_matDirty = false;
+}
+
+void CameraData::CheckDirty()
+{
+	if (m_dirDirty)
+	{
+		RecalculateDir();
+	}
+	if (m_matDirty)
+	{
+		RecalculateMat();
+	}
 }
 
 } // namespace sl

@@ -31,7 +31,7 @@ public:
 	const std::string &GetName() const { return m_name; }
 
 private:
-	std::string m_name = "Layer";
+	std::string m_name = "Default Layer Name";
 };
 
 } // namespace sl

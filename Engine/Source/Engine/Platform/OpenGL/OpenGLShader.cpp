@@ -39,9 +39,9 @@ static GLenum GetOpenGLShaderType(ShaderType type)
 }
 
 OpenGLShader::OpenGLShader(std::string name, std::string vertexSrc, std::string fragmentSrc) :
-	m_name(std::move(name))
+	m_shaderProgramName(std::move(name))
 {
-	SL_ENGINE_TRACE("Compiling standard shader program: \"{}\"", m_name);
+	SL_ENGINE_TRACE("Compiling standard shader program: \"{}\"", m_shaderProgramName);
 	m_programType = ShaderProgramType::Standard;
 	if (CompileShader(std::move(vertexSrc), ShaderType::VertexShader) &&
 		CompileShader(std::move(fragmentSrc), ShaderType::FragmentShader))
@@ -51,9 +51,9 @@ OpenGLShader::OpenGLShader(std::string name, std::string vertexSrc, std::string 
 }
 
 OpenGLShader::OpenGLShader(std::string name, std::string computeSrc) :
-	m_name(std::move(name))
+	m_shaderProgramName(std::move(name))
 {
-	SL_ENGINE_TRACE("Compiling compute shader program: \"{}\"", m_name);
+	SL_ENGINE_TRACE("Compiling compute shader program: \"{}\"", m_shaderProgramName);
 	m_programType = ShaderProgramType::Compute;
 	if (CompileShader(std::move(computeSrc), ShaderType::ComputeShader))
 	{
@@ -202,8 +202,6 @@ bool OpenGLShader::CompileShader(std::string src, ShaderType type)
 
 bool OpenGLShader::CompileProgram()
 {
-	// TODO: Compute shader
-
 	uint32_t programHandle = glCreateProgram();
 
 	if (ShaderProgramType::Compute == m_programType)
@@ -273,7 +271,7 @@ int OpenGLShader::GetUniformLocation(const std::string &name)
 #ifndef SL_FINEL
 		if (-1 == location)
 		{
-			SL_ENGINE_ERROR("Can't find uniform \"{}\" location in {}!", name, m_name);
+			SL_ENGINE_ERROR("Can't find uniform \"{}\" location in {}!", name, m_shaderProgramName);
 		}
 #endif
 		m_uniformLocationCache[name] = (uint32_t)location;

@@ -15,9 +15,9 @@ public:
 	OpenGLShader(std::string name, std::string computeSrc);
 	virtual ~OpenGLShader() override;
 
-	void SetName(std::string name) { m_name = std::move(name); }
-	std::string &GetName() { return m_name; }
-	const std::string &GetName() const { return m_name; }
+	void SetName(std::string name) { m_shaderProgramName = std::move(name); }
+	std::string &GetName() { return m_shaderProgramName; }
+	const std::string &GetName() const { return m_shaderProgramName; }
 
 	virtual void Bind() const override;
 	virtual void Unbind() const override;
@@ -47,7 +47,7 @@ private:
 
 	int GetUniformLocation(const std::string &name);
 
-	std::string m_name = "Default Shader Name";
+	std::string m_shaderProgramName = "Default Shader Name";
 	ShaderProgramType m_programType = ShaderProgramType::Standard;
 
 	uint32_t m_vertexShaderHandle = 0;

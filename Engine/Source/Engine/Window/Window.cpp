@@ -24,7 +24,7 @@ Window::~Window()
 
 void Window::Init()
 {
-	SL_ENGINE_INFO("Creating window \"{}\" ({}, {})", m_title, m_width, m_height);
+	SL_ENGINE_INFO("Create window \"{}\" ({}, {})", m_title, m_width, m_height);
 
 	bool success = glfwInit();
 	SL_ENGINE_ASSERT_INFO(success, "GLFW init failed!");

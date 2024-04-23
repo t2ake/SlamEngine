@@ -35,43 +35,44 @@ void Editor::Init(EditorInitor initor)
 	sl::Input::GetInstance().SetWindow(m_pWindow);
 	sl::RenderCore::GetInstance().SetClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-	// PENDIGN: Use pointer of every layer directly instead of layer stack.
+	// PENDING: Use pointer of every layer directly instead of layer stack.
 	m_layerStack.PushLayer(new sl::ImGuiLayer{ m_pWindow });
 
 	// TEMPORARY
 	{
-		float vertices[21] =
+		float vertices[] =
 		{
-			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-			0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
 		};
 
-		uint32_t indices[3] = { 0, 1, 2 };
+		uint32_t indices[] = { 0, 1, 3, 1, 2, 3 };
 
 		std::string vsSrc = R"(
 			#version 330 core
 			layout(location = 0) in vec3 a_position;
-			layout(location = 1) in vec4 a_color;
-			out vec4 v_color;
+			layout(location = 1) in vec2 a_uv;
+			out vec2 v_uv;
 
 			uniform mat4 u_ModelViewProjection;
 
 			void main()
 			{
-				v_color = a_color;
+				v_uv = a_uv;
 				gl_Position = u_ModelViewProjection * vec4(a_position, 1.0);
 			}
 		)";
 
 		std::string fsSrc = R"(
 			#version 330 core
-			in vec4 v_color;
+			in vec2 v_uv;
 			out vec4 o_color;
 
 			void main()
 			{
-				o_color = vec4(v_color);
+				o_color = vec4(v_uv, 0.1, 1.0);
 			}
 		)";
 
@@ -80,7 +81,7 @@ void Editor::Init(EditorInitor initor)
 		pVertexBuffer->SetLayout(sl::VertexLayout
 		{
 			{"Position", sl::AttribType::Float, 3},
-			{"Color", sl::AttribType::Float, 4},
+			{"UV", sl::AttribType::Float, 2},
 		});
 
 		m_pVertexArray = sl::VertexArray::Create();
@@ -99,6 +100,7 @@ void Editor::Shutdown()
 {
 	delete m_pVertexArray;
 	delete m_pShader;
+
 	m_layerStack.Shutdown();
 	delete m_pWindow;
 }
@@ -135,13 +137,13 @@ void Editor::BegineFrame()
 void Editor::Render()
 {
 	// TEMPORARY
-	for (int i = -10; i < 10; ++i)
+	for (int i = -1; i <= 1; ++i)
 	{
-		for (int j = -10; j < 10; ++j)
+		for (int j = -1; j <= 1; ++j)
 		{
 			glm::vec3 trans{ i, j, 0.0f };
-			glm::mat4 modelMat = glm::translate(glm::mat4{ 1.0f }, trans * 0.1f);
-			glm::mat4 mvp = m_camera.GetData().GetProjection() * m_camera.GetData().GetView() * modelMat;
+			glm::mat4 modelMat = glm::translate(glm::mat4{ 1.0f }, trans * 1.1f);
+			glm::mat4 mvp = m_camera.GetData().GetViewProjection() * modelMat;
 			m_pShader->UploadUniform("u_ModelViewProjection", std::move(mvp));
 			sl::RenderCore::GetInstance().Submit(m_pVertexArray, m_pShader);
 		}

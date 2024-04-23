@@ -54,6 +54,7 @@ public:
 
 	const glm::mat4 &GetView();
 	const glm::mat4 &GetProjection();
+	const glm::mat4 &GetViewProjection();
 
 	void DirDirty() { m_dirDirty = true; }
 	void MatDirty() { m_matDirty = true; }
@@ -61,6 +62,8 @@ public:
 	void RecalculateMat();
 
 private:
+	void CheckDirty();
+
 	// TODO: Move to ECS Transform Component
 	glm::vec3 m_position{ 0.0f, 0.0f, 0.0f };
 	// Pitch, Yaw, Roll in radians.
@@ -81,6 +84,7 @@ private:
 	bool m_matDirty = true;
 	glm::mat4 m_viewMat{ 1.0f };
 	glm::mat4 m_projectionMat{ 1.0f };
+	glm::mat4 m_viewProjectionMat{ 1.0f };
 };
 
 } // namespace sl
