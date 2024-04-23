@@ -37,6 +37,9 @@ public:
 	bool &GetIsVSync() { return m_isVSync; }
 	bool GetIsVSync() const { return m_isVSync; }
 
+	void DisableCursor() const;
+	void EnableCursor() const;
+
 	void SetEventCallback(EventCallback cb) { m_eventCallback = std::move(cb); }
 	void DespatchEvent(Event &event) { m_eventCallback(event); }
 

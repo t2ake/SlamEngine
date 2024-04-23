@@ -63,6 +63,16 @@ void Window::SetVSync(bool VSync)
 	glfwSwapInterval(m_isVSync ? 1 : 0);
 }
 
+void Window::DisableCursor() const
+{
+	glfwSetInputMode(m_pWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+void Window::EnableCursor() const
+{
+	glfwSetInputMode(m_pWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
 void Window::SetCallbacks()
 {
 	glfwSetWindowSizeCallback(m_pWindow, [](GLFWwindow *window, int width, int height)

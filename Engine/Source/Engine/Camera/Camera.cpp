@@ -1,6 +1,7 @@
 #include "Camera.h"
 
 #include "Window/Input.h"
+#include "Log/Log.h"
 
 #include <glm/trigonometric.hpp>
 
@@ -9,30 +10,49 @@ namespace sl
 
 void Camera::Update(float deltaTime)
 {
-	if (Input::GetInstance().IsKeyPressed(SL_KEY_LEFT_ALT))
+	//TODO: Check is mouse in scene view.
+
+	// Camera FPS mode.
+	if (Input::GetInstance().IsMouseButtonPressed(SL_MOUSE_BUTTON_2))
 	{
-		if (Input::GetInstance().IsMouseButtonPressed(SL_MOUSE_BUTTON_1))
-		{
-			UpdateEditorCamera(deltaTime);
-		}
+		UpdateFPSCamera(deltaTime);
 	}
+	// Camera editor mode.
+	else if (Input::GetInstance().IsMouseButtonPressed(SL_KEY_LEFT_ALT) &&
+		Input::GetInstance().IsKeyPressed(SL_MOUSE_BUTTON_1))
+	{
+		UpdateEditorCamera(deltaTime);
+	}
+	// Camera unused.
 	else
 	{
-		if (Input::GetInstance().IsMouseButtonPressed(SL_MOUSE_BUTTON_2))
+		if (m_isMoving)
 		{
-			UpdateFPSCamera(deltaTime);
+			m_pWindow->EnableCursor();
+			m_isMoving = false;
 		}
 	}
-	m_mousePrePos = Input::GetInstance().GetMousePos();
 }
 
 void Camera::UpdateEditorCamera(float deltaTime)
 {
-
+	if (!m_isMoving)
+	{
+		m_mousePrePos = Input::GetInstance().GetMousePos();
+		m_pWindow->DisableCursor();
+		m_isMoving = true;
+	}
 }
 
 void Camera::UpdateFPSCamera(float deltaTime)
 {
+	if (!m_isMoving)
+	{
+		m_mousePrePos = Input::GetInstance().GetMousePos();
+		m_pWindow->DisableCursor();
+		m_isMoving = true;
+	}
+
 	glm::vec2 crtPos = Input::GetInstance().GetMousePos();
 	float offsetX = crtPos.x - m_mousePrePos.x;
 	float offsetY = m_mousePrePos.y - crtPos.y;
@@ -69,6 +89,8 @@ void Camera::UpdateFPSCamera(float deltaTime)
 		m_data.GetPosition() -= CameraData::WorldUp * finalSpeed;
 	}
 	m_data.RecalculateMat();
+
+	m_mousePrePos = Input::GetInstance().GetMousePos();
 }
 
 } // namespace sl

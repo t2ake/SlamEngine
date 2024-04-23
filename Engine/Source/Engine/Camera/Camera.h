@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Camera/CameraData.h"
+#include "Window/Window.h"
 
 #include <glm/vec2.hpp>
 
@@ -17,6 +18,8 @@ public:
 	CameraData &GetData() { return m_data; }
 	const CameraData &GetData() const { return m_data; }
 
+	void SetWindow(Window *pWindow) { m_pWindow = pWindow; }
+
 	void SetMoveSpeed(float speed) { m_moveSpeed = speed; }
 	float &GetMoveSpeed() { return m_moveSpeed; }
 	float GetMoveSpeed() const { return m_moveSpeed; }
@@ -29,10 +32,12 @@ private:
 	void UpdateEditorCamera(float deltaTime);
 	void UpdateFPSCamera(float deltaTime);
 
+	bool m_isMoving = false;
 	CameraData m_data;
+	Window *m_pWindow = nullptr;
 
 	float m_moveSpeed = 8.0f;
-	float m_rotateSpeed = 0.5f;
+	float m_rotateSpeed = 0.25f;
 	glm::vec2 m_mousePrePos;
 
 	// TODO: Postprocessing stuff

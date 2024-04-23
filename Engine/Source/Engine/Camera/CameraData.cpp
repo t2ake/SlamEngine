@@ -48,6 +48,8 @@ void CameraData::RecalculateDir()
 
 void CameraData::RecalculateMat()
 {
+	// TODO: Orthogonal camera
+
 	m_viewMat = glm::lookAt(m_position, m_position + m_frontDir, m_upDir);
 	m_projectionMat = glm::perspective(glm::radians(m_fov), m_aspect, m_nearPlane, m_farPlane);
 

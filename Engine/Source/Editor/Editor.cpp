@@ -86,7 +86,8 @@ void Editor::Init(EditorInitor initor)
 
 		m_pShader = sl::Shader::Creat(std::move(vsSrc), std::move(fsSrc));
 
-		m_camera.GetData().SetPosition(glm::vec3{ 0.0f, 0.0f, 2.0f });
+		m_camera.SetWindow(m_pWindow);
+		m_camera.GetData().SetPosition(glm::vec3{ 0.0f, 0.0f, 5.0f });
 		m_camera.GetData().SetRotationDegrees(glm::vec3{ 0.0f, -90.0f, 0.0f });
 	}
 }
@@ -131,10 +132,17 @@ void Editor::BegineFrame()
 void Editor::Render()
 {
 	// TEMPORARY
-	glm::mat4 mvp{ 1.0f };
-	mvp = m_camera.GetData().GetProjection() * m_camera.GetData().GetView() * mvp;
-	m_pShader->UploadUniformMat4("u_ModelViewProjection", std::move(mvp));
-	sl::RenderCore::GetInstance().Submit(m_pVertexArray, m_pShader);
+	for (int i = -10; i < 10; ++i)
+	{
+		for (int j = -10; j < 10; ++j)
+		{
+			glm::vec3 trans{ i, j, 0.0f };
+			glm::mat4 modelMat = glm::translate(glm::mat4{ 1.0f }, trans * 0.1f);
+			glm::mat4 mvp = m_camera.GetData().GetProjection() * m_camera.GetData().GetView() * modelMat;
+			m_pShader->UploadUniformMat4("u_ModelViewProjection", std::move(mvp));
+			sl::RenderCore::GetInstance().Submit(m_pVertexArray, m_pShader);
+		}
+	}
 
 	for (sl::Layer *pLayer : m_layerStack)
 	{
