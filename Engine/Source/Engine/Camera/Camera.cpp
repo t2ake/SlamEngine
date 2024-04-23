@@ -1,7 +1,7 @@
 #include "Camera.h"
 
+#include "Core/Log.h"
 #include "Window/Input.h"
-#include "Log/Log.h"
 
 #include <glm/trigonometric.hpp>
 

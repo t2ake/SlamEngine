@@ -17,7 +17,7 @@ public:
 
 private:
 	uint32_t m_handle = 0;
-	uint32_t m_count;
+	uint32_t m_count = 0;
 };
 
 } // namespace sl

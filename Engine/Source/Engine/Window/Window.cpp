@@ -1,9 +1,9 @@
 #include "Window.h"
 
+#include "Core/Log.h"
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
-#include "Log/Log.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 
 #include <GLFW/glfw3.h>

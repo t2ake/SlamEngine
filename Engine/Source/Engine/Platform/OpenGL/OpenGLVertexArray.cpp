@@ -1,6 +1,6 @@
 #include "OpenGLVertexArray.h"
 
-#include "Log/Log.h"
+#include "Core/Log.h"
 
 #include <glad/glad.h>
 

@@ -1,6 +1,6 @@
 #include "RenderCore.h"
 
-#include "Log/Log.h"
+#include "Core/Log.h"
 
 namespace sl
 {

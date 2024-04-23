@@ -29,6 +29,7 @@ enum class ShaderProgramType
 };
 
 // TODO: Shader resource
+// TODO: Shader should hold a mapping from Texture to slot.
 class Shader
 {
 public:

@@ -11,6 +11,7 @@ class OpenGLContext : public RenderContext
 {
 public:
 	OpenGLContext(GLFWwindow *pWindow);
+	virtual ~OpenGLContext() override = default;
 
 	virtual void Bind() override;
 	virtual void SwapBuffers() override;

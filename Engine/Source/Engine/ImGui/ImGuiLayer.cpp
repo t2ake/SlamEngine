@@ -1,6 +1,6 @@
 #include "ImGuiLayer.h"
 
-#include "Log/Log.h"
+#include "Core/Log.h"
 #include "Window/Window.h"
 
 // TODO: Compile them into imgui.lib

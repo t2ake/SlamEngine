@@ -1,6 +1,6 @@
 #include "VertexBuffer.h"
 
-#include "Log/Log.h"
+#include "Core/Log.h"
 #include "Platform/OpenGL/OpenGLVertexBuffer.h"
 #include "RenderCore/RenderCore.h"
 

@@ -6,7 +6,7 @@
 namespace sl
 {
 
-class RenderCore
+class RenderCore final
 {
 public:
 	static RenderCore &GetInstance()
@@ -16,6 +16,9 @@ public:
 	}
 
 public:
+	RenderCore() = default;
+	~RenderCore();
+
 	void SetBackend(GraphicsBackend backend);
 	GraphicsBackend GetBackend() { return m_backend; }
 
@@ -27,8 +30,8 @@ public:
 	void Submit(VertexArray *pVertexArray, Shader *pShader);
 
 private:
-	GraphicsBackend m_backend;
-	RenderAPI *m_pRenderAPI;
+	GraphicsBackend m_backend = GraphicsBackend::None;
+	RenderAPI *m_pRenderAPI = nullptr;
 };
 
 } // namespace sl

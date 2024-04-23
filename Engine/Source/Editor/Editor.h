@@ -3,6 +3,7 @@
 // TEMPORARY
 #include "Camera/Camera.h"
 #include "RenderCore/Shader.h"
+#include "RenderCore/Texture.h"
 #include "RenderCore/VertexArray.h"
 
 #include "Core/Defines.h"
@@ -57,6 +58,7 @@ private:
 
 	// TEMPORARY
 	sl::VertexArray *m_pVertexArray;
+	sl::Texture *m_pTexture;
 	sl::Shader *m_pShader;
 	sl::Camera m_camera;
 };

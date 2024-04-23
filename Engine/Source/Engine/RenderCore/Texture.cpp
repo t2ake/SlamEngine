@@ -1,13 +1,13 @@
-#include "RenderContext.h"
+#include "Texture.h"
 
 #include "Core/Log.h"
-#include "Platform/OpenGL/OpenGLContext.h"
+#include "Platform/OpenGL/OpenGLTexture.h"
 #include "RenderCore/RenderCore.h"
 
 namespace sl
 {
 
-RenderContext *RenderContext::Create(GLFWwindow *pWindow)
+Texture2D *Texture2D::Create(std::string path)
 {
 	switch (RenderCore::GetInstance().GetBackend())
 	{
@@ -18,7 +18,7 @@ RenderContext *RenderContext::Create(GLFWwindow *pWindow)
 		}
 		case GraphicsBackend::OpenGL:
 		{
-			return new OpenGLContext{ pWindow };
+			return new OpenGLTexture2D{ std::move(path) };
 			break;
 		}
 		default:

@@ -12,6 +12,8 @@ public:
 	static RenderAPI* Create(GraphicsBackend backend);
 
 public:
+	virtual ~RenderAPI() = default;
+
 	virtual void SetClearColor(float r, float g, float b, float a) = 0;
 	virtual void SetClearDepth(float depth) = 0;
 	virtual void SetClearStencil(int stencil) = 0;

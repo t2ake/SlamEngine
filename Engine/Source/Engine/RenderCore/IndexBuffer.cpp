@@ -1,11 +1,16 @@
 #include "IndexBuffer.h"
 
-#include "Log/Log.h"
+#include "Core/Log.h"
 #include "Platform/OpenGL/OpenGLIndexBuffer.h"
 #include "RenderCore/RenderCore.h"
 
 namespace sl
 {
+
+RenderCore::~RenderCore()
+{
+	delete m_pRenderAPI;
+}
 
 IndexBuffer *IndexBuffer::Create(const uint32_t *pIndicies, size_t size)
 {

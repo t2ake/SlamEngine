@@ -36,7 +36,7 @@ struct VertexLayoutElement
 	uint32_t m_offset = 0;
 };
 
-class VertexLayout
+class VertexLayout final
 {
 public:
 	VertexLayout() = default;

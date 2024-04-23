@@ -1,6 +1,6 @@
 #include "OpenGLShader.h"
 
-#include "Log/Log.h"
+#include "Core/Log.h"
 
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -65,6 +65,7 @@ OpenGLShader::~OpenGLShader()
 {
 	glDeleteShader(m_vertexShaderHandle);
 	glDeleteShader(m_fragmentShaderHandle);
+	glDeleteShader(m_computeShaderHandle);
 	glDeleteProgram(m_programHandle);
 }
 
@@ -269,10 +270,7 @@ int OpenGLShader::GetUniformLocation(const std::string &name)
 	{
 		location = glGetUniformLocation(m_programHandle, name.c_str());
 #ifndef SL_FINEL
-		if (-1 == location)
-		{
-			SL_ENGINE_ERROR("Can't find uniform \"{}\" location in {}!", name, m_shaderProgramName);
-		}
+		if (-1 == location) { SL_ENGINE_ERROR("Can't find uniform \"{}\" location in {}!", name, m_shaderProgramName); }
 #endif
 		m_uniformLocationCache[name] = (uint32_t)location;
 	}
