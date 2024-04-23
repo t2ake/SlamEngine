@@ -1,20 +1,21 @@
 #pragma once
 
-#include "RenderCore/RenderDefines.h"
-
-#include <cstdint>
-#include <string>
-
 // TEMPORARY
 #include "Camera/Camera.h"
 #include "RenderCore/Shader.h"
 #include "RenderCore/VertexArray.h"
 
+#include "Core/Timmer.h"
+#include "Layer/LayerStack.h"
+#include "RenderCore/RenderDefines.h"
+
+#include <cstdint>
+#include <string>
+
 namespace sl
 {
 
 class Event;
-class LayerStack;
 class Window;
 
 }
@@ -53,8 +54,9 @@ private:
 	bool OnWindowClose(sl::Event &e);
 
 	bool m_isRunning = true;
+	sl::Timmer m_timmer;
+	sl::LayerStack m_layerStack;
 	sl::Window *m_pWindow = nullptr;
-	sl::LayerStack *m_pLayerStack = nullptr;
 
 	// TEMPORARY
 	sl::VertexArray *m_pVertexArray;

@@ -3,14 +3,6 @@
 namespace sl
 {
 
-LayerStack::~LayerStack()
-{
-	for (Layer *pLayer : m_pLayers)
-	{
-		delete pLayer;
-	}
-}
-
 void LayerStack::PushLayer(Layer *pLayer)
 {
 	pLayer->OnAttach();
@@ -25,6 +17,15 @@ void LayerStack::PopLayer(Layer *pLayer)
 	{
 		m_pLayers.erase(it);
 	}
+}
+
+void LayerStack::Shutdown()
+{
+	for (Layer *pLayer : m_pLayers)
+	{
+		delete pLayer;
+	}
+	m_pLayers.clear();
 }
 
 } // namespace sl

@@ -1,6 +1,6 @@
 #include "Editor.h"
 
-#include "Core.h"
+#include "Core/Core.h"
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
@@ -33,8 +33,7 @@ void Editor::Init(EditorInitor initor)
 	sl::RenderCore::GetInstance().SetClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 	// PENDIGN: Use pointer of every layer directly instead of layer stack.
-	m_pLayerStack = new sl::LayerStack;
-	m_pLayerStack->PushLayer(new sl::ImGuiLayer{ m_pWindow });
+	m_layerStack.PushLayer(new sl::ImGuiLayer{ m_pWindow });
 
 	// TEMPORARY
 	{
@@ -89,8 +88,6 @@ void Editor::Init(EditorInitor initor)
 
 		m_camera.GetData().SetPosition(glm::vec3{ 0.0f, 0.0f, 2.0f });
 		m_camera.GetData().SetRotationDegrees(glm::vec3{ 0.0f, -90.0f, 0.0f });
-		m_camera.GetData().DirDirty();
-		m_camera.GetData().MatDirty();
 	}
 }
 
@@ -98,8 +95,7 @@ void Editor::Shutdown()
 {
 	delete m_pVertexArray;
 	delete m_pShader;
-
-	delete m_pLayerStack;
+	m_layerStack.Shutdown();
 	delete m_pWindow;
 }
 
@@ -109,11 +105,11 @@ void Editor::Update()
 	{
 		BegineFrame();
 
-		for (sl::Layer *pLayer : *m_pLayerStack)
+		for (sl::Layer *pLayer : m_layerStack)
 		{
 			pLayer->OnUpdate();
 		}
-		m_camera.Update();
+		m_camera.Update(m_timmer.GetDeltatIme());
 
 		Render();
 		EndFrame();
@@ -122,9 +118,11 @@ void Editor::Update()
 
 void Editor::BegineFrame()
 {
+	m_timmer.Update();
+
 	sl::RenderCore::GetInstance().Clear(SL_CLEAR_COLOR);
 
-	for (sl::Layer *pLayer : *m_pLayerStack)
+	for (sl::Layer *pLayer : m_layerStack)
 	{
 		pLayer->BeginFrame();
 	}
@@ -138,7 +136,7 @@ void Editor::Render()
 	m_pShader->UploadUniformMat4("u_ModelViewProjection", std::move(mvp));
 	sl::RenderCore::GetInstance().Submit(m_pVertexArray, m_pShader);
 
-	for (sl::Layer *pLayer : *m_pLayerStack)
+	for (sl::Layer *pLayer : m_layerStack)
 	{
 		pLayer->OnRender();
 	}
@@ -147,7 +145,7 @@ void Editor::Render()
 void Editor::EndFrame()
 {
 	m_pWindow->EndFrame();
-	for (sl::Layer *pLayer : *m_pLayerStack)
+	for (sl::Layer *pLayer : m_layerStack)
 	{
 		pLayer->EndFrame();
 	}
@@ -159,8 +157,8 @@ void Editor::OnEvent(sl::Event &event)
 	dispatcher.Dispatch<sl::WindowCloseEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowClose));
 
 	// Iterate layers from end to begin.
-	for (auto it = std::make_reverse_iterator(m_pLayerStack->end());
-		it != std::make_reverse_iterator(m_pLayerStack->begin());
+	for (auto it = std::make_reverse_iterator(m_layerStack.end());
+		it != std::make_reverse_iterator(m_layerStack.begin());
 		++it)
 	{
 		(*it)->OnEvent(event);

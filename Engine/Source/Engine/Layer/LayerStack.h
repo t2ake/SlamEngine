@@ -15,7 +15,7 @@ public:
 	LayerStack &operator=(const LayerStack &) = delete;
 	LayerStack(LayerStack &&) = delete;
 	LayerStack &operator=(LayerStack &&) = delete;
-	~LayerStack();
+	~LayerStack() = default;
 
 	void PushLayer(Layer *pLayer);
 	void PopLayer(Layer *pLayer);
@@ -23,6 +23,8 @@ public:
 	void ClearLayers() { m_pLayers.clear(); }
 	std::vector<Layer *> &GetLayers() { return m_pLayers; }
 	const std::vector<Layer *> &GetLayers() const { return m_pLayers; }
+
+	void Shutdown();
 
 	auto begin() { return m_pLayers.begin(); }
 	auto end() { return m_pLayers.end(); }

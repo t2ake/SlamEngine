@@ -12,7 +12,7 @@ class Camera final
 public:
 	Camera() = default;
 
-	void Update();
+	void Update(float deltaTime);
 
 	CameraData &GetData() { return m_data; }
 	const CameraData &GetData() const { return m_data; }
@@ -26,13 +26,13 @@ public:
 	float GetRotateSpeed() const { return m_rotateSpeed; }
 
 private:
-	void UpdateEditorCamera();
-	void UpdateFPSCamera();
+	void UpdateEditorCamera(float deltaTime);
+	void UpdateFPSCamera(float deltaTime);
 
 	CameraData m_data;
 
-	float m_moveSpeed = 0.05f;
-	float m_rotateSpeed = 0.005f;
+	float m_moveSpeed = 8.0f;
+	float m_rotateSpeed = 0.5f;
 	glm::vec2 m_mousePrePos;
 
 	// TODO: Postprocessing stuff
