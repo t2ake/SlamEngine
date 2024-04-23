@@ -1,5 +1,5 @@
 CurrentWorkingDirectory = os.getcwd()
-RootPath = string.sub(CurrentWorkingDirectory, 0, string.len(CurrentWorkingDirectory) - string.len("Script"))
+RootPath = string.sub(CurrentWorkingDirectory, 0, string.len(CurrentWorkingDirectory) - string.len("Script") - 1)
 
 SourcePath = path.join(RootPath, "Engine/Source")
 BinaryPath = path.join(RootPath, "Engine/bin")
