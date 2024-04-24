@@ -159,6 +159,11 @@ void Editor::EndFrame()
 
 void Editor::OnEvent(sl::Event &event)
 {
+	if (event.IsInCategory(SL_EVENT_CATEGORY_INPUT))
+	{
+		m_camera.OnEvent(event);
+	}
+
 	sl::EventDispatcher dispatcher{ event };
 	dispatcher.Dispatch<sl::WindowCloseEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowClose));
 

@@ -56,21 +56,17 @@ public:
 	const glm::mat4 &GetProjection();
 	const glm::mat4 &GetViewProjection();
 
-	void DirDirty() { m_dirDirty = true; }
-	void MatDirty() { m_matDirty = true; }
-	void RecalculateDir();
-	void RecalculateMat();
+	void Dirty() { m_isDirty = true; }
+	void Recalculate();
 
 private:
-	void CheckDirty();
-
 	// TODO: Move to ECS Transform Component
 	glm::vec3 m_position{ 0.0f, 0.0f, 0.0f };
 	// Pitch, Yaw, Roll in radians.
 	glm::vec3 m_rotation{ 0.0f, 0.0f, 0.0f };
 
 	// TODO: Move to ECS Camera Component
-	float m_aspect = 16.0f / 9.0f;
+	float m_aspect = 1080.0f / 720.0f;
 	float m_fov = 45.0f;
 	float m_nearPlane = 0.01f;
 	float m_farPlane = 10000.0f;
@@ -80,8 +76,7 @@ private:
 	glm::vec3 m_upDir{ 0.0f, 1.0f, 0.0f };
 	glm::vec3 m_rightDir{ 1.0f, 0.0f, 0.0f };
 
-	bool m_dirDirty = true;
-	bool m_matDirty = true;
+	bool m_isDirty = true;
 	glm::mat4 m_viewMat{ 1.0f };
 	glm::mat4 m_projectionMat{ 1.0f };
 	glm::mat4 m_viewProjectionMat{ 1.0f };

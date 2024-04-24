@@ -2,6 +2,8 @@
 
 #include "Event.h"
 
+#include <glm/vec2.hpp>
+
 #include <sstream>
 
 namespace sl
@@ -106,8 +108,9 @@ public:
 		return SL_EVENT_CATEGORY_INPUT | SL_EVENT_CATEGORY_MOUSE;
 	}
 
-	float GetPosX() const { return m_posX; }
-	float GetPosY() const { return m_posY; }
+	glm::vec2 GetPosition() const { return { m_posX , m_posY }; }
+	float GetPositionX() const { return m_posX; }
+	float GetPositionY() const { return m_posY; }
 
 private:
 	float m_posX, m_posY;

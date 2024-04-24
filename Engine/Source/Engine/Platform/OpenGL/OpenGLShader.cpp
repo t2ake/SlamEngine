@@ -39,9 +39,9 @@ static GLenum GetOpenGLShaderType(ShaderType type)
 
 std::string LoadShaderFile(std::string path)
 {
-	std::ifstream in(path, std::ios::in, std::ios::binary);
+	std::ifstream in(path, std::ios::in | std::ios::binary);
 #ifndef SL_FINAL
-	if (!in) { SL_ENGINE_ERROR("Can't load file : {}", path); }
+	if (!in) { SL_ENGINE_ERROR("Can't load file : {}", path); return {}; }
 #endif
 
 	in.seekg(0, std::ios::end);
