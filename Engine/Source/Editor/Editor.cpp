@@ -29,12 +29,12 @@ void Editor::Init(EditorInitor initor)
 {
 	sl::Log::Init();
 
-	sl::RenderCore::GetInstance().SetBackend(initor.m_backend);
-
+	sl::RenderCore::Init(initor.m_backend);
 	m_pWindow = new sl::Window{ std::move(initor.title), initor.m_width, initor.m_height, true };
 	m_pWindow->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
-	sl::Input::GetInstance().SetWindow(m_pWindow);
-	sl::RenderCore::GetInstance().SetClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+	sl::RenderCore::SetClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	sl::RenderCore::DefaultBlend();
 
 	// PENDING: Use pointer of every layer directly instead of layer stack.
 	m_layerStack.PushLayer(new sl::ImGuiLayer{ m_pWindow });
@@ -75,7 +75,7 @@ void Editor::Init(EditorInitor initor)
 
 			void main()
 			{
-				o_color = vec4(texture(u_texture, v_uv).xyz, 1.0);
+				o_color = texture(u_texture, v_uv);
 			}
 		)";
 
@@ -93,7 +93,8 @@ void Editor::Init(EditorInitor initor)
 
 		m_pShader = sl::Shader::Creat("Test Shader", std::move(vsSrc), std::move(fsSrc));
 
-		m_pTexture = sl::Texture2D::Create(sl::Path::FromeAsset("Texture/jc.png"));
+		m_pTextureJoucho = sl::Texture2D::Create(sl::Path::FromeAsset("Texture/jc.png"));
+		m_pTextureLogo = sl::Texture2D::Create(sl::Path::FromeAsset("Texture/logo.png"));
 
 		m_camera.SetWindow(m_pWindow);
 		m_camera.GetData().SetPosition(glm::vec3{ 0.0f, 0.0f, 5.0f });
@@ -131,7 +132,7 @@ void Editor::BegineFrame()
 {
 	m_timmer.Update();
 
-	sl::RenderCore::GetInstance().Clear(SL_CLEAR_COLOR);
+	sl::RenderCore::Clear(SL_CLEAR_COLOR);
 
 	for (sl::Layer *pLayer : m_layerStack)
 	{
@@ -151,13 +152,21 @@ void Editor::Render()
 			glm::mat4 mvp = m_camera.GetData().GetViewProjection() * modelMat;
 
 			m_pShader->Bind();
-			m_pTexture->Bind(0);
-			m_pShader->UploadUniform("u_texture", (int)0);
+			//m_pShader->UploadUniform("u_texture", (int)0);
 			m_pShader->UploadUniform("u_ModelViewProjection", std::move(mvp));
-			m_pShader->Unbind();
-			sl::RenderCore::GetInstance().Submit(m_pVertexArray, m_pShader);
+			m_pTextureJoucho->Bind(0);
+			sl::RenderCore::Submit(m_pVertexArray, m_pShader);
 		}
 	}
+
+	glm::mat4 modelMat2 = glm::translate(glm::mat4{ 1.0f }, glm::vec3{ 0.0f, 0.0f, 0.25f });
+	modelMat2 = glm::scale(modelMat2, glm::vec3(4.0f, 2.0f, 0.0f));
+	glm::mat4 mvp2 = m_camera.GetData().GetViewProjection() * modelMat2;
+	m_pShader->Bind();
+	//m_pShader->UploadUniform("u_texture", (int)0);
+	m_pShader->UploadUniform("u_ModelViewProjection", std::move(mvp2));
+	m_pTextureLogo->Bind(0);
+	sl::RenderCore::Submit(m_pVertexArray, m_pShader);
 
 	for (sl::Layer *pLayer : m_layerStack)
 	{

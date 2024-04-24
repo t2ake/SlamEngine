@@ -9,7 +9,7 @@ namespace sl
 class RenderAPI
 {
 public:
-	static RenderAPI* Create(GraphicsBackend backend);
+	static RenderAPI* Create();
 
 public:
 	virtual ~RenderAPI() = default;
@@ -19,7 +19,9 @@ public:
 	virtual void SetClearStencil(int stencil) = 0;
 	virtual void Clear(uint8_t attachments) = 0;
 
-	virtual void DrawIndexed(VertexArray *pVertexArray) = 0;
+	virtual void DefaultBlend() = 0;
+
+	virtual void DrawIndexed(uint32_t count) = 0;
 };
 
 } // namespace sl

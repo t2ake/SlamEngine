@@ -9,7 +9,7 @@ namespace sl
 
 VertexBuffer *VertexBuffer::Create(const float *pVertices, size_t size)
 {
-	switch (RenderCore::GetInstance().GetBackend())
+	switch (RenderCore::GetBackend())
 	{
 		case GraphicsBackend::None:
 		{

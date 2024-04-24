@@ -9,7 +9,7 @@ namespace sl
 
 VertexArray *VertexArray::Create()
 {
-	switch (RenderCore::GetInstance().GetBackend())
+	switch (RenderCore::GetBackend())
 	{
 		case GraphicsBackend::None:
 		{

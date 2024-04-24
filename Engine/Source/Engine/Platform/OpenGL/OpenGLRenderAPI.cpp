@@ -39,9 +39,15 @@ void OpenGLRenderAPI::Clear(uint8_t attachments)
 	glClear(clearMask);
 }
 
-void OpenGLRenderAPI::DrawIndexed(VertexArray *pVertexArray)
+void OpenGLRenderAPI::DefaultBlend()
 {
-	glDrawElements(GL_TRIANGLES, pVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void OpenGLRenderAPI::DrawIndexed(uint32_t count)
+{
+	glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 }
 
 } // namespace sl

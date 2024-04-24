@@ -12,16 +12,7 @@ class Window;
 
 class Input final
 {
-private:
-	Input() = default;
-
 public:
-	static Input &GetInstance()
-	{
-		static Input instance;
-		return instance;
-	}
-
 	static void SetWindow(Window *pWindow) { m_pWindow = pWindow; }
 	static Window *GetWindow() { return m_pWindow; }
 

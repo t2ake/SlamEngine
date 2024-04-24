@@ -2,13 +2,14 @@
 
 #include "Core/Log.h"
 #include "Platform/OpenGL/OpenGLRenderAPI.h"
+#include "RenderCore/RenderCore.h"
 
 namespace sl
 {
 
-RenderAPI *RenderAPI::Create(GraphicsBackend backend)
+RenderAPI *RenderAPI::Create()
 {
-	switch (backend)
+	switch (RenderCore::GetBackend())
 	{
 		case GraphicsBackend::None:
 		{

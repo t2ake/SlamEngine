@@ -9,7 +9,7 @@ namespace sl
 
 RenderContext *RenderContext::Create(GLFWwindow *pWindow)
 {
-	switch (RenderCore::GetInstance().GetBackend())
+	switch (RenderCore::GetBackend())
 	{
 		case GraphicsBackend::None:
 		{

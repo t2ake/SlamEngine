@@ -2,6 +2,7 @@
 
 #include "RenderCore/RenderAPI.h"
 #include "RenderCore/Shader.h"
+#include "RenderCore/VertexArray.h"
 
 namespace sl
 {
@@ -9,29 +10,23 @@ namespace sl
 class RenderCore final
 {
 public:
-	static RenderCore &GetInstance()
-	{
-		static RenderCore instance;
-		return instance;
-	}
+	static void Init(GraphicsBackend backend);
 
-public:
-	RenderCore() = default;
-	~RenderCore();
+	static GraphicsBackend GetBackend() { return m_backend; }
+	
+	static void SetClearColor(float r, float g, float b, float a);
+	static void SetClearDepth(float depth);
+	static void SetClearStencil(int stencil);
+	static void Clear(uint8_t attachments);
 
-	void SetBackend(GraphicsBackend backend);
-	GraphicsBackend GetBackend() { return m_backend; }
+	// TEMPORARY
+	static void DefaultBlend();
 
-	void SetClearColor(float r, float g, float b, float a);
-	void SetClearDepth(float depth);
-	void SetClearStencil(int stencil);
-	void Clear(uint8_t attachments);
-
-	void Submit(VertexArray *pVertexArray, Shader *pShader);
+	static void Submit(VertexArray *pVertexArray, Shader *pShader);
 
 private:
-	GraphicsBackend m_backend = GraphicsBackend::None;
-	RenderAPI *m_pRenderAPI = nullptr;
+	static GraphicsBackend m_backend;
+	static RenderAPI *m_pRenderAPI;
 };
 
 } // namespace sl

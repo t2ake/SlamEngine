@@ -9,7 +9,7 @@ namespace sl
 
 Texture2D *Texture2D::Create(std::string path)
 {
-	switch (RenderCore::GetInstance().GetBackend())
+	switch (RenderCore::GetBackend())
 	{
 		case GraphicsBackend::None:
 		{

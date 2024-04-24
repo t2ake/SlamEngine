@@ -58,7 +58,8 @@ private:
 
 	// TEMPORARY
 	sl::VertexArray *m_pVertexArray;
-	sl::Texture *m_pTexture;
+	sl::Texture *m_pTextureJoucho;
+	sl::Texture *m_pTextureLogo;
 	sl::Shader *m_pShader;
 	sl::Camera m_camera;
 };

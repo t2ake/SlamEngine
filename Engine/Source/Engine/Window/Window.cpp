@@ -5,6 +5,7 @@
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
 #include "Platform/OpenGL/OpenGLContext.h"
+#include "Window/Input.h"
 
 #include <GLFW/glfw3.h>
 
@@ -38,12 +39,13 @@ void Window::Init()
 	m_pRenderContext = RenderContext::Create(m_pWindow);
 
 	glfwSetWindowUserPointer(m_pWindow, this);
+	SetCallbacks();
+	Input::SetWindow(this);
+
 #ifdef SL_FINAL
 	m_isVSync = false;
 #endif
 	glfwSwapInterval(m_isVSync ? 1 : 0);
-
-	SetCallbacks();
 }
 
 void Window::Shutdown()

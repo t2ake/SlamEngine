@@ -5,12 +5,15 @@
 namespace sl
 {
 
-void RenderCore::SetBackend(GraphicsBackend backend)
+GraphicsBackend RenderCore::m_backend = GraphicsBackend::None;
+RenderAPI *RenderCore::m_pRenderAPI = nullptr;
+
+void RenderCore::Init(GraphicsBackend backend)
 {
 	SL_ENGINE_ASSERT(!m_pRenderAPI);
 
 	m_backend = backend;
-	m_pRenderAPI = RenderAPI::Create(backend);
+	m_pRenderAPI = RenderAPI::Create();
 }
 
 void RenderCore::SetClearColor(float r, float g, float b, float a)
@@ -33,13 +36,16 @@ void RenderCore::Clear(uint8_t attachments)
 	m_pRenderAPI->Clear(attachments);
 }
 
+void RenderCore::DefaultBlend()
+{
+	m_pRenderAPI->DefaultBlend();
+}
+
 void RenderCore::Submit(VertexArray *pVertexArray, Shader *pShader)
 {
-	pShader->Bind();
 	pVertexArray->Bind();
-	m_pRenderAPI->DrawIndexed(pVertexArray);
-	// pShader->Unbind();
-	// pVertexArray->Unbind();
+	pShader->Bind();
+	m_pRenderAPI->DrawIndexed(pVertexArray->GetIndexBuffer()->GetCount());
 }
 
 } // namespace sl

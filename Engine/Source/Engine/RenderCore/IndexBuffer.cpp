@@ -7,14 +7,9 @@
 namespace sl
 {
 
-RenderCore::~RenderCore()
-{
-	delete m_pRenderAPI;
-}
-
 IndexBuffer *IndexBuffer::Create(const uint32_t *pIndicies, size_t size)
 {
-	switch (RenderCore::GetInstance().GetBackend())
+	switch (RenderCore::GetBackend())
 	{
 		case GraphicsBackend::None:
 		{

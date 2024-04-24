@@ -9,7 +9,7 @@ namespace sl
 
 Shader *Shader::Creat(std::string name, std::string vsSrc, std::string fsSrc)
 {
-	switch (RenderCore::GetInstance().GetBackend())
+	switch (RenderCore::GetBackend())
 	{
 		case GraphicsBackend::None:
 		{
