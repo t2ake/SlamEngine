@@ -51,47 +51,21 @@ void Editor::Init(EditorInitor initor)
 
 		uint32_t indices[] = { 0, 1, 3, 1, 2, 3 };
 
-		std::string vsSrc = R"(
-			#version 330 core
-			layout(location = 0) in vec3 a_position;
-			layout(location = 1) in vec2 a_uv;
-			out vec2 v_uv;
-
-			uniform mat4 u_ModelViewProjection;
-
-			void main()
-			{
-				v_uv = a_uv;
-				gl_Position = u_ModelViewProjection * vec4(a_position, 1.0);
-			}
-		)";
-
-		std::string fsSrc = R"(
-			#version 330 core
-			in vec2 v_uv;
-			out vec4 o_color;
-
-			uniform sampler2D u_texture;
-
-			void main()
-			{
-				o_color = texture(u_texture, v_uv);
-			}
-		)";
-
-		sl::IndexBuffer *pIndexBuffer = sl::IndexBuffer::Create(indices, sizeof(indices));
 		sl::VertexBuffer *pVertexBuffer = sl::VertexBuffer::Create(vertices, sizeof(vertices));
 		pVertexBuffer->SetLayout(sl::VertexLayout
 		{
 			{"Position", sl::AttribType::Float, 3},
 			{"UV", sl::AttribType::Float, 2},
 		});
+		sl::IndexBuffer *pIndexBuffer = sl::IndexBuffer::Create(indices, sizeof(indices));
 
 		m_pVertexArray = sl::VertexArray::Create();
 		m_pVertexArray->SetVertexBuffer(pVertexBuffer);
 		m_pVertexArray->SetIndexBuffer(pIndexBuffer);
 
-		m_pShader = sl::Shader::Creat("Test Shader", std::move(vsSrc), std::move(fsSrc));
+		m_pShader = sl::Shader::Creat("Test Shader",
+			sl::Path::FromeAsset("Shader/vs_Test.glsl"),
+			sl::Path::FromeAsset("Shader/fs_Test.glsl"));
 
 		m_pTextureJoucho = sl::Texture2D::Create(sl::Path::FromeAsset("Texture/jc.png"));
 		m_pTextureLogo = sl::Texture2D::Create(sl::Path::FromeAsset("Texture/logo.png"));

@@ -18,8 +18,9 @@ OpenGLTexture2D::OpenGLTexture2D(std::string path) :
 	int width, height, channels;
 	auto *pData = stbi_load(m_path.c_str(), &width, &height, &channels, 0);
 #ifndef SL_FINAL
-	if (!pData) { SL_ENGINE_ERROR("Failed to load image {}", m_path); }
+	if (!pData) { SL_ENGINE_ERROR("Failed to load image {}", m_path); return; }
 #endif
+
 	m_width = (uint32_t)width;
 	m_height = (uint32_t)height;
 
@@ -36,7 +37,7 @@ OpenGLTexture2D::OpenGLTexture2D(std::string path) :
 		format = GL_RGBA;
 	}
 #ifndef SL_FINAL
-	if (!(internalFormat & format)) { SL_ENGINE_ERROR("Unknown image format for {}", m_path); }
+	if (!(internalFormat & format)) { SL_ENGINE_ERROR("Unknown image format for {}", m_path); return; }
 #endif
 
 	glCreateTextures(GL_TEXTURE_2D, 1, &m_handle);

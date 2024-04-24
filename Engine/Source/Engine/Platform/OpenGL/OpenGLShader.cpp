@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <fstream>
 #include <vector>
 
 namespace sl
@@ -36,26 +37,45 @@ static GLenum GetOpenGLShaderType(ShaderType type)
 	}
 }
 
+std::string LoadShaderFile(std::string path)
+{
+	std::ifstream in(path, std::ios::in, std::ios::binary);
+#ifndef SL_FINAL
+	if (!in) { SL_ENGINE_ERROR("Can't load file : {}", path); }
+#endif
+
+	in.seekg(0, std::ios::end);
+	std::string src;
+	src.resize(in.tellg());
+	in.seekg(0, std::ios::beg);
+	in.read(src.data(), src.size());
+	in.close();
+
+	return src;
 }
 
-OpenGLShader::OpenGLShader(std::string name, std::string vertexSrc, std::string fragmentSrc) :
+}
+
+OpenGLShader::OpenGLShader(std::string name, std::string vertexPath, std::string fragmentPath) :
 	m_shaderProgramName(std::move(name))
 {
 	SL_ENGINE_TRACE("Compiling standard shader program: \"{}\"", m_shaderProgramName);
+
 	m_programType = ShaderProgramType::Standard;
-	if (CompileShader(std::move(vertexSrc), ShaderType::VertexShader) &&
-		CompileShader(std::move(fragmentSrc), ShaderType::FragmentShader))
+	if (CompileShader(LoadShaderFile(vertexPath), ShaderType::VertexShader) &&
+		CompileShader(LoadShaderFile(fragmentPath), ShaderType::FragmentShader))
 	{
 		CompileProgram();
 	}
 }
 
-OpenGLShader::OpenGLShader(std::string name, std::string computeSrc) :
+OpenGLShader::OpenGLShader(std::string name, std::string computePath) :
 	m_shaderProgramName(std::move(name))
 {
 	SL_ENGINE_TRACE("Compiling compute shader program: \"{}\"", m_shaderProgramName);
+
 	m_programType = ShaderProgramType::Compute;
-	if (CompileShader(std::move(computeSrc), ShaderType::ComputeShader))
+	if (CompileShader(LoadShaderFile(computePath), ShaderType::ComputeShader))
 	{
 		CompileProgram();
 	}
@@ -276,7 +296,7 @@ int OpenGLShader::GetUniformLocation(const std::string &name)
 	}
 	else
 	{
-		location = it->second;
+		location = (int)it->second;
 	}
 
 	return location;

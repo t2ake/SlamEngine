@@ -11,8 +11,8 @@ class OpenGLShader : public Shader
 {
 
 public:
-	OpenGLShader(std::string name, std::string vertexSrc, std::string fragmentSrc);
-	OpenGLShader(std::string name, std::string computeSrc);
+	OpenGLShader(std::string name, std::string vertexPath, std::string fragmentPath);
+	OpenGLShader(std::string name, std::string computePath);
 	virtual ~OpenGLShader() override;
 
 	void SetName(std::string name) { m_shaderProgramName = std::move(name); }
