@@ -5,6 +5,8 @@
 
 #include <glm/trigonometric.hpp>
 
+#include <array>
+
 namespace sl
 {
 
@@ -36,110 +38,115 @@ void Camera::Update(float deltaTime)
 	// Camera unused.
 	else
 	{
-		if (m_isUpdating)
+		if (m_isActive)
 		{
 			m_pWindow->EnableCursor();
-			m_isUpdating = false;
+			m_isActive = false;
 		}
 	}
 }
 
 void Camera::UpdateFPSCamera(float deltaTime)
 {
-	if (!m_isUpdating)
+	if (!m_isActive)
 	{
-		m_mousePrePos = Input::GetMousePos();
+		m_mouseLastPos = Input::GetMousePos();
+		m_lastMoveDir = m_data.GetFrontDir();
 		m_pWindow->DisableCursor();
-		m_isUpdating = true;
+		m_isActive = true;
 	}
 
 	// Rotation
 	{
 		glm::vec2 crtPos = Input::GetMousePos();
-		float offsetX = crtPos.x - m_mousePrePos.x;
-		float offsetY = m_mousePrePos.y - crtPos.y;
-		m_mousePrePos = Input::GetMousePos();
+		float offsetX = crtPos.x - m_mouseLastPos.x;
+		float offsetY = m_mouseLastPos.y - crtPos.y;
+		m_mouseLastPos = Input::GetMousePos();
 
-		m_data.GetRotation() += glm::vec3{ offsetY * m_basicRotateSpeed * deltaTime, offsetX * m_basicRotateSpeed * deltaTime, 0.0f };
+		m_data.GetRotation() += glm::vec3{ offsetY, offsetX, 0.0f }  * m_rotateSpeed * deltaTime;
 		m_data.GetRotation().x = std::min(m_data.GetRotation().x, glm::radians(89.9f));
 		m_data.GetRotation().x = std::max(m_data.GetRotation().x, glm::radians(-89.9f));
 	}
 
-	// TODO: The camera with acceleration is implemented roughly,
-	// need to check and improve in the future.
-
-	glm::vec3 finalMovement{ 0.0f, 0.0f, 0.0f };
-
+	// TODO: It's better to use bit mask and shift to avoid repeated call of Input::IsKeyPressed
 	bool isMoving = false;
 	for (auto key : CamraMoveKey)
 	{
-		isMoving |= Input::IsKeyPressed(key);
+		if (Input::IsKeyPressed(key))
+		{
+			isMoving = true;
+			break;
+		}
 	}
+	
+	glm::vec3 finalMoveDir;
 	if (isMoving)
 	{
 		if (!m_isMoving)
 		{
-			m_acceleration = m_defaultAcceleration;
+			// Start moving
+			m_acceleration = m_maxMoveSpeed / 50.0f;
 			m_isMoving = true;
 		}
+
+		finalMoveDir = glm::vec3{ 0.0f, 0.0f, 0.0f };
+		if (Input::IsKeyPressed(SL_KEY_W))
+		{
+			finalMoveDir += m_data.GetFrontDir();
+		}
+		if (Input::IsKeyPressed(SL_KEY_A))
+		{
+			finalMoveDir -= m_data.GetRightDir();
+		}
+		if (Input::IsKeyPressed(SL_KEY_S))
+		{
+			finalMoveDir -= m_data.GetFrontDir();
+		}
+		if (Input::IsKeyPressed(SL_KEY_D))
+		{
+			finalMoveDir += m_data.GetRightDir();
+		}
+		if (Input::IsKeyPressed(SL_KEY_E))
+		{
+			finalMoveDir += CameraData::WorldUp;
+		}
+		if (Input::IsKeyPressed(SL_KEY_Q))
+		{
+			finalMoveDir -= CameraData::WorldUp;
+		}
+		finalMoveDir = glm::normalize(finalMoveDir);
+		m_lastMoveDir = finalMoveDir;
 	}
 	else
 	{
-		finalMovement = m_lastMovement;
 		if (m_isMoving)
 		{
-			m_acceleration = -m_defaultAcceleration;
+			// Stop moving
+			m_acceleration = -m_maxMoveSpeed / 50.0f;
 			m_isMoving = false;
 		}
+
+		finalMoveDir = m_lastMoveDir;
 	}
 
-	m_basicMoveSpeed += m_acceleration;
-	m_basicMoveSpeed = std::max(m_minMoveSpeed, m_basicMoveSpeed);
-	m_basicMoveSpeed = std::min(m_maxMoveSpeed, m_basicMoveSpeed);
+	m_moveSpeed += m_acceleration;
+	m_moveSpeed = std::max(0.0f, m_moveSpeed);
+	m_moveSpeed = std::min(m_maxMoveSpeed, m_moveSpeed);
+	m_moveSpeedKeyShiftMultiplier = Input::IsKeyPressed(SL_KEY_LEFT_SHIFT) ? 2.5f : 1.0f;
+	float finalMoveSpeed = m_moveSpeed * m_moveSpeedMouseScrollMultiplier * m_moveSpeedKeyShiftMultiplier * deltaTime;
 
-	float finalMoveSpeed = deltaTime * m_basicMoveSpeed * m_moveSpeedMouseScrollMultiplier *
-		(Input::IsKeyPressed(SL_KEY_LEFT_SHIFT) ? m_moveSpeedKeyShiftMultiplier : 1.0f);
-
-	if (Input::IsKeyPressed(SL_KEY_W))
-	{
-		finalMovement += m_data.GetFrontDir();
-	}
-	if (Input::IsKeyPressed(SL_KEY_A))
-	{
-		finalMovement -= m_data.GetRightDir();
-	}
-	if (Input::IsKeyPressed(SL_KEY_S))
-	{
-		finalMovement -= m_data.GetFrontDir();
-	}
-	if (Input::IsKeyPressed(SL_KEY_D))
-	{
-		finalMovement += m_data.GetRightDir();
-	}
-	if (Input::IsKeyPressed(SL_KEY_E))
-	{
-		finalMovement += CameraData::WorldUp;
-	}
-	if (Input::IsKeyPressed(SL_KEY_Q))
-	{
-		finalMovement -= CameraData::WorldUp;
-	}
-	finalMovement = glm::normalize(finalMovement);
-
-	m_data.GetPosition() += finalMoveSpeed * finalMovement;
-	m_lastMovement = finalMovement;
-
+	m_data.GetPosition() += finalMoveDir * finalMoveSpeed;
 	m_data.Dirty();
 }
 
 void Camera::UpdateEditorCamera(float deltaTime)
 {
 	// TODO
-	if (!m_isUpdating)
+	if (!m_isActive)
 	{
-		m_mousePrePos = Input::GetMousePos();
+		m_mouseLastPos = Input::GetMousePos();
 		m_pWindow->DisableCursor();
-		m_isUpdating = true;
+		m_isActive = true;
 	}
 }
 
@@ -153,8 +160,8 @@ void Camera::OnEvent(Event &event)
 bool Camera::OnMouseScrolled(MouseScrolledEvent &event)
 {
 	m_moveSpeedMouseScrollMultiplier += event.GetOffsetY() * 0.2f;
-	m_moveSpeedMouseScrollMultiplier = std::max(m_minMoveSpeed, m_moveSpeedMouseScrollMultiplier);
-	m_moveSpeedMouseScrollMultiplier = std::min(m_maxMoveSpeed, m_moveSpeedMouseScrollMultiplier);
+	m_moveSpeedMouseScrollMultiplier = std::max(0.125f, m_moveSpeedMouseScrollMultiplier);
+	m_moveSpeedMouseScrollMultiplier = std::min(8.0f, m_moveSpeedMouseScrollMultiplier);
 
 	return true;
 }
@@ -165,6 +172,5 @@ bool Camera::OnWindowResized(WindowResizeEvent &event)
 	m_data.Dirty();
 	return true;
 }
-
 
 } // namespace sl

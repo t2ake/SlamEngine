@@ -25,8 +25,9 @@ public:
 
 	void OnEvent(Event &event);
 
-	float GetMoveSpeed() const { return m_basicMoveSpeed; }
-	float GetRotateSpeed() const { return m_basicRotateSpeed; }
+	void SetMaxMoveSpeed(float speed) { m_maxMoveSpeed = speed; }
+	float &GetMaxMoveSpeed() { return m_maxMoveSpeed; }
+	float GetMaxMoveSpeed() const { return m_maxMoveSpeed; }
 
 private:
 	void UpdateFPSCamera(float deltaTime);
@@ -35,25 +36,22 @@ private:
 	bool OnMouseScrolled(MouseScrolledEvent &event);
 	bool OnWindowResized(WindowResizeEvent &event);
 
-	bool m_isUpdating = false;
-	bool m_isMoving = false;
-
 	CameraData m_data;
 	Window *m_pWindow = nullptr;
 
-	float m_basicMoveSpeed = 0.0f;
-	const float m_basicRotateSpeed = 0.125f;
+	bool m_isActive = false;
+	bool m_isMoving = false;
 
-	float m_acceleration;
-	const float m_defaultAcceleration = 0.375f;
-	const float m_maxMoveSpeed = 16.0f;
-	const float m_minMoveSpeed = 0.0f;
+	float m_rotateSpeed = 0.125f;
+	float m_acceleration = -16.0f / 50.0f;
+	float m_maxMoveSpeed = 16.0f;
+	float m_moveSpeed = 0.0f;
 
-	float m_moveSpeedMouseScrollMultiplier = 1.0f;
-	const float m_moveSpeedKeyShiftMultiplier = 3.0f;
+	float m_moveSpeedMouseScrollMultiplier = 1.0f; 
+	float m_moveSpeedKeyShiftMultiplier = 1.0f; 
 
-	glm::vec2 m_mousePrePos{ 640.0f, 360.0f };
-	glm::vec3 m_lastMovement{ 1.0f, 0.0f, 0.0f };
+	glm::vec2 m_mouseLastPos{ 640.0f, 360.0f };
+	glm::vec3 m_lastMoveDir{ 1.0f, 0.0f, 0.0f };
 
 	// TODO: Postprocessing stuff
 };
