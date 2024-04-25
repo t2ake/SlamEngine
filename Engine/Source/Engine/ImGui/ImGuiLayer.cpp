@@ -69,11 +69,16 @@ void ImGuiLayer::BeginFrame()
 
 void ImGuiLayer::OnUpdate()
 {
+
+}
+
+void ImGuiLayer::OnRender()
+{
 	bool show_demo_window = true;
 	ImGui::ShowDemoWindow(&show_demo_window);
 }
 
-void ImGuiLayer::OnRender()
+void ImGuiLayer::EndFrame()
 {
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -81,11 +86,6 @@ void ImGuiLayer::OnRender()
 	// For docking
 	ImGui::UpdatePlatformWindows();
 	ImGui::RenderPlatformWindowsDefault();
-}
-
-void ImGuiLayer::EndFrame()
-{
-
 }
 
 } // namespace sl

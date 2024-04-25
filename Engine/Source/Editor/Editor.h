@@ -48,10 +48,13 @@ private:
 	void Render();
 	void EndFrame();
 
-	void OnEvent(sl::Event &e);
-	bool OnWindowClose(sl::Event &e);
+	void OnEvent(sl::Event &event);
+	bool OnWindowClose(sl::WindowCloseEvent &event);
+	bool OnWindowResized(sl::WindowResizeEvent &event);
 
 	bool m_isRunning = true;
+	bool m_isMinimized = false;
+
 	sl::Timmer m_timmer;
 	sl::LayerStack m_layerStack;
 	sl::Window *m_pWindow = nullptr;

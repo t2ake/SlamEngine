@@ -36,6 +36,11 @@ void RenderCore::Clear(uint8_t attachments)
 	m_pRenderAPI->Clear(attachments);
 }
 
+void RenderCore::OnMainViewportResize(uint32_t width, uint32_t height)
+{
+	m_pRenderAPI->SetViewport(0, 0, width, height);
+}
+
 void RenderCore::DefaultBlend()
 {
 	m_pRenderAPI->DefaultBlend();

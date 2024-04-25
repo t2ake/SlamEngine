@@ -5,6 +5,7 @@
 
 #include <glm/trigonometric.hpp>
 
+#include <algorithm>
 #include <array>
 
 namespace sl
@@ -64,8 +65,8 @@ void Camera::UpdateFPSCamera(float deltaTime)
 		m_mouseLastPos = Input::GetMousePos();
 
 		m_data.GetRotation() += glm::vec3{ offsetY, offsetX, 0.0f }  * m_rotateSpeed * deltaTime;
-		m_data.GetRotation().x = std::min(m_data.GetRotation().x, glm::radians(89.9f));
-		m_data.GetRotation().x = std::max(m_data.GetRotation().x, glm::radians(-89.9f));
+		m_data.GetRotation().x = std::clamp(m_data.GetRotation().x, glm::radians(-89.9f), glm::radians(89.9f));
+		m_data.Dirty();
 	}
 
 	// TODO: It's better to use bit mask and shift to avoid repeated call of Input::IsKeyPressed
@@ -125,15 +126,13 @@ void Camera::UpdateFPSCamera(float deltaTime)
 			m_acceleration = -m_maxMoveSpeed / 50.0f;
 			m_isMoving = false;
 		}
-
 		finalMoveDir = m_lastMoveDir;
 	}
 
 	m_moveSpeed += m_acceleration;
-	m_moveSpeed = std::max(0.0f, m_moveSpeed);
-	m_moveSpeed = std::min(m_maxMoveSpeed, m_moveSpeed);
-	m_moveSpeedKeyShiftMultiplier = Input::IsKeyPressed(SL_KEY_LEFT_SHIFT) ? 2.5f : 1.0f;
-	float finalMoveSpeed = m_moveSpeed * m_moveSpeedMouseScrollMultiplier * m_moveSpeedKeyShiftMultiplier * deltaTime;
+	m_moveSpeed = std::clamp(m_moveSpeed, 0.0f, m_maxMoveSpeed);
+	m_moveSpeedKeyShiftMultiplier = Input::IsKeyPressed(SL_KEY_LEFT_SHIFT) ? 3.0f : 1.0f;
+	float finalMoveSpeed = m_moveSpeed * m_moveSpeedKeyShiftMultiplier * m_moveSpeedMouseScrollMultiplier * deltaTime;
 
 	m_data.GetPosition() += finalMoveDir * finalMoveSpeed;
 	m_data.Dirty();
@@ -160,15 +159,19 @@ void Camera::OnEvent(Event &event)
 bool Camera::OnMouseScrolled(MouseScrolledEvent &event)
 {
 	m_moveSpeedMouseScrollMultiplier += event.GetOffsetY() * 0.2f;
-	m_moveSpeedMouseScrollMultiplier = std::max(0.125f, m_moveSpeedMouseScrollMultiplier);
-	m_moveSpeedMouseScrollMultiplier = std::min(8.0f, m_moveSpeedMouseScrollMultiplier);
+	m_moveSpeedMouseScrollMultiplier = std::clamp(m_moveSpeedMouseScrollMultiplier, 0.2f, 10.0f);
 
 	return true;
 }
 
 bool Camera::OnWindowResized(WindowResizeEvent &event)
 {
-	m_data.SetAspect((float)event.GetWidth() / (float)event.GetHeight());
+	float aspect = (float)event.GetWidth() / (float)event.GetHeight();
+	float fovDegrees = aspect * (45.0f / 16.0f * 9.0f);
+	fovDegrees = std::clamp(fovDegrees, 1.0f, 120.0f);
+
+	m_data.SetAspect(aspect);
+	m_data.SetFOVDegrees(fovDegrees);
 	m_data.Dirty();
 	return true;
 }

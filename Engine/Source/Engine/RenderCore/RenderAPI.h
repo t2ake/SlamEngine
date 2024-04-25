@@ -19,6 +19,8 @@ public:
 	virtual void SetClearStencil(int stencil) = 0;
 	virtual void Clear(uint8_t attachments) = 0;
 
+	virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
+
 	virtual void DefaultBlend() = 0;
 
 	virtual void DrawIndexed(uint32_t count) = 0;

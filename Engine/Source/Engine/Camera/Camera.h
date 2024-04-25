@@ -16,14 +16,12 @@ class Camera final
 public:
 	Camera() = default;
 
+	void SetWindow(Window *pWindow) { m_pWindow = pWindow; }
 	void Update(float deltaTime);
+	void OnEvent(Event &event);
 
 	CameraData &GetData() { return m_data; }
 	const CameraData &GetData() const { return m_data; }
-
-	void SetWindow(Window *pWindow) { m_pWindow = pWindow; }
-
-	void OnEvent(Event &event);
 
 	void SetMaxMoveSpeed(float speed) { m_maxMoveSpeed = speed; }
 	float &GetMaxMoveSpeed() { return m_maxMoveSpeed; }
@@ -43,15 +41,15 @@ private:
 	bool m_isMoving = false;
 
 	float m_rotateSpeed = 0.125f;
-	float m_acceleration = -16.0f / 50.0f;
 	float m_maxMoveSpeed = 16.0f;
+	float m_acceleration = -16.0f / 50.0f;
 	float m_moveSpeed = 0.0f;
 
-	float m_moveSpeedMouseScrollMultiplier = 1.0f; 
-	float m_moveSpeedKeyShiftMultiplier = 1.0f; 
+	float m_moveSpeedKeyShiftMultiplier = 1.0f;
+	float m_moveSpeedMouseScrollMultiplier = 1.0f;
 
-	glm::vec2 m_mouseLastPos{ 640.0f, 360.0f };
-	glm::vec3 m_lastMoveDir{ 1.0f, 0.0f, 0.0f };
+	glm::vec2 m_mouseLastPos;
+	glm::vec3 m_lastMoveDir;
 
 	// TODO: Postprocessing stuff
 };

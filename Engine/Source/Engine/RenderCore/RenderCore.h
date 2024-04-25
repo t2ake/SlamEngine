@@ -19,6 +19,8 @@ public:
 	static void SetClearStencil(int stencil);
 	static void Clear(uint8_t attachments);
 
+	static void OnMainViewportResize(uint32_t width, uint32_t height);
+
 	// TEMPORARY
 	static void DefaultBlend();
 

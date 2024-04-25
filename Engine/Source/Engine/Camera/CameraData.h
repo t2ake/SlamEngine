@@ -19,10 +19,12 @@ public:
 	glm::vec3 &GetPosition() { return m_position; }
 	const glm::vec3 &GetPosition() const { return m_position; }
 
-	void SetRotationDegrees(glm::vec3 rotation) { m_rotation = std::move(glm::radians(rotation)); }
 	void SetRotation(glm::vec3 rotation) { m_rotation = std::move(rotation); }
 	glm::vec3 &GetRotation() { return m_rotation; }
 	const glm::vec3 &GetRotation() const { return m_rotation; }
+
+	void SetRotationDegrees(glm::vec3 rotation) { m_rotation = glm::radians(std::move(rotation)); }
+	glm::vec3 GetRotationDegrees() const { return glm::degrees(m_rotation); }
 
 	void SetAspect(float aspect) { m_aspect = aspect; }
 	float &GetAspect() { return m_aspect; }
@@ -31,6 +33,9 @@ public:
 	void SetFOV(float fov) { m_fov = fov; }
 	float &GetFOV() { return m_fov; }
 	float GetFOV() const { return m_fov; }
+
+	void SetFOVDegrees(float fov) { m_fov = glm::radians(fov); }
+	float GetFOVDegrees() { return glm::degrees(m_fov); }
 
 	void SetNearPlane(float nearPlane) { m_nearPlane = nearPlane; }
 	float &GetNearPlane() { return m_nearPlane; }
@@ -66,17 +71,18 @@ private:
 	glm::vec3 m_rotation{ 0.0f, 0.0f, 0.0f };
 
 	// TODO: Move to ECS Camera Component
-	float m_aspect = 1080.0f / 720.0f;
-	float m_fov = 45.0f;
+	float m_aspect = 1920.0f / 1080.0f;
+	float m_fov = glm::radians(45.0f);
 	float m_nearPlane = 0.01f;
 	float m_farPlane = 10000.0f;
 
 	// Cache
+	bool m_isDirty = true;
+
 	glm::vec3 m_frontDir{ 0.0f, 0.0f, 1.0f };
 	glm::vec3 m_upDir{ 0.0f, 1.0f, 0.0f };
 	glm::vec3 m_rightDir{ 1.0f, 0.0f, 0.0f };
 
-	bool m_isDirty = true;
 	glm::mat4 m_viewMat{ 1.0f };
 	glm::mat4 m_projectionMat{ 1.0f };
 	glm::mat4 m_viewProjectionMat{ 1.0f };

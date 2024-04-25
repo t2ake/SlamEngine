@@ -40,7 +40,7 @@ void CameraData::Recalculate()
 
 	// TODO: Orthogonal camera
 	m_viewMat = glm::lookAt(m_position, m_position + m_frontDir, m_upDir);
-	m_projectionMat = glm::perspective(glm::radians(m_fov), m_aspect, m_nearPlane, m_farPlane);
+	m_projectionMat = glm::perspective(m_fov, m_aspect, m_nearPlane, m_farPlane);
 	m_viewProjectionMat = m_projectionMat * m_viewMat;
 
 	m_isDirty = false;

@@ -91,13 +91,18 @@ void Editor::Update()
 	{
 		BegineFrame();
 
-		for (sl::Layer *pLayer : m_layerStack)
+		if (!m_isMinimized)
 		{
-			pLayer->OnUpdate();
-		}
-		m_camera.Update(m_timmer.GetDeltatIme());
+			m_camera.Update(m_timmer.GetDeltatIme());
 
-		Render();
+			Render();
+			
+			for (sl::Layer *pLayer : m_layerStack)
+			{
+				pLayer->OnUpdate();
+			}
+		}
+
 		EndFrame();
 	}
 }
@@ -150,22 +155,21 @@ void Editor::Render()
 
 void Editor::EndFrame()
 {
-	m_pWindow->EndFrame();
 	for (sl::Layer *pLayer : m_layerStack)
 	{
 		pLayer->EndFrame();
 	}
+
+	m_pWindow->EndFrame();
 }
 
 void Editor::OnEvent(sl::Event &event)
 {
-	if (event.IsInCategory(SL_EVENT_CATEGORY_INPUT))
-	{
-		m_camera.OnEvent(event);
-	}
+	m_camera.OnEvent(event);
 
 	sl::EventDispatcher dispatcher{ event };
 	dispatcher.Dispatch<sl::WindowCloseEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowClose));
+	dispatcher.Dispatch<sl::WindowResizeEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowResized));
 
 	// Iterate layers from end to begin.
 	for (auto it = std::make_reverse_iterator(m_layerStack.end());
@@ -180,8 +184,29 @@ void Editor::OnEvent(sl::Event &event)
 	}
 }
 
-bool Editor::OnWindowClose(sl::Event &event)
+bool Editor::OnWindowClose(sl::WindowCloseEvent &event)
 {
+	SL_EDITOR_TRACE("Window closed.");
+
 	m_isRunning = false;
 	return true;
+}
+
+bool Editor::OnWindowResized(sl::WindowResizeEvent &event)
+{
+	uint32_t width = event.GetWidth();
+	uint32_t height = event.GetHeight();
+
+	if (0 == width || 0 == height)
+	{
+		SL_EDITOR_TRACE("Window minimized.");
+
+		m_isMinimized = true;
+		return false;
+	}
+	m_isMinimized = false;
+
+	sl::RenderCore::OnMainViewportResize(width, height);
+
+	return false;
 }
