@@ -10,6 +10,8 @@ namespace sl
 class RenderCore final
 {
 public:
+	RenderCore() = delete;
+
 	static void Init(GraphicsBackend backend);
 
 	static GraphicsBackend GetBackend() { return m_backend; }

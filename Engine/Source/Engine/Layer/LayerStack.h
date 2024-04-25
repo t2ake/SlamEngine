@@ -11,11 +11,6 @@ class LayerStack final
 {
 public:
 	LayerStack() = default;
-	LayerStack(const LayerStack &) = delete;
-	LayerStack &operator=(const LayerStack &) = delete;
-	LayerStack(LayerStack &&) = delete;
-	LayerStack &operator=(LayerStack &&) = delete;
-	~LayerStack() = default;
 
 	void PushLayer(Layer *pLayer);
 	void PopLayer(Layer *pLayer);

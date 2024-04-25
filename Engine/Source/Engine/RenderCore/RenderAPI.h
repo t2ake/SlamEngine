@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Core/Defines.h"
-#include "RenderCore/VertexArray.h"
 
 namespace sl
 {
@@ -9,7 +8,7 @@ namespace sl
 class RenderAPI
 {
 public:
-	static RenderAPI* Create();
+	static RenderAPI *Create();
 
 public:
 	virtual ~RenderAPI() = default;

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <functional>
-
 #ifdef SL_WINDOWS
 
 #else

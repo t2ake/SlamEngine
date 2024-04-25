@@ -15,6 +15,8 @@ namespace sl
 class Log final
 {
 public:
+	Log() = delete;
+
 	static void Init();
 
 	static std::shared_ptr<spdlog::logger> GetEngineLogger() { return s_pEngineLogger; }
@@ -23,7 +25,6 @@ public:
 private:
 	static std::shared_ptr<spdlog::logger> s_pEngineLogger;
 	static std::shared_ptr<spdlog::logger> s_pEditorLogger;
-
 };
 
 } // namespace sl

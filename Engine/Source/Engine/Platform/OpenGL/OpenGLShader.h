@@ -9,7 +9,6 @@ namespace sl
 
 class OpenGLShader : public Shader
 {
-
 public:
 	OpenGLShader(std::string name, std::string vertexPath, std::string fragmentPath);
 	OpenGLShader(std::string name, std::string computePath);

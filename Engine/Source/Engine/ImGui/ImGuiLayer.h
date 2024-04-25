@@ -10,8 +10,6 @@ class Window;
 class ImGuiLayer : public Layer
 {
 public:
-	using Layer::Layer;
-
 	ImGuiLayer(Window *pWindow);
 	virtual ~ImGuiLayer() override;
 

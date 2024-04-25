@@ -40,7 +40,7 @@ private:
 	bool m_isActive = false;
 	bool m_isMoving = false;
 
-	float m_rotateSpeed = 0.125f;
+	float m_rotateSpeed = 0.1f;
 	float m_maxMoveSpeed = 16.0f;
 	float m_acceleration = -16.0f / 50.0f;
 	float m_moveSpeed = 0.0f;
@@ -48,8 +48,8 @@ private:
 	float m_moveSpeedKeyShiftMultiplier = 1.0f;
 	float m_moveSpeedMouseScrollMultiplier = 1.0f;
 
-	glm::vec2 m_mouseLastPos;
-	glm::vec3 m_lastMoveDir;
+	glm::vec2 m_mouseLastPos{ 0.0f };
+	glm::vec3 m_lastMoveDir{ 0.0f };
 
 	// TODO: Postprocessing stuff
 };

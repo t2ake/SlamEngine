@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Event.h"
+#include "Window/MouseButtonCode.h"
 
 #include <glm/vec2.hpp>
 
@@ -12,8 +13,6 @@ namespace sl
 class MouseButtonPressedEvent : public Event
 {
 public:
-	using Event::Event;
-
 	MouseButtonPressedEvent(int button) : m_button(button) {}
 
 	static EventType GetStaticEventType()
@@ -47,8 +46,6 @@ private:
 class MouseButtonReleasedEvent : public Event
 {
 public:
-	using Event::Event;
-
 	MouseButtonReleasedEvent(const int button) : m_button(button) {}
 
 	static EventType GetStaticEventType()
@@ -82,8 +79,6 @@ private:
 class MouseMovedEvent : public Event
 {
 public:
-	using Event::Event;
-
 	MouseMovedEvent(float x, float y) : m_posX(x), m_posY(y) {}
 
 	static EventType GetStaticEventType()
@@ -119,8 +114,6 @@ private:
 class MouseScrolledEvent : public Event
 {
 public:
-	using Event::Event;
-
 	MouseScrolledEvent(float xOffset, float yOffset) : m_offsetX(xOffset), m_offsetY(yOffset) {}
 
 	static EventType GetStaticEventType()

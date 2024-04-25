@@ -2,17 +2,14 @@
 
 #include "Core/Core.h"
 #include "Core/Log.h"
+#include "Core/Path.hpp"
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiLayer.h"
-#include "Layer/LayerStack.h"
 #include "RenderCore/RenderCore.h"
 #include "Window/Input.h"
-#include "Window/Window.h"
 
-// TEMPLATE
-#include "Core/Path.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
 Editor::Editor(EditorInitor initor)

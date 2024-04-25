@@ -13,6 +13,8 @@ class Window;
 class Input final
 {
 public:
+	Input() = delete;
+
 	static void SetWindow(Window *pWindow) { m_pWindow = pWindow; }
 	static Window *GetWindow() { return m_pWindow; }
 

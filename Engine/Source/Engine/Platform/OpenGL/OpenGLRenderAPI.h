@@ -8,7 +8,6 @@ namespace sl
 class OpenGLRenderAPI : public RenderAPI
 {
 public:
-	OpenGLRenderAPI() = default;
 	virtual ~OpenGLRenderAPI() = default;
 
 	virtual void SetClearColor(float r, float g, float b, float a) override;

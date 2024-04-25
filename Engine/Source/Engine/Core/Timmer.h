@@ -8,6 +8,8 @@ namespace sl
 class Timmer final
 {
 public:
+	Timmer() = default;
+
 	void Update();
 	float GetDeltatIme() const { return m_deltaTime; }
 

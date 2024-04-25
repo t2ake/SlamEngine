@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Event.h"
+#include "Window/KeyCode.h"
 
 #include <sstream>
 
@@ -10,8 +11,6 @@ namespace sl
 class KeyPressedEvent : public Event
 {
 public:
-	using Event::Event;
-
 	KeyPressedEvent(int keycode, bool isRepeat = false)
 		: m_keyCode(keycode), m_isRepeat(isRepeat) {}
 
@@ -48,8 +47,6 @@ private:
 class KeyReleasedEvent : public Event
 {
 public:
-	using Event::Event;
-
 	KeyReleasedEvent(int keycode) : m_keyCode(keycode) {}
 
 	static EventType GetStaticEventType()
@@ -83,10 +80,7 @@ private:
 class KeyTypedEvent : public Event
 {
 public:
-	using Event::Event;
-
 	KeyTypedEvent(int keycode) : m_keyCode(keycode) {}
-
 
 	static EventType GetStaticEventType()
 	{

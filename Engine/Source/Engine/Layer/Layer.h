@@ -7,14 +7,7 @@ namespace sl
 
 class Layer
 {
-protected:
-	Layer() = default;
-
 public:
-	Layer(const Layer &) = delete;
-	Layer &operator=(const Layer &) = delete;
-	Layer(Layer &&) = delete;
-	Layer &operator=(Layer &&) = delete;
 	virtual ~Layer() = default;
 
 	virtual void OnAttach() = 0;

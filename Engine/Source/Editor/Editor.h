@@ -9,14 +9,7 @@
 #include "Core/Defines.h"
 #include "Core/Timmer.h"
 #include "Layer/LayerStack.h"
-
-namespace sl
-{
-
-class Event;
-class Window;
-
-}
+#include "Window/Window.h"
 
 struct EditorInitor
 {
@@ -61,8 +54,8 @@ private:
 
 	// TEMPORARY
 	sl::VertexArray *m_pVertexArray;
-	sl::Texture *m_pTextureJoucho;
-	sl::Texture *m_pTextureLogo;
+	sl::Texture2D *m_pTextureJoucho;
+	sl::Texture2D *m_pTextureLogo;
 	sl::Shader *m_pShader;
 	sl::Camera m_camera;
 };

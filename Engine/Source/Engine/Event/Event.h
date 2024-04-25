@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <format>
 #include <functional>
-#include <string>
 
 namespace sl
 {
@@ -13,7 +12,7 @@ enum class EventType
 	None = 0,
 	WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowDrop,
 	KeyPressed, KeyReleased, KeyTyped,
-	MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
+	MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
 };
 
 #define SL_EVENT_CATEGORY_NONE     UINT8_C(0x00)
@@ -26,14 +25,7 @@ enum class EventType
 
 class Event
 {
-protected:
-	Event() = default;
-
 public:
-	Event(const Event &) = delete;
-	Event &operator=(const Event &) = delete;
-	Event(Event &&) = delete;
-	Event &operator=(Event &&) = delete;
 	virtual ~Event() = default;
 
 	virtual EventType GetEventType() const = 0;
