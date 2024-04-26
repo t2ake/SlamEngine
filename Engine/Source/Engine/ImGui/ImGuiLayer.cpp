@@ -57,7 +57,7 @@ void ImGuiLayer::OnDetach()
 
 void ImGuiLayer::OnEvent(Event &event)
 {
-
+	// TODO: block some input event here.
 }
 
 void ImGuiLayer::BeginFrame()

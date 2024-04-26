@@ -30,7 +30,7 @@ void Editor::Init(EditorInitor initor)
 
 	sl::RenderCore::SetDefaultState();
 
-	m_layerStack.PushLayer(new sl::SandboxLayer);
+	m_layerStack.PushLayer(new SandboxLayer);
 	m_layerStack.PushLayer(new sl::ImGuiLayer);
 }
 

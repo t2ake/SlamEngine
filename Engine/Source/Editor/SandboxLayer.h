@@ -8,8 +8,9 @@ namespace sl
 
 class VertexArray;
 class Texture2D;
-class Texture2D;
 class Shader;
+
+}
 
 class SandboxLayer : public sl::Layer
 {
@@ -33,5 +34,3 @@ private:
 	sl::Texture2D *m_pTextureLogo;
 	sl::Shader *m_pShader;
 };
-
-} // namespace sl

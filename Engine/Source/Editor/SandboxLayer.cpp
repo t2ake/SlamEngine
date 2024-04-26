@@ -8,9 +8,6 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace sl
-{
-
 SandboxLayer::SandboxLayer()
 {
 	SetName("SandboxLayer");
@@ -110,5 +107,3 @@ void SandboxLayer::EndFrame()
 {
 
 }
-
-} // namespace sl
