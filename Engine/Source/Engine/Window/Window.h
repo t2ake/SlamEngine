@@ -23,7 +23,7 @@ protected:
 	Window() = default;
 
 public:
-	void Init(std::string title, uint32_t width, uint32_t height, bool VSync);
+	void Init(std::string title, uint32_t width, uint32_t height);
 	void Shutdown();
 
 	void BegineFrame();

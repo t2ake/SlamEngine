@@ -1,9 +1,11 @@
 #pragma once
 
-#include "Event/Event.h"
+#include <string>
 
 namespace sl
 {
+
+class Event;
 
 class Layer
 {

@@ -12,12 +12,11 @@
 namespace sl
 {
 
-void Window::Init(std::string title, uint32_t width, uint32_t height, bool VSync)
+void Window::Init(std::string title, uint32_t width, uint32_t height)
 {
 	m_title = std::move(title);
 	m_width = width;
 	m_height = height;
-	m_isVSync = VSync;
 
 	SL_ENGINE_INFO("Create window \"{}\" ({}, {})", m_title, m_width, m_height);
 
@@ -34,7 +33,6 @@ void Window::Init(std::string title, uint32_t width, uint32_t height, bool VSync
 
 	glfwSetWindowUserPointer(m_pWindow, this);
 	SetCallbacks();
-	Input::SetWindow(this);
 
 #ifdef SL_FINAL
 	m_isVSync = false;

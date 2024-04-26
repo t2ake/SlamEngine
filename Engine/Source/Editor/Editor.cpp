@@ -5,38 +5,34 @@
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
-#include "ImGui/ImGuiLayer.h"
+#include "ImGui/ImGuiContext.h"
 #include "RenderCore/RenderCore.h"
-#include "SandboxLayer.h"
 #include "Window/Window.h"
 
+#include "ImGuiLayer.h"
+#include "SandboxLayer.h"
+
 Editor::Editor(EditorInitor initor)
-{
-	Init(std::move(initor));
-}
-
-Editor::~Editor()
-{
-	Shutdown();
-}
-
-void Editor::Init(EditorInitor initor)
 {
 	sl::Log::Init();
 
 	sl::RenderCore::Init(initor.m_backend);
-	sl::Window::GetInstance().Init(std::move(initor.title), initor.m_width, initor.m_height, true);
+	sl::Window::GetInstance().Init(std::move(initor.title), initor.m_width, initor.m_height);
 	sl::Window::GetInstance().SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
+	sl::ImGuiContext::Init();
 
 	sl::RenderCore::SetDefaultState();
 
 	m_layerStack.PushLayer(new SandboxLayer);
-	m_layerStack.PushLayer(new sl::ImGuiLayer);
+	m_layerStack.PushLayer(new ImGuiLayer);
 }
 
-void Editor::Shutdown()
+Editor::~Editor()
 {
+	sl::ImGuiContext::Shutdown();
+
 	m_layerStack.Shutdown();
+
 	sl::Window::GetInstance().Shutdown();
 }
 
@@ -64,7 +60,7 @@ void Editor::BegineFrame()
 {
 	m_timer.Update();
 	sl::RenderCore::Clear(SL_CLEAR_COLOR);
-	sl::Window::GetInstance().BegineFrame();
+	sl::ImGuiContext::BeginFrame();
 
 	for (sl::Layer *pLayer : m_layerStack)
 	{
@@ -87,6 +83,7 @@ void Editor::EndFrame()
 		pLayer->EndFrame();
 	}
 
+	sl::ImGuiContext::EndFrame();
 	sl::Window::GetInstance().EndFrame();
 }
 

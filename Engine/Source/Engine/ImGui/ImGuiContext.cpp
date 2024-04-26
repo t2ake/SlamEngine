@@ -1,4 +1,4 @@
-#include "ImGuiLayer.h"
+#include "ImGuiContext.h"
 
 #include "Core/Log.h"
 #include "Window/Window.h"
@@ -10,21 +10,10 @@
 namespace sl
 {
 
-ImGuiLayer::ImGuiLayer()
-{
-	SetName("ImGuiLayer");
-}
-
-ImGuiLayer::~ImGuiLayer()
-{
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-}
-
-void ImGuiLayer::OnAttach()
+void ImGuiContext::Init()
 {
 	// 1. Init imgui
+	SL_ENGINE_INFO("Init ImGui");
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
@@ -32,53 +21,38 @@ void ImGuiLayer::OnAttach()
 	ImGuiIO &io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable Docking
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi Viewport Windows
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	io.ConfigViewportsNoTaskBarIcon = true;
 
 	// 3. Load font
 
 	// 4. Set style
 	ImGui::StyleColorsDark();
-	// For docking
 	ImGuiStyle &style = ImGui::GetStyle();
 	style.WindowRounding = 0.0f;
 	style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 
 	// 5. Init platform and Rendering backend
 	ImGui_ImplGlfw_InitForOpenGL(Window::GetInstance().GetWindow(), true);
-	ImGui_ImplOpenGL3_Init("#version 130");
+	ImGui_ImplOpenGL3_Init("#version 460");
 }
 
-void ImGuiLayer::OnDetach()
+void ImGuiContext::Shutdown()
 {
-
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 }
 
-void ImGuiLayer::OnEvent(Event &event)
-{
-	// TODO: block some input event here.
-}
-
-void ImGuiLayer::BeginFrame()
+void ImGuiContext::BeginFrame()
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 }
 
-void ImGuiLayer::OnUpdate(float deltaTime)
-{
-
-}
-
-void ImGuiLayer::OnRender()
-{
-	bool show_demo_window = true;
-	ImGui::ShowDemoWindow(&show_demo_window);
-}
-
-void ImGuiLayer::EndFrame()
+void ImGuiContext::EndFrame()
 {
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

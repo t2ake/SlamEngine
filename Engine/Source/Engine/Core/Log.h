@@ -12,6 +12,7 @@
 namespace sl
 {
 
+// TODO: Instance?
 class Log final
 {
 public:

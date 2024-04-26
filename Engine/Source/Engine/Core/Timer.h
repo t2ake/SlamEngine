@@ -11,6 +11,8 @@ public:
 	Timer() = default;
 
 	void Update();
+
+	// Returns in milliseconds.
 	float GetDeltatIme() const { return m_deltaTime; }
 
 private:

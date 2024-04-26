@@ -36,9 +36,6 @@ public:
 	void Run();
 
 private:
-	void Init(EditorInitor initor);
-	void Shutdown();
-
 	void BegineFrame();
 	void Render();
 	void EndFrame();

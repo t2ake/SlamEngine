@@ -1,14 +1,16 @@
 #pragma once
 
 #include "Camera/CameraData.h"
-#include "Event/MouseEvent.h"
-#include "Event/WindowEvent.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
 namespace sl
 {
+
+class Event;
+class MouseScrolledEvent;
+class WindowResizeEvent;
 
 class Camera final
 {
@@ -37,9 +39,9 @@ private:
 	bool m_isActive = false;
 	bool m_isMoving = false;
 
-	float m_rotateSpeed = 0.04f;
-	float m_maxMoveSpeed = 16.0f;
-	float m_acceleration = -16.0f / 50.0f;
+	float m_rotateSpeed = glm::radians(0.01f);
+	float m_maxMoveSpeed = 0.016f;
+	float m_acceleration = -0.016f / 32.0f;
 	float m_moveSpeed = 0.0f;
 
 	float m_moveSpeedKeyShiftMultiplier = 1.0f;

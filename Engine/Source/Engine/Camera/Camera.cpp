@@ -1,6 +1,8 @@
 #include "Camera.h"
 
 #include "Core/Log.h"
+#include "Event/MouseEvent.h"
+#include "Event/WindowEvent.h"
 #include "Window/Input.h"
 #include "Window/Window.h"
 
@@ -89,7 +91,7 @@ void Camera::UpdateFPSCamera(float deltaTime)
 		if (!m_isMoving)
 		{
 			// Start moving
-			m_acceleration = m_maxMoveSpeed / 50.0f;
+			m_acceleration = m_maxMoveSpeed / 32.0f;
 			m_isMoving = true;
 		}
 
@@ -132,7 +134,7 @@ void Camera::UpdateFPSCamera(float deltaTime)
 		if (m_isMoving)
 		{
 			// Stop moving
-			m_acceleration = -m_maxMoveSpeed / 50.0f;
+			m_acceleration = -m_maxMoveSpeed / 32.0f;
 			m_isMoving = false;
 		}
 		finalMoveDir = m_lastMoveDir;
