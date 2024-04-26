@@ -37,7 +37,7 @@ private:
 	bool m_isActive = false;
 	bool m_isMoving = false;
 
-	float m_rotateSpeed = 0.02f;
+	float m_rotateSpeed = 0.04f;
 	float m_maxMoveSpeed = 16.0f;
 	float m_acceleration = -16.0f / 50.0f;
 	float m_moveSpeed = 0.0f;

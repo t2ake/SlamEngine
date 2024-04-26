@@ -62,12 +62,13 @@ void Camera::UpdateFPSCamera(float deltaTime)
 	// Rotation
 	{
 		glm::vec2 crtPos = Input::GetMousePos();
-		float offsetX = crtPos.x - m_mouseLastPos.x;
-		float offsetY = m_mouseLastPos.y - crtPos.y;
-		m_mouseLastPos = Input::GetMousePos();
+		glm::vec2 offset{ m_mouseLastPos.y - crtPos.y, crtPos.x - m_mouseLastPos.x };
+		m_mouseLastPos = crtPos;
 
-		m_data.GetRotation() += glm::vec3{ offsetY, offsetX, 0.0f }  * m_rotateSpeed * deltaTime;
+		offset *= m_rotateSpeed * deltaTime;
+		m_data.GetRotation() += glm::vec3{ offset, 0.0f };
 		m_data.GetRotation().x = std::clamp(m_data.GetRotation().x, glm::radians(-89.9f), glm::radians(89.9f));
+	
 		m_data.Dirty();
 	}
 

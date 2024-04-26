@@ -54,7 +54,7 @@ private:
 	uint32_t m_computeShaderHandle = 0;
 	uint32_t m_programHandle = 0;
 
-	std::unordered_map<std::string, uint32_t> m_uniformLocationCache;
+	std::unordered_map<std::string, int> m_uniformLocationCache;
 };
 
 } // namespace sl

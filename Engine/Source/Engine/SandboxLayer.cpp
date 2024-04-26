@@ -25,7 +25,6 @@ SandboxLayer::SandboxLayer()
 		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
 		-0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
 	};
-
 	uint32_t indices[] = { 0, 1, 3, 1, 2, 3 };
 
 	sl::VertexBuffer *pVertexBuffer = sl::VertexBuffer::Create(vertices, sizeof(vertices));
@@ -52,6 +51,8 @@ SandboxLayer::~SandboxLayer()
 {
 	delete m_pVertexArray;
 	delete m_pShader;
+	delete m_pTextureJoucho;
+	delete m_pTextureLogo;
 }
 
 void SandboxLayer::OnAttach()
@@ -90,7 +91,6 @@ void SandboxLayer::OnRender()
 			glm::mat4 mvp = m_camera.GetData().GetViewProjection() * modelMat;
 
 			m_pShader->Bind();
-			//m_pShader->UploadUniform("u_texture", (int)0);
 			m_pShader->UploadUniform("u_ModelViewProjection", std::move(mvp));
 			m_pTextureJoucho->Bind(0);
 			sl::RenderCore::Submit(m_pVertexArray, m_pShader);
@@ -101,7 +101,6 @@ void SandboxLayer::OnRender()
 	modelMat2 = glm::scale(modelMat2, glm::vec3(4.0f, 2.0f, 0.0f));
 	glm::mat4 mvp2 = m_camera.GetData().GetViewProjection() * modelMat2;
 	m_pShader->Bind();
-	//m_pShader->UploadUniform("u_texture", (int)0);
 	m_pShader->UploadUniform("u_ModelViewProjection", std::move(mvp2));
 	m_pTextureLogo->Bind(0);
 	sl::RenderCore::Submit(m_pVertexArray, m_pShader);

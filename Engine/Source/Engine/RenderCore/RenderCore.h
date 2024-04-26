@@ -13,17 +13,15 @@ public:
 	RenderCore() = delete;
 
 	static void Init(GraphicsBackend backend);
-
 	static GraphicsBackend GetBackend() { return m_backend; }
-	
+	static void SetDefaultState();
+
 	static void SetClearColor(float r, float g, float b, float a);
 	static void SetClearDepth(float depth);
 	static void SetClearStencil(int stencil);
 	static void Clear(uint8_t attachments);
 
 	static void OnMainViewportResize(uint32_t width, uint32_t height);
-
-	static void SetDefaultState();
 
 	static void Submit(VertexArray *pVertexArray, Shader *pShader);
 

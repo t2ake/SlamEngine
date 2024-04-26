@@ -28,7 +28,6 @@ void Editor::Init(EditorInitor initor)
 	sl::Window::GetInstance().Init(std::move(initor.title), initor.m_width, initor.m_height, true);
 	sl::Window::GetInstance().SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
-	sl::RenderCore::SetClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	sl::RenderCore::SetDefaultState();
 
 	m_layerStack.PushLayer(new sl::SandboxLayer);
@@ -51,7 +50,7 @@ void Editor::Run()
 		{
 			for (sl::Layer *pLayer : m_layerStack)
 			{
-				pLayer->OnUpdate(m_timmer.GetDeltatIme());
+				pLayer->OnUpdate(m_timer.GetDeltatIme());
 			}
 
 			Render();
@@ -63,7 +62,7 @@ void Editor::Run()
 
 void Editor::BegineFrame()
 {
-	m_timmer.Update();
+	m_timer.Update();
 	sl::RenderCore::Clear(SL_CLEAR_COLOR);
 	sl::Window::GetInstance().BegineFrame();
 

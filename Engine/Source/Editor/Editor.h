@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/Defines.h"
-#include "Core/Timmer.h"
+#include "Core/Timer.h"
 #include "Layer/LayerStack.h"
 
 namespace sl
@@ -50,6 +50,6 @@ private:
 	bool m_isRunning = true;
 	bool m_isMinimized = false;
 
-	sl::Timmer m_timmer;
+	sl::Timer m_timer;
 	sl::LayerStack m_layerStack;
 };

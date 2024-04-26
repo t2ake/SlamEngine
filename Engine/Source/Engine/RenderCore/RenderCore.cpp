@@ -16,6 +16,11 @@ void RenderCore::Init(GraphicsBackend backend)
 	m_pRenderAPI = RenderAPI::Create();
 }
 
+void RenderCore::SetDefaultState()
+{
+	m_pRenderAPI->SetDefaultState();
+}
+
 void RenderCore::SetClearColor(float r, float g, float b, float a)
 {
 	m_pRenderAPI->SetClearColor(r, g, b, a);
@@ -39,11 +44,6 @@ void RenderCore::Clear(uint8_t attachments)
 void RenderCore::OnMainViewportResize(uint32_t width, uint32_t height)
 {
 	m_pRenderAPI->SetViewport(0, 0, width, height);
-}
-
-void RenderCore::SetDefaultState()
-{
-	m_pRenderAPI->SetDefaultState();
 }
 
 void RenderCore::Submit(VertexArray *pVertexArray, Shader *pShader)

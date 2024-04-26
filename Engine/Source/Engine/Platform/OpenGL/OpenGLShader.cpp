@@ -288,15 +288,15 @@ int OpenGLShader::GetUniformLocation(const std::string &name)
 	const auto it = m_uniformLocationCache.find(name);
 	if (it == m_uniformLocationCache.end())
 	{
-		location = glGetUniformLocation(m_programHandle, name.c_str());
+		location = (int)glGetUniformLocation(m_programHandle, name.c_str());
 #ifndef SL_FINEL
 		if (-1 == location) { SL_ENGINE_ERROR("Can't find uniform \"{}\" location in {}!", name, m_shaderProgramName); }
 #endif
-		m_uniformLocationCache[name] = (uint32_t)location;
+		m_uniformLocationCache[name] = location;
 	}
 	else
 	{
-		location = (int)it->second;
+		location = it->second;
 	}
 
 	return location;
