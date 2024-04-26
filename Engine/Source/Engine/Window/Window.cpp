@@ -12,19 +12,13 @@
 namespace sl
 {
 
-Window::Window(std::string title, uint32_t width, uint32_t height, bool VSync)
-	: m_title(title), m_width(width), m_height(height), m_isVSync(VSync)
+void Window::Init(std::string title, uint32_t width, uint32_t height, bool VSync)
 {
-	Init();
-}
+	m_title = std::move(title);
+	m_width = width;
+	m_height = height;
+	m_isVSync = VSync;
 
-Window::~Window()
-{
-	Shutdown();
-}
-
-void Window::Init()
-{
 	SL_ENGINE_INFO("Create window \"{}\" ({}, {})", m_title, m_width, m_height);
 
 	bool success = glfwInit();
@@ -54,6 +48,11 @@ void Window::Shutdown()
 	glfwTerminate();
 
 	delete m_pRenderContext;
+}
+
+void Window::BegineFrame()
+{
+
 }
 
 void Window::EndFrame()

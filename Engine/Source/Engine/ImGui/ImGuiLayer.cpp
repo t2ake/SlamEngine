@@ -10,7 +10,7 @@
 namespace sl
 {
 
-ImGuiLayer::ImGuiLayer(Window *pWindow) : m_pWindow(pWindow)
+ImGuiLayer::ImGuiLayer()
 {
 	SetName("ImGuiLayer");
 }
@@ -46,7 +46,7 @@ void ImGuiLayer::OnAttach()
 	style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 
 	// 5. Init platform and Rendering backend
-	ImGui_ImplGlfw_InitForOpenGL(m_pWindow->GetWindow(), true);
+	ImGui_ImplGlfw_InitForOpenGL(Window::GetInstance().GetWindow(), true);
 	ImGui_ImplOpenGL3_Init("#version 130");
 }
 
@@ -67,7 +67,7 @@ void ImGuiLayer::BeginFrame()
 	ImGui::NewFrame();
 }
 
-void ImGuiLayer::OnUpdate()
+void ImGuiLayer::OnUpdate(float deltaTime)
 {
 
 }

@@ -1,15 +1,17 @@
 #pragma once
 
-// TEMPORARY
-#include "Camera/Camera.h"
-#include "RenderCore/Shader.h"
-#include "RenderCore/Texture.h"
-#include "RenderCore/VertexArray.h"
-
 #include "Core/Defines.h"
 #include "Core/Timmer.h"
 #include "Layer/LayerStack.h"
-#include "Window/Window.h"
+
+namespace sl
+{
+
+class Event;
+class WindowCloseEvent;
+class WindowResizeEvent;
+
+}
 
 struct EditorInitor
 {
@@ -31,7 +33,7 @@ public:
 	Editor(EditorInitor initor);
 	~Editor();
 
-	void Update();
+	void Run();
 
 private:
 	void Init(EditorInitor initor);
@@ -50,12 +52,4 @@ private:
 
 	sl::Timmer m_timmer;
 	sl::LayerStack m_layerStack;
-	sl::Window *m_pWindow = nullptr;
-
-	// TEMPORARY
-	sl::VertexArray *m_pVertexArray;
-	sl::Texture2D *m_pTextureJoucho;
-	sl::Texture2D *m_pTextureLogo;
-	sl::Shader *m_pShader;
-	sl::Camera m_camera;
 };

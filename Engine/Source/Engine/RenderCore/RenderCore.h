@@ -23,8 +23,7 @@ public:
 
 	static void OnMainViewportResize(uint32_t width, uint32_t height);
 
-	// TEMPORARY
-	static void DefaultBlend();
+	static void SetDefaultState();
 
 	static void Submit(VertexArray *pVertexArray, Shader *pShader);
 

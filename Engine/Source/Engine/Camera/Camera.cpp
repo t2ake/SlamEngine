@@ -2,7 +2,9 @@
 
 #include "Core/Log.h"
 #include "Window/Input.h"
+#include "Window/Window.h"
 
+#include <glm/gtc/epsilon.hpp>
 #include <glm/trigonometric.hpp>
 
 #include <algorithm>
@@ -14,7 +16,7 @@ namespace sl
 namespace
 {
 
-static std::array<uint32_t, 6> CamraMoveKey =
+static constexpr std::array<uint32_t, 6> CamraMoveKey =
 {
 	SL_KEY_W, SL_KEY_A, SL_KEY_S, SL_KEY_D,
 	SL_KEY_E, SL_KEY_Q,
@@ -41,7 +43,7 @@ void Camera::Update(float deltaTime)
 	{
 		if (m_isActive)
 		{
-			m_pWindow->EnableCursor();
+			Window::GetInstance().EnableCursor();
 			m_isActive = false;
 		}
 	}
@@ -53,7 +55,7 @@ void Camera::UpdateFPSCamera(float deltaTime)
 	{
 		m_mouseLastPos = Input::GetMousePos();
 		m_lastMoveDir = m_data.GetFrontDir();
-		m_pWindow->DisableCursor();
+		Window::GetInstance().DisableCursor();
 		m_isActive = true;
 	}
 
@@ -116,6 +118,12 @@ void Camera::UpdateFPSCamera(float deltaTime)
 			finalMoveDir -= CameraData::WorldUp;
 		}
 		finalMoveDir = glm::normalize(finalMoveDir);
+
+		if (glm::any(glm::isnan(finalMoveDir)))
+		{
+			// When pressing buttons in the opposite direction at the same time.
+			finalMoveDir = glm::vec3{ 0.0f, 0.0f , 0.0f };
+		}
 		m_lastMoveDir = finalMoveDir;
 	}
 	else
@@ -144,7 +152,7 @@ void Camera::UpdateEditorCamera(float deltaTime)
 	if (!m_isActive)
 	{
 		m_mouseLastPos = Input::GetMousePos();
-		m_pWindow->DisableCursor();
+		Window::GetInstance().DisableCursor();
 		m_isActive = true;
 	}
 }

@@ -6,7 +6,7 @@ int main()
 
 	Editor *pApp = new Editor{ std::move(initor) };
 
-	pApp->Update();
+	pApp->Run();
 
 	delete pApp;
 

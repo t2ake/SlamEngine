@@ -41,9 +41,9 @@ void RenderCore::OnMainViewportResize(uint32_t width, uint32_t height)
 	m_pRenderAPI->SetViewport(0, 0, width, height);
 }
 
-void RenderCore::DefaultBlend()
+void RenderCore::SetDefaultState()
 {
-	m_pRenderAPI->DefaultBlend();
+	m_pRenderAPI->SetDefaultState();
 }
 
 void RenderCore::Submit(VertexArray *pVertexArray, Shader *pShader)

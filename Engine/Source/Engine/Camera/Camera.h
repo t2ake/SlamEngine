@@ -3,7 +3,6 @@
 #include "Camera/CameraData.h"
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
-#include "Window/Window.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -16,7 +15,6 @@ class Camera final
 public:
 	Camera() = default;
 
-	void SetWindow(Window *pWindow) { m_pWindow = pWindow; }
 	void Update(float deltaTime);
 	void OnEvent(Event &event);
 
@@ -35,12 +33,11 @@ private:
 	bool OnWindowResized(WindowResizeEvent &event);
 
 	CameraData m_data;
-	Window *m_pWindow = nullptr;
 
 	bool m_isActive = false;
 	bool m_isMoving = false;
 
-	float m_rotateSpeed = 0.1f;
+	float m_rotateSpeed = 0.02f;
 	float m_maxMoveSpeed = 16.0f;
 	float m_acceleration = -16.0f / 50.0f;
 	float m_moveSpeed = 0.0f;

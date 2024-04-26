@@ -3,6 +3,8 @@
 #include "Event/Event.h"
 #include "RenderCore/RenderContext.h"
 
+#include <string>
+
 struct GLFWwindow;
 
 namespace sl
@@ -11,9 +13,20 @@ namespace sl
 class Window final
 {
 public:
-	Window(std::string title, uint32_t width, uint32_t height, bool VSync);
-	~Window();
+	static Window &GetInstance()
+	{
+		static Window instance;
+		return instance;
+	}
 
+protected:
+	Window() = default;
+
+public:
+	void Init(std::string title, uint32_t width, uint32_t height, bool VSync);
+	void Shutdown();
+
+	void BegineFrame();
 	void EndFrame();
 
 	GLFWwindow *GetWindow() const { return m_pWindow; }
@@ -37,20 +50,18 @@ public:
 	void DespatchEvent(Event &event) { m_eventCallback(event); }
 
 private:
-	void Init();
-	void Shutdown();
 
 	void SetCallbacks();
 
 	GLFWwindow *m_pWindow = nullptr;
 	RenderContext *m_pRenderContext = nullptr;
 
-	std::string m_title;
-	uint32_t m_width;
-	uint32_t m_height;
-	bool m_isVSync;
+	std::string m_title = "Default Title";
+	uint32_t m_width = 1280;
+	uint32_t m_height = 720;
+	bool m_isVSync = true;
 
-	EventCallback m_eventCallback;
+	EventCallback m_eventCallback = nullptr;
 };
 
 } // namespace sl
