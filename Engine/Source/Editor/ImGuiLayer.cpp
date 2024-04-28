@@ -1,8 +1,9 @@
 #include "ImGuiLayer.h"
 
 #include "Core/Log.h"
-#include "Window/Window.h"
 #include "Event/Event.h"
+#include "RenderCore/RenderCore.h"
+#include "Window/Window.h"
 
 #include <imgui/imgui.h>
 
@@ -59,8 +60,11 @@ void ImGuiLayer::OnRender()
 	}
 	ImGui::EndMainMenuBar();
 
-	bool show = true;
-	ImGui::ShowDemoWindow(&show);
+	ImGui::Begin("Scene");
+	uint32_t handle = sl::RenderCore::GetFrameBuffer()->GetColorAttachmentHandle();
+#pragma warning(suppress : 4312)
+	ImGui::Image((void *)handle, ImVec2{ 1280, 720 }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
+	ImGui::End();
 }
 
 void ImGuiLayer::EndFrame()

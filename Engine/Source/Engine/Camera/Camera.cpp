@@ -28,7 +28,8 @@ static constexpr std::array<uint32_t, 6> CamraMoveKey =
 
 void Camera::Update(float deltaTime)
 {
-	// TODO: Check is mouse in scene view.
+	// TODO: Find somewhere to check is mouse in scene view, maybe in ECS world or in ImGuiLayer.
+	// After that we can revert Window to a normal class.
 
 	// Camera FPS mode.
 	if (Input::IsMouseButtonPressed(SL_MOUSE_BUTTON_2))

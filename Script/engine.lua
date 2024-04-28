@@ -94,6 +94,8 @@ project("Slam")
 	
 	rtti("Off")
 	exceptionhandling("Off")
+	justmycode("Off")
+	editAndContinue("Off")
 	
 	flags
 	{

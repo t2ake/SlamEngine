@@ -3,8 +3,6 @@
 #include "Event/Event.h"
 #include "RenderCore/RenderContext.h"
 
-#include <string>
-
 struct GLFWwindow;
 
 namespace sl

@@ -21,6 +21,7 @@ Editor::Editor(EditorInitor initor)
 	sl::Window::GetInstance().SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 	sl::ImGuiContext::Init();
 
+	sl::RenderCore::SetFrameBuffer(sl::FrameBuffer::Create(1280, 720));
 	sl::RenderCore::SetDefaultState();
 
 	m_layerStack.PushLayer(new SandboxLayer);
@@ -59,7 +60,6 @@ void Editor::Run()
 void Editor::BegineFrame()
 {
 	m_timer.Update();
-	sl::RenderCore::Clear(SL_CLEAR_COLOR);
 	sl::ImGuiContext::BeginFrame();
 
 	for (sl::Layer *pLayer : m_layerStack)
@@ -98,11 +98,12 @@ void Editor::OnEvent(sl::Event &event)
 		it != std::make_reverse_iterator(m_layerStack.begin());
 		++it)
 	{
-		(*it)->OnEvent(event);
 		if (event.GetIsHandled())
 		{
 			break;
 		}
+
+		(*it)->OnEvent(event);
 	}
 }
 

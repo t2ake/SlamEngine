@@ -73,7 +73,6 @@ void OpenGLVertexArray::SetVertexBuffer(VertexBuffer *pVertexBuffer)
 	}
 
 	glBindVertexArray(0);
-	// PENDING: Should I unbind vb here?
 }
 
 void OpenGLVertexArray::SetIndexBuffer(IndexBuffer *pIndexBuffer)
@@ -84,7 +83,6 @@ void OpenGLVertexArray::SetIndexBuffer(IndexBuffer *pIndexBuffer)
 	m_pIndexBuffer->Bind();
 
 	glBindVertexArray(0);
-	// PENDING: Should I unbind ib here?
 }
 
 } // namespace sl

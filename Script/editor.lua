@@ -96,6 +96,8 @@ project("Editor")
 	
 	rtti("Off")
 	exceptionhandling("Off")
+	justmycode("Off")
+	editAndContinue("Off")
 	
 	flags
 	{

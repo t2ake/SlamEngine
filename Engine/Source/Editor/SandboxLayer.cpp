@@ -79,6 +79,9 @@ void SandboxLayer::OnUpdate(float deltaTime)
 
 void SandboxLayer::OnRender()
 {
+	sl::RenderCore::GetFrameBuffer()->Bind();
+	sl::RenderCore::Clear(SL_CLEAR_COLOR);
+
 	for (int i = -1; i <= 1; ++i)
 	{
 		for (int j = -1; j <= 1; ++j)
@@ -101,6 +104,8 @@ void SandboxLayer::OnRender()
 	m_pShader->UploadUniform("u_ModelViewProjection", std::move(mvp2));
 	m_pTextureLogo->Bind(0);
 	sl::RenderCore::Submit(m_pVertexArray, m_pShader);
+
+	sl::RenderCore::GetFrameBuffer()->Unbind();
 }
 
 void SandboxLayer::EndFrame()
