@@ -79,7 +79,7 @@ void SandboxLayer::OnUpdate(float deltaTime)
 
 void SandboxLayer::OnRender()
 {
-	sl::RenderCore::GetFrameBuffer()->Bind();
+	sl::RenderCore::GetMainFrameBuffer()->Bind();
 	sl::RenderCore::Clear(SL_CLEAR_COLOR);
 
 	for (int i = -1; i <= 1; ++i)
@@ -105,7 +105,7 @@ void SandboxLayer::OnRender()
 	m_pTextureLogo->Bind(0);
 	sl::RenderCore::Submit(m_pVertexArray, m_pShader);
 
-	sl::RenderCore::GetFrameBuffer()->Unbind();
+	sl::RenderCore::GetMainFrameBuffer()->Unbind();
 }
 
 void SandboxLayer::EndFrame()

@@ -17,15 +17,13 @@ public:
 	static GraphicsBackend GetBackend() { return m_backend; }
 	static void SetDefaultState();
 
-	static void SetFrameBuffer(FrameBuffer *pBuffer) { m_pMainFrameBuffer = pBuffer; }
-	static FrameBuffer *GetFrameBuffer() { return m_pMainFrameBuffer; }
+	static void SetMainFrameBuffer(FrameBuffer *pBuffer) { m_pMainFrameBuffer = pBuffer; }
+	static FrameBuffer *GetMainFrameBuffer() { return m_pMainFrameBuffer; }
 
 	static void SetClearColor(float r, float g, float b, float a);
 	static void SetClearDepth(float depth);
 	static void SetClearStencil(int stencil);
 	static void Clear(uint8_t attachments);
-
-	static void OnMainViewportResize(uint32_t width, uint32_t height);
 
 	static void Submit(VertexArray *pVertexArray, Shader *pShader);
 

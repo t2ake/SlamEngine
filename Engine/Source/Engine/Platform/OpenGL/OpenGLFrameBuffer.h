@@ -17,6 +17,8 @@ public:
 	virtual void Bind() const override;
 	virtual void Unbind() const override;
 
+	virtual void Resize(uint32_t width, uint32_t height) override;
+
 	virtual uint32_t GetColorAttachmentHandle() const override { return m_color; }
 
 private:

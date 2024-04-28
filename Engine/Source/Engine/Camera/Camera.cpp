@@ -176,6 +176,9 @@ bool Camera::OnMouseScrolled(MouseScrolledEvent &event)
 	return true;
 }
 
+// TODO: Can't use window event here.
+// We might need to make application to be a singleton.
+// Then the Window class can be a normal class.
 bool Camera::OnWindowResized(WindowResizeEvent &event)
 {
 	float aspect = (float)event.GetWidth() / (float)event.GetHeight();

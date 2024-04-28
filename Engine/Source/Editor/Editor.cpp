@@ -1,6 +1,5 @@
 #include "Editor.h"
 
-#include "Core/Core.h"
 #include "Core/Log.h"
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
@@ -21,7 +20,7 @@ Editor::Editor(EditorInitor initor)
 	sl::Window::GetInstance().SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 	sl::ImGuiContext::Init();
 
-	sl::RenderCore::SetFrameBuffer(sl::FrameBuffer::Create(1280, 720));
+	sl::RenderCore::SetMainFrameBuffer(sl::FrameBuffer::Create(1280, 720));
 	sl::RenderCore::SetDefaultState();
 
 	m_layerStack.PushLayer(new SandboxLayer);
@@ -109,7 +108,7 @@ void Editor::OnEvent(sl::Event &event)
 
 bool Editor::OnWindowClose(sl::WindowCloseEvent &event)
 {
-	SL_EDITOR_TRACE("Window closed.");
+	SL_EDITOR_TRACE("Window closed");
 
 	m_isRunning = false;
 	return true;
@@ -122,14 +121,12 @@ bool Editor::OnWindowResized(sl::WindowResizeEvent &event)
 
 	if (0 == width || 0 == height)
 	{
-		SL_EDITOR_TRACE("Window minimized.");
+		SL_EDITOR_TRACE("Window minimized");
 
 		m_isMinimized = true;
 		return false;
 	}
 	m_isMinimized = false;
-
-	sl::RenderCore::OnMainViewportResize(width, height);
 
 	return false;
 }

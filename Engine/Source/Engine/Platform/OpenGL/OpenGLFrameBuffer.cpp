@@ -16,11 +16,14 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(uint32_t width, uint32_t height) :
 OpenGLFrameBuffer::~OpenGLFrameBuffer()
 {
 	glDeleteFramebuffers(1, &m_handle);
+	glDeleteTextures(1, &m_color);
+	glDeleteTextures(1, &m_depth);
 }
 
 void OpenGLFrameBuffer::Bind() const
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
+	glViewport(0, 0, m_width, m_height);
 }
 
 void OpenGLFrameBuffer::Unbind() const
@@ -28,13 +31,23 @@ void OpenGLFrameBuffer::Unbind() const
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
+{
+	glDeleteFramebuffers(1, &m_handle);
+	glDeleteTextures(1, &m_color);
+	glDeleteTextures(1, &m_depth);
+	m_handle = m_color = m_depth = 0;
+
+	m_width = width;
+	m_height = height;
+	Create();
+}
+
 void OpenGLFrameBuffer::Create()
 {
 	if (m_handle)
 	{
-		glDeleteFramebuffers(1, &m_handle);
-		glDeleteTextures(1, &m_color);
-		glDeleteTextures(1, &m_depth);
+		return;
 	}
 
 	glCreateFramebuffers(1, &m_handle);

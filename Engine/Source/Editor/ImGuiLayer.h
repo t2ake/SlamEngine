@@ -2,6 +2,8 @@
 
 #include "Layer/Layer.h"
 
+#include <glm/vec2.hpp>
+
 class ImGuiLayer : public sl::Layer
 {
 public:
@@ -18,5 +20,9 @@ public:
 	virtual void EndFrame() override;
 
 private:
+	void ShowMenuBar();
+	void ShowSceneViewpotr();
 
+	int m_dockSpaceFlag = 0;
+	glm::vec2 m_SceneViewportSize{ 0.0f };
 };
