@@ -6,7 +6,6 @@ namespace sl
 namespace
 {
 
-// TODO: Integrate nameof lib.
 static constexpr uint32_t AttribTypeToSize[(size_t)AttribType::Count] =
 {
 	1, // AttribType::Int8

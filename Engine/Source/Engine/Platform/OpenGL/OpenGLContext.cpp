@@ -8,9 +8,9 @@
 namespace sl
 {
 
-OpenGLContext::OpenGLContext(GLFWwindow *pWindow) : m_pWindow(pWindow)
+OpenGLContext::OpenGLContext(void *pWindow) : m_pWindow(pWindow)
 {
-	glfwMakeContextCurrent(m_pWindow);
+	glfwMakeContextCurrent(static_cast<GLFWwindow *>(m_pWindow));
 
 	bool success = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	SL_ENGINE_ASSERT_INFO(success, "GLAD init context failed!");
@@ -23,12 +23,12 @@ OpenGLContext::OpenGLContext(GLFWwindow *pWindow) : m_pWindow(pWindow)
 
 void OpenGLContext::Bind()
 {
-	glfwMakeContextCurrent(m_pWindow);
+	glfwMakeContextCurrent(static_cast<GLFWwindow *>(m_pWindow));
 }
 
 void OpenGLContext::SwapBuffers()
 {
-	glfwSwapBuffers(m_pWindow);
+	glfwSwapBuffers(static_cast<GLFWwindow *>(m_pWindow));
 }
 
 } // namespace sl

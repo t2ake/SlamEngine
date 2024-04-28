@@ -8,7 +8,7 @@ class ImGuiContext final
 public:
 	ImGuiContext() = delete;
 
-	static void Init();
+	static void Init(void *pNativeWindow);
 	static void Shutdown();
 
 	static void BeginFrame();

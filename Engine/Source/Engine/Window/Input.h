@@ -16,6 +16,9 @@ public:
 	static bool IsKeyPressed(int key);
 	static bool IsMouseButtonPressed(int button);
 	static glm::vec2 GetMousePos();
+
+	static void Init(void *pWindow) { m_pWindow = pWindow; }
+	static void *m_pWindow;
 };
 
 } // namespace sl

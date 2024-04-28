@@ -3,6 +3,16 @@
 namespace sl
 {
 
+LayerStack::~LayerStack()
+{
+	// PENDING: Should I iterate them from the top to the bottom?
+	for (Layer *pLayer : m_pLayers)
+	{
+		delete pLayer;
+	}
+	m_pLayers.clear();
+}
+
 void LayerStack::PushLayer(Layer *pLayer)
 {
 	pLayer->OnAttach();
@@ -17,16 +27,6 @@ void LayerStack::PopLayer(Layer *pLayer)
 	{
 		m_pLayers.erase(it);
 	}
-}
-
-void LayerStack::Shutdown()
-{
-	// PENDING: Should I iterate them from the top to the bottom?
-	for (Layer *pLayer : m_pLayers)
-	{
-		delete pLayer;
-	}
-	m_pLayers.clear();
 }
 
 } // namespace sl

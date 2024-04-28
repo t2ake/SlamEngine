@@ -2,22 +2,20 @@
 
 #include "RenderCore/RenderContext.h"
 
-struct GLFWwindow;
-
 namespace sl
 {
 
 class OpenGLContext : public RenderContext
 {
 public:
-	OpenGLContext(GLFWwindow *pWindow);
+	OpenGLContext(void *pWindow);
 	virtual ~OpenGLContext() override = default;
 
 	virtual void Bind() override;
 	virtual void SwapBuffers() override;
 
 private:
-	GLFWwindow *m_pWindow = nullptr;
+	void *m_pWindow = nullptr;
 };
 
 } // namespace sl

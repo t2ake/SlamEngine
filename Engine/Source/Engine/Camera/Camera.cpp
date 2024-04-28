@@ -29,7 +29,6 @@ static constexpr std::array<uint32_t, 6> CamraMoveKey =
 void Camera::Update(float deltaTime)
 {
 	// TODO: Find somewhere to check is mouse in scene view, maybe in ECS world or in ImGuiLayer.
-	// After that we can revert Window to a normal class.
 
 	// Camera FPS mode.
 	if (Input::IsMouseButtonPressed(SL_MOUSE_BUTTON_2))
@@ -46,7 +45,6 @@ void Camera::Update(float deltaTime)
 	{
 		if (m_isActive)
 		{
-			Window::GetInstance().EnableCursor();
 			m_isActive = false;
 		}
 	}
@@ -58,7 +56,6 @@ void Camera::UpdateFPSCamera(float deltaTime)
 	{
 		m_mouseLastPos = Input::GetMousePos();
 		m_lastMoveDir = m_data.GetFrontDir();
-		Window::GetInstance().DisableCursor();
 		m_isActive = true;
 	}
 
@@ -156,7 +153,7 @@ void Camera::UpdateEditorCamera(float deltaTime)
 	if (!m_isActive)
 	{
 		m_mouseLastPos = Input::GetMousePos();
-		Window::GetInstance().DisableCursor();
+		m_lastMoveDir = m_data.GetFrontDir();
 		m_isActive = true;
 	}
 }
@@ -177,8 +174,6 @@ bool Camera::OnMouseScrolled(MouseScrolledEvent &event)
 }
 
 // TODO: Can't use window event here.
-// We might need to make application to be a singleton.
-// Then the Window class can be a normal class.
 bool Camera::OnWindowResized(WindowResizeEvent &event)
 {
 	float aspect = (float)event.GetWidth() / (float)event.GetHeight();

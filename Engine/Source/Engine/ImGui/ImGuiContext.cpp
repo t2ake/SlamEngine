@@ -10,7 +10,7 @@
 namespace sl
 {
 
-void ImGuiContext::Init()
+void ImGuiContext::Init(void *pNativeWindow)
 {
 	// 1. Init imgui
 	SL_ENGINE_INFO("Init ImGui");
@@ -34,7 +34,7 @@ void ImGuiContext::Init()
 	style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 
 	// 5. Init platform and Rendering backend
-	ImGui_ImplGlfw_InitForOpenGL(Window::GetInstance().GetWindow(), true);
+	ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(pNativeWindow), true);
 	ImGui_ImplOpenGL3_Init("#version 460");
 }
 

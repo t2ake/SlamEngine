@@ -1,14 +1,12 @@
 #pragma once
 
-struct GLFWwindow;
-
 namespace sl
 {
 
 class RenderContext
 {
 public:
-	static RenderContext *Create(GLFWwindow *pWindow);
+	static RenderContext *Create(void *pWindow);
 
 public:
 	virtual ~RenderContext() = default;

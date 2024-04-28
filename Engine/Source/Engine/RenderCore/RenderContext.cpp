@@ -7,7 +7,7 @@
 namespace sl
 {
 
-RenderContext *RenderContext::Create(GLFWwindow *pWindow)
+RenderContext *RenderContext::Create(void *pWindow)
 {
 	switch (RenderCore::GetBackend())
 	{

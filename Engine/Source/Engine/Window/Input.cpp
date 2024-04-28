@@ -7,25 +7,24 @@
 namespace sl
 {
 
+void *Input::m_pWindow = nullptr;
+
 bool Input::IsKeyPressed(int key)
 {
-	GLFWwindow *pWindow = Window::GetInstance().GetWindow();
-	auto state = glfwGetKey(pWindow, key);
+	auto state = glfwGetKey(static_cast<GLFWwindow *>(m_pWindow), key);
 	return GLFW_PRESS == state;
 }
 
 bool Input::IsMouseButtonPressed(int button)
 {
-	GLFWwindow *pWindow = Window::GetInstance().GetWindow();
-	auto state = glfwGetMouseButton(pWindow, button);
+	auto state = glfwGetMouseButton(static_cast<GLFWwindow *>(m_pWindow), button);
 	return GLFW_PRESS == state;
 }
 
 glm::vec2 Input::GetMousePos()
 {
-	GLFWwindow *pWindow = Window::GetInstance().GetWindow();
 	double posX, posY;
-	glfwGetCursorPos(pWindow, &posX, &posY);
+	glfwGetCursorPos(static_cast<GLFWwindow *>(m_pWindow), &posX, &posY);
 	return { float(posX), float(posY)};
 }
 

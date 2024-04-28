@@ -2,12 +2,13 @@
 
 #include "Core/Defines.h"
 #include "Core/Timer.h"
-#include "Layer/LayerStack.h"
 
 namespace sl
 {
 
 class Event;
+class LayerStack;
+class Window;
 class WindowCloseEvent;
 class WindowResizeEvent;
 
@@ -24,6 +25,10 @@ struct EditorInitor
 class Editor final
 {
 public:
+	static Editor *Get() { return pInstance; }
+	static Editor *pInstance;
+
+public:
 	Editor() = delete;
 	Editor(const Editor &) = delete;
 	Editor &operator=(const Editor &) = delete;
@@ -34,6 +39,8 @@ public:
 	~Editor();
 
 	void Run();
+
+	sl::Window *GetWindow() const { return m_pWindow; }
 
 private:
 	void BegineFrame();
@@ -48,5 +55,7 @@ private:
 	bool m_isMinimized = false;
 
 	sl::Timer m_timer;
-	sl::LayerStack m_layerStack;
+	
+	sl::LayerStack *m_pLayerStack = nullptr;
+	sl::Window *m_pWindow = nullptr;
 };

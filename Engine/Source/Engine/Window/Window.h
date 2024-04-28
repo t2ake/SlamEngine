@@ -3,31 +3,21 @@
 #include "Event/Event.h"
 #include "RenderCore/RenderContext.h"
 
-struct GLFWwindow;
-
 namespace sl
 {
 
 class Window final
 {
 public:
-	static Window &GetInstance()
-	{
-		static Window instance;
-		return instance;
-	}
+	Window() = delete;
 
-protected:
-	Window() = default;
-
-public:
-	void Init(std::string title, uint32_t width, uint32_t height);
-	void Shutdown();
+	Window(std::string title, uint32_t width, uint32_t height);
+	~Window();
 
 	void BegineFrame();
 	void EndFrame();
 
-	GLFWwindow *GetWindow() const { return m_pWindow; }
+	void *GetNativeWindow() const { return m_pNativeWindow; }
 
 	void SetWidth(uint32_t width) { m_width = width; }
 	uint32_t &GetWidth() { return m_width; }
@@ -51,7 +41,7 @@ private:
 
 	void SetCallbacks();
 
-	GLFWwindow *m_pWindow = nullptr;
+	void *m_pNativeWindow = nullptr;
 	RenderContext *m_pRenderContext = nullptr;
 
 	std::string m_title = "Default Title";

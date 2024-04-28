@@ -5,35 +5,42 @@
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
+#include "Layer/LayerStack.h"
 #include "RenderCore/RenderCore.h"
+#include "Window/Input.h"
 #include "Window/Window.h"
 
 #include "ImGuiLayer.h"
 #include "SandboxLayer.h"
 
+Editor *Editor::pInstance = nullptr;
+
 Editor::Editor(EditorInitor initor)
 {
+	pInstance = this;
+
 	sl::Log::Init();
 
 	sl::RenderCore::Init(initor.m_backend);
-	sl::Window::GetInstance().Init(std::move(initor.title), initor.m_width, initor.m_height);
-	sl::Window::GetInstance().SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
-	sl::ImGuiContext::Init();
+	m_pWindow = new sl::Window(std::move(initor.title), initor.m_width, initor.m_height);
+	m_pWindow->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
+	sl::ImGuiContext::Init(m_pWindow->GetNativeWindow());
+	sl::Input::Init(m_pWindow->GetNativeWindow());
 
 	sl::RenderCore::SetMainFrameBuffer(sl::FrameBuffer::Create(1280, 720));
 	sl::RenderCore::SetDefaultState();
 
-	m_layerStack.PushLayer(new SandboxLayer);
-	m_layerStack.PushLayer(new ImGuiLayer);
+	m_pLayerStack = new sl::LayerStack;
+	m_pLayerStack->PushLayer(new SandboxLayer);
+	m_pLayerStack->PushLayer(new ImGuiLayer);
 }
 
 Editor::~Editor()
 {
 	sl::ImGuiContext::Shutdown();
 
-	m_layerStack.Shutdown();
-
-	sl::Window::GetInstance().Shutdown();
+	delete m_pLayerStack;
+	delete m_pWindow;
 }
 
 void Editor::Run()
@@ -44,7 +51,7 @@ void Editor::Run()
 
 		if (!m_isMinimized)
 		{
-			for (sl::Layer *pLayer : m_layerStack)
+			for (sl::Layer *pLayer : *m_pLayerStack)
 			{
 				pLayer->OnUpdate(m_timer.GetDeltatIme());
 			}
@@ -61,7 +68,7 @@ void Editor::BegineFrame()
 	m_timer.Update();
 	sl::ImGuiContext::BeginFrame();
 
-	for (sl::Layer *pLayer : m_layerStack)
+	for (sl::Layer *pLayer : *m_pLayerStack)
 	{
 		pLayer->BeginFrame();
 	}
@@ -69,7 +76,7 @@ void Editor::BegineFrame()
 
 void Editor::Render()
 {
-	for (sl::Layer *pLayer : m_layerStack)
+	for (sl::Layer *pLayer : *m_pLayerStack)
 	{
 		pLayer->OnRender();
 	}
@@ -77,13 +84,13 @@ void Editor::Render()
 
 void Editor::EndFrame()
 {
-	for (sl::Layer *pLayer : m_layerStack)
+	for (sl::Layer *pLayer : *m_pLayerStack)
 	{
 		pLayer->EndFrame();
 	}
 
 	sl::ImGuiContext::EndFrame();
-	sl::Window::GetInstance().EndFrame();
+	m_pWindow->EndFrame();
 }
 
 void Editor::OnEvent(sl::Event &event)
@@ -93,8 +100,8 @@ void Editor::OnEvent(sl::Event &event)
 	dispatcher.Dispatch<sl::WindowResizeEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowResized));
 
 	// Iterate layers from end to begin.
-	for (auto it = std::make_reverse_iterator(m_layerStack.end());
-		it != std::make_reverse_iterator(m_layerStack.begin());
+	for (auto it = std::make_reverse_iterator(m_pLayerStack->end());
+		it != std::make_reverse_iterator(m_pLayerStack->begin());
 		++it)
 	{
 		if (event.GetIsHandled())

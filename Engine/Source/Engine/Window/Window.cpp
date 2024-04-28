@@ -4,15 +4,14 @@
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
-#include "Platform/OpenGL/OpenGLContext.h"
-#include "Window/Input.h"
+#include "RenderCore/RenderContext.h"
 
 #include <GLFW/glfw3.h>
 
 namespace sl
 {
 
-void Window::Init(std::string title, uint32_t width, uint32_t height)
+Window::Window(std::string title, uint32_t width, uint32_t height)
 {
 	m_title = std::move(title);
 	m_width = width;
@@ -27,11 +26,11 @@ void Window::Init(std::string title, uint32_t width, uint32_t height)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	m_pWindow = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
-	SL_ENGINE_ASSERT_INFO(m_pWindow, "GLFW creat window failed!");
-	m_pRenderContext = RenderContext::Create(m_pWindow);
+	m_pNativeWindow = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
+	SL_ENGINE_ASSERT_INFO(m_pNativeWindow, "GLFW creat window failed!");
+	m_pRenderContext = RenderContext::Create(m_pNativeWindow);
 
-	glfwSetWindowUserPointer(m_pWindow, this);
+	glfwSetWindowUserPointer(static_cast<GLFWwindow *>(m_pNativeWindow), this);
 	SetCallbacks();
 
 #ifdef SL_FINAL
@@ -40,9 +39,9 @@ void Window::Init(std::string title, uint32_t width, uint32_t height)
 	glfwSwapInterval(m_isVSync ? 1 : 0);
 }
 
-void Window::Shutdown()
+Window::~Window()
 {
-	glfwDestroyWindow(m_pWindow);
+	glfwDestroyWindow(static_cast<GLFWwindow *>(m_pNativeWindow));
 	glfwTerminate();
 
 	delete m_pRenderContext;
@@ -70,17 +69,17 @@ void Window::SetVSync(bool VSync)
 
 void Window::DisableCursor() const
 {
-	glfwSetInputMode(m_pWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Window::EnableCursor() const
 {
-	glfwSetInputMode(m_pWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void Window::SetCallbacks()
 {
-	glfwSetWindowSizeCallback(m_pWindow, [](GLFWwindow *window, int width, int height)
+	glfwSetWindowSizeCallback(static_cast<GLFWwindow *>(m_pNativeWindow), [](GLFWwindow *window, int width, int height)
 	{
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
 		pWindow->SetWidth(uint32_t(width));
@@ -90,14 +89,14 @@ void Window::SetCallbacks()
 		pWindow->DespatchEvent(event);
 	});
 
-	glfwSetWindowCloseCallback(m_pWindow, [](GLFWwindow *window)
+	glfwSetWindowCloseCallback(static_cast<GLFWwindow *>(m_pNativeWindow), [](GLFWwindow *window)
 	{
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
 		WindowCloseEvent event{};
 		pWindow->DespatchEvent(event);
 	});
 
-	glfwSetKeyCallback(m_pWindow, [](GLFWwindow *window, int key, int scancode, int action, int mods)
+	glfwSetKeyCallback(static_cast<GLFWwindow *>(m_pNativeWindow), [](GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
 
@@ -128,14 +127,14 @@ void Window::SetCallbacks()
 		}
 	});
 
-	glfwSetCharCallback(m_pWindow, [](GLFWwindow *window, unsigned int codepoint)
+	glfwSetCharCallback(static_cast<GLFWwindow *>(m_pNativeWindow), [](GLFWwindow *window, unsigned int codepoint)
 	{
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
 		KeyTypedEvent event{ int(codepoint) };
 		pWindow->DespatchEvent(event);
 	});
 
-	glfwSetMouseButtonCallback(m_pWindow, [](GLFWwindow *window, int button, int action, int mods)
+	glfwSetMouseButtonCallback(static_cast<GLFWwindow *>(m_pNativeWindow), [](GLFWwindow *window, int button, int action, int mods)
 	{
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
 
@@ -160,21 +159,21 @@ void Window::SetCallbacks()
 		}
 	});
 
-	glfwSetCursorPosCallback(m_pWindow, [](GLFWwindow *window, double xpos, double ypos)
+	glfwSetCursorPosCallback(static_cast<GLFWwindow *>(m_pNativeWindow), [](GLFWwindow *window, double xpos, double ypos)
 	{
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
 		MouseMovedEvent event{ float(xpos), float(ypos) };
 		pWindow->DespatchEvent(event);
 	});
 
-	glfwSetScrollCallback(m_pWindow, [](GLFWwindow *window, double xoffset, double yoffset)
+	glfwSetScrollCallback(static_cast<GLFWwindow *>(m_pNativeWindow), [](GLFWwindow *window, double xoffset, double yoffset)
 	{
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
 		MouseScrolledEvent event{ float(xoffset), float(yoffset) };
 		pWindow->DespatchEvent(event);
 	});
 
-	glfwSetWindowFocusCallback(m_pWindow, [](GLFWwindow *window, int focused)
+	glfwSetWindowFocusCallback(static_cast<GLFWwindow *>(m_pNativeWindow), [](GLFWwindow *window, int focused)
 	{
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
 		if (GLFW_TRUE == focused)
@@ -189,7 +188,7 @@ void Window::SetCallbacks()
 		}
 	});
 
-	glfwSetDropCallback(m_pWindow, [](GLFWwindow *window, int path_count, const char *paths[])
+	glfwSetDropCallback(static_cast<GLFWwindow *>(m_pNativeWindow), [](GLFWwindow *window, int path_count, const char *paths[])
 	{
 		if (path_count > 1)
 		{
