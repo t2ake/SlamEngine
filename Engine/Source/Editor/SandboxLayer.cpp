@@ -10,7 +10,7 @@
 
 SandboxLayer::SandboxLayer()
 {
-	SetName("SandboxLayer");
+	SetName("Sandbox Layer");
 
 	m_camera.GetData().SetPosition(glm::vec3{ 0.0f, 0.0f, 5.0f });
 	m_camera.GetData().SetRotationDegrees(glm::vec3{ 0.0f, -90.0f, 0.0f });

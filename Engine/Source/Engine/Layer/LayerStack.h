@@ -24,6 +24,11 @@ public:
 	auto begin() const { return m_pLayers.cbegin(); }
 	auto end() const { return m_pLayers.cend(); }
 
+	auto rbegin() { return std::make_reverse_iterator(m_pLayers.begin()); }
+	auto rend() { return std::make_reverse_iterator(m_pLayers.end()); }
+	auto crbegin() const { return std::make_reverse_iterator(m_pLayers.cbegin()); }
+	auto crend() const { return std::make_reverse_iterator(m_pLayers.cend()); }
+
 private:
 	std::vector<Layer *> m_pLayers;
 };

@@ -10,7 +10,9 @@ namespace sl
 
 class Event;
 class MouseScrolledEvent;
-class WindowResizeEvent;
+class SceneViewportResizeEvent;
+class SceneViewportFocusEvent;
+class SceneViewportLostFocusEvent;
 
 class Camera final
 {
@@ -27,16 +29,20 @@ public:
 	float &GetMaxMoveSpeed() { return m_maxMoveSpeed; }
 	float GetMaxMoveSpeed() const { return m_maxMoveSpeed; }
 
+
 private:
 	void UpdateFPSCamera(float deltaTime);
 	void UpdateEditorCamera(float deltaTime);
 
 	bool OnMouseScrolled(MouseScrolledEvent &event);
-	bool OnWindowResized(WindowResizeEvent &event);
+	bool OnSceneViewportResize(SceneViewportResizeEvent &event);
+	bool OnSceneViewportFocus(SceneViewportFocusEvent &event);
+	bool OnSceneViewportLostFocus(SceneViewportLostFocusEvent &event);
 
 	CameraData m_data;
 
 	bool m_isActive = false;
+	bool m_isRotating = false;
 	bool m_isMoving = false;
 
 	float m_rotateSpeed = glm::radians(0.01f);

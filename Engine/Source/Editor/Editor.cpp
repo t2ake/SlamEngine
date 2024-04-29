@@ -3,6 +3,7 @@
 #include "Core/Log.h"
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
+#include "Event/SceneViewportEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
 #include "Layer/LayerStack.h"
@@ -30,9 +31,13 @@ Editor::Editor(EditorInitor initor)
 	sl::RenderCore::SetMainFrameBuffer(sl::FrameBuffer::Create(1280, 720));
 	sl::RenderCore::SetDefaultState();
 
+	m_pSandboxLayer = new SandboxLayer;
+	m_pImGuiLayer = new ImGuiLayer;
+	m_pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
+	
 	m_pLayerStack = new sl::LayerStack;
-	m_pLayerStack->PushLayer(new SandboxLayer);
-	m_pLayerStack->PushLayer(new ImGuiLayer);
+	m_pLayerStack->PushLayer(m_pSandboxLayer);
+	m_pLayerStack->PushLayer(m_pImGuiLayer);
 }
 
 Editor::~Editor()
@@ -97,18 +102,16 @@ void Editor::OnEvent(sl::Event &event)
 {
 	sl::EventDispatcher dispatcher{ event };
 	dispatcher.Dispatch<sl::WindowCloseEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowClose));
-	dispatcher.Dispatch<sl::WindowResizeEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowResized));
+	dispatcher.Dispatch<sl::WindowResizeEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowResize));
+	dispatcher.Dispatch<sl::MouseButtonReleasedEvent>(BIND_EVENT_CALLBACK(Editor::OnMouseButtonReleased));
 
 	// Iterate layers from end to begin.
-	for (auto it = std::make_reverse_iterator(m_pLayerStack->end());
-		it != std::make_reverse_iterator(m_pLayerStack->begin());
-		++it)
+	for (auto it = m_pLayerStack->rend(); it != m_pLayerStack->rbegin(); ++it)
 	{
 		if (event.GetIsHandled())
 		{
 			break;
 		}
-
 		(*it)->OnEvent(event);
 	}
 }
@@ -121,19 +124,28 @@ bool Editor::OnWindowClose(sl::WindowCloseEvent &event)
 	return true;
 }
 
-bool Editor::OnWindowResized(sl::WindowResizeEvent &event)
+bool Editor::OnWindowResize(sl::WindowResizeEvent &event)
 {
-	uint32_t width = event.GetWidth();
-	uint32_t height = event.GetHeight();
-
-	if (0 == width || 0 == height)
+	if (0 == event.GetWidth() || 0 == event.GetHeight())
 	{
 		SL_EDITOR_TRACE("Window minimized");
-
 		m_isMinimized = true;
-		return false;
 	}
-	m_isMinimized = false;
+	else
+	{
+		m_isMinimized = false;
+	}
 
-	return false;
+	return true;
+}
+
+bool Editor::OnMouseButtonReleased(sl::MouseButtonReleasedEvent &event)
+{
+	if (SL_MOUSE_BUTTON_1 == event.GetButton())
+	{
+		// This is to avoid flickering caused by framebuffer rebuilding every frame when scene viewport changing.
+		sl::RenderCore::GetMainFrameBuffer()->Resize(m_pImGuiLayer->GetSceneViewportSizeX(), m_pImGuiLayer->GetSceneViewportSizeY());
+	}
+
+	return true;
 }

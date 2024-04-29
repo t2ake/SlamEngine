@@ -33,6 +33,11 @@ void OpenGLFrameBuffer::Unbind() const
 
 void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 {
+	if (width == m_width && height == m_height)
+	{
+		return;
+	}
+
 	glDeleteFramebuffers(1, &m_handle);
 	glDeleteTextures(1, &m_color);
 	glDeleteTextures(1, &m_depth);

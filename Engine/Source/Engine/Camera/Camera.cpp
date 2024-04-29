@@ -2,7 +2,7 @@
 
 #include "Core/Log.h"
 #include "Event/MouseEvent.h"
-#include "Event/WindowEvent.h"
+#include "Event/SceneViewportEvent.h"
 #include "Window/Input.h"
 #include "Window/Window.h"
 
@@ -28,7 +28,11 @@ static constexpr std::array<uint32_t, 6> CamraMoveKey =
 
 void Camera::Update(float deltaTime)
 {
-	// TODO: Find somewhere to check is mouse in scene view, maybe in ECS world or in ImGuiLayer.
+	if (!m_isActive)
+	{
+		m_moveSpeed = 0.0f;
+		return;
+	}
 
 	// Camera FPS mode.
 	if (Input::IsMouseButtonPressed(SL_MOUSE_BUTTON_2))
@@ -43,20 +47,22 @@ void Camera::Update(float deltaTime)
 	// Camera unused.
 	else
 	{
-		if (m_isActive)
+		if (m_isRotating)
 		{
-			m_isActive = false;
+			m_isRotating = false;
 		}
 	}
 }
 
 void Camera::UpdateFPSCamera(float deltaTime)
 {
-	if (!m_isActive)
+	// TODO: Camera mode controller logic should be move to ImGuiLayer.
+
+	if (!m_isRotating)
 	{
 		m_mouseLastPos = Input::GetMousePos();
 		m_lastMoveDir = m_data.GetFrontDir();
-		m_isActive = true;
+		m_isRotating = true;
 	}
 
 	// Rotation
@@ -150,11 +156,11 @@ void Camera::UpdateFPSCamera(float deltaTime)
 void Camera::UpdateEditorCamera(float deltaTime)
 {
 	// TODO
-	if (!m_isActive)
+	if (!m_isRotating)
 	{
 		m_mouseLastPos = Input::GetMousePos();
 		m_lastMoveDir = m_data.GetFrontDir();
-		m_isActive = true;
+		m_isRotating = true;
 	}
 }
 
@@ -162,7 +168,9 @@ void Camera::OnEvent(Event &event)
 {
 	EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<MouseScrolledEvent>(BIND_EVENT_CALLBACK(Camera::OnMouseScrolled));
-	dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_CALLBACK(Camera::OnWindowResized));
+	dispatcher.Dispatch<SceneViewportResizeEvent>(BIND_EVENT_CALLBACK(Camera::OnSceneViewportResize));
+	dispatcher.Dispatch<SceneViewportFocusEvent>(BIND_EVENT_CALLBACK(Camera::OnSceneViewportFocus));
+	dispatcher.Dispatch<SceneViewportLostFocusEvent>(BIND_EVENT_CALLBACK(Camera::OnSceneViewportLostFocus));
 }
 
 bool Camera::OnMouseScrolled(MouseScrolledEvent &event)
@@ -173,8 +181,7 @@ bool Camera::OnMouseScrolled(MouseScrolledEvent &event)
 	return true;
 }
 
-// TODO: Can't use window event here.
-bool Camera::OnWindowResized(WindowResizeEvent &event)
+bool Camera::OnSceneViewportResize(SceneViewportResizeEvent &event)
 {
 	float aspect = (float)event.GetWidth() / (float)event.GetHeight();
 	float fovDegrees = aspect * (45.0f / 16.0f * 9.0f);
@@ -183,6 +190,19 @@ bool Camera::OnWindowResized(WindowResizeEvent &event)
 	m_data.SetAspect(aspect);
 	m_data.SetFOVDegrees(fovDegrees);
 	m_data.Dirty();
+
+	return true;
+}
+
+bool Camera::OnSceneViewportFocus(SceneViewportFocusEvent &event)
+{
+	m_isActive = true;
+	return true;
+}
+
+bool Camera::OnSceneViewportLostFocus(SceneViewportLostFocusEvent &event)
+{
+	m_isActive = false;
 	return true;
 }
 

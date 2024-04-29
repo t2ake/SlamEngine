@@ -303,3 +303,5 @@ int OpenGLShader::GetUniformLocation(const std::string &name)
 }
 
 } // namespace sl
+
+static_assert(std::is_same_v<GLint, int>);

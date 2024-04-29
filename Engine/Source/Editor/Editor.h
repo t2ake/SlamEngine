@@ -7,12 +7,17 @@ namespace sl
 {
 
 class Event;
-class LayerStack;
-class Window;
 class WindowCloseEvent;
 class WindowResizeEvent;
+class MouseButtonReleasedEvent;
+class SceneViewportFocusEvent;
+class Window;
+class LayerStack;
 
 }
+
+class SandboxLayer;
+class ImGuiLayer;
 
 struct EditorInitor
 {
@@ -49,13 +54,15 @@ private:
 
 	void OnEvent(sl::Event &event);
 	bool OnWindowClose(sl::WindowCloseEvent &event);
-	bool OnWindowResized(sl::WindowResizeEvent &event);
+	bool OnWindowResize(sl::WindowResizeEvent &event);
+	bool OnMouseButtonReleased(sl::MouseButtonReleasedEvent &event);
 
 	bool m_isRunning = true;
 	bool m_isMinimized = false;
 
 	sl::Timer m_timer;
-	
-	sl::LayerStack *m_pLayerStack = nullptr;
 	sl::Window *m_pWindow = nullptr;
+	sl::LayerStack *m_pLayerStack = nullptr;
+	SandboxLayer *m_pSandboxLayer = nullptr;
+	ImGuiLayer *m_pImGuiLayer = nullptr;
 };

@@ -34,7 +34,7 @@ public:
 	void DisableCursor() const;
 	void EnableCursor() const;
 
-	void SetEventCallback(EventCallback cb) { m_eventCallback = std::move(cb); }
+	void SetEventCallback(EventCallback fun) { m_eventCallback = std::move(fun); }
 	void DespatchEvent(Event &event) { m_eventCallback(event); }
 
 private:

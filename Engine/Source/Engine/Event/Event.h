@@ -13,13 +13,15 @@ enum class EventType
 	WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowDrop,
 	KeyPressed, KeyReleased, KeyTyped,
 	MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
+	SceneViewportResize, SceneViewportFocus, SceneViewportLostFocus,
 };
 
-#define SL_EVENT_CATEGORY_NONE     UINT8_C(0x00)
-#define SL_EVENT_CATEGORY_WINDOW   UINT8_C(0x01)
-#define SL_EVENT_CATEGORY_INPUT    UINT8_C(0x02)
-#define SL_EVENT_CATEGORY_KEYBOARD UINT8_C(0x04)
-#define SL_EVENT_CATEGORY_MOUSE    UINT8_C(0x08)
+#define SL_EVENT_CATEGORY_NONE           UINT8_C(0x00)
+#define SL_EVENT_CATEGORY_WINDOW         UINT8_C(0x01)
+#define SL_EVENT_CATEGORY_INPUT          UINT8_C(0x02)
+#define SL_EVENT_CATEGORY_KEYBOARD       UINT8_C(0x04)
+#define SL_EVENT_CATEGORY_MOUSE          UINT8_C(0x08)
+#define SL_EVENT_CATEGORY_SCENE_VIEWPORT UINT8_C(0x10)
 
 #define BIND_EVENT_CALLBACK(fun) std::bind(&fun, this, std::placeholders::_1)
 
