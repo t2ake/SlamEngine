@@ -5,6 +5,7 @@
 namespace sl
 {
 
+// TODO: Move these into OpenGL Vertex Buffer.
 class OpenGLVertexArray : public VertexArray
 {
 public:

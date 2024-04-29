@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/Core.h"
 #include "Core/Defines.h"
 #include "Core/Timer.h"
 
@@ -9,7 +10,7 @@ namespace sl
 class Event;
 class WindowCloseEvent;
 class WindowResizeEvent;
-class MouseButtonReleasedEvent;
+class MouseButtonReleaseEvent;
 class SceneViewportFocusEvent;
 class Window;
 class LayerStack;
@@ -55,7 +56,7 @@ private:
 	void OnEvent(sl::Event &event);
 	bool OnWindowClose(sl::WindowCloseEvent &event);
 	bool OnWindowResize(sl::WindowResizeEvent &event);
-	bool OnMouseButtonReleased(sl::MouseButtonReleasedEvent &event);
+	bool OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event);
 
 	bool m_isRunning = true;
 	bool m_isMinimized = false;

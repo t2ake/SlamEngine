@@ -11,8 +11,8 @@ enum class EventType
 {
 	None = 0,
 	WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowDrop,
-	KeyPressed, KeyReleased, KeyTyped,
-	MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
+	KeyPress, KeyRelease, KeyType,
+	MouseButtonPress, MouseButtonRelease, MouseMove, MouseScroll,
 	SceneViewportResize, SceneViewportFocus, SceneViewportLostFocus,
 };
 

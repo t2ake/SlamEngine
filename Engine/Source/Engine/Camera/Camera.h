@@ -9,7 +9,7 @@ namespace sl
 {
 
 class Event;
-class MouseScrolledEvent;
+class MouseScrollEvent;
 class SceneViewportResizeEvent;
 class SceneViewportFocusEvent;
 class SceneViewportLostFocusEvent;
@@ -34,7 +34,7 @@ private:
 	void UpdateFPSCamera(float deltaTime);
 	void UpdateEditorCamera(float deltaTime);
 
-	bool OnMouseScrolled(MouseScrolledEvent &event);
+	bool OnMouseScroll(MouseScrollEvent &event);
 	bool OnSceneViewportResize(SceneViewportResizeEvent &event);
 	bool OnSceneViewportFocus(SceneViewportFocusEvent &event);
 	bool OnSceneViewportLostFocus(SceneViewportLostFocusEvent &event);

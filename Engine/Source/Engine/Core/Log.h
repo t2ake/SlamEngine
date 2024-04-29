@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Core.h"
+
 #ifndef SL_FINAL
 
 #include <glm/vec2.hpp>
@@ -118,10 +120,10 @@ public:
 	#define SL_EDITOR_FATAL(...) ::sl::Log::GetEditorLogger()->critical(__VA_ARGS__)
 
 	// Assertions
-	#define SL_ENGINE_ASSERT(x) {if(!(x)){__debugbreak();}}
-	#define SL_ENGINE_ASSERT_INFO(x, ...) {if(!(x)){SL_ENGINE_FATAL(__VA_ARGS__); __debugbreak();}}
-	#define SL_EDITOR_ASSERT(x) {if(!(x)){__debugbreak();}}
-	#define SL_EDITOR_ASSERT_INFO(x, ...) {if(!(x)){SL_ENGINE_FATAL(__VA_ARGS__); __debugbreak();}}
+	#define SL_ENGINE_ASSERT(x) { if(!(x)){ SL_DEBUGBREAK(); } }
+	#define SL_ENGINE_ASSERT_INFO(x, ...) { if(!(x)){ SL_EDITOR_FATAL(__VA_ARGS__); SL_DEBUGBREAK(); } }
+	#define SL_EDITOR_ASSERT(x) { if(!(x)){ SL_DEBUGBREAK(); } }
+	#define SL_EDITOR_ASSERT_INFO(x, ...) { if(!(x)){ SL_ENGINE_FATAL(__VA_ARGS__); SL_DEBUGBREAK(); } }
 #else
 	#define SL_ENGINE_TRACE(...)
 	#define SL_ENGINE_DEBUG(...)

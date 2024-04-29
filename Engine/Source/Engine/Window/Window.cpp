@@ -104,19 +104,19 @@ void Window::SetCallbacks()
 		{
 			case GLFW_PRESS:
 			{
-				KeyPressedEvent event{ key , false };
+				KeyPressEvent event{ key , false };
 				pWindow->DespatchEvent(event);
 				break;
 			}
 			case GLFW_RELEASE:
 			{
-				KeyReleasedEvent event{ key };
+				KeyReleaseEvent event{ key };
 				pWindow->DespatchEvent(event);
 				break;
 			}
 			case GLFW_REPEAT:
 			{
-				KeyPressedEvent event{ key , true };
+				KeyPressEvent event{ key , true };
 				pWindow->DespatchEvent(event);
 				break;
 			}
@@ -130,7 +130,7 @@ void Window::SetCallbacks()
 	glfwSetCharCallback(static_cast<GLFWwindow *>(m_pNativeWindow), [](GLFWwindow *window, unsigned int codepoint)
 	{
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
-		KeyTypedEvent event{ int(codepoint) };
+		KeyTypeEvent event{ int(codepoint) };
 		pWindow->DespatchEvent(event);
 	});
 
@@ -142,13 +142,13 @@ void Window::SetCallbacks()
 		{
 			case GLFW_PRESS:
 			{
-				MouseButtonPressedEvent event{ button };
+				MouseButtonPressEvent event{ button };
 				pWindow->DespatchEvent(event);
 				break;
 			}
 			case GLFW_RELEASE:
 			{
-				MouseButtonReleasedEvent event{ button };
+				MouseButtonReleaseEvent event{ button };
 				pWindow->DespatchEvent(event);
 				break;
 			}
@@ -162,14 +162,14 @@ void Window::SetCallbacks()
 	glfwSetCursorPosCallback(static_cast<GLFWwindow *>(m_pNativeWindow), [](GLFWwindow *window, double xpos, double ypos)
 	{
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
-		MouseMovedEvent event{ float(xpos), float(ypos) };
+		MouseMoveEvent event{ float(xpos), float(ypos) };
 		pWindow->DespatchEvent(event);
 	});
 
 	glfwSetScrollCallback(static_cast<GLFWwindow *>(m_pNativeWindow), [](GLFWwindow *window, double xoffset, double yoffset)
 	{
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
-		MouseScrolledEvent event{ float(xoffset), float(yoffset) };
+		MouseScrollEvent event{ float(xoffset), float(yoffset) };
 		pWindow->DespatchEvent(event);
 	});
 

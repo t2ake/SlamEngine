@@ -8,7 +8,7 @@
 namespace sl
 {
 
-class MouseButtonReleasedEvent;
+class MouseButtonReleaseEvent;
 
 }
 

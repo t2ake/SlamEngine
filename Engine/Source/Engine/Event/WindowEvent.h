@@ -25,7 +25,7 @@ public:
 	virtual std::string ToString() const override
 	{
 		std::stringstream ss;
-		ss << "WindowResizeEvent: " << m_width << ", " << m_height;
+		ss << "WindowResize: " << m_width << ", " << m_height;
 		return ss.str();
 	}
 
@@ -56,7 +56,7 @@ public:
 
 	virtual std::string ToString() const override
 	{
-		return "WindowCloseEvent";
+		return "WindowClose";
 	}
 
 	virtual uint8_t GetCategories() const override
@@ -80,7 +80,7 @@ public:
 
 	virtual std::string ToString() const override
 	{
-		return "WindowFocusEvent";
+		return "WindowFocus";
 	}
 
 	virtual uint8_t GetCategories() const override
@@ -104,7 +104,7 @@ public:
 
 	virtual std::string ToString() const override
 	{
-		return "WindowLostFocusEvent";
+		return "WindowLostFocus";
 	}
 
 	virtual uint8_t GetCategories() const override
@@ -132,7 +132,7 @@ public:
 	virtual std::string ToString() const override
 	{
 		std::stringstream ss;
-		ss << "WindowDropEvent: " << m_path;
+		ss << "WindowDrop: " << m_path;
 		return ss.str();
 	}
 

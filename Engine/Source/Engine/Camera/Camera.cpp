@@ -167,13 +167,13 @@ void Camera::UpdateEditorCamera(float deltaTime)
 void Camera::OnEvent(Event &event)
 {
 	EventDispatcher dispatcher(event);
-	dispatcher.Dispatch<MouseScrolledEvent>(BIND_EVENT_CALLBACK(Camera::OnMouseScrolled));
+	dispatcher.Dispatch<MouseScrollEvent>(BIND_EVENT_CALLBACK(Camera::OnMouseScroll));
 	dispatcher.Dispatch<SceneViewportResizeEvent>(BIND_EVENT_CALLBACK(Camera::OnSceneViewportResize));
 	dispatcher.Dispatch<SceneViewportFocusEvent>(BIND_EVENT_CALLBACK(Camera::OnSceneViewportFocus));
 	dispatcher.Dispatch<SceneViewportLostFocusEvent>(BIND_EVENT_CALLBACK(Camera::OnSceneViewportLostFocus));
 }
 
-bool Camera::OnMouseScrolled(MouseScrolledEvent &event)
+bool Camera::OnMouseScroll(MouseScrollEvent &event)
 {
 	m_moveSpeedMouseScrollMultiplier += event.GetOffsetY() * 0.2f;
 	m_moveSpeedMouseScrollMultiplier = std::clamp(m_moveSpeedMouseScrollMultiplier, 0.2f, 10.0f);

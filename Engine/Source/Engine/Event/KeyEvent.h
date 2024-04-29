@@ -8,15 +8,15 @@
 namespace sl
 {
 
-class KeyPressedEvent : public Event
+class KeyPressEvent : public Event
 {
 public:
-	KeyPressedEvent(int keycode, bool isRepeat = false)
+	KeyPressEvent(int keycode, bool isRepeat = false)
 		: m_keyCode(keycode), m_isRepeat(isRepeat) {}
 
 	static EventType GetStaticEventType()
 	{
-		return EventType::KeyPressed;
+		return EventType::KeyPress;
 	}
 
 	virtual EventType GetEventType() const override
@@ -27,7 +27,7 @@ public:
 	virtual std::string ToString() const override
 	{
 		std::stringstream ss;
-		ss << "KeyPressedEvent: " << m_keyCode << (m_isRepeat ? ", repeat" : "");
+		ss << "KeyPress: " << m_keyCode << (m_isRepeat ? ", repeat" : "");
 		return ss.str();
 	}
 
@@ -44,14 +44,14 @@ private:
 	bool m_isRepeat;
 };
 
-class KeyReleasedEvent : public Event
+class KeyReleaseEvent : public Event
 {
 public:
-	KeyReleasedEvent(int keycode) : m_keyCode(keycode) {}
+	KeyReleaseEvent(int keycode) : m_keyCode(keycode) {}
 
 	static EventType GetStaticEventType()
 	{
-		return EventType::KeyReleased;
+		return EventType::KeyRelease;
 	}
 
 	virtual EventType GetEventType() const override
@@ -62,7 +62,7 @@ public:
 	virtual std::string ToString() const override
 	{
 		std::stringstream ss;
-		ss << "KeyReleasedEvent: " << m_keyCode;
+		ss << "KeyRelease: " << m_keyCode;
 		return ss.str();
 	}
 
@@ -77,14 +77,14 @@ private:
 	int m_keyCode;
 };
 
-class KeyTypedEvent : public Event
+class KeyTypeEvent : public Event
 {
 public:
-	KeyTypedEvent(int keycode) : m_keyCode(keycode) {}
+	KeyTypeEvent(int keycode) : m_keyCode(keycode) {}
 
 	static EventType GetStaticEventType()
 	{
-		return EventType::KeyTyped;
+		return EventType::KeyType;
 	}
 
 	virtual EventType GetEventType() const override
@@ -95,7 +95,7 @@ public:
 	virtual std::string ToString() const override
 	{
 		std::stringstream ss;
-		ss << "KeyTypedEvent: " << m_keyCode;
+		ss << "KeyType: " << m_keyCode;
 		return ss.str();
 	}
 	virtual

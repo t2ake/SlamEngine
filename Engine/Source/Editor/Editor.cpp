@@ -103,9 +103,9 @@ void Editor::OnEvent(sl::Event &event)
 	sl::EventDispatcher dispatcher{ event };
 	dispatcher.Dispatch<sl::WindowCloseEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowClose));
 	dispatcher.Dispatch<sl::WindowResizeEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowResize));
-	dispatcher.Dispatch<sl::MouseButtonReleasedEvent>(BIND_EVENT_CALLBACK(Editor::OnMouseButtonReleased));
+	dispatcher.Dispatch<sl::MouseButtonReleaseEvent>(BIND_EVENT_CALLBACK(Editor::OnMouseButtonRelease));
 
-	// Iterate layers from end to begin.
+	// Iterate layers from end to begin / top to bottom.
 	for (auto it = m_pLayerStack->rend(); it != m_pLayerStack->rbegin(); ++it)
 	{
 		if (event.GetIsHandled())
@@ -139,7 +139,7 @@ bool Editor::OnWindowResize(sl::WindowResizeEvent &event)
 	return true;
 }
 
-bool Editor::OnMouseButtonReleased(sl::MouseButtonReleasedEvent &event)
+bool Editor::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event)
 {
 	if (SL_MOUSE_BUTTON_1 == event.GetButton())
 	{

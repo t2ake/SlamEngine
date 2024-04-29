@@ -33,6 +33,12 @@ void OpenGLFrameBuffer::Unbind() const
 
 void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 {
+	if (width <= 0 || height <= 0 || width > m_maxSize || height > m_maxSize)
+	{
+		SL_ENGINE_ERROR("Invalid frame bufferr size!");
+		return;
+	}
+
 	if (width == m_width && height == m_height)
 	{
 		return;

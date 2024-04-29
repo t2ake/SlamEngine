@@ -10,14 +10,14 @@
 namespace sl
 {
 
-class MouseButtonPressedEvent : public Event
+class MouseButtonPressEvent : public Event
 {
 public:
-	MouseButtonPressedEvent(int button) : m_button(button) {}
+	MouseButtonPressEvent(int button) : m_button(button) {}
 
 	static EventType GetStaticEventType()
 	{
-		return EventType::MouseButtonPressed;
+		return EventType::MouseButtonPress;
 	}
 
 	virtual EventType GetEventType() const override
@@ -28,7 +28,7 @@ public:
 	virtual std::string ToString() const override
 	{
 		std::stringstream ss;
-		ss << "MouseButtonPressedEvent: " << m_button;
+		ss << "MouseButtonPress: " << m_button;
 		return ss.str();
 	}
 
@@ -43,14 +43,14 @@ private:
 	int m_button;
 };
 
-class MouseButtonReleasedEvent : public Event
+class MouseButtonReleaseEvent : public Event
 {
 public:
-	MouseButtonReleasedEvent(const int button) : m_button(button) {}
+	MouseButtonReleaseEvent(const int button) : m_button(button) {}
 
 	static EventType GetStaticEventType()
 	{
-		return EventType::MouseButtonReleased;
+		return EventType::MouseButtonRelease;
 	}
 
 	virtual EventType GetEventType() const override
@@ -61,7 +61,7 @@ public:
 	virtual std::string ToString() const override
 	{
 		std::stringstream ss;
-		ss << "MouseButtonReleasedEvent: " << m_button;
+		ss << "MouseButtonRelease: " << m_button;
 		return ss.str();
 	}
 
@@ -76,14 +76,14 @@ private:
 	int m_button;
 };
 
-class MouseMovedEvent : public Event
+class MouseMoveEvent : public Event
 {
 public:
-	MouseMovedEvent(float x, float y) : m_posX(x), m_posY(y) {}
+	MouseMoveEvent(float x, float y) : m_posX(x), m_posY(y) {}
 
 	static EventType GetStaticEventType()
 	{
-		return EventType::MouseMoved;
+		return EventType::MouseMove;
 	}
 
 	virtual EventType GetEventType() const override
@@ -94,7 +94,7 @@ public:
 	virtual std::string ToString() const override
 	{
 		std::stringstream ss;
-		ss << "MouseMovedEvent: " << m_posX << ", " << m_posY;
+		ss << "MouseMove: " << m_posX << ", " << m_posY;
 		return ss.str();
 	}
 
@@ -111,14 +111,14 @@ private:
 	float m_posX, m_posY;
 };
 
-class MouseScrolledEvent : public Event
+class MouseScrollEvent : public Event
 {
 public:
-	MouseScrolledEvent(float xOffset, float yOffset) : m_offsetX(xOffset), m_offsetY(yOffset) {}
+	MouseScrollEvent(float xOffset, float yOffset) : m_offsetX(xOffset), m_offsetY(yOffset) {}
 
 	static EventType GetStaticEventType()
 	{
-		return EventType::MouseScrolled;
+		return EventType::MouseScroll;
 	}
 
 	virtual EventType GetEventType() const override
@@ -129,7 +129,7 @@ public:
 	virtual std::string ToString() const override
 	{
 		std::stringstream ss;
-		ss << "MouseScrolledEvent: " << m_offsetX << ", " << m_offsetY;
+		ss << "MouseScroll: " << m_offsetX << ", " << m_offsetY;
 		return ss.str();
 	}
 
