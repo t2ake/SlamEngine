@@ -38,6 +38,7 @@ project("Slam")
 		path.join(ThirdPartyPath, "glad/include"),
 		path.join(ThirdPartyPath, "imgui"),
 		path.join(ThirdPartyPath, "glm"),
+		path.join(ThirdPartyPath, "entt/src"),
 	}
 	
 	-- Set files.

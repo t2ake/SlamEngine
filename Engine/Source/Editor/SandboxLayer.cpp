@@ -5,6 +5,7 @@
 #include "RenderCore/Shader.h"
 #include "RenderCore/Texture.h"
 #include "RenderCore/VertexArray.h"
+#include "Scene/Scene.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -42,6 +43,16 @@ SandboxLayer::SandboxLayer()
 
 	m_pTextureJoucho = sl::Texture2D::Create(sl::Path::FromeAsset("Texture/jc.png"));
 	m_pTextureLogo = sl::Texture2D::Create(sl::Path::FromeAsset("Texture/logo.png"));
+
+	auto entity = sl::Scene::CreateEntity();
+
+	auto view = sl::Scene::GetRegistry().view<sl::TagComponent, sl::TransformComponent>();
+	for (auto e : view)
+	{
+		auto &tag = view.get<sl::TagComponent>(e);
+		auto &trans = view.get<sl::TransformComponent>(e);
+		auto [a, b] = view.get(e);
+	}
 }
 
 SandboxLayer::~SandboxLayer()

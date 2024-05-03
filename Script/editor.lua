@@ -37,6 +37,7 @@ project("Editor")
 		ThirdPartyPath,
 		path.join(ThirdPartyPath, "spdlog/include"),
 		path.join(ThirdPartyPath, "glm"),
+		path.join(ThirdPartyPath, "entt/src"),
 	}
 	
 	-- Set files.

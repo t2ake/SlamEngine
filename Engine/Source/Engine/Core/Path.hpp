@@ -23,16 +23,10 @@ public:
 		return (std::filesystem::path{ SL_ASSET_PATH } / path).generic_string();
 	}
 
-	template<typename... Args>
-	static std::string Join(std::string path, Args... args)
+	template<class... Args>
+	static std::string Join(Args&&... args)
 	{
-		return (std::filesystem::path{ std::move(path) } / Join(std::move(args)...)).generic_string();
-	}
-
-private:
-	static std::string Join(std::string path)
-	{
-		return path;
+		return (std::filesystem::path{ std::forward<Args>(args)} / ...).generic_string();
 	}
 };
 
