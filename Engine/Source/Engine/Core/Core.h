@@ -12,12 +12,12 @@
 // Debug break
 #if !defined(SL_FINAL)
 	#if defined(_MSC_VER)
-		#define SL_DEBUGBREAK __debugbreak
+		#define SL_DEBUGBREAK() __debugbreak()
 	#else
-		#define SL_DEBUGBREAK
+		#define SL_DEBUGBREAK()
 	#endif
 #else
-	#define SL_DEBUGBREAK
+	#define SL_DEBUGBREAK()
 #endif
 
 // Force inline
