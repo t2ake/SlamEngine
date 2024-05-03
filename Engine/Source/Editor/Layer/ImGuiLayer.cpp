@@ -3,15 +3,22 @@
 #include "Core/Log.h"
 #include "Event/MouseEvent.h"
 #include "Event/SceneViewportEvent.h"
+#include "ImGui/ImGuiContext.h"
 #include "RenderCore/RenderCore.h"
+#include "RenderCore/RenderCore.h"
+#include "Scene/ECSWorld.h"
 #include "Window/Input.h"
 #include "Window/Window.h"
 
 #include <imgui/imgui.h>
 
+#include <format>
+
 ImGuiLayer::ImGuiLayer()
 {
 	SetName("ImGui Layer");
+
+	m_dockSpaceFlag |= ImGuiDockNodeFlags_NoUndocking;
 }
 
 ImGuiLayer::~ImGuiLayer()
@@ -36,20 +43,29 @@ void ImGuiLayer::OnEvent(sl::Event &event)
 
 void ImGuiLayer::BeginFrame()
 {
-
+	sl::ImGuiContext::NewFrame();
 }
 
 void ImGuiLayer::OnUpdate(float deltaTime)
 {
+	//ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
 
+	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), (ImGuiDockNodeFlags)m_dockSpaceFlag);
+
+	ShowMenuBar();
+	ShowEntityList();
+	ShowLog();
+	ShowInfo(deltaTime);
+	ShowDetails();
+
+	ShowSceneViewport();
+
+	//ImGui::PopStyleVar();
 }
 
 void ImGuiLayer::OnRender()
 {
-	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), (ImGuiDockNodeFlags)m_dockSpaceFlag);
-	ShowMenuBar();
-	ShowInfoViewport();
-	ShowSceneViewport();
+	sl::ImGuiContext::Submit();
 }
 
 void ImGuiLayer::EndFrame()
@@ -59,24 +75,98 @@ void ImGuiLayer::EndFrame()
 
 void ImGuiLayer::ShowMenuBar()
 {
+	static bool ShowImGuiDemo = false;
+	static bool ItemPicker = false;
+
 	ImGui::BeginMainMenuBar();
-	if (ImGui::BeginMenu("Options"))
+	if (ImGui::BeginMenu("Settings"))
 	{
-		if (ImGui::MenuItem("NoUndocking", "", (m_dockSpaceFlag & ImGuiDockNodeFlags_NoUndocking) != 0))
+		if (ImGui::MenuItem("No Undocking", "", m_dockSpaceFlag & ImGuiDockNodeFlags_NoUndocking))
 		{
 			m_dockSpaceFlag ^= ImGuiDockNodeFlags_NoUndocking;
 		}
-
+		if (ImGui::MenuItem("No Resize", "", m_dockSpaceFlag & ImGuiDockNodeFlags_NoResize))
+		{
+			m_dockSpaceFlag ^= ImGuiDockNodeFlags_NoResize;
+		}
+		ImGui::EndMenu();
+	}
+	if (ImGui::BeginMenu("Debug"))
+	{
+		if (ImGui::MenuItem("Show ImGui Demo", "", ShowImGuiDemo))
+		{
+			ShowImGuiDemo = !ShowImGuiDemo;
+		}
+		if (ImGui::MenuItem("Item Picker", "", ItemPicker))
+		{
+			ItemPicker = !ItemPicker;
+		}
 		ImGui::EndMenu();
 	}
 	ImGui::EndMainMenuBar();
+
+	if (ShowImGuiDemo)
+	{
+		ImGui::ShowDemoWindow();
+	}
+	if (ItemPicker)
+	{
+		ImGui::DebugStartItemPicker();
+	}
 }
 
-void ImGuiLayer::ShowInfoViewport()
+void ImGuiLayer::ShowEntityList()
+{
+	ImGui::Begin("Entity List");
+
+	auto view = sl::ECSWorld::GetRegistry().view<sl::TagComponent>();
+	for (auto entity : view)
+	{
+		auto &tag = view.get<sl::TagComponent>(entity);
+
+		ImGuiTreeNodeFlags flags = ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0);
+		// TODO: hierarchy
+		flags |= ImGuiTreeNodeFlags_Leaf;
+
+		bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags, tag.m_name.c_str());
+		if (ImGui::IsItemClicked())
+		{
+			m_selectedEntity = entity;
+		}
+		if (opened)
+		{
+			ImGui::TreePop();
+		}
+	}
+
+	ImGui::End();
+}
+
+void ImGuiLayer::ShowLog()
+{
+	ImGui::Begin("Log");
+
+
+
+	ImGui::End();
+}
+
+void ImGuiLayer::ShowInfo(float deltaTime)
 {
 	ImGui::Begin("Info");
 
-	ImGui::Text(m_isSceneViewportFocused ? "true" : "false");
+	// ImGui::Text(sl::RenderCore::GetBackend());
+	ImGui::Text("Backend: OpenGL");
+	ImGui::Text(std::format("FPS: {}", 1000.0f / deltaTime).c_str());
+
+	ImGui::End();
+}
+
+void ImGuiLayer::ShowDetails()
+{
+	ImGui::Begin("Details");
+
+
 
 	ImGui::End();
 }
@@ -123,8 +213,7 @@ void ImGuiLayer::ShowSceneViewport()
 	}
 
 	uint32_t handle = sl::RenderCore::GetMainFrameBuffer()->GetColorAttachmentHandle();
-#pragma warning(suppress : 4312)
-	ImGui::Image((void *)handle, ImVec2{ (float)m_viewportSizeX, (float)m_viewportSizeY }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
+	ImGui::Image((void *)(uint64_t)handle, ImVec2{ (float)m_viewportSizeX, (float)m_viewportSizeY }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
 
 	ImGui::End();
 	ImGui::PopStyleVar();

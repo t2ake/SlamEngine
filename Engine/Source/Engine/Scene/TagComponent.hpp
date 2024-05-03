@@ -7,7 +7,7 @@ namespace sl
 
 struct TagComponent
 {
-	std::string m_tag;
+	std::string m_name;
 };
 
 } // namespace sl

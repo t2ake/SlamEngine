@@ -3,7 +3,7 @@
 namespace sl
 {
 
-void Timer::Update()
+void Timer::Tick()
 {
 	auto crtTimePoint = std::chrono::high_resolution_clock::now();
 	long long deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(crtTimePoint - m_lastTimePoint).count();

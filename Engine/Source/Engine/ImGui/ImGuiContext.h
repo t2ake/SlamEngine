@@ -11,8 +11,8 @@ public:
 	static void Init(void *pNativeWindow);
 	static void Shutdown();
 
-	static void BeginFrame();
-	static void EndFrame();
+	static void NewFrame();
+	static void Submit();
 };
 
 } // namespace sl

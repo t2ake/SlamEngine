@@ -51,6 +51,7 @@ public:
 
 private:
 	void BegineFrame();
+	void Update();
 	void Render();
 	void EndFrame();
 

@@ -2,6 +2,7 @@
 
 #include "Event/Event.h"
 #include "Layer/Layer.h"
+#include "Scene/ECSWorld.h"
 
 #include <glm/vec2.hpp>
 
@@ -34,13 +35,19 @@ public:
 
 private:
 	void ShowMenuBar();
-	void ShowInfoViewport();
+	void ShowEntityList();
+	void ShowLog();
+	void ShowInfo(float deltaTime);
+	void ShowDetails();
 	void ShowSceneViewport();
 
 	int m_dockSpaceFlag = 0;
+	
+	sl::Entity m_selectedEntity;
+
 	uint32_t m_viewportSizeX = 0;
 	uint32_t m_viewportSizeY = 0;
-
 	bool m_isSceneViewportFocused = false;
+	
 	sl::EventCallback m_eventCallback;
 };

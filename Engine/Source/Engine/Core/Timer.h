@@ -10,7 +10,7 @@ class Timer final
 public:
 	Timer() = default;
 
-	void Update();
+	void Tick();
 
 	// Returns in milliseconds.
 	float GetDeltatIme() const { return m_deltaTime; }

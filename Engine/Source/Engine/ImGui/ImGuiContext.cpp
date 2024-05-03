@@ -45,14 +45,14 @@ void ImGuiContext::Shutdown()
 	ImGui::DestroyContext();
 }
 
-void ImGuiContext::BeginFrame()
+void ImGuiContext::NewFrame()
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 }
 
-void ImGuiContext::EndFrame()
+void ImGuiContext::Submit()
 {
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

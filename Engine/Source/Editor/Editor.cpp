@@ -31,9 +31,14 @@ Editor::Editor(EditorInitor initor)
 	sl::RenderCore::SetMainFrameBuffer(sl::FrameBuffer::Create(1280, 720));
 	sl::RenderCore::SetDefaultState();
 
-	auto mainCameraEntity = sl::ECSWorld::CreateEntity();
+	auto mainCameraEntity = sl::ECSWorld::CreateEntity("Camera");
 	mainCameraEntity.AddComponent<sl::CameraComponent>();
 	sl::ECSWorld::SetMainCameraEntity(mainCameraEntity);
+
+	for (int i = 0; i < 10; ++i)
+	{
+		sl::ECSWorld::CreateEntity(std::format("Test entity {}", i).c_str());
+	}
 
 	m_pSandboxLayer = new SandboxLayer;
 	m_pImGuiLayer = new ImGuiLayer;
@@ -63,13 +68,7 @@ void Editor::Run()
 
 		if (!m_isMinimized)
 		{
-			float deltaTime = m_timer.GetDeltatIme();
-
-			for (sl::Layer *pLayer : *m_pLayerStack)
-			{
-				pLayer->OnUpdate(deltaTime);
-			}
-
+			Update();
 			Render();
 		}
 
@@ -79,12 +78,19 @@ void Editor::Run()
 
 void Editor::BegineFrame()
 {
-	m_timer.Update();
-	sl::ImGuiContext::BeginFrame();
+	m_timer.Tick();
 
 	for (sl::Layer *pLayer : *m_pLayerStack)
 	{
 		pLayer->BeginFrame();
+	}
+}
+
+void Editor::Update()
+{
+	for (sl::Layer *pLayer : *m_pLayerStack)
+	{
+		pLayer->OnUpdate(m_timer.GetDeltatIme());
 	}
 }
 
@@ -103,7 +109,6 @@ void Editor::EndFrame()
 		pLayer->EndFrame();
 	}
 
-	sl::ImGuiContext::EndFrame();
 	m_pWindow->EndFrame();
 }
 

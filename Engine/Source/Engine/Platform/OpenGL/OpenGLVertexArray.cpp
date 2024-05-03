@@ -67,8 +67,7 @@ void OpenGLVertexArray::SetVertexBuffer(VertexBuffer *pVertexBuffer)
 			AttribTypeToOpenGLType[(size_t)element.m_type],
 			element.m_normalize ? GL_TRUE : GL_FALSE,
 			layout.GetStride(),
-#pragma warning(suppress : 4312)
-			reinterpret_cast<const void *>(element.m_offset));
+			(void *)(uint64_t)element.m_offset);
 		index++;
 	}
 

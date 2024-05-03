@@ -5,5 +5,8 @@
 *.user
 
 build
-bin
-int
+
+/Engine/bin/*
+
+/Engine/int/*
+!/Engine/int/imgui.ini
