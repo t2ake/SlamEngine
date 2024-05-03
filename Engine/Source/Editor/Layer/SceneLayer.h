@@ -1,23 +1,11 @@
 #pragma once
 
-#include "Camera/Camera.h"
 #include "Layer/Layer.h"
 
-namespace sl
-{
-
-class VertexArray;
-class Texture2D;
-class Shader;
-
-}
-
-class SandboxLayer : public sl::Layer
+// Basically, SceneLayer is just a OnUpdate / OnEvent controller of ECSWorld.
+class SceneLayer : public sl::Layer
 {
 public:
-	SandboxLayer();
-	virtual ~SandboxLayer() override;
-
 	virtual void OnAttach() override;
 	virtual void OnDetach() override;
 	virtual void OnEvent(sl::Event &event) override;
@@ -28,10 +16,5 @@ public:
 	virtual void EndFrame() override;
 
 private:
-	sl::Camera m_camera;
 
-	sl::VertexArray *m_pVertexArray;
-	sl::Texture2D *m_pTextureJoucho;
-	sl::Texture2D *m_pTextureLogo;
-	sl::Shader *m_pShader;
 };

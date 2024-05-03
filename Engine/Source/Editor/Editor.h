@@ -19,6 +19,7 @@ class LayerStack;
 
 class SandboxLayer;
 class ImGuiLayer;
+class SceneLayer;
 
 struct EditorInitor
 {
@@ -64,6 +65,8 @@ private:
 	sl::Timer m_timer;
 	sl::Window *m_pWindow = nullptr;
 	sl::LayerStack *m_pLayerStack = nullptr;
+
 	SandboxLayer *m_pSandboxLayer = nullptr;
 	ImGuiLayer *m_pImGuiLayer = nullptr;
+	SceneLayer *m_pSceneLayer = nullptr;
 };

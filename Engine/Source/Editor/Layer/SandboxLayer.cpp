@@ -5,7 +5,7 @@
 #include "RenderCore/Shader.h"
 #include "RenderCore/Texture.h"
 #include "RenderCore/VertexArray.h"
-#include "Scene/Scene.h"
+#include "Scene/ECSWorld.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -13,8 +13,9 @@ SandboxLayer::SandboxLayer()
 {
 	SetName("Sandbox Layer");
 
-	m_camera.GetData().SetPosition(glm::vec3{ 0.0f, 0.0f, 5.0f });
-	m_camera.GetData().SetRotationDegrees(glm::vec3{ 0.0f, -90.0f, 0.0f });
+	auto &camera = sl::ECSWorld::GetMainCameraComponent();
+	camera.GetData().SetPosition(glm::vec3{ 0.0f, 0.0f, 5.0f });
+	camera.GetData().SetRotationDegrees(glm::vec3{ 0.0f, -90.0f, 0.0f });
 
 	float vertices[] =
 	{
@@ -43,16 +44,6 @@ SandboxLayer::SandboxLayer()
 
 	m_pTextureJoucho = sl::Texture2D::Create(sl::Path::FromeAsset("Texture/jc.png"));
 	m_pTextureLogo = sl::Texture2D::Create(sl::Path::FromeAsset("Texture/logo.png"));
-
-	auto entity = sl::Scene::CreateEntity();
-
-	auto view = sl::Scene::GetRegistry().view<sl::TagComponent, sl::TransformComponent>();
-	for (auto e : view)
-	{
-		auto &tag = view.get<sl::TagComponent>(e);
-		auto &trans = view.get<sl::TransformComponent>(e);
-		auto [a, b] = view.get(e);
-	}
 }
 
 SandboxLayer::~SandboxLayer()
@@ -75,7 +66,7 @@ void SandboxLayer::OnDetach()
 
 void SandboxLayer::OnEvent(sl::Event &event)
 {
-	m_camera.OnEvent(event);
+
 }
 
 void SandboxLayer::BeginFrame()
@@ -85,7 +76,7 @@ void SandboxLayer::BeginFrame()
 
 void SandboxLayer::OnUpdate(float deltaTime)
 {
-	m_camera.Update(deltaTime);
+
 }
 
 void SandboxLayer::OnRender()
@@ -93,13 +84,15 @@ void SandboxLayer::OnRender()
 	sl::RenderCore::GetMainFrameBuffer()->Bind();
 	sl::RenderCore::Clear(SL_CLEAR_COLOR);
 
+	glm::mat4 viewProjection = sl::ECSWorld::GetMainCameraComponent().GetViewProjection();
+
 	for (int i = -1; i <= 1; ++i)
 	{
 		for (int j = -1; j <= 1; ++j)
 		{
 			glm::vec3 trans{ i, j, 0.0f };
 			glm::mat4 modelMat = glm::translate(glm::mat4{ 1.0f }, trans * 1.1f);
-			glm::mat4 mvp = m_camera.GetData().GetViewProjection() * modelMat;
+			glm::mat4 mvp = viewProjection * modelMat;
 
 			m_pShader->Bind();
 			m_pShader->UploadUniform("u_ModelViewProjection", std::move(mvp));
@@ -110,7 +103,7 @@ void SandboxLayer::OnRender()
 
 	glm::mat4 modelMat2 = glm::translate(glm::mat4{ 1.0f }, glm::vec3{ 0.0f, 0.0f, 0.25f });
 	modelMat2 = glm::scale(modelMat2, glm::vec3(4.0f, 2.0f, 0.0f));
-	glm::mat4 mvp2 = m_camera.GetData().GetViewProjection() * modelMat2;
+	glm::mat4 mvp2 = viewProjection * modelMat2;
 	m_pShader->Bind();
 	m_pShader->UploadUniform("u_ModelViewProjection", std::move(mvp2));
 	m_pTextureLogo->Bind(0);

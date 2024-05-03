@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Camera/CameraData.h"
+#include "Core/CameraData.h"
 
+#include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
@@ -14,10 +15,10 @@ class SceneViewportResizeEvent;
 class SceneViewportFocusEvent;
 class SceneViewportLostFocusEvent;
 
-class Camera final
+class CameraComponent final
 {
 public:
-	Camera() = default;
+	CameraComponent() = default;
 
 	void Update(float deltaTime);
 	void OnEvent(Event &event);
@@ -25,10 +26,13 @@ public:
 	CameraData &GetData() { return m_data; }
 	const CameraData &GetData() const { return m_data; }
 
+	const glm::mat4 &GetView() { return m_data.GetView(); }
+	const glm::mat4 &GetProjection() { return m_data.GetProjection(); }
+	const glm::mat4 &GetViewProjection() { return m_data.GetViewProjection(); }
+
 	void SetMaxMoveSpeed(float speed) { m_maxMoveSpeed = speed; }
 	float &GetMaxMoveSpeed() { return m_maxMoveSpeed; }
 	float GetMaxMoveSpeed() const { return m_maxMoveSpeed; }
-
 
 private:
 	void UpdateFPSCamera(float deltaTime);

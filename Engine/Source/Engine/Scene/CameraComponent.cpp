@@ -1,13 +1,9 @@
-#include "Camera.h"
+#include "CameraComponent.h"
 
 #include "Core/Log.h"
 #include "Event/MouseEvent.h"
 #include "Event/SceneViewportEvent.h"
 #include "Window/Input.h"
-#include "Window/Window.h"
-
-#include <glm/gtc/epsilon.hpp>
-#include <glm/trigonometric.hpp>
 
 #include <algorithm>
 #include <array>
@@ -26,7 +22,7 @@ static constexpr std::array<uint32_t, 6> CamraMoveKey =
 
 }
 
-void Camera::Update(float deltaTime)
+void CameraComponent::Update(float deltaTime)
 {
 	if (!m_isActive)
 	{
@@ -54,7 +50,7 @@ void Camera::Update(float deltaTime)
 	}
 }
 
-void Camera::UpdateFPSCamera(float deltaTime)
+void CameraComponent::UpdateFPSCamera(float deltaTime)
 {
 	// TODO: Camera mode controller logic should be move to ImGuiLayer.
 
@@ -74,7 +70,7 @@ void Camera::UpdateFPSCamera(float deltaTime)
 		offset *= m_rotateSpeed * deltaTime;
 		m_data.GetRotation() += glm::vec3{ offset, 0.0f };
 		m_data.GetRotation().x = std::clamp(m_data.GetRotation().x, glm::radians(-89.9f), glm::radians(89.9f));
-	
+
 		m_data.Dirty();
 	}
 
@@ -88,7 +84,7 @@ void Camera::UpdateFPSCamera(float deltaTime)
 			break;
 		}
 	}
-	
+
 	glm::vec3 finalMoveDir;
 	if (isMoving)
 	{
@@ -153,7 +149,7 @@ void Camera::UpdateFPSCamera(float deltaTime)
 	m_data.Dirty();
 }
 
-void Camera::UpdateEditorCamera(float deltaTime)
+void CameraComponent::UpdateEditorCamera(float deltaTime)
 {
 	// TODO
 	if (!m_isRotating)
@@ -164,16 +160,16 @@ void Camera::UpdateEditorCamera(float deltaTime)
 	}
 }
 
-void Camera::OnEvent(Event &event)
+void CameraComponent::OnEvent(Event &event)
 {
 	EventDispatcher dispatcher(event);
-	dispatcher.Dispatch<MouseScrollEvent>(BIND_EVENT_CALLBACK(Camera::OnMouseScroll));
-	dispatcher.Dispatch<SceneViewportResizeEvent>(BIND_EVENT_CALLBACK(Camera::OnSceneViewportResize));
-	dispatcher.Dispatch<SceneViewportFocusEvent>(BIND_EVENT_CALLBACK(Camera::OnSceneViewportFocus));
-	dispatcher.Dispatch<SceneViewportLostFocusEvent>(BIND_EVENT_CALLBACK(Camera::OnSceneViewportLostFocus));
+	dispatcher.Dispatch<MouseScrollEvent>(BIND_EVENT_CALLBACK(CameraComponent::OnMouseScroll));
+	dispatcher.Dispatch<SceneViewportResizeEvent>(BIND_EVENT_CALLBACK(CameraComponent::OnSceneViewportResize));
+	dispatcher.Dispatch<SceneViewportFocusEvent>(BIND_EVENT_CALLBACK(CameraComponent::OnSceneViewportFocus));
+	dispatcher.Dispatch<SceneViewportLostFocusEvent>(BIND_EVENT_CALLBACK(CameraComponent::OnSceneViewportLostFocus));
 }
 
-bool Camera::OnMouseScroll(MouseScrollEvent &event)
+bool CameraComponent::OnMouseScroll(MouseScrollEvent &event)
 {
 	m_moveSpeedMouseScrollMultiplier += event.GetOffsetY() * 0.2f;
 	m_moveSpeedMouseScrollMultiplier = std::clamp(m_moveSpeedMouseScrollMultiplier, 0.2f, 10.0f);
@@ -181,7 +177,7 @@ bool Camera::OnMouseScroll(MouseScrollEvent &event)
 	return true;
 }
 
-bool Camera::OnSceneViewportResize(SceneViewportResizeEvent &event)
+bool CameraComponent::OnSceneViewportResize(SceneViewportResizeEvent &event)
 {
 	float aspect = (float)event.GetWidth() / (float)event.GetHeight();
 	float fovDegrees = aspect * (45.0f / 16.0f * 9.0f);
@@ -194,16 +190,16 @@ bool Camera::OnSceneViewportResize(SceneViewportResizeEvent &event)
 	return true;
 }
 
-bool Camera::OnSceneViewportFocus(SceneViewportFocusEvent &event)
+bool CameraComponent::OnSceneViewportFocus(SceneViewportFocusEvent &event)
 {
 	m_isActive = true;
 	return true;
 }
 
-bool Camera::OnSceneViewportLostFocus(SceneViewportLostFocusEvent &event)
+bool CameraComponent::OnSceneViewportLostFocus(SceneViewportLostFocusEvent &event)
 {
 	m_isActive = false;
 	return true;
 }
 
-} // namespace sl
+} // nmaespace sl

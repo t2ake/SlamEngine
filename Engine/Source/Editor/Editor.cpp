@@ -1,18 +1,18 @@
 #include "Editor.h"
 
 #include "Core/Log.h"
-#include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
-#include "Event/SceneViewportEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
 #include "Layer/LayerStack.h"
 #include "RenderCore/RenderCore.h"
+#include "Scene/ECSWorld.h"
 #include "Window/Input.h"
 #include "Window/Window.h"
 
-#include "ImGuiLayer.h"
-#include "SandboxLayer.h"
+#include "Layer/ImGuiLayer.h"
+#include "Layer/SandboxLayer.h"
+#include "Layer/SceneLayer.h"
 
 Editor *Editor::pInstance = nullptr;
 
@@ -31,13 +31,20 @@ Editor::Editor(EditorInitor initor)
 	sl::RenderCore::SetMainFrameBuffer(sl::FrameBuffer::Create(1280, 720));
 	sl::RenderCore::SetDefaultState();
 
+	auto mainCameraEntity = sl::ECSWorld::CreateEntity();
+	mainCameraEntity.AddComponent<sl::CameraComponent>();
+	sl::ECSWorld::SetMainCameraEntity(mainCameraEntity);
+
 	m_pSandboxLayer = new SandboxLayer;
 	m_pImGuiLayer = new ImGuiLayer;
-	m_pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
+	m_pSceneLayer = new SceneLayer;
 	
 	m_pLayerStack = new sl::LayerStack;
 	m_pLayerStack->PushLayer(m_pSandboxLayer);
 	m_pLayerStack->PushLayer(m_pImGuiLayer);
+	m_pLayerStack->PushLayer(m_pSceneLayer);
+
+	m_pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 }
 
 Editor::~Editor()
@@ -56,9 +63,11 @@ void Editor::Run()
 
 		if (!m_isMinimized)
 		{
+			float deltaTime = m_timer.GetDeltatIme();
+
 			for (sl::Layer *pLayer : *m_pLayerStack)
 			{
-				pLayer->OnUpdate(m_timer.GetDeltatIme());
+				pLayer->OnUpdate(deltaTime);
 			}
 
 			Render();
