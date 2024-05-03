@@ -11,6 +11,7 @@
 #include "Window/Window.h"
 
 #include <imgui/imgui.h>
+#include <nameof/nameof.hpp>
 
 #include <format>
 
@@ -155,8 +156,7 @@ void ImGuiLayer::ShowInfo(float deltaTime)
 {
 	ImGui::Begin("Info");
 
-	// ImGui::Text(sl::RenderCore::GetBackend());
-	ImGui::Text("Backend: OpenGL");
+	ImGui::Text("Backend: %s", nameof::nameof_enum(sl::RenderCore::GetBackend()).data());
 	ImGui::Text(std::format("FPS: {}", 1000.0f / deltaTime).c_str());
 
 	ImGui::End();
