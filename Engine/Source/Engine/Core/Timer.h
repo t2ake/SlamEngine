@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Core.h"
+
 #include <chrono>
 
 namespace sl
@@ -13,7 +15,7 @@ public:
 	void Tick();
 
 	// Returns in milliseconds.
-	float GetDeltatIme() const { return m_deltaTime; }
+	SL_FORCEINLINE float GetDeltatIme() const { return m_deltaTime; }
 
 private:
 	std::chrono::steady_clock::time_point m_lastTimePoint;
