@@ -188,7 +188,7 @@ void ImGuiLayer::ShowSceneViewport()
 		{
 			if (crtFocus)
 			{
-				sl::SceneViewportFocusEvent event;
+				sl::SceneViewportGetFocusEvent event;
 				m_eventCallback(event);
 			}
 			else

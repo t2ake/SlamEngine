@@ -10,9 +10,9 @@
 #include "Window/Input.h"
 #include "Window/Window.h"
 
+#include "Layer/CameraControllerLayer.h"
 #include "Layer/ImGuiLayer.h"
 #include "Layer/SandboxLayer.h"
-#include "Layer/SceneLayer.h"
 
 Editor *Editor::pInstance = nullptr;
 
@@ -40,16 +40,15 @@ Editor::Editor(EditorInitor initor)
 		sl::ECSWorld::CreateEntity(std::format("Test entity {}", i).c_str());
 	}
 
+	m_pCameraControllerLayer = new CameraControllerLayer;
 	m_pSandboxLayer = new SandboxLayer;
 	m_pImGuiLayer = new ImGuiLayer;
-	m_pSceneLayer = new SceneLayer;
-	
+	m_pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
+
 	m_pLayerStack = new sl::LayerStack;
 	m_pLayerStack->PushLayer(m_pSandboxLayer);
+	m_pLayerStack->PushLayer(m_pCameraControllerLayer);
 	m_pLayerStack->PushLayer(m_pImGuiLayer);
-	m_pLayerStack->PushLayer(m_pSceneLayer);
-
-	m_pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 }
 
 Editor::~Editor()

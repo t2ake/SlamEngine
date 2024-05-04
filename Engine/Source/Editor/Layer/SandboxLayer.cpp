@@ -13,10 +13,10 @@ SandboxLayer::SandboxLayer()
 {
 	SetName("Sandbox Layer");
 
-	auto &camera = sl::ECSWorld::GetMainCameraComponent();
-	camera.GetData().SetPosition(glm::vec3{ 0.0f, 0.0f, 5.0f });
-	camera.GetData().SetRotationDegrees(glm::vec3{ 0.0f, -90.0f, 0.0f });
-
+	auto &transform = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::TransformComponent>();
+	transform.m_position = glm::vec3{ 0.0f, 0.0f, 5.0f };
+	transform.m_rotation = glm::vec3{ 0.0f, -90.0f, 0.0f };
+	
 	float vertices[] =
 	{
 		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
@@ -84,7 +84,7 @@ void SandboxLayer::OnRender()
 	sl::RenderCore::GetMainFrameBuffer()->Bind();
 	sl::RenderCore::Clear(SL_CLEAR_COLOR);
 
-	glm::mat4 viewProjection = sl::ECSWorld::GetMainCameraComponent().GetViewProjection();
+	glm::mat4 viewProjection = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>().GetViewProjection();
 
 	for (int i = -1; i <= 1; ++i)
 	{

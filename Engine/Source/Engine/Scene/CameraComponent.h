@@ -1,66 +1,54 @@
 #pragma once
 
-#include "Core/CameraData.h"
-
 #include <glm/mat4x4.hpp>
+#include <glm/trigonometric.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
 namespace sl
 {
 
-class Event;
-class MouseScrollEvent;
-class SceneViewportResizeEvent;
-class SceneViewportFocusEvent;
-class SceneViewportLostFocusEvent;
-
-class CameraComponent final
+struct CameraComponent
 {
-public:
-	CameraComponent() = default;
+	static constexpr glm::vec3 WorldUp = { 0.0f, 1.0f, 0.0f };
 
-	void Update(float deltaTime);
-	void OnEvent(Event &event);
+	const glm::mat4 &GetView();
+	const glm::mat4 &GetProjection();
+	const glm::mat4 &GetViewProjection();
+	void Recalculate();
 
-	CameraData &GetData() { return m_data; }
-	const CameraData &GetData() const { return m_data; }
+	// Camera datas
+	float m_aspect = 1920.0f / 1080.0f;
+	float m_fov = glm::radians(45.0f);
+	float m_nearPlane = 0.01f;
+	float m_farPlane = 10000.0f;
 
-	const glm::mat4 &GetView() { return m_data.GetView(); }
-	const glm::mat4 &GetProjection() { return m_data.GetProjection(); }
-	const glm::mat4 &GetViewProjection() { return m_data.GetViewProjection(); }
-
-	void SetMaxMoveSpeed(float speed) { m_maxMoveSpeed = speed; }
-	float &GetMaxMoveSpeed() { return m_maxMoveSpeed; }
-	float GetMaxMoveSpeed() const { return m_maxMoveSpeed; }
-
-private:
-	void UpdateFPSCamera(float deltaTime);
-	void UpdateEditorCamera(float deltaTime);
-
-	bool OnMouseScroll(MouseScrollEvent &event);
-	bool OnSceneViewportResize(SceneViewportResizeEvent &event);
-	bool OnSceneViewportFocus(SceneViewportFocusEvent &event);
-	bool OnSceneViewportLostFocus(SceneViewportLostFocusEvent &event);
-
-	CameraData m_data;
-
+	// Camera Controller datas
 	bool m_isActive = false;
 	bool m_isRotating = false;
 	bool m_isMoving = false;
 
 	float m_rotateSpeed = glm::radians(0.01f);
 	float m_maxMoveSpeed = 0.016f;
-	float m_acceleration = -0.016f / 32.0f;
+	float m_acceleration = 0.0f;
 	float m_moveSpeed = 0.0f;
 
 	float m_moveSpeedKeyShiftMultiplier = 1.0f;
 	float m_moveSpeedMouseScrollMultiplier = 1.0f;
 
-	glm::vec2 m_mouseLastPos{ 0.0f };
-	glm::vec3 m_lastMoveDir{ 0.0f };
+	glm::vec2 m_mouseLastPos{ 0.0f, 0.0f };
+	glm::vec3 m_lastMoveDir{ 0.0f, 0.0f, 0.0f };
 
-	// TODO: Postprocessing stuff
+	// Caches
+	bool m_isDirty = true;
+
+	glm::vec3 m_frontDir{ 0.0f, 0.0f, 1.0f };
+	glm::vec3 m_upDir{ 0.0f, 1.0f, 0.0f };
+	glm::vec3 m_rightDir{ 1.0f, 0.0f, 0.0f };
+	
+	glm::mat4 m_viewMat{ 1.0f };
+	glm::mat4 m_projectionMat{ 1.0f };
+	glm::mat4 m_viewProjectionMat{ 1.0f };
 };
 
 } // namespace sl

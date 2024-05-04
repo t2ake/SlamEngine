@@ -21,7 +21,7 @@ public:
 	static Entity CreateEntity(std::string name = "Default Name");
 
 	static void SetMainCameraEntity(Entity entity);
-	static CameraComponent &GetMainCameraComponent();
+	static Entity GetMainCameraEntity();
 
 private:
 	static entt::registry m_registry;
@@ -115,7 +115,7 @@ public:
 
 	operator bool() const { return entt::null != m_handle; }
 	bool operator==(const Entity &other) const { return other.m_handle == m_handle; }
-	bool operator!=(const Entity &other) const { return !operator==(other); }
+	bool operator!=(const Entity &other) const { return !(operator==(other)); }
 
 private:
 	entt::entity m_handle = entt::null;

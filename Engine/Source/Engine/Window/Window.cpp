@@ -178,7 +178,7 @@ void Window::SetCallbacks()
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
 		if (GLFW_TRUE == focused)
 		{
-			WindowFocusEvent event;
+			WindowGetFocusEvent event;
 			pWindow->DespatchEvent(event);
 		}
 		if(GLFW_FALSE == focused)

@@ -20,9 +20,9 @@ void ECSWorld::SetMainCameraEntity(Entity entity)
 	m_mainCameraEntity = entity;
 }
 
-CameraComponent &ECSWorld::GetMainCameraComponent()
+Entity ECSWorld::GetMainCameraEntity()
 {
-	return m_mainCameraEntity.GetComponent<CameraComponent>();
+	return m_mainCameraEntity;
 }
 
 } // namespace sl

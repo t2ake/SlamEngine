@@ -10,10 +10,10 @@ namespace sl
 enum class EventType
 {
 	None = 0,
-	WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowDrop,
+	WindowClose, WindowResize, WindowGetFocus, WindowLostFocus, WindowDrop,
 	KeyPress, KeyRelease, KeyType,
 	MouseButtonPress, MouseButtonRelease, MouseMove, MouseScroll,
-	SceneViewportResize, SceneViewportFocus, SceneViewportLostFocus,
+	SceneViewportResize, SceneViewportGetFocus, SceneViewportLostFocus,
 };
 
 #define SL_EVENT_CATEGORY_NONE           UINT8_C(0x00)

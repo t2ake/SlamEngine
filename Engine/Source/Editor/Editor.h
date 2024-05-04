@@ -11,15 +11,15 @@ class Event;
 class WindowCloseEvent;
 class WindowResizeEvent;
 class MouseButtonReleaseEvent;
-class SceneViewportFocusEvent;
+class SceneViewportGetFocusEvent;
 class Window;
 class LayerStack;
 
 }
 
-class SandboxLayer;
+class CameraControllerLayer;
 class ImGuiLayer;
-class SceneLayer;
+class SandboxLayer;
 
 struct EditorInitor
 {
@@ -66,8 +66,8 @@ private:
 	sl::Timer m_timer;
 	sl::Window *m_pWindow = nullptr;
 	sl::LayerStack *m_pLayerStack = nullptr;
-
-	SandboxLayer *m_pSandboxLayer = nullptr;
+	
+	CameraControllerLayer *m_pCameraControllerLayer = nullptr;
 	ImGuiLayer *m_pImGuiLayer = nullptr;
-	SceneLayer *m_pSceneLayer = nullptr;
+	SandboxLayer *m_pSandboxLayer = nullptr;
 };

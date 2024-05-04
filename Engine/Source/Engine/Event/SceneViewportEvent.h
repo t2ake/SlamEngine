@@ -41,12 +41,12 @@ private:
 	uint32_t m_width, m_height;
 };
 
-class SceneViewportFocusEvent : public Event
+class SceneViewportGetFocusEvent : public Event
 {
 public:
 	static EventType GetStaticEventType()
 	{
-		return EventType::SceneViewportFocus;
+		return EventType::SceneViewportGetFocus;
 	}
 
 	virtual EventType GetEventType() const override

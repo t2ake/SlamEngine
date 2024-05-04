@@ -65,12 +65,12 @@ public:
 	}
 };
 
-class WindowFocusEvent : public Event
+class WindowGetFocusEvent : public Event
 {
 public:
 	static EventType GetStaticEventType()
 	{
-		return EventType::WindowFocus;
+		return EventType::WindowGetFocus;
 	}
 
 	virtual EventType GetEventType() const override
