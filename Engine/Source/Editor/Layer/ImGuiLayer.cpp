@@ -210,6 +210,8 @@ void ImGuiLayer::ShowSceneViewport()
 			m_viewportSizeX = crtSizeX;
 			m_viewportSizeY = crtSizeY;
 		}
+
+		sl::RenderCore::GetMainFrameBuffer()->Resize(m_viewportSizeX, m_viewportSizeY);
 	}
 
 	uint32_t handle = sl::RenderCore::GetMainFrameBuffer()->GetColorAttachmentHandle();

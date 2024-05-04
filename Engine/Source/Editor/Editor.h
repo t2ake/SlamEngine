@@ -58,7 +58,6 @@ private:
 	void OnEvent(sl::Event &event);
 	bool OnWindowClose(sl::WindowCloseEvent &event);
 	bool OnWindowResize(sl::WindowResizeEvent &event);
-	bool OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event);
 
 	bool m_isRunning = true;
 	bool m_isMinimized = false;

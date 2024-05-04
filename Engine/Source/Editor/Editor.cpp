@@ -116,7 +116,6 @@ void Editor::OnEvent(sl::Event &event)
 	sl::EventDispatcher dispatcher{ event };
 	dispatcher.Dispatch<sl::WindowCloseEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowClose));
 	dispatcher.Dispatch<sl::WindowResizeEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowResize));
-	dispatcher.Dispatch<sl::MouseButtonReleaseEvent>(BIND_EVENT_CALLBACK(Editor::OnMouseButtonRelease));
 
 	// Iterate layers from end to begin / top to bottom.
 	for (auto it = m_pLayerStack->rend(); it != m_pLayerStack->rbegin(); ++it)
@@ -147,17 +146,6 @@ bool Editor::OnWindowResize(sl::WindowResizeEvent &event)
 	else
 	{
 		m_isMinimized = false;
-	}
-
-	return true;
-}
-
-bool Editor::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event)
-{
-	if (SL_MOUSE_BUTTON_1 == event.GetButton())
-	{
-		// This is to avoid flickering caused by framebuffer rebuilding every frame when scene viewport changing.
-		sl::RenderCore::GetMainFrameBuffer()->Resize(m_pImGuiLayer->GetSceneViewportSizeX(), m_pImGuiLayer->GetSceneViewportSizeY());
 	}
 
 	return true;

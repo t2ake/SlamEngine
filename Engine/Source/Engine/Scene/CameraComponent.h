@@ -11,6 +11,7 @@ namespace sl
 struct CameraComponent
 {
 	static constexpr glm::vec3 WorldUp = { 0.0f, 1.0f, 0.0f };
+	static constexpr float MaxSpeedToAcceleration = 1.0f / 250.0f;
 
 	const glm::mat4 &GetView();
 	const glm::mat4 &GetProjection();
@@ -28,7 +29,7 @@ struct CameraComponent
 	bool m_isRotating = false;
 	bool m_isMoving = false;
 
-	float m_rotateSpeed = glm::radians(0.01f);
+	float m_rotateSpeed = glm::radians(0.05f);
 	float m_maxMoveSpeed = 0.016f;
 	float m_acceleration = 0.0f;
 	float m_moveSpeed = 0.0f;

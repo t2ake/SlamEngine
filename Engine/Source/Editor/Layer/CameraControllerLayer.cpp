@@ -84,8 +84,7 @@ void CameraControllerLayer::UpdateMainCamera(float deltaTime)
 			glm::vec2 offset{ camera.m_mouseLastPos.y - crtPos.y, crtPos.x - camera.m_mouseLastPos.x };
 			camera.m_mouseLastPos = crtPos;
 
-			offset *= camera.m_rotateSpeed * deltaTime;
-			transform.m_rotation += glm::vec3{ offset, 0.0f };
+			transform.m_rotation += glm::vec3{ offset * camera.m_rotateSpeed, 0.0f };
 			transform.m_rotation.x = std::clamp(transform.m_rotation.x, glm::radians(-89.9f), glm::radians(89.9f));
 
 			camera.m_isDirty = true;
@@ -107,7 +106,7 @@ void CameraControllerLayer::UpdateMainCamera(float deltaTime)
 			if (!camera.m_isMoving)
 			{
 				// When the camera starts to move.
-				camera.m_acceleration = camera.m_maxMoveSpeed / 32.0f;
+				camera.m_acceleration = camera.m_maxMoveSpeed * sl::CameraComponent::MaxSpeedToAcceleration;
 				camera.m_isMoving = true;
 			}
 
@@ -133,7 +132,7 @@ void CameraControllerLayer::UpdateMainCamera(float deltaTime)
 			if (glm::any(glm::isnan(finalMoveDir)))
 			{
 				// When pressing buttons in the opposite direction at the same time.
-				finalMoveDir = glm::vec3{ 0.0f, 0.0f , 0.0f };
+				finalMoveDir = glm::vec3{ 0.0f, 0.0f, 0.0f };
 			}
 			camera.m_lastMoveDir = finalMoveDir;
 		}
@@ -142,13 +141,13 @@ void CameraControllerLayer::UpdateMainCamera(float deltaTime)
 			if (camera.m_isMoving)
 			{
 				// Stop moving
-				camera.m_acceleration = -camera.m_maxMoveSpeed / 32.0f;
+				camera.m_acceleration = -camera.m_maxMoveSpeed * sl::CameraComponent::MaxSpeedToAcceleration;
 				camera.m_isMoving = false;
 			}
 			finalMoveDir = camera.m_lastMoveDir;
 		}
 
-		camera.m_moveSpeed += camera.m_acceleration;
+		camera.m_moveSpeed += camera.m_acceleration * deltaTime;
 		camera.m_moveSpeed = std::clamp(camera.m_moveSpeed, 0.0f, camera.m_maxMoveSpeed);
 		camera.m_moveSpeedKeyShiftMultiplier = sl::Input::IsKeyPressed(SL_KEY_LEFT_SHIFT) ? 3.0f : 1.0f;
 		float finalMoveSpeed = camera.m_moveSpeed * camera.m_moveSpeedKeyShiftMultiplier * camera.m_moveSpeedMouseScrollMultiplier * deltaTime;
