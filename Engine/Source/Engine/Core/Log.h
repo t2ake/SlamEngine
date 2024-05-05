@@ -26,8 +26,8 @@ public:
 	static std::shared_ptr<spdlog::logger> GetEditorLogger() { return s_pEditorLogger; }
 
 private:
-	static std::shared_ptr<spdlog::logger> s_pEngineLogger;
-	static std::shared_ptr<spdlog::logger> s_pEditorLogger;
+	inline static std::shared_ptr<spdlog::logger> s_pEngineLogger;
+	inline static std::shared_ptr<spdlog::logger> s_pEditorLogger;
 };
 
 } // namespace sl

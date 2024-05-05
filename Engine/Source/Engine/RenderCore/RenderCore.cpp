@@ -5,10 +5,6 @@
 namespace sl
 {
 
-GraphicsBackend RenderCore::m_backend = GraphicsBackend::None;
-RenderAPI *RenderCore::m_pRenderAPI = nullptr;
-FrameBuffer *RenderCore::m_pMainFrameBuffer = nullptr;
-
 void RenderCore::Init(GraphicsBackend backend)
 {
 	SL_ENGINE_ASSERT(!m_pRenderAPI);

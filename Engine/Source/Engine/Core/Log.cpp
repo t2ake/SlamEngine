@@ -8,9 +8,6 @@
 namespace sl
 {
 
-std::shared_ptr<spdlog::logger> Log::s_pEngineLogger;
-std::shared_ptr<spdlog::logger> Log::s_pEditorLogger;
-
 void Log::Init()
 {
 	// Output to console.

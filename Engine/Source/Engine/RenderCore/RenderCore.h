@@ -28,10 +28,10 @@ public:
 	static void Submit(VertexArray *pVertexArray, Shader *pShader);
 
 private:
-	static GraphicsBackend m_backend;
-	static RenderAPI *m_pRenderAPI;
+	inline static GraphicsBackend m_backend = GraphicsBackend::None;
+	inline static RenderAPI *m_pRenderAPI = nullptr;
 
-	static FrameBuffer *m_pMainFrameBuffer;
+	inline static FrameBuffer *m_pMainFrameBuffer = nullptr;
 };
 
 } // namespace sl

@@ -7,8 +7,6 @@
 namespace sl
 {
 
-void *Input::m_pWindow = nullptr;
-
 bool Input::IsKeyPressed(int key)
 {
 	auto state = glfwGetKey(static_cast<GLFWwindow *>(m_pWindow), key);

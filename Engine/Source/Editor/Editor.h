@@ -32,10 +32,6 @@ struct EditorInitor
 class Editor final
 {
 public:
-	static Editor *Get() { return pInstance; }
-	static Editor *pInstance;
-
-public:
 	Editor() = delete;
 	Editor(const Editor &) = delete;
 	Editor &operator=(const Editor &) = delete;

@@ -18,7 +18,8 @@ public:
 	static glm::vec2 GetMousePos();
 
 	static void Init(void *pWindow) { m_pWindow = pWindow; }
-	static void *m_pWindow;
+
+	inline static void *m_pWindow = nullptr;
 };
 
 } // namespace sl

@@ -14,12 +14,8 @@
 #include "Layer/ImGuiLayer.h"
 #include "Layer/SandboxLayer.h"
 
-Editor *Editor::pInstance = nullptr;
-
 Editor::Editor(EditorInitor initor)
 {
-	pInstance = this;
-
 	sl::Log::Init();
 
 	sl::RenderCore::Init(initor.m_backend);
