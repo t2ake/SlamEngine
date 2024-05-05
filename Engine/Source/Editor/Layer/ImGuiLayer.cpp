@@ -15,8 +15,6 @@
 #include <imgui/imgui.h>
 #include <nameof/nameof.hpp>
 
-#include <format>
-
 namespace
 {
 
@@ -250,6 +248,82 @@ void ImGuiLayer::ShowDetails()
 		ImGui::Separator();
 	}
 
+	if (auto *pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>(); pCamera)
+	{
+		if (ImGui::TreeNodeEx("##Camera", DefaultCmoponentTreeNodeFlag, "Camera"))
+		{
+			constexpr const char *ProjectionTypeNames[] =
+			{
+				nameof::nameof_enum(sl::ProjectionType::Perspective).data(),
+				nameof::nameof_enum(sl::ProjectionType::Orthographic).data(),
+			};
+			ImGui::Text("Projection Type");
+			ImGui::SameLine();
+			const char *crtProjectionTypeName = ProjectionTypeNames[(size_t)pCamera->m_projectionType];
+			if (ImGui::BeginCombo("##Projection Type", crtProjectionTypeName, ImGuiComboFlags_WidthFitPreview))
+			{
+				for (size_t i = 0; i < 2; ++i)
+				{
+					bool isSelected = (ProjectionTypeNames[i] == crtProjectionTypeName);
+					if (ImGui::Selectable(ProjectionTypeNames[i], isSelected))
+					{
+						pCamera->m_projectionType = (sl::ProjectionType)i;
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			if (sl::ProjectionType::Perspective == pCamera->m_projectionType)
+			{
+				ImGui::Text("FOV ");
+				ImGui::SameLine();
+				float fovDegrees = glm::degrees(pCamera->m_fov);
+				if (ImGui::DragFloat("##FOV", &fovDegrees, 0.1f))
+				{
+					pCamera->m_fov = glm::radians(fovDegrees);
+					pCamera->m_isDirty = true;
+				}
+
+				ImGui::Text("Near");
+				ImGui::SameLine();
+				if (ImGui::DragFloat("##Near", &(pCamera->m_nearPlane), 0.1f))
+				{
+					pCamera->m_isDirty = true;
+				}
+
+				ImGui::Text("Far ");
+				ImGui::SameLine();
+				if (ImGui::DragFloat("##Far", &(pCamera->m_farPlane), 0.1f))
+				{
+					pCamera->m_isDirty = true;
+				}
+			}
+			else if (sl::ProjectionType::Orthographic == pCamera->m_projectionType)
+			{
+				ImGui::Text("Size");
+				ImGui::SameLine();
+				if (ImGui::DragFloat("##Size", &(pCamera->m_orthoSize), 0.1f))
+				{
+					pCamera->m_isDirty = true;
+				}
+
+				ImGui::Text("Near");
+				ImGui::SameLine();
+				if (ImGui::DragFloat("##Near", &(pCamera->m_orthoNearClip), 0.1f))
+				{
+					pCamera->m_isDirty = true;
+				}
+
+				ImGui::Text("Far ");
+				ImGui::SameLine();
+				if (ImGui::DragFloat("##Far", &(pCamera->m_orthoFarClip), 0.1f))
+				{
+					pCamera->m_isDirty = true;
+				}
+			}
+		}
+	}
+
 	ImGui::End();
 }
 
@@ -291,9 +365,9 @@ void ImGuiLayer::ShowSceneViewport()
 
 			m_viewportSizeX = crtSizeX;
 			m_viewportSizeY = crtSizeY;
-		}
 
-		sl::RenderCore::GetMainFrameBuffer()->Resize(m_viewportSizeX, m_viewportSizeY);
+			sl::RenderCore::GetMainFrameBuffer()->Resize(m_viewportSizeX, m_viewportSizeY);
+		}
 	}
 
 	uint32_t handle = sl::RenderCore::GetMainFrameBuffer()->GetColorAttachmentHandle();

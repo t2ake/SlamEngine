@@ -186,11 +186,10 @@ bool CameraControllerLayer::OnSceneViewportResize(sl::SceneViewportResizeEvent &
 	auto &camera = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>();
 
 	float aspect = (float)event.GetWidth() / (float)event.GetHeight();
-	float fovDegrees = aspect * (45.0f / 16.0f * 9.0f);
-	fovDegrees = std::clamp(fovDegrees, 1.0f, 120.0f);
+	float fovMultiplier = aspect * 9.0f / 16.0f;
 
 	camera.m_aspect = aspect;
-	camera.m_fov = glm::radians(fovDegrees);
+	camera.m_fovMultiplier = fovMultiplier;
 	camera.m_isDirty = true;
 
 	return true;

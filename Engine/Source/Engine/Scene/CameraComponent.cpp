@@ -46,7 +46,20 @@ void CameraComponent::Recalculate()
 
 	// TODO: Orthogonal camera
 	m_viewMat = glm::lookAt(position, position + m_frontDir, m_upDir);
-	m_projectionMat = glm::perspective(m_fov, m_aspect, m_nearPlane, m_farPlane);
+
+	if (ProjectionType::Perspective == m_projectionType)
+	{
+		m_projectionMat = glm::perspective(m_fov * m_fovMultiplier, m_aspect, m_nearPlane, m_farPlane);
+	}
+	else
+	{
+		float orthoLeft = -m_orthoSize * m_aspect * 0.5f;
+		float orthoRight = m_orthoSize * m_aspect * 0.5f;
+		float orthoBottom = -m_orthoSize * 0.5f;
+		float orthoTop = m_orthoSize * 0.5f;
+		m_projectionMat = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, m_orthoNearClip, m_orthoFarClip);
+	}
+
 	m_viewProjectionMat = m_projectionMat * m_viewMat;
 
 	m_isDirty = false;

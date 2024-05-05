@@ -8,6 +8,12 @@
 namespace sl
 {
 
+enum class ProjectionType : uint8_t
+{
+	Perspective = 0,
+	Orthographic = 1,
+};
+
 struct CameraComponent
 {
 	static constexpr glm::vec3 WorldUp = { 0.0f, 1.0f, 0.0f };
@@ -18,9 +24,18 @@ struct CameraComponent
 	const glm::mat4 &GetViewProjection();
 	void Recalculate();
 
+	ProjectionType m_projectionType = ProjectionType::Perspective;
+
+	// Orthographic datas
+	float m_orthoSize = 10.0f;
+	float m_orthoNearClip = -10.0f;
+	float m_orthoFarClip = 10.0f;
+
 	// Camera datas
 	float m_aspect = 1920.0f / 1080.0f;
+	// Stores in radians
 	float m_fov = glm::radians(45.0f);
+	float m_fovMultiplier = 1.0f;
 	float m_nearPlane = 0.01f;
 	float m_farPlane = 10000.0f;
 
