@@ -122,5 +122,3 @@ private:
 };
 
 } // namespace sl
-
-static_assert(std::is_same_v<entt::id_type, uint32_t>);

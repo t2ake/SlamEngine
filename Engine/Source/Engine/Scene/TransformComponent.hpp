@@ -12,6 +12,7 @@ struct TransformComponent
 		m_position(position), m_rotation(rotation), m_scale(scale) {}
 
 	glm::vec3 m_position{ 0.0f, 0.0f , 0.0f };
+	// Stores in radians
 	glm::vec3 m_rotation{ 0.0f, 0.0f , 0.0f };
 	glm::vec3 m_scale{ 1.0f, 1.0f , 1.0f };
 };

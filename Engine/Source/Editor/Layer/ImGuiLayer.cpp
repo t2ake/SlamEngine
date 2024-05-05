@@ -10,10 +10,22 @@
 #include "Window/Input.h"
 #include "Window/Window.h"
 
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/vec3.hpp>
 #include <imgui/imgui.h>
 #include <nameof/nameof.hpp>
 
 #include <format>
+
+namespace
+{
+
+SL_FORCEINLINE static glm::vec3 ModVec3(const glm::vec3 &v, float m)
+{
+	return glm::vec3{ std::fmod(v.x, m), std::fmod(v.y, m) , std::fmod(v.z, m) };
+}
+
+}
 
 ImGuiLayer::ImGuiLayer()
 {
@@ -125,19 +137,25 @@ void ImGuiLayer::ShowEntityList()
 	{
 		auto &tag = view.get<sl::TagComponent>(entity);
 
-		ImGuiTreeNodeFlags flags = ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0);
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanFullWidth;
+		flags |= ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0);
 		// TODO: hierarchy
 		flags |= ImGuiTreeNodeFlags_Leaf;
 
-		bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags, tag.m_name.c_str());
-		if (ImGui::IsItemClicked())
+		if (ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags, tag.m_name.c_str()))
 		{
-			m_selectedEntity = entity;
-		}
-		if (opened)
-		{
+			if (ImGui::IsItemClicked())
+			{
+				m_selectedEntity = entity;
+			}
+
 			ImGui::TreePop();
 		}
+	}
+
+	if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+	{
+		m_selectedEntity = sl::Entity{};
 	}
 
 	ImGui::End();
@@ -157,7 +175,7 @@ void ImGuiLayer::ShowInfo(float deltaTime)
 	ImGui::Begin("Info");
 
 	ImGui::Text("Backend: %s", nameof::nameof_enum(sl::RenderCore::GetBackend()).data());
-	ImGui::Text(std::format("FPS: {}", 1000.0f / deltaTime).c_str());
+	ImGui::Text("FPS: %f", 1000.0f / deltaTime);
 
 	ImGui::End();
 }
@@ -166,7 +184,71 @@ void ImGuiLayer::ShowDetails()
 {
 	ImGui::Begin("Details");
 
+	if (!m_selectedEntity)
+	{
+		ImGui::End();
+		return;
+	}
 
+	constexpr ImGuiTreeNodeFlags DefaultCmoponentTreeNodeFlag =
+		ImGuiTreeNodeFlags_DefaultOpen |
+		ImGuiTreeNodeFlags_OpenOnDoubleClick |
+		ImGuiTreeNodeFlags_OpenOnArrow |
+		ImGuiTreeNodeFlags_CollapsingHeader;
+
+	if (auto *pTag = m_selectedEntity.TryGetComponent<sl::TagComponent>(); pTag)
+	{
+		if (ImGui::TreeNodeEx("##Tag", DefaultCmoponentTreeNodeFlag, "Tag"))
+		{
+			std::string &name = pTag->m_name;
+
+			constexpr size_t BufferSize = 32;
+			SL_EDITOR_ASSERT(BufferSize >= name.size());
+			char buffer[BufferSize] = { 0 };
+			memcpy(buffer, name.c_str(), name.size());
+
+			ImGui::Text("Name    ");
+			ImGui::SameLine();
+			if (ImGui::InputText("##Name", buffer, BufferSize))
+			{
+				name = std::string{ buffer };
+				if (name.empty())
+				{
+					name = "Default Name";
+				}
+			}
+		}
+
+		ImGui::Separator();
+	}
+
+	if (auto *pTransform = m_selectedEntity.TryGetComponent<sl::TransformComponent>(); pTransform)
+	{
+		if (ImGui::TreeNodeEx("##Transform", DefaultCmoponentTreeNodeFlag, "Transform"))
+		{
+			glm::vec3 &position = pTransform->m_position;
+			glm::vec3 &rotation = pTransform->m_rotation;
+			glm::vec3 &scale = pTransform->m_scale;
+
+			ImGui::Text("Position");
+			ImGui::SameLine();
+			ImGui::DragFloat3("##Position", glm::value_ptr(position), 0.1f);
+
+			glm::vec3 ratationDegree = glm::degrees(rotation);
+			ratationDegree = ModVec3(ratationDegree, 360.0f);
+
+			ImGui::Text("Rotation");
+			ImGui::SameLine();
+			ImGui::DragFloat3("##Rotation", glm::value_ptr(ratationDegree), 0.1f);
+			rotation = glm::radians(std::move(ratationDegree));
+
+			ImGui::Text("Scale   ");
+			ImGui::SameLine();
+			ImGui::DragFloat3("##Scale", glm::value_ptr(scale), 0.1f);
+		}
+
+		ImGui::Separator();
+	}
 
 	ImGui::End();
 }
