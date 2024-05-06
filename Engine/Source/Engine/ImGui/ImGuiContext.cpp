@@ -7,6 +7,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include <implot/implot.h>
+
 namespace sl
 {
 
@@ -16,6 +18,7 @@ void ImGuiContext::Init(void *pNativeWindow)
 	SL_ENGINE_INFO("Init ImGui");
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
+	ImPlot::CreateContext();
 
 	// 2. Set flags
 	ImGuiIO &io = ImGui::GetIO();
@@ -42,6 +45,7 @@ void ImGuiContext::Shutdown()
 {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
+	ImPlot::DestroyContext();
 	ImGui::DestroyContext();
 }
 

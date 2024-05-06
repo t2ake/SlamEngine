@@ -9,7 +9,10 @@
 
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui/imgui.h>
+#include <implot/implot.h>
 #include <nameof/nameof.hpp>
+
+#include <format>
 
 namespace
 {
@@ -20,6 +23,38 @@ SL_FORCEINLINE static glm::vec3 ModVec3(const glm::vec3 &v, float m)
 
 	return glm::vec3{ std::fmod(v.x, m), std::fmod(v.y, m) , std::fmod(v.z, m) };
 }
+
+// From ImPlot
+struct ScrollingBuffer
+{
+	int MaxSize;
+	int Offset;
+	ImVector<ImVec2> Data;
+	ScrollingBuffer(int max_size = 2000)
+	{
+		MaxSize = max_size;
+		Offset = 0;
+		Data.reserve(MaxSize);
+	}
+	void AddPoint(float x, float y)
+	{
+		if (Data.size() < MaxSize)
+			Data.push_back(ImVec2(x, y));
+		else
+		{
+			Data[Offset] = ImVec2(x, y);
+			Offset = (Offset + 1) % MaxSize;
+		}
+	}
+	void Erase()
+	{
+		if (Data.size() > 0)
+		{
+			Data.shrink(0);
+			Offset = 0;
+		}
+	}
+};
 
 }
 
@@ -170,10 +205,62 @@ void ImGuiLayer::ShowLog()
 
 void ImGuiLayer::ShowInfo(float deltaTime)
 {
-	ImGui::Begin("Info");
+	bool open = true;
+	ImGui::Begin("Info", &open, ImGuiWindowFlags_NoScrollbar);
 
-	ImGui::Text("Backend: %s", nameof::nameof_enum(sl::RenderCore::GetBackend()).data());
-	ImGui::Text("%.2f ms/frame (%.2f fps)", deltaTime, 1000.0f / deltaTime);
+	// Infos
+	{
+		ImGui::Text("Backend: %s", nameof::nameof_enum(sl::RenderCore::GetBackend()).data());
+		ImGui::Separator();
+	}
+
+	// FPS plot
+	{
+		static float s_sumTime = 0.0f;
+		static ScrollingBuffer s_coastBuffer;
+		static ScrollingBuffer s_fpsBuffer;
+
+		// Stores in millisecond.
+		constexpr float History = 1000.0f;
+		constexpr float Delay = 1000.0f;
+
+		s_sumTime += deltaTime;
+		if (s_sumTime > Delay)
+		{
+			// Waiting for programme to stabilise.
+			s_coastBuffer.AddPoint(s_sumTime, 10.0f * deltaTime);
+			s_fpsBuffer.AddPoint(s_sumTime, 1000.0f / deltaTime);
+		}
+
+		constexpr ImPlotFlags PlotFlag = ImPlotFlags_CanvasOnly;
+		constexpr ImPlotAxisFlags AxisFlagX = ImPlotAxisFlags_NoTickLabels;
+		constexpr ImPlotAxisFlags AxisFlagY = ImPlotAxisFlags_AutoFit;
+		if (ImPlot::BeginPlot("Monitor", ImVec2(-1.0f, 150.0f), PlotFlag))
+		{
+			ImPlot::SetupAxes(nullptr, nullptr, AxisFlagX, AxisFlagY);
+			ImPlot::SetupAxisLimits(ImAxis_X1, s_sumTime - History, s_sumTime, ImGuiCond_Always);
+			ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
+			if (s_sumTime > Delay)
+			{
+				ImPlot::PlotShaded("Coast in ms",
+					&s_coastBuffer.Data[0].x,
+					&s_coastBuffer.Data[0].y,
+					s_coastBuffer.Data.size(),
+					0, 0,
+					s_coastBuffer.Offset,
+					2 * sizeof(float));
+
+				ImPlot::PlotLine("FPS",
+					&s_fpsBuffer.Data[0].x,
+					&s_fpsBuffer.Data[0].y,
+					s_fpsBuffer.Data.size(), 
+					0,
+					s_fpsBuffer.Offset,
+					2 * sizeof(float));
+			}
+			ImPlot::EndPlot();
+		}
+	}
 
 	ImGui::End();
 }

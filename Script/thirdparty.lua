@@ -64,3 +64,23 @@ project("imgui")
 		path.join(ImGuiPath, "*.cpp"),
 	}
 	
+ImPlotPath = path.join(ThirdPartyPath, "implot")
+print("[ implot ] path: "..ImPlotPath)
+project("implot")
+	kind("StaticLib")
+	language("C++")
+	cppdialect("C++20")
+	location(path.join(ThirdPartyBuildPath, "implot"))
+	
+	includedirs
+	{
+		ImPlotPath,
+		ImGuiPath,
+	}
+	
+	files
+	{
+		path.join(ImPlotPath, "*.h"),
+		path.join(ImPlotPath, "*.cpp"),
+	}
+	

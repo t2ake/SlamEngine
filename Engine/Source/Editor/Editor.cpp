@@ -45,6 +45,8 @@ Editor::Editor(EditorInitor initor)
 	m_pLayerStack->PushLayer(m_pSandboxLayer);
 	m_pLayerStack->PushLayer(m_pCameraControllerLayer);
 	m_pLayerStack->PushLayer(m_pImGuiLayer);
+
+	m_timer.Tick();
 }
 
 Editor::~Editor()

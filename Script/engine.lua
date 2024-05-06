@@ -54,10 +54,11 @@ project("Slam")
 			path.join(ThirdPartyPath, "glfw/build/src/Debug"),
 			path.join(ThirdPartyPath, "build/glad/bin/Debug"),
 			path.join(ThirdPartyPath, "build/imgui/bin/Debug"),
+			path.join(ThirdPartyPath, "build/implot/bin/Debug"),
 		}
 		links
 		{
-			"glfw3", "glad", "imgui",
+			"glfw3", "glad", "imgui", "implot",
 		}
 	filter { "configurations:Release" }
 		libdirs
@@ -65,10 +66,11 @@ project("Slam")
 			path.join(ThirdPartyPath, "glfw/build/src/Release"),
 			path.join(ThirdPartyPath, "build/glad/bin/Release"),
 			path.join(ThirdPartyPath, "build/imgui/bin/Release"),
+			path.join(ThirdPartyPath, "build/implot/bin/Release"),
 		}
 		links
 		{
-			"glfw3", "glad", "imgui",
+			"glfw3", "glad", "imgui", "implot",
 		}
 	filter { "configurations:Final" }
 		libdirs
@@ -76,10 +78,11 @@ project("Slam")
 			path.join(ThirdPartyPath, "glfw/build/src/Release"),
 			path.join(ThirdPartyPath, "build/glad/bin/Release"),
 			path.join(ThirdPartyPath, "build/imgui/bin/Release"),
+			path.join(ThirdPartyPath, "build/implot/bin/Release"),
 		}
 		links
 		{
-			"glfw3", "glad", "imgui",
+			"glfw3", "glad", "imgui", "implot",
 		}
 	filter {}
 	
