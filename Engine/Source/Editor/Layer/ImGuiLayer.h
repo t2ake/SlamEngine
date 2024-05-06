@@ -36,6 +36,7 @@ private:
 	void ShowSceneViewport();
 
 	// Dock space
+	// ImGuiDockNodeFlags m_dockSpaceFlag = ImGuiDockNodeFlags_None
 	int m_dockSpaceFlag = 0;
 	
 	// Menubar

@@ -7,7 +7,6 @@
 #include "Scene/ECSWorld.h"
 #include "Window/Input.h"
 
-#include <glm/common.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui/imgui.h>
 #include <nameof/nameof.hpp>
@@ -17,7 +16,7 @@ namespace
 
 SL_FORCEINLINE static glm::vec3 ModVec3(const glm::vec3 &v, float m)
 {
-	// Why the second argument to glm::modf must accept a left-valued reference?
+	// Why the second argument of glm::modf must accept a non const left value reference?
 
 	return glm::vec3{ std::fmod(v.x, m), std::fmod(v.y, m) , std::fmod(v.z, m) };
 }
@@ -53,11 +52,13 @@ void ImGuiLayer::OnEvent(sl::Event &event)
 
 void ImGuiLayer::BeginFrame()
 {
-	sl::ImGuiContext::NewFrame();
+
 }
 
 void ImGuiLayer::OnUpdate(float deltaTime)
 {
+	sl::ImGuiContext::NewFrame();
+
 	ShowDebugPanels();
 
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), (ImGuiDockNodeFlags)m_dockSpaceFlag);
@@ -205,6 +206,7 @@ void ImGuiLayer::ShowDetails()
 			char buffer[BufferSize] = { 0 };
 			memcpy(buffer, name.c_str(), name.size());
 
+			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Name    ");
 			ImGui::SameLine();
 			if (ImGui::InputText("##Name", buffer, BufferSize))
@@ -229,6 +231,7 @@ void ImGuiLayer::ShowDetails()
 
 			bool cameraMayBeDirty = false;
 
+			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Position");
 			ImGui::SameLine();
 			if (ImGui::DragFloat3("##Position", glm::value_ptr(position), 0.1f))
@@ -236,6 +239,7 @@ void ImGuiLayer::ShowDetails()
 				cameraMayBeDirty = true;
 			}
 
+			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Rotation");
 			ImGui::SameLine();
 			glm::vec3 ratationDegree = ModVec3(glm::degrees(rotation), 360.0f);
@@ -245,6 +249,7 @@ void ImGuiLayer::ShowDetails()
 				cameraMayBeDirty = true;
 			}
 
+			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Scale   ");
 			ImGui::SameLine();
 			ImGui::DragFloat3("##Scale", glm::value_ptr(scale), 0.1f);
@@ -267,9 +272,10 @@ void ImGuiLayer::ShowDetails()
 				nameof::nameof_enum(sl::ProjectionType::Orthographic).data(),
 			};
 
+			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Projection Type");
 			ImGui::SameLine();
-			const char *crtProjectionTypeName = ProjectionTypeNames[(size_t)pCamera->m_projectionType];
+			const char *crtProjectionTypeName = ProjectionTypeNames[static_cast<size_t>(pCamera->m_projectionType)];
 			if (ImGui::BeginCombo("##Projection Type", crtProjectionTypeName, ImGuiComboFlags_WidthFitPreview))
 			{
 				for (size_t i = 0; i < 2; ++i)
@@ -277,57 +283,64 @@ void ImGuiLayer::ShowDetails()
 					bool isSelected = (ProjectionTypeNames[i] == crtProjectionTypeName);
 					if (ImGui::Selectable(ProjectionTypeNames[i], isSelected))
 					{
-						pCamera->m_projectionType = (sl::ProjectionType)i;
+						pCamera->m_projectionType = static_cast<sl::ProjectionType>(i);
 						pCamera->m_isDirty = true;
 					}
 				}
 				ImGui::EndCombo();
 			}
+			ImGui::Spacing();
 
 			if (sl::ProjectionType::Perspective == pCamera->m_projectionType)
 			{
-				ImGui::Text("FOV ");
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("FOV     ");
 				ImGui::SameLine();
 				float fovDegrees = glm::degrees(pCamera->m_fov);
-				if (ImGui::DragFloat("##FOV", &fovDegrees, 0.1f))
+				if (ImGui::DragFloat("##FOV", &fovDegrees, 0.1f, 1.0f, 120.0f))
 				{
 					pCamera->m_fov = glm::radians(fovDegrees);
 					pCamera->m_isDirty = true;
 				}
 
-				ImGui::Text("Near");
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Near    ");
 				ImGui::SameLine();
-				if (ImGui::DragFloat("##Near", &(pCamera->m_nearPlane), 0.1f))
+				if (ImGui::DragFloat("##Near", &(pCamera->m_nearPlane), 0.1f, 0.001f, 100000.0f))
 				{
 					pCamera->m_isDirty = true;
 				}
 
-				ImGui::Text("Far ");
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Far     ");
 				ImGui::SameLine();
-				if (ImGui::DragFloat("##Far", &(pCamera->m_farPlane), 0.1f))
+				if (ImGui::DragFloat("##Far", &(pCamera->m_farPlane), 0.1f, 0.001f, 100000.0f))
 				{
 					pCamera->m_isDirty = true;
 				}
 			}
 			else if (sl::ProjectionType::Orthographic == pCamera->m_projectionType)
 			{
-				ImGui::Text("Size");
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Size    ");
 				ImGui::SameLine();
-				if (ImGui::DragFloat("##Size", &(pCamera->m_orthoSize), 0.1f))
+				if (ImGui::DragFloat("##Size", &(pCamera->m_orthoSize), 0.1f, 0.001f, 100000.0f))
 				{
 					pCamera->m_isDirty = true;
 				}
 
-				ImGui::Text("Near");
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Near    ");
 				ImGui::SameLine();
-				if (ImGui::DragFloat("##Near", &(pCamera->m_orthoNearClip), 0.1f))
+				if (ImGui::DragFloat("##Near", &(pCamera->m_orthoNearClip), 0.1f), -100000.0f, 100000.0f)
 				{
 					pCamera->m_isDirty = true;
 				}
 
-				ImGui::Text("Far ");
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Far     ");
 				ImGui::SameLine();
-				if (ImGui::DragFloat("##Far", &(pCamera->m_orthoFarClip), 0.1f))
+				if (ImGui::DragFloat("##Far", &(pCamera->m_orthoFarClip), 0.1f), -100000.0f, 100000.0f)
 				{
 					pCamera->m_isDirty = true;
 				}
@@ -383,7 +396,7 @@ void ImGuiLayer::ShowSceneViewport()
 	}
 
 	uint32_t handle = sl::RenderCore::GetMainFrameBuffer()->GetColorAttachmentHandle();
-	ImGui::Image((void *)(uint64_t)handle, ImVec2{ (float)m_viewportSizeX, (float)m_viewportSizeY }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
+	ImGui::Image((void *)(uint64_t)handle, ImVec2{ (float)m_viewportSizeX, (float)m_viewportSizeY }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 
 	ImGui::End();
 	ImGui::PopStyleVar();
