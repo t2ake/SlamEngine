@@ -1,17 +1,14 @@
 #include "ImGuiLayer.h"
 
 #include "Core/Log.h"
-#include "Event/MouseEvent.h"
 #include "Event/SceneViewportEvent.h"
 #include "ImGui/ImGuiContext.h"
 #include "RenderCore/RenderCore.h"
-#include "RenderCore/RenderCore.h"
 #include "Scene/ECSWorld.h"
 #include "Window/Input.h"
-#include "Window/Window.h"
 
+#include <glm/common.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <glm/vec3.hpp>
 #include <imgui/imgui.h>
 #include <nameof/nameof.hpp>
 
@@ -20,6 +17,8 @@ namespace
 
 SL_FORCEINLINE static glm::vec3 ModVec3(const glm::vec3 &v, float m)
 {
+	// Why the second argument to glm::modf must accept a left-valued reference?
+
 	return glm::vec3{ std::fmod(v.x, m), std::fmod(v.y, m) , std::fmod(v.z, m) };
 }
 
@@ -59,7 +58,7 @@ void ImGuiLayer::BeginFrame()
 
 void ImGuiLayer::OnUpdate(float deltaTime)
 {
-	//ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
+	ShowDebugPanels();
 
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), (ImGuiDockNodeFlags)m_dockSpaceFlag);
 
@@ -68,10 +67,7 @@ void ImGuiLayer::OnUpdate(float deltaTime)
 	ShowLog();
 	ShowInfo(deltaTime);
 	ShowDetails();
-
 	ShowSceneViewport();
-
-	//ImGui::PopStyleVar();
 }
 
 void ImGuiLayer::OnRender()
@@ -84,11 +80,24 @@ void ImGuiLayer::EndFrame()
 
 }
 
+void ImGuiLayer::ShowDebugPanels()
+{
+	if (m_debugImGuiDemo)
+	{
+		ImGui::ShowDemoWindow(&m_debugImGuiDemo);
+	}
+	if (m_debugIDStack)
+	{
+		ImGui::ShowIDStackToolWindow(&m_debugIDStack);
+	}
+	if (m_debugItemPicker)
+	{
+		ImGui::DebugStartItemPicker();
+	}
+}
+
 void ImGuiLayer::ShowMenuBar()
 {
-	static bool ShowImGuiDemo = false;
-	static bool ItemPicker = false;
-
 	ImGui::BeginMainMenuBar();
 	if (ImGui::BeginMenu("Settings"))
 	{
@@ -104,26 +113,12 @@ void ImGuiLayer::ShowMenuBar()
 	}
 	if (ImGui::BeginMenu("Debug"))
 	{
-		if (ImGui::MenuItem("Show ImGui Demo", "", ShowImGuiDemo))
-		{
-			ShowImGuiDemo = !ShowImGuiDemo;
-		}
-		if (ImGui::MenuItem("Item Picker", "", ItemPicker))
-		{
-			ItemPicker = !ItemPicker;
-		}
+		ImGui::MenuItem("Show ImGui Demo", "", &m_debugImGuiDemo);
+		ImGui::MenuItem("Item Picker", "", &m_debugItemPicker);
+		ImGui::MenuItem("ID Stack", "", &m_debugIDStack);
 		ImGui::EndMenu();
 	}
 	ImGui::EndMainMenuBar();
-
-	if (ShowImGuiDemo)
-	{
-		ImGui::ShowDemoWindow();
-	}
-	if (ItemPicker)
-	{
-		ImGui::DebugStartItemPicker();
-	}
 }
 
 void ImGuiLayer::ShowEntityList()
@@ -133,20 +128,24 @@ void ImGuiLayer::ShowEntityList()
 	auto view = sl::ECSWorld::GetRegistry().view<sl::TagComponent>();
 	for (auto entity : view)
 	{
+		ImGuiTreeNodeFlags flags =
+			ImGuiTreeNodeFlags_OpenOnDoubleClick |
+			ImGuiTreeNodeFlags_OpenOnArrow |
+			ImGuiTreeNodeFlags_FramePadding |
+			ImGuiTreeNodeFlags_SpanFullWidth |
+			ImGuiTreeNodeFlags_Leaf; // TODO: hierarchy
+		if (m_selectedEntity == entity)
+		{
+			flags |= ImGuiTreeNodeFlags_Selected;
+		}
+
 		auto &tag = view.get<sl::TagComponent>(entity);
-
-		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanFullWidth;
-		flags |= ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0);
-		// TODO: hierarchy
-		flags |= ImGuiTreeNodeFlags_Leaf;
-
 		if (ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags, tag.m_name.c_str()))
 		{
 			if (ImGui::IsItemClicked())
 			{
 				m_selectedEntity = entity;
 			}
-
 			ImGui::TreePop();
 		}
 	}
@@ -163,7 +162,7 @@ void ImGuiLayer::ShowLog()
 {
 	ImGui::Begin("Log");
 
-
+	ImGui::Text("TODO");
 
 	ImGui::End();
 }
@@ -173,7 +172,7 @@ void ImGuiLayer::ShowInfo(float deltaTime)
 	ImGui::Begin("Info");
 
 	ImGui::Text("Backend: %s", nameof::nameof_enum(sl::RenderCore::GetBackend()).data());
-	ImGui::Text("FPS: %f", 1000.0f / deltaTime);
+	ImGui::Text("%.2f ms/frame (%.2f fps)", deltaTime, 1000.0f / deltaTime);
 
 	ImGui::End();
 }
@@ -188,7 +187,7 @@ void ImGuiLayer::ShowDetails()
 		return;
 	}
 
-	constexpr ImGuiTreeNodeFlags DefaultCmoponentTreeNodeFlag =
+	constexpr ImGuiTreeNodeFlags DefaultFlags =
 		ImGuiTreeNodeFlags_DefaultOpen |
 		ImGuiTreeNodeFlags_OpenOnDoubleClick |
 		ImGuiTreeNodeFlags_OpenOnArrow |
@@ -196,12 +195,13 @@ void ImGuiLayer::ShowDetails()
 
 	if (auto *pTag = m_selectedEntity.TryGetComponent<sl::TagComponent>(); pTag)
 	{
-		if (ImGui::TreeNodeEx("##Tag", DefaultCmoponentTreeNodeFlag, "Tag"))
+		if (ImGui::TreeNodeEx("##Tag", DefaultFlags, "Tag"))
 		{
 			std::string &name = pTag->m_name;
 
 			constexpr size_t BufferSize = 32;
 			SL_EDITOR_ASSERT(BufferSize >= name.size());
+
 			char buffer[BufferSize] = { 0 };
 			memcpy(buffer, name.c_str(), name.size());
 
@@ -216,47 +216,57 @@ void ImGuiLayer::ShowDetails()
 				}
 			}
 		}
-
 		ImGui::Separator();
 	}
 
 	if (auto *pTransform = m_selectedEntity.TryGetComponent<sl::TransformComponent>(); pTransform)
 	{
-		if (ImGui::TreeNodeEx("##Transform", DefaultCmoponentTreeNodeFlag, "Transform"))
+		if (ImGui::TreeNodeEx("##Transform", DefaultFlags, "Transform"))
 		{
 			glm::vec3 &position = pTransform->m_position;
 			glm::vec3 &rotation = pTransform->m_rotation;
 			glm::vec3 &scale = pTransform->m_scale;
 
+			bool cameraMayBeDirty = false;
+
 			ImGui::Text("Position");
 			ImGui::SameLine();
-			ImGui::DragFloat3("##Position", glm::value_ptr(position), 0.1f);
-
-			glm::vec3 ratationDegree = glm::degrees(rotation);
-			ratationDegree = ModVec3(ratationDegree, 360.0f);
+			if (ImGui::DragFloat3("##Position", glm::value_ptr(position), 0.1f))
+			{
+				cameraMayBeDirty = true;
+			}
 
 			ImGui::Text("Rotation");
 			ImGui::SameLine();
-			ImGui::DragFloat3("##Rotation", glm::value_ptr(ratationDegree), 0.1f);
-			rotation = glm::radians(std::move(ratationDegree));
+			glm::vec3 ratationDegree = ModVec3(glm::degrees(rotation), 360.0f);
+			if (ImGui::DragFloat3("##Rotation", glm::value_ptr(ratationDegree), 0.1f))
+			{
+				rotation = glm::radians(std::move(ratationDegree));
+				cameraMayBeDirty = true;
+			}
 
 			ImGui::Text("Scale   ");
 			ImGui::SameLine();
 			ImGui::DragFloat3("##Scale", glm::value_ptr(scale), 0.1f);
+			
+			if (auto *pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>(); pCamera && cameraMayBeDirty)
+			{
+				pCamera->m_isDirty = true;
+			}
 		}
-
 		ImGui::Separator();
 	}
 
 	if (auto *pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>(); pCamera)
 	{
-		if (ImGui::TreeNodeEx("##Camera", DefaultCmoponentTreeNodeFlag, "Camera"))
+		if (ImGui::TreeNodeEx("##Camera", DefaultFlags, "Camera"))
 		{
 			constexpr const char *ProjectionTypeNames[] =
 			{
 				nameof::nameof_enum(sl::ProjectionType::Perspective).data(),
 				nameof::nameof_enum(sl::ProjectionType::Orthographic).data(),
 			};
+
 			ImGui::Text("Projection Type");
 			ImGui::SameLine();
 			const char *crtProjectionTypeName = ProjectionTypeNames[(size_t)pCamera->m_projectionType];
@@ -268,6 +278,7 @@ void ImGuiLayer::ShowDetails()
 					if (ImGui::Selectable(ProjectionTypeNames[i], isSelected))
 					{
 						pCamera->m_projectionType = (sl::ProjectionType)i;
+						pCamera->m_isDirty = true;
 					}
 				}
 				ImGui::EndCombo();
@@ -322,6 +333,7 @@ void ImGuiLayer::ShowDetails()
 				}
 			}
 		}
+		ImGui::Separator();
 	}
 
 	ImGui::End();

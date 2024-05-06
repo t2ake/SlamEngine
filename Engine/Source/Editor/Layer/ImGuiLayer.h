@@ -6,13 +6,6 @@
 
 #include <glm/vec2.hpp>
 
-namespace sl
-{
-
-class MouseButtonReleaseEvent;
-
-}
-
 class ImGuiLayer : public sl::Layer
 {
 public:
@@ -34,6 +27,7 @@ public:
 	void SetEventCallback(sl::EventCallback fun) { m_eventCallback = std::move(fun); }
 
 private:
+	void ShowDebugPanels();
 	void ShowMenuBar();
 	void ShowEntityList();
 	void ShowLog();
@@ -41,10 +35,18 @@ private:
 	void ShowDetails();
 	void ShowSceneViewport();
 
+	// Dock space
 	int m_dockSpaceFlag = 0;
 	
+	// Menubar
+	bool m_debugImGuiDemo = false;
+	bool m_debugItemPicker = false;
+	bool m_debugIDStack = false;
+
+	// Entity list
 	sl::Entity m_selectedEntity;
 
+	// Scene viewport
 	uint32_t m_viewportSizeX = 0;
 	uint32_t m_viewportSizeY = 0;
 	bool m_isSceneViewportFocused = false;
