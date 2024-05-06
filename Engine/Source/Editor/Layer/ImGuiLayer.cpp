@@ -12,8 +12,6 @@
 #include <implot/implot.h>
 #include <nameof/nameof.hpp>
 
-#include <format>
-
 namespace
 {
 
@@ -205,8 +203,7 @@ void ImGuiLayer::ShowLog()
 
 void ImGuiLayer::ShowInfo(float deltaTime)
 {
-	bool open = true;
-	ImGui::Begin("Info", &open, ImGuiWindowFlags_NoScrollbar);
+	ImGui::Begin("Info");
 
 	// Infos
 	{
@@ -217,6 +214,7 @@ void ImGuiLayer::ShowInfo(float deltaTime)
 	// FPS plot
 	{
 		static float s_sumTime = 0.0f;
+		static float s_deltaTimeMultiplier = 10.0f;
 		static ScrollingBuffer s_coastBuffer;
 		static ScrollingBuffer s_fpsBuffer;
 
@@ -224,11 +222,17 @@ void ImGuiLayer::ShowInfo(float deltaTime)
 		constexpr float History = 1000.0f;
 		constexpr float Delay = 1000.0f;
 
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Delta Time Multiplier: ");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.25f);
+		ImGui::DragFloat("##Multiplier", &s_deltaTimeMultiplier, 1.0f, 1.0f, 1000.0f);
+
 		s_sumTime += deltaTime;
 		if (s_sumTime > Delay)
 		{
 			// Waiting for programme to stabilise.
-			s_coastBuffer.AddPoint(s_sumTime, 10.0f * deltaTime);
+			s_coastBuffer.AddPoint(s_sumTime, s_deltaTimeMultiplier * deltaTime);
 			s_fpsBuffer.AddPoint(s_sumTime, 1000.0f / deltaTime);
 		}
 
@@ -275,15 +279,21 @@ void ImGuiLayer::ShowDetails()
 		return;
 	}
 
-	constexpr ImGuiTreeNodeFlags DefaultFlags =
+	constexpr ImGuiTreeNodeFlags DefaultTreeFlags =
 		ImGuiTreeNodeFlags_DefaultOpen |
 		ImGuiTreeNodeFlags_OpenOnDoubleClick |
 		ImGuiTreeNodeFlags_OpenOnArrow |
 		ImGuiTreeNodeFlags_CollapsingHeader;
 
+	constexpr ImGuiTreeNodeFlags DefaultSubTreeFlags =
+		ImGuiTreeNodeFlags_NoTreePushOnOpen |
+		ImGuiTreeNodeFlags_NoAutoOpenOnLog |
+		ImGuiTreeNodeFlags_DefaultOpen |
+		ImGuiTreeNodeFlags_SpanFullWidth;
+
 	if (auto *pTag = m_selectedEntity.TryGetComponent<sl::TagComponent>(); pTag)
 	{
-		if (ImGui::TreeNodeEx("##Tag", DefaultFlags, "Tag"))
+		if (ImGui::TreeNodeEx("##Tag", DefaultTreeFlags, "Tag"))
 		{
 			std::string &name = pTag->m_name;
 
@@ -293,9 +303,7 @@ void ImGuiLayer::ShowDetails()
 			char buffer[BufferSize] = { 0 };
 			memcpy(buffer, name.c_str(), name.size());
 
-			ImGui::AlignTextToFramePadding();
-			ImGui::Text("Name    ");
-			ImGui::SameLine();
+			StartWithText("Name");
 			if (ImGui::InputText("##Name", buffer, BufferSize))
 			{
 				name = std::string{ buffer };
@@ -310,40 +318,36 @@ void ImGuiLayer::ShowDetails()
 
 	if (auto *pTransform = m_selectedEntity.TryGetComponent<sl::TransformComponent>(); pTransform)
 	{
-		if (ImGui::TreeNodeEx("##Transform", DefaultFlags, "Transform"))
+		if (ImGui::TreeNodeEx("##Transform", DefaultTreeFlags, "Transform"))
 		{
-			glm::vec3 &position = pTransform->m_position;
-			glm::vec3 &rotation = pTransform->m_rotation;
-			glm::vec3 &scale = pTransform->m_scale;
-
 			bool cameraMayBeDirty = false;
 
-			ImGui::AlignTextToFramePadding();
-			ImGui::Text("Position");
-			ImGui::SameLine();
+			glm::vec3 &position = pTransform->m_position;
+			StartWithText("Position");
 			if (ImGui::DragFloat3("##Position", glm::value_ptr(position), 0.1f))
 			{
 				cameraMayBeDirty = true;
 			}
 
-			ImGui::AlignTextToFramePadding();
-			ImGui::Text("Rotation");
-			ImGui::SameLine();
-			glm::vec3 ratationDegree = ModVec3(glm::degrees(rotation), 360.0f);
+			glm::vec3 ratationDegree = ModVec3(pTransform->GetRotationDegrees(), 360.0f);
+			StartWithText("Rotation");
 			if (ImGui::DragFloat3("##Rotation", glm::value_ptr(ratationDegree), 0.1f))
 			{
-				rotation = glm::radians(std::move(ratationDegree));
+				pTransform->SetRotationDegrees(ratationDegree);
 				cameraMayBeDirty = true;
 			}
 
-			ImGui::AlignTextToFramePadding();
-			ImGui::Text("Scale   ");
-			ImGui::SameLine();
+			glm::vec3 &scale = pTransform->m_scale;
+			StartWithText("Scale");
 			ImGui::DragFloat3("##Scale", glm::value_ptr(scale), 0.1f);
 			
-			if (auto *pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>(); pCamera && cameraMayBeDirty)
+			if (cameraMayBeDirty)
 			{
-				pCamera->m_isDirty = true;
+				auto *pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>();
+				if (pCamera)
+				{
+					pCamera->m_isDirty = true;
+				}
 			}
 		}
 		ImGui::Separator();
@@ -351,7 +355,7 @@ void ImGuiLayer::ShowDetails()
 
 	if (auto *pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>(); pCamera)
 	{
-		if (ImGui::TreeNodeEx("##Camera", DefaultFlags, "Camera"))
+		if (ImGui::TreeNodeEx("##Camera", DefaultTreeFlags, "Camera"))
 		{
 			constexpr const char *ProjectionTypeNames[] =
 			{
@@ -359,11 +363,9 @@ void ImGuiLayer::ShowDetails()
 				nameof::nameof_enum(sl::ProjectionType::Orthographic).data(),
 			};
 
-			ImGui::AlignTextToFramePadding();
-			ImGui::Text("Projection Type");
-			ImGui::SameLine();
 			const char *crtProjectionTypeName = ProjectionTypeNames[static_cast<size_t>(pCamera->m_projectionType)];
-			if (ImGui::BeginCombo("##Projection Type", crtProjectionTypeName, ImGuiComboFlags_WidthFitPreview))
+			StartWithText("Projection");
+			if (ImGui::BeginCombo("##Projection", crtProjectionTypeName, ImGuiComboFlags_WidthFitPreview))
 			{
 				for (size_t i = 0; i < 2; ++i)
 				{
@@ -376,61 +378,56 @@ void ImGuiLayer::ShowDetails()
 				}
 				ImGui::EndCombo();
 			}
-			ImGui::Spacing();
+			ImGui::Separator();
 
-			if (sl::ProjectionType::Perspective == pCamera->m_projectionType)
+			// TODO: Font thick
+			if (ImGui::TreeNodeEx("##Perspective", DefaultSubTreeFlags, "Perspective"))
 			{
-				ImGui::AlignTextToFramePadding();
-				ImGui::Text("FOV     ");
-				ImGui::SameLine();
+				ImGui::Indent();
 				float fovDegrees = glm::degrees(pCamera->m_fov);
+				StartWithText("FOV");
 				if (ImGui::DragFloat("##FOV", &fovDegrees, 0.1f, 1.0f, 120.0f))
 				{
 					pCamera->m_fov = glm::radians(fovDegrees);
 					pCamera->m_isDirty = true;
 				}
 
-				ImGui::AlignTextToFramePadding();
-				ImGui::Text("Near    ");
-				ImGui::SameLine();
-				if (ImGui::DragFloat("##Near", &(pCamera->m_nearPlane), 0.1f, 0.001f, 100000.0f))
+				StartWithText("Near Plane");
+				if (ImGui::DragFloat("##Near Plane", &(pCamera->m_nearPlane), 0.1f, 0.001f, 100000.0f))
 				{
 					pCamera->m_isDirty = true;
 				}
 
-				ImGui::AlignTextToFramePadding();
-				ImGui::Text("Far     ");
-				ImGui::SameLine();
-				if (ImGui::DragFloat("##Far", &(pCamera->m_farPlane), 0.1f, 0.001f, 100000.0f))
+				StartWithText("Far Plane");
+				if (ImGui::DragFloat("##Far Plane", &(pCamera->m_farPlane), 0.1f, 0.001f, 100000.0f))
 				{
 					pCamera->m_isDirty = true;
 				}
+				ImGui::Unindent();
 			}
-			else if (sl::ProjectionType::Orthographic == pCamera->m_projectionType)
+			ImGui::Separator();
+
+			if (ImGui::TreeNodeEx("##Orthographic", DefaultSubTreeFlags, "Orthographic"))
 			{
-				ImGui::AlignTextToFramePadding();
-				ImGui::Text("Size    ");
-				ImGui::SameLine();
+				ImGui::Indent();
+				StartWithText("Size");
 				if (ImGui::DragFloat("##Size", &(pCamera->m_orthoSize), 0.1f, 0.001f, 100000.0f))
 				{
 					pCamera->m_isDirty = true;
 				}
 
-				ImGui::AlignTextToFramePadding();
-				ImGui::Text("Near    ");
-				ImGui::SameLine();
-				if (ImGui::DragFloat("##Near", &(pCamera->m_orthoNearClip), 0.1f), -100000.0f, 100000.0f)
+				StartWithText("Near Clip");
+				if (ImGui::DragFloat("##Near Clip", &(pCamera->m_orthoNearClip), 0.1f), -100000.0f, 100000.0f)
 				{
 					pCamera->m_isDirty = true;
 				}
 
-				ImGui::AlignTextToFramePadding();
-				ImGui::Text("Far     ");
-				ImGui::SameLine();
-				if (ImGui::DragFloat("##Far", &(pCamera->m_orthoFarClip), 0.1f), -100000.0f, 100000.0f)
+				StartWithText("Far Clip");
+				if (ImGui::DragFloat("##Far Clip", &(pCamera->m_orthoFarClip), 0.1f), -100000.0f, 100000.0f)
 				{
 					pCamera->m_isDirty = true;
 				}
+				ImGui::Unindent();
 			}
 		}
 		ImGui::Separator();
@@ -487,6 +484,27 @@ void ImGuiLayer::ShowSceneViewport()
 
 	ImGui::End();
 	ImGui::PopStyleVar();
+}
+
+void ImGuiLayer::StartWithText(std::string text)
+{
+	static float s_maxTextSize = 0.0f;
+	static sl::Entity s_crtEntity;
+
+	if (s_crtEntity != m_selectedEntity)
+	{
+		s_maxTextSize = 0.0f;
+		s_crtEntity = m_selectedEntity;
+	}
+
+	float crtTextSize = ImGui::CalcTextSize(text.c_str()).x;
+	s_maxTextSize = std::max(s_maxTextSize, crtTextSize);
+
+	ImGui::SetCursorPosX(30.0f);
+	ImGui::AlignTextToFramePadding();
+	ImGui::Text(text.c_str());
+
+	ImGui::SameLine(s_maxTextSize + 50.0f);
 }
 
 // For ImGuiLayer::m_dockSpaceFlag

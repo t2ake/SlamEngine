@@ -35,6 +35,8 @@ private:
 	void ShowDetails();
 	void ShowSceneViewport();
 
+	void StartWithText(std::string text);
+
 	// Dock space
 	// ImGuiDockNodeFlags m_dockSpaceFlag = ImGuiDockNodeFlags_None
 	int m_dockSpaceFlag = 0;
