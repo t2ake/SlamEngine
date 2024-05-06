@@ -19,3 +19,5 @@ stb ae721c50eaf761660b4f90cc590453cdb0c2acd0
 entt 3.13.2
 
 nameof 0.10.4
+
+implot 0.16
