@@ -1,9 +1,10 @@
 #include "ImGuiContext.h"
 
 #include "Core/Log.h"
+#include "Core/Path.hpp"
+#include "Resource/Font.h"
 #include "Window/Window.h"
 
-// TODO: Compile them into imgui.lib
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
@@ -19,9 +20,9 @@ void ImGuiContext::Init(void *pNativeWindow)
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImPlot::CreateContext();
+	ImGuiIO &io = ImGui::GetIO();
 
 	// 2. Set flags
-	ImGuiIO &io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -29,6 +30,16 @@ void ImGuiContext::Init(void *pNativeWindow)
 	io.ConfigViewportsNoTaskBarIcon = true;
 
 	// 3. Load font
+	// ImFont *pRegularFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Roboto/Roboto-Regular.ttf").c_str(), 16.0f);
+	// ImFont *pBoldFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Roboto/Roboto-Bold.ttf").c_str(), 16.0f);
+	// ImFont *pThinFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Roboto/Roboto-Thin.ttf").c_str(), 16.0f);
+	ImFont *pRegularFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Regular.ttf").c_str(), 16.0f);
+	ImFont *pBoldFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Bold.ttf").c_str(), 16.0f);
+	ImFont *pThinFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Light.ttf").c_str(), 16.0f);
+	sl::Font::SetRegular(pRegularFont);
+	sl::Font::SetBold(pBoldFont);
+	sl::Font::SetThin(pThinFont);
+	io.FontDefault = pRegularFont;
 
 	// 4. Set style
 	ImGui::StyleColorsDark();

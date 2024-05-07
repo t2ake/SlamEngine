@@ -4,6 +4,7 @@
 #include "Event/SceneViewportEvent.h"
 #include "ImGui/ImGuiContext.h"
 #include "RenderCore/RenderCore.h"
+#include "Resource/Font.h"
 #include "Scene/ECSWorld.h"
 #include "Window/Input.h"
 
@@ -160,7 +161,7 @@ void ImGuiLayer::ShowMenuBar()
 	}
 	if (ImGui::BeginMenu("Debug"))
 	{
-		ImGui::MenuItem("Show ImGui Demo", "", &m_debugImGuiDemo);
+		ImGui::MenuItem("ImGui Demo", "", &m_debugImGuiDemo);
 		ImGui::MenuItem("ID Stack", "", &m_debugIDStack);
 		ImGui::MenuItem("Item Picker", "", &m_debugItemPicker);
 		ImGui::EndMenu();
@@ -200,7 +201,7 @@ void ImGuiLayer::ShowEntityList()
 		// Left click to select entity.
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
 		{
-			SL_ENGINE_TRACE("Select Entity: \"{}\"", tag.m_name);
+			SL_ENGINE_TRACE("Select entity: \"{}\"", tag.m_name);
 			m_selectedEntity = entity;
 		}
 
@@ -337,8 +338,11 @@ void ImGuiLayer::ShowDetails()
 
 	if (auto *pTag = m_selectedEntity.TryGetComponent<sl::TagComponent>(); pTag)
 	{
+		ImGui::PushFont(sl::Font::GetBold());
 		if (ImGui::TreeNodeEx("##Tag", DefaultTreeFlags, "Tag"))
 		{
+			ImGui::PopFont();
+
 			std::string &name = pTag->m_name;
 
 			constexpr size_t BufferSize = 256;
@@ -362,8 +366,11 @@ void ImGuiLayer::ShowDetails()
 
 	if (auto *pTransform = m_selectedEntity.TryGetComponent<sl::TransformComponent>(); pTransform)
 	{
+		ImGui::PushFont(sl::Font::GetBold());
 		if (ImGui::TreeNodeEx("##Transform", DefaultTreeFlags, "Transform"))
 		{
+			ImGui::PopFont();
+
 			bool cameraMayBeDirty = false;
 
 			glm::vec3 &position = pTransform->m_position;
@@ -401,7 +408,9 @@ void ImGuiLayer::ShowDetails()
 	{
 		ImGui::PushID("##Camera");
 
+		ImGui::PushFont(sl::Font::GetBold());
 		bool componentTreeOpen = ImGui::TreeNodeEx("##Camera", DefaultTreeFlags, "Camera");
+		ImGui::PopFont();
 
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
 		ImGui::SameLine();
@@ -450,7 +459,6 @@ void ImGuiLayer::ShowDetails()
 			}
 			ImGui::Separator();
 
-			// TODO: Font thick
 			if (ImGui::TreeNodeEx("##Perspective", DefaultSubTreeFlags, "Perspective"))
 			{
 				ImGui::Indent();
@@ -515,7 +523,9 @@ void ImGuiLayer::ShowDetails()
 	{
 		ImGui::PushID("##Cornerstone");
 
+		ImGui::PushFont(sl::Font::GetBold());
 		bool componentTreeOpen = ImGui::TreeNodeEx("##Cornerstone", DefaultTreeFlags, "Cornerstone");
+		ImGui::PopFont();
 
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
 		ImGui::SameLine();
@@ -570,7 +580,7 @@ void ImGuiLayer::ShowDetails()
 			}
 			else
 			{
-				SL_ENGINE_WARN("Camera Component already exists!");
+				SL_ENGINE_WARN("Camera component already exists!");
 			}
 		}
 		if (ImGui::MenuItem("Cornerstone"))
@@ -581,7 +591,7 @@ void ImGuiLayer::ShowDetails()
 			}
 			else
 			{
-				SL_ENGINE_WARN("Cornerstone Component already exists!");
+				SL_ENGINE_WARN("Cornerstone component already exists!");
 			}
 		}
 		ImGui::EndPopup();
