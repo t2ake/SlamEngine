@@ -18,7 +18,6 @@ namespace
 SL_FORCEINLINE static glm::vec3 ModVec3(const glm::vec3 &v, float m)
 {
 	// Why the second argument of glm::modf must accept a non const left value reference?
-
 	return glm::vec3{ std::fmod(v.x, m), std::fmod(v.y, m) , std::fmod(v.z, m) };
 }
 
@@ -28,7 +27,7 @@ struct ScrollingBuffer
 	int MaxSize;
 	int Offset;
 	ImVector<ImVec2> Data;
-	ScrollingBuffer(int max_size = 2000)
+	ScrollingBuffer(int max_size = 1024)
 	{
 		MaxSize = max_size;
 		Offset = 0;
@@ -53,6 +52,20 @@ struct ScrollingBuffer
 		}
 	}
 };
+
+bool AlignButton(const char *label, float align = 0.5f)
+{
+	float size = ImGui::CalcTextSize(label).x + ImGui::GetStyle().FramePadding.x * 2.0f;
+	float avail = ImGui::GetContentRegionAvail().x;
+
+	float offset = (avail - size) * align;
+	if (offset > 0.0f)
+	{
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
+	}
+
+	return ImGui::Button(label);
+}
 
 }
 
@@ -148,8 +161,8 @@ void ImGuiLayer::ShowMenuBar()
 	if (ImGui::BeginMenu("Debug"))
 	{
 		ImGui::MenuItem("Show ImGui Demo", "", &m_debugImGuiDemo);
-		ImGui::MenuItem("Item Picker", "", &m_debugItemPicker);
 		ImGui::MenuItem("ID Stack", "", &m_debugIDStack);
+		ImGui::MenuItem("Item Picker", "", &m_debugItemPicker);
 		ImGui::EndMenu();
 	}
 	ImGui::EndMainMenuBar();
@@ -159,10 +172,18 @@ void ImGuiLayer::ShowEntityList()
 {
 	ImGui::Begin("Entity List");
 
+	if (ImGui::SmallButton("+"))
+	{
+		sl::ECSWorld::CreateEntity("Empty Entity");
+	}
+	ImGui::Separator();
+
 	auto view = sl::ECSWorld::GetRegistry().view<sl::TagComponent>();
 	for (auto entity : view)
 	{
-		ImGuiTreeNodeFlags flags =
+		ImGui::PushID((void *)(uint64_t)(uint32_t)entity);
+
+		ImGuiTreeNodeFlags treeNodeFlag =
 			ImGuiTreeNodeFlags_OpenOnDoubleClick |
 			ImGuiTreeNodeFlags_OpenOnArrow |
 			ImGuiTreeNodeFlags_FramePadding |
@@ -170,23 +191,45 @@ void ImGuiLayer::ShowEntityList()
 			ImGuiTreeNodeFlags_Leaf; // TODO: hierarchy
 		if (m_selectedEntity == entity)
 		{
-			flags |= ImGuiTreeNodeFlags_Selected;
+			treeNodeFlag |= ImGuiTreeNodeFlags_Selected;
 		}
 
 		auto &tag = view.get<sl::TagComponent>(entity);
-		if (ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags, tag.m_name.c_str()))
+		bool nodeOpen = ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, treeNodeFlag, tag.m_name.c_str());
+
+		// Left click to select entity.
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
 		{
-			if (ImGui::IsItemClicked())
+			SL_ENGINE_TRACE("Select Entity: \"{}\"", tag.m_name);
+			m_selectedEntity = entity;
+		}
+
+		// Right click to open an entity popup.
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+		{
+			ImGui::OpenPopup("EntityPopupContext");
+		}
+		if (ImGui::BeginPopup("EntityPopupContext"))
+		{
+			if (ImGui::MenuItem("Destory Entity"))
 			{
-				m_selectedEntity = entity;
+				sl::ECSWorld::DestroyEntity(entity);
 			}
+			ImGui::EndPopup();
+		}
+
+		if (nodeOpen)
+		{
 			ImGui::TreePop();
 		}
+
+		ImGui::PopID();
 	}
 
-	if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+	// Left click at enpty space to clear selected entity.
+	if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Left))
 	{
-		m_selectedEntity = sl::Entity{};
+		m_selectedEntity.Reset();
 	}
 
 	ImGui::End();
@@ -213,20 +256,20 @@ void ImGuiLayer::ShowInfo(float deltaTime)
 
 	// FPS plot
 	{
+		// Stores in millisecond.
 		static float s_sumTime = 0.0f;
 		static float s_deltaTimeMultiplier = 10.0f;
 		static ScrollingBuffer s_coastBuffer;
 		static ScrollingBuffer s_fpsBuffer;
 
-		// Stores in millisecond.
 		constexpr float History = 1000.0f;
 		constexpr float Delay = 1000.0f;
 
 		ImGui::AlignTextToFramePadding();
-		ImGui::Text("Delta Time Multiplier: ");
+		ImGui::Text("Delta Time Multiplier:");
 		ImGui::SameLine();
-		ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.25f);
-		ImGui::DragFloat("##Multiplier", &s_deltaTimeMultiplier, 1.0f, 1.0f, 1000.0f);
+		ImGui::SetNextItemWidth(-1.0f);
+		ImGui::DragFloat("##DeltaTimeMultiplier", &s_deltaTimeMultiplier, 1.0f, 1.0f, 1000.0f);
 
 		s_sumTime += deltaTime;
 		if (s_sumTime > Delay)
@@ -280,6 +323,7 @@ void ImGuiLayer::ShowDetails()
 	}
 
 	constexpr ImGuiTreeNodeFlags DefaultTreeFlags =
+		ImGuiTreeNodeFlags_AllowOverlap |
 		ImGuiTreeNodeFlags_DefaultOpen |
 		ImGuiTreeNodeFlags_OpenOnDoubleClick |
 		ImGuiTreeNodeFlags_OpenOnArrow |
@@ -297,7 +341,7 @@ void ImGuiLayer::ShowDetails()
 		{
 			std::string &name = pTag->m_name;
 
-			constexpr size_t BufferSize = 32;
+			constexpr size_t BufferSize = 256;
 			SL_EDITOR_ASSERT(BufferSize >= name.size());
 
 			char buffer[BufferSize] = { 0 };
@@ -355,7 +399,33 @@ void ImGuiLayer::ShowDetails()
 
 	if (auto *pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>(); pCamera)
 	{
-		if (ImGui::TreeNodeEx("##Camera", DefaultTreeFlags, "Camera"))
+		ImGui::PushID("##Camera");
+
+		bool componentTreeOpen = ImGui::TreeNodeEx("##Camera", DefaultTreeFlags, "Camera");
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
+		ImGui::SameLine();
+		if (AlignButton(":", 1.0f))
+		{
+			ImGui::OpenPopup("ComponentPopup");
+		}
+		ImGui::PopStyleColor();
+
+		bool removeComponent = false;
+		if(ImGui::BeginPopup("ComponentPopup"))
+		{
+			if (ImGui::MenuItem("Reset Component"))
+			{
+				// TODO
+			}
+			if (ImGui::MenuItem("Remove Component"))
+			{
+				removeComponent = true;
+			}
+			ImGui::EndPopup();
+		}
+
+		if (componentTreeOpen)
 		{
 			constexpr const char *ProjectionTypeNames[] =
 			{
@@ -393,13 +463,13 @@ void ImGuiLayer::ShowDetails()
 				}
 
 				StartWithText("Near Plane");
-				if (ImGui::DragFloat("##Near Plane", &(pCamera->m_nearPlane), 0.1f, 0.001f, 100000.0f))
+				if (ImGui::DragFloat("##NearPlane", &(pCamera->m_nearPlane), 0.1f, 0.001f, 100000.0f))
 				{
 					pCamera->m_isDirty = true;
 				}
 
 				StartWithText("Far Plane");
-				if (ImGui::DragFloat("##Far Plane", &(pCamera->m_farPlane), 0.1f, 0.001f, 100000.0f))
+				if (ImGui::DragFloat("##FarPlane", &(pCamera->m_farPlane), 0.1f, 0.001f, 100000.0f))
 				{
 					pCamera->m_isDirty = true;
 				}
@@ -417,13 +487,13 @@ void ImGuiLayer::ShowDetails()
 				}
 
 				StartWithText("Near Clip");
-				if (ImGui::DragFloat("##Near Clip", &(pCamera->m_orthoNearClip), 0.1f), -100000.0f, 100000.0f)
+				if (ImGui::DragFloat("##NearClip", &(pCamera->m_orthoNearClip), 0.1f), -100000.0f, 100000.0f)
 				{
 					pCamera->m_isDirty = true;
 				}
 
 				StartWithText("Far Clip");
-				if (ImGui::DragFloat("##Far Clip", &(pCamera->m_orthoFarClip), 0.1f), -100000.0f, 100000.0f)
+				if (ImGui::DragFloat("##FarClip", &(pCamera->m_orthoFarClip), 0.1f), -100000.0f, 100000.0f)
 				{
 					pCamera->m_isDirty = true;
 				}
@@ -431,6 +501,90 @@ void ImGuiLayer::ShowDetails()
 			}
 		}
 		ImGui::Separator();
+
+		if (removeComponent)
+		{
+			m_selectedEntity.RemoveComponent<sl::CameraComponent>();
+			m_maxTextSize = 0.0f;
+		}
+
+		ImGui::PopID();
+	}
+
+	if (auto *pCornerstone = m_selectedEntity.TryGetComponent<sl::CornerstoneComponent>(); pCornerstone)
+	{
+		ImGui::PushID("##Cornerstone");
+
+		bool componentTreeOpen = ImGui::TreeNodeEx("##Cornerstone", DefaultTreeFlags, "Cornerstone");
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
+		ImGui::SameLine();
+		if (AlignButton(":", 1.0f))
+		{
+			ImGui::OpenPopup("ComponentPopup");
+		}
+		ImGui::PopStyleColor();
+
+		bool removeComponent = false;
+		if (ImGui::BeginPopup("ComponentPopup"))
+		{
+			if (ImGui::MenuItem("Reset Component"))
+			{
+				// TODO
+			}
+			if (ImGui::MenuItem("Remove Component"))
+			{
+				removeComponent = true;
+			}
+			ImGui::EndPopup();
+		}
+
+		if (componentTreeOpen)
+		{
+			StartWithText("Info");
+			ImGui::TextWrapped(pCornerstone->m_info.c_str());
+		}
+		ImGui::Separator();
+
+		if (removeComponent)
+		{
+			m_selectedEntity.RemoveComponent<sl::CornerstoneComponent>();
+			m_maxTextSize = 0.0f;
+		}
+	
+		ImGui::PopID();
+	}
+
+	if (AlignButton("Add Component"))
+	{
+		ImGui::OpenPopup("AddComponent");
+	}
+
+	if (ImGui::BeginPopup("AddComponent"))
+	{
+		if (ImGui::MenuItem("Camera"))
+		{
+			if (!m_selectedEntity.TryGetComponent<sl::CameraComponent>())
+			{
+				m_selectedEntity.AddComponent<sl::CameraComponent>();
+			}
+			else
+			{
+				SL_ENGINE_WARN("Camera Component already exists!");
+			}
+		}
+		if (ImGui::MenuItem("Cornerstone"))
+		{
+			if (!m_selectedEntity.TryGetComponent<sl::CornerstoneComponent>())
+			{
+				m_selectedEntity.AddComponent<sl::CornerstoneComponent>();
+			}
+			else
+			{
+				SL_ENGINE_WARN("Cornerstone Component already exists!");
+			}
+		}
+		ImGui::EndPopup();
 	}
 
 	ImGui::End();
@@ -445,7 +599,7 @@ void ImGuiLayer::ShowSceneViewport()
 
 	// Scene viewport event stuff
 	{
-		if (ImGui::IsWindowHovered() && sl::Input::IsMouseButtonPressed(SL_MOUSE_BUTTON_2))
+		if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
 		{
 			ImGui::SetWindowFocus();
 		}
@@ -488,23 +642,26 @@ void ImGuiLayer::ShowSceneViewport()
 
 void ImGuiLayer::StartWithText(std::string text)
 {
-	static float s_maxTextSize = 0.0f;
 	static sl::Entity s_crtEntity;
-
 	if (s_crtEntity != m_selectedEntity)
 	{
-		s_maxTextSize = 0.0f;
+		// ImGui::CalcTextSize("Position").x == 56.0f
+		// ImGui::CalcTextSize("Rotation").x == 56.0f
+		// Just a little trick to avoid Tag Component flickering when it is rendered the first time,
+		// as we know every Entity must hold both Tag and Transform Component.
+		m_maxTextSize = 56.0f;
 		s_crtEntity = m_selectedEntity;
 	}
 
 	float crtTextSize = ImGui::CalcTextSize(text.c_str()).x;
-	s_maxTextSize = std::max(s_maxTextSize, crtTextSize);
+	m_maxTextSize = std::max(m_maxTextSize, crtTextSize);
 
 	ImGui::SetCursorPosX(30.0f);
 	ImGui::AlignTextToFramePadding();
 	ImGui::Text(text.c_str());
 
-	ImGui::SameLine(s_maxTextSize + 50.0f);
+	ImGui::SameLine(m_maxTextSize + 50.0f);
+	ImGui::SetNextItemWidth(-8.0f);
 }
 
 // For ImGuiLayer::m_dockSpaceFlag

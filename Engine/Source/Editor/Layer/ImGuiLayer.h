@@ -49,6 +49,9 @@ private:
 	// Entity list
 	sl::Entity m_selectedEntity;
 
+	// Details
+	float m_maxTextSize = 0.0f;
+
 	// Scene viewport
 	uint32_t m_viewportSizeX = 0;
 	uint32_t m_viewportSizeY = 0;

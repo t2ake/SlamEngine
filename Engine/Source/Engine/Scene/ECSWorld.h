@@ -2,6 +2,7 @@
 
 #include "Core/Log.h"
 #include "Scene/CameraComponent.h"
+#include "Scene/CornerstoneComponent.h"
 #include "Scene/TagComponent.hpp"
 #include "Scene/TransformComponent.hpp"
 
@@ -10,15 +11,16 @@
 namespace sl
 {
 
-class Entity;
-
 class ECSWorld final
 {
 	friend class Entity;
 
 public:
 	static entt::registry &GetRegistry() { return m_registry; }
+
 	static Entity CreateEntity(std::string name = "Default Name");
+	// Destroy an entity and all its components.
+	static void DestroyEntity(Entity entity);
 
 	static void SetMainCameraEntity(Entity entity);
 	static Entity GetMainCameraEntity();
@@ -35,7 +37,7 @@ public:
 	Entity() = default;
 	Entity(entt::entity entity) : m_handle(entity) {}
 
-	entt::entity GetHandle() const { return m_handle; }
+	void Reset() { m_handle = entt::null; }
 
 	// Returns reference.
 	template<class T, class... Args>
@@ -96,6 +98,11 @@ public:
 	template<class T>
 	auto RemoveComponent()
 	{
+		if (auto *pCornerstone = TryGetComponent<sl::CornerstoneComponent>(); pCornerstone && !pCornerstone->m_info.empty())
+		{
+			SL_ENGINE_WARN("Remove Cornerstone Component from \"{}\"", GetComponent<sl::TagComponent>().m_name);
+			SL_ENGINE_WARN("    Info: {}", pCornerstone->m_info);
+		}
 		return ECSWorld::m_registry.remove<T>(m_handle);
 	}
 
@@ -106,16 +113,15 @@ public:
 		ECSWorld::m_registry.erase<T>(m_handle);
 	}
 
-	// Destroys an entity and all its components.
-	void Destroy()
-	{
-		ECSWorld::m_registry.destroy(m_handle);
-		m_handle = entt::null;
-	}
-
 	operator bool() const { return entt::null != m_handle; }
+	operator uint32_t() const{ return (uint32_t)m_handle; }
+	operator entt::entity() const { return m_handle; }
+
 	bool operator==(const Entity &other) const { return other.m_handle == m_handle; }
 	bool operator!=(const Entity &other) const { return !(operator==(other)); }
+
+	bool operator==(const entt::entity &other) const { return other == m_handle; }
+	bool operator!=(const entt::entity &other) const { return !(operator==(other)); }
 
 private:
 	entt::entity m_handle = entt::null;

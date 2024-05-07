@@ -29,6 +29,7 @@ Editor::Editor(EditorInitor initor)
 
 	auto mainCameraEntity = sl::ECSWorld::CreateEntity("Camera");
 	mainCameraEntity.AddComponent<sl::CameraComponent>();
+	mainCameraEntity.AddComponent<sl::CornerstoneComponent>("Currently we only support that only one camera in the scene.");
 	sl::ECSWorld::SetMainCameraEntity(mainCameraEntity);
 
 	for (int i = 0; i < 10; ++i)
