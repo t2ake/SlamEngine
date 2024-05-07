@@ -16,6 +16,19 @@
 namespace
 {
 
+constexpr ImGuiTreeNodeFlags DefaultTreeFlags =
+	ImGuiTreeNodeFlags_AllowOverlap |
+	ImGuiTreeNodeFlags_DefaultOpen |
+	ImGuiTreeNodeFlags_OpenOnDoubleClick |
+	ImGuiTreeNodeFlags_OpenOnArrow |
+	ImGuiTreeNodeFlags_CollapsingHeader;
+
+constexpr ImGuiTreeNodeFlags DefaultSubTreeFlags =
+	ImGuiTreeNodeFlags_NoTreePushOnOpen |
+	ImGuiTreeNodeFlags_NoAutoOpenOnLog |
+	ImGuiTreeNodeFlags_DefaultOpen |
+	ImGuiTreeNodeFlags_SpanFullWidth;
+
 SL_FORCEINLINE static glm::vec3 ModVec3(const glm::vec3 &v, float m)
 {
 	// Why the second argument of glm::modf must accept a non const left value reference?
@@ -37,7 +50,9 @@ struct ScrollingBuffer
 	void AddPoint(float x, float y)
 	{
 		if (Data.size() < MaxSize)
+		{
 			Data.push_back(ImVec2(x, y));
+		}
 		else
 		{
 			Data[Offset] = ImVec2(x, y);
@@ -54,15 +69,15 @@ struct ScrollingBuffer
 	}
 };
 
-bool AlignButton(const char *label, float align = 0.5f)
+bool AlignButton(const char *label, float align = 0.5f, float offset = 0.0f)
 {
 	float size = ImGui::CalcTextSize(label).x + ImGui::GetStyle().FramePadding.x * 2.0f;
 	float avail = ImGui::GetContentRegionAvail().x;
 
-	float offset = (avail - size) * align;
-	if (offset > 0.0f)
+	float startOffset = (avail - size) * align;
+	if (startOffset > 0.0f)
 	{
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + startOffset + offset);
 	}
 
 	return ImGui::Button(label);
@@ -187,8 +202,7 @@ void ImGuiLayer::ShowEntityList()
 		ImGuiTreeNodeFlags treeNodeFlag =
 			ImGuiTreeNodeFlags_OpenOnDoubleClick |
 			ImGuiTreeNodeFlags_OpenOnArrow |
-			ImGuiTreeNodeFlags_FramePadding |
-			ImGuiTreeNodeFlags_SpanFullWidth |
+			ImGuiTreeNodeFlags_SpanAvailWidth |
 			ImGuiTreeNodeFlags_Leaf; // TODO: hierarchy
 		if (m_selectedEntity == entity)
 		{
@@ -313,223 +327,21 @@ void ImGuiLayer::ShowInfo(float deltaTime)
 	ImGui::End();
 }
 
-void ImGuiLayer::ShowDetails()
+template<class T, class Fun>
+void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 {
-	ImGui::Begin("Details");
-
-	if (!m_selectedEntity)
+	if (auto *pComponent = m_selectedEntity.TryGetComponent<T>(); pComponent)
 	{
-		ImGui::End();
-		return;
-	}
-
-	constexpr ImGuiTreeNodeFlags DefaultTreeFlags =
-		ImGuiTreeNodeFlags_AllowOverlap |
-		ImGuiTreeNodeFlags_DefaultOpen |
-		ImGuiTreeNodeFlags_OpenOnDoubleClick |
-		ImGuiTreeNodeFlags_OpenOnArrow |
-		ImGuiTreeNodeFlags_CollapsingHeader;
-
-	constexpr ImGuiTreeNodeFlags DefaultSubTreeFlags =
-		ImGuiTreeNodeFlags_NoTreePushOnOpen |
-		ImGuiTreeNodeFlags_NoAutoOpenOnLog |
-		ImGuiTreeNodeFlags_DefaultOpen |
-		ImGuiTreeNodeFlags_SpanFullWidth;
-
-	if (auto *pTag = m_selectedEntity.TryGetComponent<sl::TagComponent>(); pTag)
-	{
-		ImGui::PushFont(sl::Font::GetBold());
-		if (ImGui::TreeNodeEx("##Tag", DefaultTreeFlags, "Tag"))
-		{
-			ImGui::PopFont();
-
-			std::string &name = pTag->m_name;
-
-			constexpr size_t BufferSize = 256;
-			SL_EDITOR_ASSERT(BufferSize >= name.size());
-
-			char buffer[BufferSize] = { 0 };
-			memcpy(buffer, name.c_str(), name.size());
-
-			StartWithText("Name");
-			if (ImGui::InputText("##Name", buffer, BufferSize))
-			{
-				name = std::string{ buffer };
-				if (name.empty())
-				{
-					name = "Default Name";
-				}
-			}
-		}
-		ImGui::Separator();
-	}
-
-	if (auto *pTransform = m_selectedEntity.TryGetComponent<sl::TransformComponent>(); pTransform)
-	{
-		ImGui::PushFont(sl::Font::GetBold());
-		if (ImGui::TreeNodeEx("##Transform", DefaultTreeFlags, "Transform"))
-		{
-			ImGui::PopFont();
-
-			bool cameraMayBeDirty = false;
-
-			glm::vec3 &position = pTransform->m_position;
-			StartWithText("Position");
-			if (ImGui::DragFloat3("##Position", glm::value_ptr(position), 0.1f))
-			{
-				cameraMayBeDirty = true;
-			}
-
-			glm::vec3 ratationDegree = ModVec3(pTransform->GetRotationDegrees(), 360.0f);
-			StartWithText("Rotation");
-			if (ImGui::DragFloat3("##Rotation", glm::value_ptr(ratationDegree), 0.1f))
-			{
-				pTransform->SetRotationDegrees(ratationDegree);
-				cameraMayBeDirty = true;
-			}
-
-			glm::vec3 &scale = pTransform->m_scale;
-			StartWithText("Scale");
-			ImGui::DragFloat3("##Scale", glm::value_ptr(scale), 0.1f);
-			
-			if (cameraMayBeDirty)
-			{
-				auto *pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>();
-				if (pCamera)
-				{
-					pCamera->m_isDirty = true;
-				}
-			}
-		}
-		ImGui::Separator();
-	}
-
-	if (auto *pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>(); pCamera)
-	{
-		ImGui::PushID("##Camera");
+		ImGui::PushID(nameof::nameof_type<T>().data());
 
 		ImGui::PushFont(sl::Font::GetBold());
-		bool componentTreeOpen = ImGui::TreeNodeEx("##Camera", DefaultTreeFlags, "Camera");
+		bool componentTreeOpen = ImGui::TreeNodeEx(label, DefaultTreeFlags, label);
 		ImGui::PopFont();
 
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
 		ImGui::SameLine();
-		if (AlignButton(":", 1.0f))
-		{
-			ImGui::OpenPopup("ComponentPopup");
-		}
-		ImGui::PopStyleColor();
-
-		bool removeComponent = false;
-		if(ImGui::BeginPopup("ComponentPopup"))
-		{
-			if (ImGui::MenuItem("Reset Component"))
-			{
-				// TODO
-			}
-			if (ImGui::MenuItem("Remove Component"))
-			{
-				removeComponent = true;
-			}
-			ImGui::EndPopup();
-		}
-
-		if (componentTreeOpen)
-		{
-			constexpr const char *ProjectionTypeNames[] =
-			{
-				nameof::nameof_enum(sl::ProjectionType::Perspective).data(),
-				nameof::nameof_enum(sl::ProjectionType::Orthographic).data(),
-			};
-
-			const char *crtProjectionTypeName = ProjectionTypeNames[static_cast<size_t>(pCamera->m_projectionType)];
-			StartWithText("Projection");
-			if (ImGui::BeginCombo("##Projection", crtProjectionTypeName, ImGuiComboFlags_WidthFitPreview))
-			{
-				for (size_t i = 0; i < 2; ++i)
-				{
-					bool isSelected = (ProjectionTypeNames[i] == crtProjectionTypeName);
-					if (ImGui::Selectable(ProjectionTypeNames[i], isSelected))
-					{
-						pCamera->m_projectionType = static_cast<sl::ProjectionType>(i);
-						pCamera->m_isDirty = true;
-					}
-				}
-				ImGui::EndCombo();
-			}
-			ImGui::Separator();
-
-			if (ImGui::TreeNodeEx("##Perspective", DefaultSubTreeFlags, "Perspective"))
-			{
-				ImGui::Indent();
-				float fovDegrees = glm::degrees(pCamera->m_fov);
-				StartWithText("FOV");
-				if (ImGui::DragFloat("##FOV", &fovDegrees, 0.1f, 1.0f, 120.0f))
-				{
-					pCamera->m_fov = glm::radians(fovDegrees);
-					pCamera->m_isDirty = true;
-				}
-
-				StartWithText("Near Plane");
-				if (ImGui::DragFloat("##NearPlane", &(pCamera->m_nearPlane), 0.1f, 0.001f, 100000.0f))
-				{
-					pCamera->m_isDirty = true;
-				}
-
-				StartWithText("Far Plane");
-				if (ImGui::DragFloat("##FarPlane", &(pCamera->m_farPlane), 0.1f, 0.001f, 100000.0f))
-				{
-					pCamera->m_isDirty = true;
-				}
-				ImGui::Unindent();
-			}
-			ImGui::Separator();
-
-			if (ImGui::TreeNodeEx("##Orthographic", DefaultSubTreeFlags, "Orthographic"))
-			{
-				ImGui::Indent();
-				StartWithText("Size");
-				if (ImGui::DragFloat("##Size", &(pCamera->m_orthoSize), 0.1f, 0.001f, 100000.0f))
-				{
-					pCamera->m_isDirty = true;
-				}
-
-				StartWithText("Near Clip");
-				if (ImGui::DragFloat("##NearClip", &(pCamera->m_orthoNearClip), 0.1f), -100000.0f, 100000.0f)
-				{
-					pCamera->m_isDirty = true;
-				}
-
-				StartWithText("Far Clip");
-				if (ImGui::DragFloat("##FarClip", &(pCamera->m_orthoFarClip), 0.1f), -100000.0f, 100000.0f)
-				{
-					pCamera->m_isDirty = true;
-				}
-				ImGui::Unindent();
-			}
-		}
-		ImGui::Separator();
-
-		if (removeComponent)
-		{
-			m_selectedEntity.RemoveComponent<sl::CameraComponent>();
-			m_maxTextSize = 0.0f;
-		}
-
-		ImGui::PopID();
-	}
-
-	if (auto *pCornerstone = m_selectedEntity.TryGetComponent<sl::CornerstoneComponent>(); pCornerstone)
-	{
-		ImGui::PushID("##Cornerstone");
-
-		ImGui::PushFont(sl::Font::GetBold());
-		bool componentTreeOpen = ImGui::TreeNodeEx("##Cornerstone", DefaultTreeFlags, "Cornerstone");
-		ImGui::PopFont();
-
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
-		ImGui::SameLine();
-		if (AlignButton(":", 1.0f))
+		// Hard code 6.0f here to align to window's right side
+		if (AlignButton(" : ", 1.0f, 6.0f))
 		{
 			ImGui::OpenPopup("ComponentPopup");
 		}
@@ -540,60 +352,232 @@ void ImGuiLayer::ShowDetails()
 		{
 			if (ImGui::MenuItem("Reset Component"))
 			{
-				// TODO
+				// TODO: pComponent->Reset();
 			}
-			if (ImGui::MenuItem("Remove Component"))
+			if constexpr (!std::is_same_v<T, sl::TagComponent> && !std::is_same_v<T, sl::TransformComponent>)
 			{
-				removeComponent = true;
+				if (ImGui::MenuItem("Remove Component"))
+				{
+					removeComponent = true;
+				}
 			}
 			ImGui::EndPopup();
 		}
 
 		if (componentTreeOpen)
 		{
-			StartWithText("Info");
-			ImGui::TextWrapped(pCornerstone->m_info.c_str());
+			uiFunction(pComponent);
 		}
-		ImGui::Separator();
 
 		if (removeComponent)
 		{
-			m_selectedEntity.RemoveComponent<sl::CornerstoneComponent>();
+			m_selectedEntity.RemoveComponent<T>();
 			m_maxTextSize = 0.0f;
 		}
-	
+
+		ImGui::Separator();
 		ImGui::PopID();
 	}
+}
 
+template<class T>
+void ImGuiLayer::AddComponent(const char *label)
+{
+	if (ImGui::MenuItem(label))
+	{
+		if (!m_selectedEntity.TryGetComponent<T>())
+		{
+			m_selectedEntity.AddComponent<T>();
+		}
+		else
+		{
+			SL_ENGINE_WARN("Entity \"{}\" already has component \"{}\"", m_selectedEntity.GetComponent<sl::TagComponent>().m_name, label);
+		}
+	}
+}
+
+void ImGuiLayer::StartWithText(std::string text)
+{
+	static sl::Entity s_crtEntity;
+	if (s_crtEntity != m_selectedEntity)
+	{
+		// ImGui::CalcTextSize("Position").x == 56.0f
+		// ImGui::CalcTextSize("Rotation").x == 56.0f
+		// Just a little trick to avoid Tag Component flickering when it is rendered the first time,
+		// as we know every Entity must hold both Tag and Transform Component.
+		m_maxTextSize = 56.0f;
+		s_crtEntity = m_selectedEntity;
+	}
+
+	float crtTextSize = ImGui::CalcTextSize(text.c_str()).x;
+	m_maxTextSize = std::max(m_maxTextSize, crtTextSize);
+
+	float offset = ImGui::GetStyle().IndentSpacing + ImGui::GetFontSize();
+	ImGui::SetCursorPosX(offset);
+	ImGui::AlignTextToFramePadding();
+	ImGui::Text(text.c_str());
+
+	ImGui::SameLine(m_maxTextSize + 50.0f);
+	ImGui::SetNextItemWidth(-8.0f);
+}
+
+void ImGuiLayer::ShowDetails()
+{
+	ImGui::Begin("Details");
+
+	if (!m_selectedEntity)
+	{
+		ImGui::End();
+		return;
+	}
+
+	// Draw Tag component
+	DrawComponent<sl::TagComponent>("Tag", [this](auto *pComponent)
+	{
+		std::string &name = pComponent->m_name;
+
+		constexpr size_t BufferSize = 256;
+		SL_EDITOR_ASSERT(BufferSize >= name.size());
+
+		char buffer[BufferSize] = { 0 };
+		memcpy(buffer, name.c_str(), name.size());
+
+		StartWithText("Name");
+		if (ImGui::InputText("##Name", buffer, BufferSize))
+		{
+			name = std::string{ buffer };
+			if (name.empty())
+			{
+				name = "Default Name";
+			}
+		}
+	});
+
+	// Draw Transform component
+	DrawComponent<sl::TransformComponent>("Transform", [this](auto *pComponent)
+	{
+		bool cameraMayBeDirty = false;
+
+		glm::vec3 &position = pComponent->m_position;
+		StartWithText("Position");
+		if (ImGui::DragFloat3("##Position", glm::value_ptr(position), 0.1f))
+		{
+			cameraMayBeDirty = true;
+		}
+
+		glm::vec3 ratationDegree = ModVec3(pComponent->GetRotationDegrees(), 360.0f);
+		StartWithText("Rotation");
+		if (ImGui::DragFloat3("##Rotation", glm::value_ptr(ratationDegree), 0.1f))
+		{
+			pComponent->SetRotationDegrees(ratationDegree);
+			cameraMayBeDirty = true;
+		}
+
+		glm::vec3 &scale = pComponent->m_scale;
+		StartWithText("Scale");
+		ImGui::DragFloat3("##Scale", glm::value_ptr(scale), 0.1f);
+
+		if (cameraMayBeDirty)
+		{
+			if (auto *pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>(); pCamera)
+			{
+				pCamera->m_isDirty = true;
+			}
+		}
+	});
+
+	// Draw Camera component
+	DrawComponent<sl::CameraComponent>("Camera", [this](auto *pComponent)
+	{
+		constexpr const char *ProjectionTypeNames[] =
+		{
+			nameof::nameof_enum(sl::ProjectionType::Perspective).data(),
+			nameof::nameof_enum(sl::ProjectionType::Orthographic).data(),
+		};
+
+		const char *crtProjectionTypeName = ProjectionTypeNames[static_cast<size_t>(pComponent->m_projectionType)];
+		StartWithText("Projection");
+		if (ImGui::BeginCombo("##Projection", crtProjectionTypeName, ImGuiComboFlags_WidthFitPreview))
+		{
+			for (size_t i = 0; i < 2; ++i)
+			{
+				bool isSelected = (ProjectionTypeNames[i] == crtProjectionTypeName);
+				if (ImGui::Selectable(ProjectionTypeNames[i], isSelected))
+				{
+					pComponent->m_projectionType = static_cast<sl::ProjectionType>(i);
+					pComponent->m_isDirty = true;
+				}
+			}
+			ImGui::EndCombo();
+		}
+		ImGui::Separator();
+
+		if (ImGui::TreeNodeEx("##Perspective", DefaultSubTreeFlags, "Perspective"))
+		{
+			ImGui::Indent();
+			float fovDegrees = glm::degrees(pComponent->m_fov);
+			StartWithText("FOV");
+			if (ImGui::DragFloat("##FOV", &fovDegrees, 0.1f, 1.0f, 120.0f))
+			{
+				pComponent->m_fov = glm::radians(fovDegrees);
+				pComponent->m_isDirty = true;
+			}
+
+			StartWithText("Near Plane");
+			if (ImGui::DragFloat("##NearPlane", &(pComponent->m_nearPlane), 0.1f, 0.001f, 100000.0f))
+			{
+				pComponent->m_isDirty = true;
+			}
+
+			StartWithText("Far Plane");
+			if (ImGui::DragFloat("##FarPlane", &(pComponent->m_farPlane), 0.1f, 0.001f, 100000.0f))
+			{
+				pComponent->m_isDirty = true;
+			}
+			ImGui::Unindent();
+		}
+		ImGui::Separator();
+
+		if (ImGui::TreeNodeEx("##Orthographic", DefaultSubTreeFlags, "Orthographic"))
+		{
+			ImGui::Indent();
+			StartWithText("Size");
+			if (ImGui::DragFloat("##Size", &(pComponent->m_orthoSize), 0.1f, 0.001f, 100000.0f))
+			{
+				pComponent->m_isDirty = true;
+			}
+
+			StartWithText("Near Clip");
+			if (ImGui::DragFloat("##NearClip", &(pComponent->m_orthoNearClip), 0.1f), -100000.0f, 100000.0f)
+			{
+				pComponent->m_isDirty = true;
+			}
+
+			StartWithText("Far Clip");
+			if (ImGui::DragFloat("##FarClip", &(pComponent->m_orthoFarClip), 0.1f), -100000.0f, 100000.0f)
+			{
+				pComponent->m_isDirty = true;
+			}
+			ImGui::Unindent();
+		}
+	});
+
+	// Draw Cornerstone component
+	DrawComponent<sl::CornerstoneComponent>("Cornerstone", [this](auto *pComponent)
+	{
+		StartWithText("Info");
+		ImGui::TextWrapped(pComponent->m_info.c_str());
+	});
+
+	// Add component button
 	if (AlignButton("Add Component"))
 	{
 		ImGui::OpenPopup("AddComponent");
 	}
-
 	if (ImGui::BeginPopup("AddComponent"))
 	{
-		if (ImGui::MenuItem("Camera"))
-		{
-			if (!m_selectedEntity.TryGetComponent<sl::CameraComponent>())
-			{
-				m_selectedEntity.AddComponent<sl::CameraComponent>();
-			}
-			else
-			{
-				SL_ENGINE_WARN("Camera component already exists!");
-			}
-		}
-		if (ImGui::MenuItem("Cornerstone"))
-		{
-			if (!m_selectedEntity.TryGetComponent<sl::CornerstoneComponent>())
-			{
-				m_selectedEntity.AddComponent<sl::CornerstoneComponent>();
-			}
-			else
-			{
-				SL_ENGINE_WARN("Cornerstone component already exists!");
-			}
-		}
+		AddComponent<sl::CameraComponent>("Camera");
+		AddComponent<sl::CornerstoneComponent>("Cornerstone");
 		ImGui::EndPopup();
 	}
 
@@ -648,30 +632,6 @@ void ImGuiLayer::ShowSceneViewport()
 
 	ImGui::End();
 	ImGui::PopStyleVar();
-}
-
-void ImGuiLayer::StartWithText(std::string text)
-{
-	static sl::Entity s_crtEntity;
-	if (s_crtEntity != m_selectedEntity)
-	{
-		// ImGui::CalcTextSize("Position").x == 56.0f
-		// ImGui::CalcTextSize("Rotation").x == 56.0f
-		// Just a little trick to avoid Tag Component flickering when it is rendered the first time,
-		// as we know every Entity must hold both Tag and Transform Component.
-		m_maxTextSize = 56.0f;
-		s_crtEntity = m_selectedEntity;
-	}
-
-	float crtTextSize = ImGui::CalcTextSize(text.c_str()).x;
-	m_maxTextSize = std::max(m_maxTextSize, crtTextSize);
-
-	ImGui::SetCursorPosX(30.0f);
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text(text.c_str());
-
-	ImGui::SameLine(m_maxTextSize + 50.0f);
-	ImGui::SetNextItemWidth(-8.0f);
 }
 
 // For ImGuiLayer::m_dockSpaceFlag

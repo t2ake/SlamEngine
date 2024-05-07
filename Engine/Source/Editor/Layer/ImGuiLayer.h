@@ -32,10 +32,16 @@ private:
 	void ShowEntityList();
 	void ShowLog();
 	void ShowInfo(float deltaTime);
+
+	// Just used inside ImGuiLayer
+	template<class T, class Fun>
+	void DrawComponent(const char *label, Fun uiFunction);
+	template<class T>
+	void AddComponent(const char *label);
+	void StartWithText(std::string text);
+
 	void ShowDetails();
 	void ShowSceneViewport();
-
-	void StartWithText(std::string text);
 
 	// Dock space
 	// ImGuiDockNodeFlags m_dockSpaceFlag = ImGuiDockNodeFlags_None
