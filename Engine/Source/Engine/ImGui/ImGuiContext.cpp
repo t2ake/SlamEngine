@@ -92,9 +92,9 @@ void ImGuiContext::SetColor()
 	constexpr ImVec4 bgColorLight = ColorFromByte(32, 31, 31);
 	constexpr ImVec4 bgColorVeryLight = ColorFromByte(68, 66, 66);
 
-	constexpr ImVec4 widgetColor = ColorFromByte(46, 46, 46);
-	constexpr ImVec4 widgetColorLight = ColorFromByte(61, 61, 61);
-	constexpr ImVec4 widgetColorVeryLight = ColorFromByte(153, 153, 153);
+	constexpr ImVec4 itemColor = ColorFromByte(46, 46, 46);
+	constexpr ImVec4 itemColorLight = ColorFromByte(61, 61, 61);
+	constexpr ImVec4 itemColorVeryLight = ColorFromByte(153, 153, 153);
 
 	ImVec4 *colors = ImGui::GetStyle().Colors;
 
@@ -108,9 +108,9 @@ void ImGuiContext::SetColor()
 	colors[ImGuiCol_Border] = blackColor;
 	colors[ImGuiCol_BorderShadow] = bgColorVeryLight;
 
-	colors[ImGuiCol_FrameBg] = widgetColor;
-	colors[ImGuiCol_FrameBgHovered] = widgetColorLight;
-	colors[ImGuiCol_FrameBgActive] = widgetColorLight;
+	colors[ImGuiCol_FrameBg] = itemColor;
+	colors[ImGuiCol_FrameBgHovered] = itemColorLight;
+	colors[ImGuiCol_FrameBgActive] = itemColorLight;
 
 	colors[ImGuiCol_TitleBg] = bgColorLight;
 	colors[ImGuiCol_TitleBgActive] = bgColorLight;
@@ -119,36 +119,36 @@ void ImGuiContext::SetColor()
 	colors[ImGuiCol_MenuBarBg] = bgColorLight;
 
 	colors[ImGuiCol_ScrollbarBg] = bgColorLight;
-	colors[ImGuiCol_ScrollbarGrab] = widgetColorLight;
-	colors[ImGuiCol_ScrollbarGrabHovered] = widgetColorVeryLight;
-	colors[ImGuiCol_ScrollbarGrabActive] = widgetColorVeryLight;
+	colors[ImGuiCol_ScrollbarGrab] = itemColorLight;
+	colors[ImGuiCol_ScrollbarGrabHovered] = itemColorVeryLight;
+	colors[ImGuiCol_ScrollbarGrabActive] = itemColorVeryLight;
 
-	colors[ImGuiCol_CheckMark] = widgetColorVeryLight;
+	colors[ImGuiCol_CheckMark] = itemColorVeryLight;
 
-	colors[ImGuiCol_SliderGrab] = widgetColorLight;
-	colors[ImGuiCol_SliderGrabActive] = widgetColorVeryLight;
+	colors[ImGuiCol_SliderGrab] = itemColorLight;
+	colors[ImGuiCol_SliderGrabActive] = itemColorVeryLight;
 
-	colors[ImGuiCol_Button] = widgetColor;
-	colors[ImGuiCol_ButtonHovered] = widgetColorLight;
-	colors[ImGuiCol_ButtonActive] = widgetColorLight;
+	colors[ImGuiCol_Button] = itemColor;
+	colors[ImGuiCol_ButtonHovered] = itemColorLight;
+	colors[ImGuiCol_ButtonActive] = itemColorLight;
 
-	colors[ImGuiCol_Header] = widgetColor;
-	colors[ImGuiCol_HeaderHovered] = widgetColorLight;
-	colors[ImGuiCol_HeaderActive] = widgetColorLight;
+	colors[ImGuiCol_Header] = itemColor;
+	colors[ImGuiCol_HeaderHovered] = itemColorLight;
+	colors[ImGuiCol_HeaderActive] = itemColorLight;
 
 	colors[ImGuiCol_Separator] = blackColor;
-	colors[ImGuiCol_SeparatorHovered] = widgetColorVeryLight;
-	colors[ImGuiCol_SeparatorActive] = widgetColorVeryLight;
+	colors[ImGuiCol_SeparatorHovered] = itemColorVeryLight;
+	colors[ImGuiCol_SeparatorActive] = itemColorVeryLight;
 
-	colors[ImGuiCol_ResizeGrip] = widgetColorLight;
-	colors[ImGuiCol_ResizeGripHovered] = widgetColorVeryLight;
-	colors[ImGuiCol_ResizeGripActive] = widgetColorVeryLight;
+	colors[ImGuiCol_ResizeGrip] = itemColorLight;
+	colors[ImGuiCol_ResizeGripHovered] = itemColorVeryLight;
+	colors[ImGuiCol_ResizeGripActive] = itemColorVeryLight;
 
-	colors[ImGuiCol_Tab] = widgetColor;
-	colors[ImGuiCol_TabHovered] = widgetColorVeryLight;
+	colors[ImGuiCol_Tab] = itemColor;
+	colors[ImGuiCol_TabHovered] = itemColorVeryLight;
 	colors[ImGuiCol_TabActive] = myColor;
-	colors[ImGuiCol_TabUnfocused] = widgetColor;
-	colors[ImGuiCol_TabUnfocusedActive] = widgetColorLight;
+	colors[ImGuiCol_TabUnfocused] = itemColor;
+	colors[ImGuiCol_TabUnfocusedActive] = itemColorLight;
 
 	colors[ImGuiCol_DockingPreview] = bgColorVeryLight;
 	colors[ImGuiCol_DockingEmptyBg] = bgColorLight;

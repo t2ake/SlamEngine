@@ -7,6 +7,28 @@
 namespace sl
 {
 
+void CameraComponent::Reset()
+{
+	m_projectionType = ProjectionType::Perspective;
+
+	m_fov = glm::radians(45.0f);
+	m_nearPlane = 0.01f;
+	m_farPlane = 10000.0f;
+	m_orthoSize = 10.0f;
+	m_orthoNearClip = -10.0f;
+	m_orthoFarClip = 10.0f;
+	m_isActive = false;
+	m_isRotating = false;
+	m_isMoving = false;
+	m_rotateSpeed = glm::radians(0.05f);
+	m_maxMoveSpeed = 0.016f;
+	m_acceleration = 0.0f;
+	m_moveSpeed = 0.0f;
+	m_moveSpeedKeyShiftMultiplier = 1.0f;
+	m_moveSpeedMouseScrollMultiplier = 1.0f;
+	m_isDirty = true;
+}
+
 const glm::mat4 &CameraComponent::GetView()
 {
 	Recalculate();

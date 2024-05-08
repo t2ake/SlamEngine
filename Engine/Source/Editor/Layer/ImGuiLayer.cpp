@@ -2,11 +2,11 @@
 
 #include "Core/Log.h"
 #include "Event/SceneViewportEvent.h"
+#include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
 #include "RenderCore/RenderCore.h"
 #include "Resource/Font.h"
 #include "Scene/ECSWorld.h"
-#include "Window/Input.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui/imgui.h>
@@ -166,7 +166,29 @@ void ImGuiLayer::ShowDebugPanels()
 void ImGuiLayer::ShowMenuBar()
 {
 	ImGui::BeginMainMenuBar();
-	if (ImGui::BeginMenu("Settings"))
+	if (ImGui::BeginMenu("File"))
+	{
+		if (ImGui::MenuItem("New"))
+		{
+
+		}
+		if (ImGui::MenuItem("Open"))
+		{
+
+		}
+		if (ImGui::MenuItem("Save"))
+		{
+
+		}
+		ImGui::Separator();
+		if (ImGui::MenuItem("Exit"))
+		{
+			sl::WindowCloseEvent event;
+			m_eventCallback(event);
+		}
+		ImGui::EndMenu();
+	}
+	if (ImGui::BeginMenu("Setting"))
 	{
 		if (ImGui::MenuItem("No Undocking", "", m_dockSpaceFlag & ImGuiDockNodeFlags_NoUndocking))
 		{
@@ -357,7 +379,7 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 		{
 			if (ImGui::MenuItem("Reset Component"))
 			{
-				// TODO: pComponent->Reset();
+				pComponent->Reset();
 			}
 			if constexpr (!std::is_same_v<T, sl::TagComponent> && !std::is_same_v<T, sl::TransformComponent>)
 			{

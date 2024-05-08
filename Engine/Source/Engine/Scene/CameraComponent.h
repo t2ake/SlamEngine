@@ -19,6 +19,8 @@ struct CameraComponent
 	static constexpr glm::vec3 WorldUp = { 0.0f, 1.0f, 0.0f };
 	static constexpr float MaxSpeedToAcceleration = 1.0f / 250.0f;
 
+	void Reset();
+
 	const glm::mat4 &GetView();
 	const glm::mat4 &GetProjection();
 	const glm::mat4 &GetViewProjection();
@@ -26,18 +28,17 @@ struct CameraComponent
 
 	ProjectionType m_projectionType = ProjectionType::Perspective;
 
+	// Perspective  datas
+	float m_aspect = 1920.0f / 1080.0f;
+	float m_fov = glm::radians(45.0f); // Stores in radians
+	float m_fovMultiplier = 1.0f;
+	float m_nearPlane = 0.01f;
+	float m_farPlane = 10000.0f;
+
 	// Orthographic datas
 	float m_orthoSize = 10.0f;
 	float m_orthoNearClip = -10.0f;
 	float m_orthoFarClip = 10.0f;
-
-	// Camera datas
-	float m_aspect = 1920.0f / 1080.0f;
-	// Stores in radians
-	float m_fov = glm::radians(45.0f);
-	float m_fovMultiplier = 1.0f;
-	float m_nearPlane = 0.01f;
-	float m_farPlane = 10000.0f;
 
 	// Camera Controller datas
 	bool m_isActive = false;

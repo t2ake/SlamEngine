@@ -1,7 +1,6 @@
 #include "Editor.h"
 
 #include "Core/Log.h"
-#include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
 #include "Layer/LayerStack.h"

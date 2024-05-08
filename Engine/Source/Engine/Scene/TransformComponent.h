@@ -2,6 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
+#include <glm/trigonometric.hpp>
 #include <glm/vec3.hpp>
 
 namespace sl
@@ -9,6 +10,13 @@ namespace sl
 
 struct TransformComponent
 {
+	void Reset()
+	{
+		m_position = glm::vec3{ 0.0f, 0.0f , 0.0f };
+		m_rotation = glm::vec3{ 0.0f, 0.0f , 0.0f };
+		m_scale = glm::vec3{ 1.0f, 1.0f , 1.0f };
+	}
+
 	TransformComponent() = default;
 	TransformComponent(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) :
 		m_position(position), m_rotation(rotation), m_scale(scale) {}
@@ -29,8 +37,7 @@ struct TransformComponent
 	}
 
 	glm::vec3 m_position{ 0.0f, 0.0f , 0.0f };
-	// Stores in radians
-	glm::vec3 m_rotation{ 0.0f, 0.0f , 0.0f };
+	glm::vec3 m_rotation{ 0.0f, 0.0f , 0.0f }; // Stores in radians
 	glm::vec3 m_scale{ 1.0f, 1.0f , 1.0f };
 };
 
