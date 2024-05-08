@@ -50,7 +50,7 @@ struct CameraComponent
 	float m_acceleration = 0.0f;
 	float m_moveSpeed = 0.0f;
 
-	float m_moveSpeedKeyShiftMultiplier = 1.0f;
+	float m_moveSpeedKeyShiftMultiplier = 4.0f;
 	float m_moveSpeedMouseScrollMultiplier = 1.0f;
 
 	glm::vec2 m_mouseLastPos{ 0.0f, 0.0f };

@@ -149,8 +149,8 @@ void CameraControllerLayer::UpdateMainCamera(float deltaTime)
 
 		camera.m_moveSpeed += camera.m_acceleration * deltaTime;
 		camera.m_moveSpeed = std::clamp(camera.m_moveSpeed, 0.0f, camera.m_maxMoveSpeed);
-		camera.m_moveSpeedKeyShiftMultiplier = sl::Input::IsKeyPressed(SL_KEY_LEFT_SHIFT) ? 3.0f : 1.0f;
-		float finalMoveSpeed = camera.m_moveSpeed * camera.m_moveSpeedKeyShiftMultiplier * camera.m_moveSpeedMouseScrollMultiplier * deltaTime;
+		float moveSpeedKeyShiftMultiplier = sl::Input::IsKeyPressed(SL_KEY_LEFT_SHIFT) ? camera.m_moveSpeedKeyShiftMultiplier : 1.0f;
+		float finalMoveSpeed = camera.m_moveSpeed * moveSpeedKeyShiftMultiplier * camera.m_moveSpeedMouseScrollMultiplier * deltaTime;
 
 		transform.m_position += finalMoveDir * finalMoveSpeed;
 		camera.m_isDirty = true;
@@ -173,10 +173,16 @@ void CameraControllerLayer::UpdateMainCamera(float deltaTime)
 
 bool CameraControllerLayer::OnMouseScroll(sl::MouseScrollEvent &event)
 {
+	if (!sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>().m_isActive ||
+		!sl::Input::IsMouseButtonPressed(SL_MOUSE_BUTTON_2))
+	{
+		return false;
+	}
+
 	auto &camera = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>();
 	
-	camera.m_moveSpeedMouseScrollMultiplier += event.GetOffsetY() * 0.2f;
-	camera.m_moveSpeedMouseScrollMultiplier = std::clamp(camera.m_moveSpeedMouseScrollMultiplier, 0.2f, 10.0f);
+	camera.m_moveSpeedMouseScrollMultiplier += event.GetOffsetY() * 0.1f;
+	camera.m_moveSpeedMouseScrollMultiplier = std::clamp(camera.m_moveSpeedMouseScrollMultiplier, 0.1f, 10.0f);
 
 	return true;
 }

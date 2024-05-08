@@ -24,7 +24,7 @@ void CameraComponent::Reset()
 	m_maxMoveSpeed = 0.016f;
 	m_acceleration = 0.0f;
 	m_moveSpeed = 0.0f;
-	m_moveSpeedKeyShiftMultiplier = 1.0f;
+	m_moveSpeedKeyShiftMultiplier = 4.0f;
 	m_moveSpeedMouseScrollMultiplier = 1.0f;
 	m_isDirty = true;
 }

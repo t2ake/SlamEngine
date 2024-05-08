@@ -542,6 +542,7 @@ void ImGuiLayer::ShowDetails()
 		if (ImGui::TreeNodeEx("##Perspective", DefaultSubTreeFlags, "Perspective"))
 		{
 			ImGui::Indent();
+
 			float fovDegrees = glm::degrees(pComponent->m_fov);
 			StartWithText("FOV");
 			if (ImGui::DragFloat("##FOV", &fovDegrees, 0.1f, 1.0f, 120.0f))
@@ -561,6 +562,7 @@ void ImGuiLayer::ShowDetails()
 			{
 				pComponent->m_isDirty = true;
 			}
+
 			ImGui::Unindent();
 		}
 		ImGui::Separator();
@@ -568,6 +570,7 @@ void ImGuiLayer::ShowDetails()
 		if (ImGui::TreeNodeEx("##Orthographic", DefaultSubTreeFlags, "Orthographic"))
 		{
 			ImGui::Indent();
+
 			StartWithText("Size");
 			if (ImGui::DragFloat("##Size", &(pComponent->m_orthoSize), 0.1f, 0.001f, 100000.0f))
 			{
@@ -585,6 +588,41 @@ void ImGuiLayer::ShowDetails()
 			{
 				pComponent->m_isDirty = true;
 			}
+
+			ImGui::Unindent();
+		}
+		ImGui::Separator();
+
+		if (ImGui::TreeNodeEx("##Controller", DefaultSubTreeFlags, "Controller"))
+		{
+			ImGui::Indent();
+
+			float rotateSpeedDegrees = glm::degrees(pComponent->m_rotateSpeed);
+			StartWithText("Rotate Speed");
+			if (ImGui::DragFloat("##RotateSpeed", &rotateSpeedDegrees, 0.01f), 0.0001f, 1.0f)
+			{
+				pComponent->m_isDirty = true;
+				pComponent->m_rotateSpeed = glm::radians(rotateSpeedDegrees);
+			}
+
+			StartWithText("Move Speed");
+			if (ImGui::DragFloat("##MoveSpeed", &(pComponent->m_maxMoveSpeed), 0.01f), 0.0001f, 1.0f)
+			{
+				pComponent->m_isDirty = true;
+			}
+
+			StartWithText("Shift Multiplier");
+			if (ImGui::DragFloat("##ShiftMultiplier", &(pComponent->m_moveSpeedKeyShiftMultiplier), 0.1f), 0.1f, 10.0f)
+			{
+				pComponent->m_isDirty = true;
+			}
+
+			StartWithText("Scroll Multiplier");
+			if (ImGui::DragFloat("##ScrollMultiplier", &(pComponent->m_moveSpeedMouseScrollMultiplier), 0.1f), 0.1f, 10.0f)
+			{
+				pComponent->m_isDirty = true;
+			}
+
 			ImGui::Unindent();
 		}
 	});
