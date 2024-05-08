@@ -13,6 +13,11 @@ public:
 
 	static void NewFrame();
 	static void Submit();
+
+
+private:
+	static void SetColor();
+	static void SetStyle();
 };
 
 } // namespace sl

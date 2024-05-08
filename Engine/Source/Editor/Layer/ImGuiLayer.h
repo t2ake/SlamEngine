@@ -49,6 +49,7 @@ private:
 	
 	// Menubar
 	bool m_debugImGuiDemo = false;
+	bool m_styleEditor = false;
 	bool m_debugItemPicker = false;
 	bool m_debugIDStack = false;
 

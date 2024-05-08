@@ -30,22 +30,20 @@ void ImGuiContext::Init(void *pNativeWindow)
 	io.ConfigViewportsNoTaskBarIcon = true;
 
 	// 3. Load font
-	// ImFont *pRegularFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Roboto/Roboto-Regular.ttf").c_str(), 16.0f);
-	// ImFont *pBoldFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Roboto/Roboto-Bold.ttf").c_str(), 16.0f);
-	// ImFont *pThinFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Roboto/Roboto-Thin.ttf").c_str(), 16.0f);
-	ImFont *pRegularFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Regular.ttf").c_str(), 16.0f);
-	ImFont *pBoldFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Bold.ttf").c_str(), 16.0f);
-	ImFont *pThinFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Light.ttf").c_str(), 16.0f);
+	// ImFont *pRegularFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Roboto/Roboto-Regular.ttf").c_str(), 18.0f);
+	// ImFont *pBoldFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Roboto/Roboto-Bold.ttf").c_str(), 18.0f);
+	// ImFont *pThinFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Roboto/Roboto-Thin.ttf").c_str(), 18.0f);
+	ImFont *pRegularFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Regular.ttf").c_str(), 18.0f);
+	ImFont *pBoldFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Bold.ttf").c_str(), 18.0f);
+	ImFont *pThinFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Light.ttf").c_str(), 18.0f);
 	sl::Font::SetRegular(pRegularFont);
 	sl::Font::SetBold(pBoldFont);
 	sl::Font::SetThin(pThinFont);
 	io.FontDefault = pRegularFont;
 
 	// 4. Set style
-	ImGui::StyleColorsDark();
-	ImGuiStyle &style = ImGui::GetStyle();
-	style.WindowRounding = 0.0f;
-	style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	SetColor();
+	SetStyle();
 
 	// 5. Init platform and Rendering backend
 	ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(pNativeWindow), true);
@@ -75,6 +73,119 @@ void ImGuiContext::Submit()
 	// For docking
 	ImGui::UpdatePlatformWindows();
 	ImGui::RenderPlatformWindowsDefault();
+}
+
+void ImGuiContext::SetColor()
+{
+	constexpr auto ColorFromByte = [](uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255)
+	{
+		return ImVec4{ (float)r / 255.0f, (float)g / 255.0f, (float)b / 255.0f, (float)a / 255.0f };
+	};
+
+	constexpr ImVec4 whiteColor = ColorFromByte(255, 255, 255);
+	constexpr ImVec4 greyColor = ColorFromByte(127, 127, 127);
+	constexpr ImVec4 blackColor = ColorFromByte(0, 0, 0);
+	constexpr ImVec4 myColor = ColorFromByte(255, 50, 30);
+	constexpr ImVec4 unknownColor = ColorFromByte(255, 0, 235);
+
+	constexpr ImVec4 bgColor = ColorFromByte(30, 30, 30);
+	constexpr ImVec4 bgColorLight = ColorFromByte(32, 31, 31);
+	constexpr ImVec4 bgColorVeryLight = ColorFromByte(68, 66, 66);
+
+	constexpr ImVec4 widgetColor = ColorFromByte(46, 46, 46);
+	constexpr ImVec4 widgetColorLight = ColorFromByte(61, 61, 61);
+	constexpr ImVec4 widgetColorVeryLight = ColorFromByte(153, 153, 153);
+
+	ImVec4 *colors = ImGui::GetStyle().Colors;
+
+	colors[ImGuiCol_Text] = whiteColor;
+	colors[ImGuiCol_TextDisabled] = greyColor;
+
+	colors[ImGuiCol_WindowBg] = bgColor;
+	colors[ImGuiCol_ChildBg] = bgColorLight;
+	colors[ImGuiCol_PopupBg] = bgColorLight;
+
+	colors[ImGuiCol_Border] = blackColor;
+	colors[ImGuiCol_BorderShadow] = bgColorVeryLight;
+
+	colors[ImGuiCol_FrameBg] = widgetColor;
+	colors[ImGuiCol_FrameBgHovered] = widgetColorLight;
+	colors[ImGuiCol_FrameBgActive] = widgetColorLight;
+
+	colors[ImGuiCol_TitleBg] = bgColorLight;
+	colors[ImGuiCol_TitleBgActive] = bgColorLight;
+	colors[ImGuiCol_TitleBgCollapsed] = bgColorLight;
+
+	colors[ImGuiCol_MenuBarBg] = bgColorLight;
+
+	colors[ImGuiCol_ScrollbarBg] = bgColorLight;
+	colors[ImGuiCol_ScrollbarGrab] = widgetColorLight;
+	colors[ImGuiCol_ScrollbarGrabHovered] = widgetColorVeryLight;
+	colors[ImGuiCol_ScrollbarGrabActive] = widgetColorVeryLight;
+
+	colors[ImGuiCol_CheckMark] = widgetColorVeryLight;
+
+	colors[ImGuiCol_SliderGrab] = widgetColorLight;
+	colors[ImGuiCol_SliderGrabActive] = widgetColorVeryLight;
+
+	colors[ImGuiCol_Button] = widgetColor;
+	colors[ImGuiCol_ButtonHovered] = widgetColorLight;
+	colors[ImGuiCol_ButtonActive] = widgetColorLight;
+
+	colors[ImGuiCol_Header] = widgetColor;
+	colors[ImGuiCol_HeaderHovered] = widgetColorLight;
+	colors[ImGuiCol_HeaderActive] = widgetColorLight;
+
+	colors[ImGuiCol_Separator] = blackColor;
+	colors[ImGuiCol_SeparatorHovered] = widgetColorVeryLight;
+	colors[ImGuiCol_SeparatorActive] = widgetColorVeryLight;
+
+	colors[ImGuiCol_ResizeGrip] = widgetColorLight;
+	colors[ImGuiCol_ResizeGripHovered] = widgetColorVeryLight;
+	colors[ImGuiCol_ResizeGripActive] = widgetColorVeryLight;
+
+	colors[ImGuiCol_Tab] = widgetColor;
+	colors[ImGuiCol_TabHovered] = widgetColorVeryLight;
+	colors[ImGuiCol_TabActive] = myColor;
+	colors[ImGuiCol_TabUnfocused] = widgetColor;
+	colors[ImGuiCol_TabUnfocusedActive] = widgetColorLight;
+
+	colors[ImGuiCol_DockingPreview] = bgColorVeryLight;
+	colors[ImGuiCol_DockingEmptyBg] = bgColorLight;
+
+	// colors[ImGuiCol_PlotLines] = unknownColor;
+	// colors[ImGuiCol_PlotLinesHovered] = unknownColor;
+	// colors[ImGuiCol_PlotHistogram] = unknownColor;
+	// colors[ImGuiCol_PlotHistogramHovered] = unknownColor;
+	// 
+	// colors[ImGuiCol_TableHeaderBg] = unknownColor;
+	// colors[ImGuiCol_TableBorderStrong] = unknownColor;
+	// colors[ImGuiCol_TableBorderLight] = unknownColor;
+	// colors[ImGuiCol_TableRowBg] = unknownColor;
+	// colors[ImGuiCol_TableRowBgAlt] = unknownColor;
+	// 
+	// colors[ImGuiCol_TextSelectedBg] = unknownColor;
+	// colors[ImGuiCol_DragDropTarget] = unknownColor;
+	// 
+	// colors[ImGuiCol_NavHighlight] = unknownColor;
+	// colors[ImGuiCol_NavWindowingHighlight] = unknownColor;
+	// colors[ImGuiCol_NavWindowingDimBg] = unknownColor;
+	// 
+	// colors[ImGuiCol_ModalWindowDimBg] = unknownColor;
+}
+
+void ImGuiContext::SetStyle()
+{
+	ImGuiStyle &style = ImGui::GetStyle();
+
+	style.WindowRounding = 4.0f;
+	style.ChildRounding = 4.0f;
+	style.FrameRounding = 4.0f;
+	style.PopupRounding = 4.0f;
+	style.ScrollbarRounding = 4.0f;
+	style.GrabRounding = 4.0f;
+	style.TabRounding = 4.0f;
+	style.DockingSeparatorSize = 1.0f;
 }
 
 } // namespace sl

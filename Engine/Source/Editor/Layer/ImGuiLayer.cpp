@@ -99,7 +99,7 @@ ImGuiLayer::~ImGuiLayer()
 
 void ImGuiLayer::OnAttach()
 {
-
+	m_selectedEntity = sl::ECSWorld::GetMainCameraEntity();
 }
 
 void ImGuiLayer::OnDetach()
@@ -149,6 +149,10 @@ void ImGuiLayer::ShowDebugPanels()
 	{
 		ImGui::ShowDemoWindow(&m_debugImGuiDemo);
 	}
+	if (m_styleEditor)
+	{
+		ImGui::ShowStyleEditor();
+	}
 	if (m_debugIDStack)
 	{
 		ImGui::ShowIDStackToolWindow(&m_debugIDStack);
@@ -177,6 +181,7 @@ void ImGuiLayer::ShowMenuBar()
 	if (ImGui::BeginMenu("Debug"))
 	{
 		ImGui::MenuItem("ImGui Demo", "", &m_debugImGuiDemo);
+		ImGui::MenuItem("Style Editor", "", &m_styleEditor);
 		ImGui::MenuItem("ID Stack", "", &m_debugIDStack);
 		ImGui::MenuItem("Item Picker", "", &m_debugItemPicker);
 		ImGui::EndMenu();
@@ -188,7 +193,7 @@ void ImGuiLayer::ShowEntityList()
 {
 	ImGui::Begin("Entity List");
 
-	if (ImGui::SmallButton("+"))
+	if (ImGui::Button("+"))
 	{
 		sl::ECSWorld::CreateEntity("Empty Entity");
 	}
@@ -586,10 +591,8 @@ void ImGuiLayer::ShowDetails()
 
 void ImGuiLayer::ShowSceneViewport()
 {
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-	bool open = true;
-	ImGui::Begin("Scene", &open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
+	ImGui::Begin("Scene");
 
 	// Scene viewport event stuff
 	{
