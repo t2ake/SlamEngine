@@ -1,6 +1,7 @@
 #include "ImGuiLayer.h"
 
 #include "Core/Log.h"
+#include "Event/CameraEvent.h"
 #include "Event/SceneViewportEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
@@ -81,6 +82,14 @@ bool AlignButton(const char *label, float align = 0.5f, float offset = 0.0f)
 	}
 
 	return ImGui::Button(label);
+}
+
+void RightClickFocus()
+{
+	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered())
+	{
+		ImGui::SetWindowFocus();
+	}
 }
 
 }
@@ -215,6 +224,8 @@ void ImGuiLayer::ShowEntityList()
 {
 	ImGui::Begin("Entity List");
 
+	RightClickFocus();
+
 	if (ImGui::Button("+"))
 	{
 		sl::ECSWorld::CreateEntity("Empty Entity");
@@ -269,7 +280,7 @@ void ImGuiLayer::ShowEntityList()
 	}
 
 	// Left click at enpty space to clear selected entity.
-	if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+	if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 	{
 		m_selectedEntity.Reset();
 	}
@@ -281,6 +292,8 @@ void ImGuiLayer::ShowLog()
 {
 	ImGui::Begin("Log");
 
+	RightClickFocus();
+
 	ImGui::Text("TODO");
 
 	ImGui::End();
@@ -289,6 +302,8 @@ void ImGuiLayer::ShowLog()
 void ImGuiLayer::ShowInfo(float deltaTime)
 {
 	ImGui::Begin("Info");
+
+	RightClickFocus();
 
 	// Infos
 	{
@@ -361,14 +376,15 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 	{
 		ImGui::PushID(nameof::nameof_type<T>().data());
 
+		// Draw tree node
 		ImGui::PushFont(sl::Font::GetBold());
 		bool componentTreeOpen = ImGui::TreeNodeEx(label, DefaultTreeFlags, label);
 		ImGui::PopFont();
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
+		// Draw component menu button
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 		ImGui::SameLine();
-		// Hard code 6.0f here to align to window's right side
-		if (AlignButton(" : ", 1.0f, 6.0f))
+		if (AlignButton(" : ", 1.0f, ImGui::GetStyle().WindowPadding.x / 2.0f))
 		{
 			ImGui::OpenPopup("ComponentPopup");
 		}
@@ -380,6 +396,13 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 			if (ImGui::MenuItem("Reset Component"))
 			{
 				pComponent->Reset();
+				if constexpr (std::is_same_v<T, sl::TransformComponent>)
+				{
+					if (auto pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>(); pCamera)
+					{
+						pCamera->m_isDirty = true;
+					}
+				}
 			}
 			if constexpr (!std::is_same_v<T, sl::TagComponent> && !std::is_same_v<T, sl::TransformComponent>)
 			{
@@ -391,6 +414,7 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 			ImGui::EndPopup();
 		}
 
+		// Draw component specific item
 		if (componentTreeOpen)
 		{
 			uiFunction(pComponent);
@@ -431,7 +455,7 @@ void ImGuiLayer::StartWithText(std::string text)
 		// ImGui::CalcTextSize("Position").x == 56.0f
 		// ImGui::CalcTextSize("Rotation").x == 56.0f
 		// Just a little trick to avoid Tag Component flickering when it is rendered the first time,
-		// as we know every Entity must hold both Tag and Transform Component.
+		// as we know every entity must hold both Tag and Transform component.
 		m_maxTextSize = 56.0f;
 		s_crtEntity = m_selectedEntity;
 	}
@@ -451,6 +475,8 @@ void ImGuiLayer::StartWithText(std::string text)
 void ImGuiLayer::ShowDetails()
 {
 	ImGui::Begin("Details");
+
+	RightClickFocus();
 
 	if (!m_selectedEntity)
 	{
@@ -545,20 +571,20 @@ void ImGuiLayer::ShowDetails()
 
 			float fovDegrees = glm::degrees(pComponent->m_fov);
 			StartWithText("FOV");
-			if (ImGui::DragFloat("##FOV", &fovDegrees, 0.1f, 1.0f, 120.0f))
+			if (ImGui::DragFloat("##FOV", &fovDegrees, 0.1f, 1.0f, 180.0f))
 			{
 				pComponent->m_fov = glm::radians(fovDegrees);
 				pComponent->m_isDirty = true;
 			}
 
 			StartWithText("Near Plane");
-			if (ImGui::DragFloat("##NearPlane", &(pComponent->m_nearPlane), 0.1f, 0.001f, 100000.0f))
+			if (ImGui::DragFloat("##NearPlane", &(pComponent->m_nearPlane), 0.001f, 0.001f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
 
 			StartWithText("Far Plane");
-			if (ImGui::DragFloat("##FarPlane", &(pComponent->m_farPlane), 0.1f, 0.001f, 100000.0f))
+			if (ImGui::DragFloat("##FarPlane", &(pComponent->m_farPlane), 1.0f, 0.001f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
@@ -572,19 +598,19 @@ void ImGuiLayer::ShowDetails()
 			ImGui::Indent();
 
 			StartWithText("Size");
-			if (ImGui::DragFloat("##Size", &(pComponent->m_orthoSize), 0.1f, 0.001f, 100000.0f))
+			if (ImGui::DragFloat("##Size", &(pComponent->m_orthoSize), 0.1f, 0.1f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
 
 			StartWithText("Near Clip");
-			if (ImGui::DragFloat("##NearClip", &(pComponent->m_orthoNearClip), 0.1f), -100000.0f, 100000.0f)
+			if (ImGui::DragFloat("##NearClip", &(pComponent->m_orthoNearClip), 0.1f, -100000.0f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
 
 			StartWithText("Far Clip");
-			if (ImGui::DragFloat("##FarClip", &(pComponent->m_orthoFarClip), 0.1f), -100000.0f, 100000.0f)
+			if (ImGui::DragFloat("##FarClip", &(pComponent->m_orthoFarClip), 0.1f, -100000.0f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
@@ -599,29 +625,22 @@ void ImGuiLayer::ShowDetails()
 
 			float rotateSpeedDegrees = glm::degrees(pComponent->m_rotateSpeed);
 			StartWithText("Rotate Speed");
-			if (ImGui::DragFloat("##RotateSpeed", &rotateSpeedDegrees, 0.01f), 0.0001f, 1.0f)
+			if (ImGui::DragFloat("##RotateSpeed", &rotateSpeedDegrees, 0.001f, 0.001f, 1.0f))
 			{
-				pComponent->m_isDirty = true;
 				pComponent->m_rotateSpeed = glm::radians(rotateSpeedDegrees);
 			}
 
 			StartWithText("Move Speed");
-			if (ImGui::DragFloat("##MoveSpeed", &(pComponent->m_maxMoveSpeed), 0.01f), 0.0001f, 1.0f)
-			{
-				pComponent->m_isDirty = true;
-			}
+			ImGui::DragFloat("##MoveSpeed", &(pComponent->m_maxMoveSpeed), 0.001f, 0.001f, 1.0f);
+
+			StartWithText("Acceleration");
+			ImGui::DragFloat("##Acceleration", &(pComponent->m_maxSpeedToAcceleration), 0.001f, 0.001f, 1.0f);
 
 			StartWithText("Shift Multiplier");
-			if (ImGui::DragFloat("##ShiftMultiplier", &(pComponent->m_moveSpeedKeyShiftMultiplier), 0.1f), 0.1f, 10.0f)
-			{
-				pComponent->m_isDirty = true;
-			}
+			ImGui::DragFloat("##ShiftMultiplier", &(pComponent->m_moveSpeedKeyShiftMultiplier), 0.1f, 0.1f, 10.0f);
 
 			StartWithText("Scroll Multiplier");
-			if (ImGui::DragFloat("##ScrollMultiplier", &(pComponent->m_moveSpeedMouseScrollMultiplier), 0.1f), 0.1f, 10.0f)
-			{
-				pComponent->m_isDirty = true;
-			}
+			ImGui::DragFloat("##ScrollMultiplier", &(pComponent->m_moveSpeedMouseScrollMultiplier), 0.1f, 0.1f, 10.0f);
 
 			ImGui::Unindent();
 		}
@@ -656,25 +675,24 @@ void ImGuiLayer::ShowSceneViewport()
 
 	// Scene viewport event stuff
 	{
-		if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+		// Camera event
+		if (ImGui::IsWindowHovered())
 		{
-			ImGui::SetWindowFocus();
-		}
-		if (bool crtFocus = ImGui::IsWindowFocused(); crtFocus != m_isSceneViewportFocused)
-		{
-			if (crtFocus)
+			if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
 			{
-				sl::SceneViewportGetFocusEvent event;
+				ImGui::SetWindowFocus();
+
+				sl::CameraActivateEvent event{ sl::CameraControllerMode::FPS };
 				m_eventCallback(event);
 			}
-			else
+			else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
 			{
-				sl::SceneViewportLostFocusEvent event;
+				sl::CameraActivateEvent event{ sl::CameraControllerMode::Editor };
 				m_eventCallback(event);
 			}
-			m_isSceneViewportFocused = crtFocus;
 		}
 
+		// Resize event
 		auto crtSize = ImGui::GetContentRegionAvail();
 		uint32_t crtSizeX = (uint32_t)crtSize.x;
 		uint32_t crtSizeY = (uint32_t)crtSize.y;
@@ -690,6 +708,15 @@ void ImGuiLayer::ShowSceneViewport()
 		}
 	}
 
+	// The invisible button is designed to prevent the mouse from hovering over the ui item
+	// even when the camera is moving, using an internal imgui mechanism.
+	// I haven't come up with a better solution, but it just works.
+	ImVec2 pos = ImGui::GetCursorPos();
+	ImGui::InvisibleButton("SceneViewport", ImVec2{ (float)m_viewportSizeX, (float)m_viewportSizeY },
+			ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+	ImGui::SetCursorPos(pos);
+
+	// Draw main frame buffer color attachment
 	uint32_t handle = sl::RenderCore::GetMainFrameBuffer()->GetColorAttachmentHandle();
 	ImGui::Image((void *)(uint64_t)handle, ImVec2{ (float)m_viewportSizeX, (float)m_viewportSizeY }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 

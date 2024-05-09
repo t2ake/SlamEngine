@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/Defines.h"
 #include "Layer/Layer.h"
 
 namespace sl
@@ -7,8 +8,9 @@ namespace sl
 
 class MouseScrollEvent;
 class SceneViewportResizeEvent;
-class SceneViewportGetFocusEvent;
-class SceneViewportLostFocusEvent;
+class CameraActivateEvent;
+class MouseButtonReleaseEvent;
+class KeyReleaseEvent;
 
 }
 
@@ -26,9 +28,16 @@ public:
 
 private:
 	void UpdateMainCamera(float deltaTime);
+	void UpdateFPSCamera(float deltaTime);
+	void UpdateEditorCamera(float deltaTime);
 
 	bool OnMouseScroll(sl::MouseScrollEvent &event);
 	bool OnSceneViewportResize(sl::SceneViewportResizeEvent &event);
-	bool OnSceneViewportGetFocus(sl::SceneViewportGetFocusEvent &event);
-	bool OnSceneViewportLostFocus(sl::SceneViewportLostFocusEvent &event);
+	bool OnCameraActivate(sl::CameraActivateEvent &event);
+	bool OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event);
+	bool OnKeyRelease(sl::KeyReleaseEvent &event);
+
+	sl::CameraControllerMode m_controllerMode = sl::CameraControllerMode::None;
+	bool m_isRotating = false;
+	bool m_isMoving = false;
 };

@@ -1,11 +1,13 @@
 #pragma once
 
 #include "Event/Event.h"
+#include "Layer/Layer.h"
 #include "RenderCore/RenderContext.h"
 
 namespace sl
 {
 
+// TODO: WindowLayer
 class Window final
 {
 public:
@@ -31,14 +33,13 @@ public:
 	bool &GetIsVSync() { return m_isVSync; }
 	bool GetIsVSync() const { return m_isVSync; }
 
-	void DisableCursor() const;
-	void EnableCursor() const;
+	void CaptureCursor();
+	void ReleaseCursor();
 
 	void SetEventCallback(EventCallback fun) { m_eventCallback = std::move(fun); }
 	void DespatchEvent(Event &event) { m_eventCallback(event); }
 
 private:
-
 	void SetCallbacks();
 
 	void *m_pNativeWindow = nullptr;
@@ -48,6 +49,7 @@ private:
 	uint32_t m_width = 1280;
 	uint32_t m_height = 720;
 	bool m_isVSync = true;
+	bool m_isCursorCaptured = false;
 
 	EventCallback m_eventCallback = nullptr;
 };

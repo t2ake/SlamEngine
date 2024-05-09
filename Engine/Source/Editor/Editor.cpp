@@ -1,6 +1,8 @@
 #include "Editor.h"
 
 #include "Core/Log.h"
+#include "Event/CameraEvent.h"
+#include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
 #include "Layer/LayerStack.h"
@@ -114,6 +116,8 @@ void Editor::OnEvent(sl::Event &event)
 	sl::EventDispatcher dispatcher{ event };
 	dispatcher.Dispatch<sl::WindowCloseEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowClose));
 	dispatcher.Dispatch<sl::WindowResizeEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowResize));
+	dispatcher.Dispatch<sl::CameraActivateEvent>(BIND_EVENT_CALLBACK(Editor::OnCameraActivate));
+	dispatcher.Dispatch<sl::MouseButtonReleaseEvent>(BIND_EVENT_CALLBACK(Editor::OnMouseButtonRelease));
 
 	// Iterate layers from end to begin / top to bottom.
 	for (auto it = m_pLayerStack->rend(); it != m_pLayerStack->rbegin(); ++it)
@@ -129,8 +133,8 @@ void Editor::OnEvent(sl::Event &event)
 bool Editor::OnWindowClose(sl::WindowCloseEvent &event)
 {
 	SL_EDITOR_TRACE("Window closed");
-
 	m_isRunning = false;
+
 	return true;
 }
 
@@ -147,4 +151,20 @@ bool Editor::OnWindowResize(sl::WindowResizeEvent &event)
 	}
 
 	return true;
+}
+
+// TODO: Move these to Window layer
+
+bool Editor::OnCameraActivate(sl::CameraActivateEvent &event)
+{
+	m_pWindow->CaptureCursor();
+
+	return false;
+}
+
+bool Editor::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event)
+{
+	m_pWindow->ReleaseCursor();
+
+	return false;
 }
