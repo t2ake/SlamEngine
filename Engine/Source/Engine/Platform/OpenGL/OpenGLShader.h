@@ -14,10 +14,6 @@ public:
 	OpenGLShader(std::string name, std::string computePath);
 	virtual ~OpenGLShader() override;
 
-	void SetName(std::string name) { m_shaderProgramName = std::move(name); }
-	std::string &GetName() { return m_shaderProgramName; }
-	const std::string &GetName() const { return m_shaderProgramName; }
-
 	virtual void Bind() const override;
 	virtual void Unbind() const override;
 
@@ -39,6 +35,11 @@ public:
 	virtual void UploadUniform(const std::string &name, const glm::mat2 &value) override;
 	virtual void UploadUniform(const std::string &name, const glm::mat3 &value) override;
 	virtual void UploadUniform(const std::string &name, const glm::mat4 &value) override;
+
+	virtual const std::string &GetName() const override
+	{
+		return m_shaderProgramName;
+	}
 
 private:
 	bool CompileShader(std::string src, ShaderType type);

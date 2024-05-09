@@ -646,6 +646,13 @@ void ImGuiLayer::ShowDetails()
 		}
 	});
 
+	// Draw Rendering component
+	DrawComponent<sl::RenderingComponent>("Rendering", [this](auto *pComponent)
+	{
+		StartWithText("Shader");
+		ImGui::Text(pComponent->m_pShader->GetName().c_str());
+	});
+
 	// Draw Cornerstone component
 	DrawComponent<sl::CornerstoneComponent>("Cornerstone", [this](auto *pComponent)
 	{

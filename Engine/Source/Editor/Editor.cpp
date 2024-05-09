@@ -13,6 +13,7 @@
 
 #include "Layer/CameraControllerLayer.h"
 #include "Layer/ImGuiLayer.h"
+#include "Layer/RendererLayer.h"
 #include "Layer/SandboxLayer.h"
 
 Editor::Editor(EditorInitor initor)
@@ -33,19 +34,16 @@ Editor::Editor(EditorInitor initor)
 	mainCameraEntity.AddComponent<sl::CornerstoneComponent>("Currently we only support that only one camera in the scene.");
 	sl::ECSWorld::SetMainCameraEntity(mainCameraEntity);
 
-	for (int i = 0; i < 10; ++i)
-	{
-		sl::ECSWorld::CreateEntity(std::format("Test entity {}", i).c_str());
-	}
-
-	m_pCameraControllerLayer = new CameraControllerLayer;
 	m_pSandboxLayer = new SandboxLayer;
+	m_pCameraControllerLayer = new CameraControllerLayer;
+	m_pRendererLayer = new RendererLayer;
 	m_pImGuiLayer = new ImGuiLayer;
 	m_pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
 	m_pLayerStack = new sl::LayerStack;
 	m_pLayerStack->PushLayer(m_pSandboxLayer);
 	m_pLayerStack->PushLayer(m_pCameraControllerLayer);
+	m_pLayerStack->PushLayer(m_pRendererLayer);
 	m_pLayerStack->PushLayer(m_pImGuiLayer);
 
 	m_timer.Tick();
@@ -152,8 +150,6 @@ bool Editor::OnWindowResize(sl::WindowResizeEvent &event)
 
 	return true;
 }
-
-// TODO: Move these to Window layer
 
 bool Editor::OnCameraActivate(sl::CameraActivateEvent &event)
 {

@@ -3,6 +3,7 @@
 #include "RenderCore/FrameBuffer.h"
 #include "RenderCore/RenderAPI.h"
 #include "RenderCore/Shader.h"
+#include "RenderCore/Texture.h"
 #include "RenderCore/VertexArray.h"
 
 namespace sl

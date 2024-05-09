@@ -7,7 +7,6 @@
 namespace sl
 {
 
-// TODO: WindowLayer
 class Window final
 {
 public:

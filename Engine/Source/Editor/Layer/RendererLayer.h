@@ -2,11 +2,10 @@
 
 #include "Layer/Layer.h"
 
-class SandboxLayer : public sl::Layer
+class RendererLayer : public sl::Layer
 {
 public:
-	SandboxLayer();
-	virtual ~SandboxLayer() override;
+	virtual ~RendererLayer() override = default;
 
 	virtual void OnAttach() override;
 	virtual void OnDetach() override;

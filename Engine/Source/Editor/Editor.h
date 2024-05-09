@@ -19,6 +19,7 @@ class LayerStack;
 
 class CameraControllerLayer;
 class ImGuiLayer;
+class RendererLayer;
 class SandboxLayer;
 
 struct EditorInitor
@@ -66,5 +67,6 @@ private:
 	
 	CameraControllerLayer *m_pCameraControllerLayer = nullptr;
 	ImGuiLayer *m_pImGuiLayer = nullptr;
+	RendererLayer *m_pRendererLayer = nullptr;
 	SandboxLayer *m_pSandboxLayer = nullptr;
 };
