@@ -84,3 +84,23 @@ project("implot")
 		path.join(ImPlotPath, "*.cpp"),
 	}
 	
+ImGuizmoPath = path.join(ThirdPartyPath, "imguizmo")
+print("[ imguizmo ] path: "..ImGuizmoPath)
+project("imguizmo")
+	kind("StaticLib")
+	language("C++")
+	cppdialect("C++20")
+	location(path.join(ThirdPartyBuildPath, "imguizmo"))
+	
+	includedirs
+	{
+		ImGuizmoPath,
+		ImGuiPath,
+	}
+	
+	files
+	{
+		path.join(ImGuizmoPath, "*.h"),
+		path.join(ImGuizmoPath, "*.cpp"),
+	}
+	

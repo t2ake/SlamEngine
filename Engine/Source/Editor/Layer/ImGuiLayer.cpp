@@ -11,6 +11,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui/imgui.h>
+#include <imguizmo/ImGuizmo.h>
 #include <implot/implot.h>
 #include <nameof/nameof.hpp>
 
@@ -135,6 +136,7 @@ void ImGuiLayer::OnUpdate(float deltaTime)
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), (ImGuiDockNodeFlags)m_dockSpaceFlag);
 
 	ShowMenuBar();
+	ShowTools();
 	ShowEntityList();
 	ShowLog();
 	ShowInfo(deltaTime);
@@ -220,13 +222,47 @@ void ImGuiLayer::ShowMenuBar()
 	ImGui::EndMainMenuBar();
 }
 
+void ImGuiLayer::ShowTools()
+{
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
+	ImGui::Begin("Tools", nullptr, ImGuiWindowFlags_NoDecoration);
+	ImGui::PopStyleVar();
+	
+	if (ImGui::Button("M", ImVec2{ 32.0f, 32.0f }))
+	{
+		m_imguizmoMode = -1;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("T", ImVec2{ 32.0f, 32.0f }))
+	{
+		m_imguizmoMode = ImGuizmo::OPERATION::TRANSLATE;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("R", ImVec2{ 32.0f, 32.0f }))
+	{
+		m_imguizmoMode = ImGuizmo::OPERATION::ROTATE;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("S", ImVec2{ 32.0f, 32.0f }))
+	{
+		m_imguizmoMode = ImGuizmo::OPERATION::SCALE;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("U", ImVec2{ 32.0f, 32.0f }))
+	{
+		m_imguizmoMode = ImGuizmo::OPERATION::UNIVERSAL;
+	}
+
+	ImGui::End();
+}
+
 void ImGuiLayer::ShowEntityList()
 {
 	ImGui::Begin("Entity List");
 
 	RightClickFocus();
 
-	if (ImGui::Button("+"))
+	if (ImGui::Button("Add"))
 	{
 		sl::ECSWorld::CreateEntity("Empty Entity");
 	}
@@ -518,7 +554,7 @@ void ImGuiLayer::ShowDetails()
 			cameraMayBeDirty = true;
 		}
 
-		glm::vec3 ratationDegree = ModVec3(pComponent->GetRotationDegrees(), 360.0f);
+		glm::vec3 ratationDegree = ModVec3(pComponent->GetRotationDegrees(), 180.0f);
 		StartWithText("Rotation");
 		if (ImGui::DragFloat3("##Rotation", glm::value_ptr(ratationDegree), 0.1f))
 		{
@@ -678,7 +714,8 @@ void ImGuiLayer::ShowDetails()
 void ImGuiLayer::ShowSceneViewport()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
-	ImGui::Begin("Scene");
+	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoDecoration);
+	ImGui::PopStyleVar();
 
 	// Scene viewport event stuff
 	{
@@ -715,20 +752,57 @@ void ImGuiLayer::ShowSceneViewport()
 		}
 	}
 
-	// The invisible button is designed to prevent the mouse from hovering over the ui item
-	// even when the camera is moving, using an internal imgui mechanism.
-	// I haven't come up with a better solution, but it just works.
-	ImVec2 pos = ImGui::GetCursorPos();
-	ImGui::InvisibleButton("SceneViewport", ImVec2{ (float)m_viewportSizeX, (float)m_viewportSizeY },
-			ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
-	ImGui::SetCursorPos(pos);
+	// InvisibleButton will block ImGuizmo moving
+	if (!ImGuizmo::IsOver())
+	{
+		// The invisible button is designed to prevent the mouse from hovering over the ui item
+		// even when the camera is moving, using an internal imgui mechanism.
+		// I haven't come up with a better solution, but it works.
+		ImVec2 pos = ImGui::GetCursorPos();
+		ImGui::InvisibleButton("SceneViewport", ImVec2{ (float)m_viewportSizeX, (float)m_viewportSizeY },
+				ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+		ImGui::SetCursorPos(pos);
+	}
 
 	// Draw main frame buffer color attachment
 	uint32_t handle = sl::RenderCore::GetMainFrameBuffer()->GetColorAttachmentHandle();
 	ImGui::Image((void *)(uint64_t)handle, ImVec2{ (float)m_viewportSizeX, (float)m_viewportSizeY }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 
+	ShowImGuizmo();
+
 	ImGui::End();
-	ImGui::PopStyleVar();
+}
+
+void ImGuiLayer::ShowImGuizmo()
+{
+	if (m_imguizmoMode < 0 || !m_selectedEntity || sl::ECSWorld::GetMainCameraEntity() == m_selectedEntity)
+	{
+		return;
+	}
+
+	auto &camera = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>();
+	ImGuizmo::SetOrthographic(sl::ProjectionType::Orthographic == camera.m_projectionType ? true : false);
+	ImGuizmo::SetDrawlist();
+	ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
+
+	const glm::mat4 &view = camera.GetView();
+	const glm::mat4 &projection = camera.GetProjection();
+
+	auto &transform = m_selectedEntity.GetComponent<sl::TransformComponent>();
+	glm::mat4 manipulatedTransform = transform.GetTransform();
+
+	ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection),
+		(ImGuizmo::OPERATION)m_imguizmoMode, ImGuizmo::LOCAL, glm::value_ptr(manipulatedTransform));
+
+	if(ImGuizmo::IsUsing())
+	{
+		glm::vec3 newPosition, newRotation, newScale;
+		ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(manipulatedTransform), glm::value_ptr(newPosition), glm::value_ptr(newRotation), glm::value_ptr(newScale));
+
+		transform.m_position = newPosition;
+		transform.m_rotation += glm::radians(newRotation) - transform.m_rotation;
+		transform.m_scale = newScale;
+	}
 }
 
 // For ImGuiLayer::m_dockSpaceFlag

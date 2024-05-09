@@ -55,10 +55,11 @@ project("Editor")
 			path.join(ThirdPartyPath, "glfw/build/src/Debug"),
 			path.join(ThirdPartyPath, "build/glad/bin/Debug"),
 			path.join(ThirdPartyPath, "build/imgui/bin/Debug"),
+			path.join(ThirdPartyPath, "build/imguizmo/bin/Debug"),
 		}
 		links
 		{
-			"Slam", "glfw3", "glad", "imgui",
+			"Slam", "glfw3", "glad", "imgui", "imguizmo",
 		}
 	filter { "configurations:Release" }
 		libdirs
@@ -67,10 +68,11 @@ project("Editor")
 			path.join(ThirdPartyPath, "glfw/build/src/Release"),
 			path.join(ThirdPartyPath, "build/glad/bin/Release"),
 			path.join(ThirdPartyPath, "build/imgui/bin/Release"),
+			path.join(ThirdPartyPath, "build/imguizmo/bin/Release"),
 		}
 		links
 		{
-			"Slam", "glfw3", "glad", "imgui",
+			"Slam", "glfw3", "glad", "imgui", "imguizmo",
 		}
 	filter { "configurations:Final" }
 		libdirs
@@ -79,10 +81,11 @@ project("Editor")
 			path.join(ThirdPartyPath, "glfw/build/src/Release"),
 			path.join(ThirdPartyPath, "build/glad/bin/Release"),
 			path.join(ThirdPartyPath, "build/imgui/bin/Release"),
+			path.join(ThirdPartyPath, "build/imguizmo/bin/Release"),
 		}
 		links
 		{
-			"Slam", "glfw3", "glad", "imgui",
+			"Slam", "glfw3", "glad", "imgui", "imguizmo",
 		}
 	filter {}
 	

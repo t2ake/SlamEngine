@@ -29,6 +29,7 @@ public:
 private:
 	void ShowDebugPanels();
 	void ShowMenuBar();
+	void ShowTools();
 	void ShowEntityList();
 	void ShowLog();
 	void ShowInfo(float deltaTime);
@@ -42,6 +43,7 @@ private:
 
 	void ShowDetails();
 	void ShowSceneViewport();
+	void ShowImGuizmo();
 
 	// Dock space
 	// ImGuiDockNodeFlags m_dockSpaceFlag = ImGuiDockNodeFlags_None
@@ -62,6 +64,9 @@ private:
 	// Scene viewport
 	uint32_t m_viewportSizeX = 0;
 	uint32_t m_viewportSizeY = 0;
+
+	// ImGuizmo
+	int m_imguizmoMode = -1;
 	
 	sl::EventCallback m_eventCallback;
 };

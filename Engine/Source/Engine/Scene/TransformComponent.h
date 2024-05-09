@@ -1,6 +1,8 @@
 #pragma once
 
 #include <glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/trigonometric.hpp>
 #include <glm/vec3.hpp>
@@ -26,13 +28,8 @@ struct TransformComponent
 
 	glm::mat4 GetTransform() const
 	{
-		glm::mat4 ratation =
-			glm::rotate(glm::mat4{ 1.0f }, m_rotation.x, { 1.0f, 0.0f, 0.0f }) *
-			glm::rotate(glm::mat4{ 1.0f }, m_rotation.y, { 0.0f, 1.0f, 0.0f }) *
-			glm::rotate(glm::mat4{ 1.0f }, m_rotation.z, { 0.0f, 0.0f, 1.0f });
-
 		return glm::translate(glm::mat4{ 1.0f }, m_position) *
-			ratation *
+			glm::toMat4(glm::quat(m_rotation)) *
 			glm::scale(glm::mat4{ 1.0f }, m_scale);
 	}
 
