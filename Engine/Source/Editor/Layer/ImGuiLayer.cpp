@@ -8,7 +8,6 @@
 #include "RenderCore/RenderCore.h"
 #include "Resource/Font.h"
 #include "Scene/ECSWorld.h"
-#include "Window/Input.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui/imgui.h>
@@ -32,12 +31,12 @@ constexpr ImGuiTreeNodeFlags DefaultSubTreeFlags =
 	ImGuiTreeNodeFlags_DefaultOpen |
 	ImGuiTreeNodeFlags_SpanFullWidth;
 
-constexpr ImGuiWindowFlags OverlayFlags =
+constexpr ImGuiWindowFlags OverlayButtonFlags =
 	ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar |
-	ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+	ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
 	ImGuiWindowFlags_NoBackground;
 
-constexpr float ToolOverlayOffset = 8.0f;
+constexpr ImGuiWindowFlags OverlayViewFlags = OverlayButtonFlags | ImGuiWindowFlags_NoMouseInputs;
 
 // From ImPlot
 struct ScrollingBuffer
@@ -207,35 +206,62 @@ void ImGuiLayer::ShowToolOverlay()
 		return;
 	}
 
+	constexpr float ToolOverlayOffset = 10.0f;
 	float titleBarSize = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
 	ImGui::SetNextWindowPos(ImVec2{
 		m_sceneViewportWindowPos.x + ToolOverlayOffset,
 		m_sceneViewportWindowPos.y + ToolOverlayOffset + titleBarSize });
 
-	ImGui::Begin("Tools", nullptr, OverlayFlags);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
+	ImGui::Begin("Tools", nullptr, OverlayButtonFlags);
+	ImGui::PopStyleVar();
+
+	constexpr std::array<int, 5> Operations =
+	{
+		-1,
+		ImGuizmo::OPERATION::TRANSLATE,
+		ImGuizmo::OPERATION::ROTATE,
+		ImGuizmo::OPERATION::SCALE,
+		ImGuizmo::OPERATION::UNIVERSAL,
+	};
+	constexpr std::array<const char *, 5> Icons =
+	{
+		"M", "T", "R", "S", "U",
+	};
+
+	auto SelectableButton = [this](size_t index)
+	{
+		int op = Operations[index];
+		bool selected = false;
+
+		if (m_imguizmoMode == op)
+		{
+			selected = true;
+		}
+
+		if (selected)
+		{
+			ImGui::PopStyleVar();
+		}
+		if (ImGui::Button(Icons[index], ImVec2{32.0f, 32.0f}))
+		{
+			m_imguizmoMode = op;
+		}
+		if (selected)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
+		}
+	};
 
 	// TODO: Icon
-	if (ImGui::Button("M", ImVec2{ 32.0f, 32.0f }))
+	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
+
+	for (size_t i = 0; i <= 4; ++i)
 	{
-		m_imguizmoMode = -1;
-	}
-	if (ImGui::Button("T", ImVec2{ 32.0f, 32.0f }))
-	{
-		m_imguizmoMode = ImGuizmo::OPERATION::TRANSLATE;
-	}
-	if (ImGui::Button("R", ImVec2{ 32.0f, 32.0f }))
-	{
-		m_imguizmoMode = ImGuizmo::OPERATION::ROTATE;
-	}
-	if (ImGui::Button("S", ImVec2{ 32.0f, 32.0f }))
-	{
-		m_imguizmoMode = ImGuizmo::OPERATION::SCALE;
-	}
-	if (ImGui::Button("U", ImVec2{ 32.0f, 32.0f }))
-	{
-		m_imguizmoMode = ImGuizmo::OPERATION::UNIVERSAL;
+		SelectableButton(i);
 	}
 
+	ImGui::PopStyleVar();
 	ImGui::End();
 }
 
@@ -243,17 +269,20 @@ void ImGuiLayer::ShowOrientationOverlay()
 {
 	static OrientationCamera s_fakeCamera;
 
-	constexpr float CrtWindowSize = 100.0f;
+	constexpr float OrientationWindowSize = 100.0f;
+	constexpr float OrientationOverlayOffset = 10.0f;
 	float titleBarSize = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
 
 	ImVec2 windowPos = ImVec2{
-		m_sceneViewportWindowPos.x + m_sceneViewportSizeX - ToolOverlayOffset - CrtWindowSize,
-		m_sceneViewportWindowPos.y + ToolOverlayOffset + titleBarSize };
-	constexpr ImVec2 windowSize = ImVec2{ CrtWindowSize, CrtWindowSize };
+		m_sceneViewportWindowPos.x + m_sceneViewportSizeX - OrientationOverlayOffset - OrientationWindowSize,
+		m_sceneViewportWindowPos.y + OrientationOverlayOffset + titleBarSize };
+	constexpr ImVec2 windowSize = ImVec2{ OrientationWindowSize, OrientationWindowSize };
 
 	ImGui::SetNextWindowPos(windowPos);
 	ImGui::SetNextWindowSize(windowSize);
-	ImGui::Begin("Orientation", nullptr, OverlayFlags);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
+	ImGui::Begin("Orientation", nullptr, OverlayViewFlags);
+	ImGui::PopStyleVar();
 
 	ImGuizmo::SetDrawlist();
 	ImGuizmo::SetOrthographic(false);
@@ -265,7 +294,6 @@ void ImGuiLayer::ShowOrientationOverlay()
 
 	const glm::mat4 view = s_fakeCamera.GetView();
 	const glm::mat4 projection = s_fakeCamera.GetProjection();
-
 	ImGuizmo::DrawCubes(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(glm::mat4{ 1.0f }), 1);
 
 	ImGui::End();
@@ -782,62 +810,60 @@ void ImGuiLayer::ShowSceneViewport()
 	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoScrollbar);
 	ImGui::PopStyleVar();
 
-	auto windowPos = ImGui::GetWindowPos();
+	ImVec2 windowPos = ImGui::GetWindowPos();
 	m_sceneViewportWindowPos = glm::vec2{ windowPos.x, windowPos.y };
+	ImVec2 crtSceneViewportSize = ImGui::GetContentRegionAvail();
 
-	// Scene viewport event stuff
+	// Resize event
+	uint32_t crtSizeX = (uint32_t)crtSceneViewportSize.x;
+	uint32_t crtSizeY = (uint32_t)crtSceneViewportSize.y;
+	if (crtSizeX != m_sceneViewportSizeX || crtSizeY != m_sceneViewportSizeY)
 	{
-		// Camera event
-		if (ImGui::IsWindowHovered())
-		{
-			if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-			{
-				ImGui::SetWindowFocus();
+		sl::SceneViewportResizeEvent event{ crtSizeX , crtSizeY };
+		m_eventCallback(event);
 
-				sl::CameraActivateEvent event{ sl::CameraControllerMode::FPS };
-				m_eventCallback(event);
-			}
-			else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
-			{
-				sl::CameraActivateEvent event{ sl::CameraControllerMode::Editor };
-				m_eventCallback(event);
-			}
-		}
+		m_sceneViewportSizeX = crtSizeX;
+		m_sceneViewportSizeY = crtSizeY;
 
-		// Resize event
-		auto crtSize = ImGui::GetContentRegionAvail();
-		uint32_t crtSizeX = (uint32_t)crtSize.x;
-		uint32_t crtSizeY = (uint32_t)crtSize.y;
-		if (crtSizeX != m_sceneViewportSizeX || crtSizeY != m_sceneViewportSizeY)
-		{
-			sl::SceneViewportResizeEvent event{ crtSizeX , crtSizeY };
-			m_eventCallback(event);
-
-			m_sceneViewportSizeX = crtSizeX;
-			m_sceneViewportSizeY = crtSizeY;
-
-			sl::RenderCore::GetMainFrameBuffer()->Resize(m_sceneViewportSizeX, m_sceneViewportSizeY);
-		}
-	}
-
-	// InvisibleButton will block ImGuizmo moving
-	if (!ImGuizmo::IsOver())
-	{
-		// The invisible button is designed to prevent the mouse from hovering over the ui item
-		// even when the camera is moving, using an internal imgui mechanism.
-		// I haven't come up with a better solution, but it works.
-		ImVec2 pos = ImGui::GetCursorPos();
-		ImGui::InvisibleButton("SceneViewport", ImVec2{ (float)m_sceneViewportSizeX, (float)m_sceneViewportSizeY },
-				ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
-		ImGui::SetCursorPos(pos);
+		sl::RenderCore::GetMainFrameBuffer()->Resize(m_sceneViewportSizeX, m_sceneViewportSizeY);
 	}
 
 	// Draw main frame buffer color attachment
+	ImVec2 crtCursorPos = ImGui::GetCursorPos();
 	uint32_t handle = sl::RenderCore::GetMainFrameBuffer()->GetColorAttachmentHandle();
-	ImGui::Image((void *)(uint64_t)handle, ImVec2{ (float)m_sceneViewportSizeX, (float)m_sceneViewportSizeY }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
+	ImGui::Image((void *)(uint64_t)handle, crtSceneViewportSize, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 
 	ShowImGuizmoTransform();
 
+	// ImGuizmo transform moving should not be blocked by InvisibleButton.
+	if (!ImGuizmo::IsOver())
+	{
+		// The invisible button is designed to prevent the mouse from hovering over the ui item
+		// even when the camera is moving(and the mouse is captured), using an internal imgui mechanism.
+		// I haven't come out with a better solution, but it works anyway.
+		ImGui::SetCursorPos(crtCursorPos);
+		ImGui::InvisibleButton("InvisibleButton", crtSceneViewportSize,
+			ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenOverlappedByWindow))
+		{
+			// Camera event
+			if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+			{
+				ImGui::SetWindowFocus();
+				sl::CameraActivateEvent event{ sl::CameraControllerMode::FPS };
+				m_eventCallback(event);
+			}
+			else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+			{
+				ImGui::SetWindowFocus();
+				if (ImGui::IsKeyDown(ImGuiKey_LeftAlt))
+				{
+					sl::CameraActivateEvent event{ sl::CameraControllerMode::Editor };
+					m_eventCallback(event);
+				}
+			}
+		}
+	}
 	ImGui::End();
 }
 
@@ -860,7 +886,7 @@ void ImGuiLayer::ShowImGuizmoTransform()
 	auto &transform = m_selectedEntity.GetComponent<sl::TransformComponent>();
 	glm::mat4 manipulatedTransform = transform.GetTransform();
 
-	bool useSnap = sl::Input::IsKeyPressed(SL_KEY_LEFT_CONTROL);
+	bool useSnap = ImGui::IsKeyDown(ImGuiKey_LeftCtrl);
 	float snap = (ImGuizmo::OPERATION::ROTATE == m_imguizmoMode ? 45.0f : 0.5f);
 	float snaps[] = { snap, snap, snap };
 
@@ -886,3 +912,6 @@ void ImGuiLayer::ShowImGuizmoTransform()
 // For ImGuiLayer::m_dockSpaceFlag
 static_assert(std::is_same_v<ImGuiDockNodeFlags, int>);
 static_assert(ImGuiDockNodeFlags_None == 0);
+
+// For ImGuiLayer::m_imguizmoMode
+static_assert(ImGuizmo::OPERATION::TRANSLATE == 7);

@@ -29,7 +29,7 @@ Editor::Editor(EditorInitor initor)
 	sl::RenderCore::SetMainFrameBuffer(sl::FrameBuffer::Create(1280, 720));
 	sl::RenderCore::SetDefaultState();
 
-	auto mainCameraEntity = sl::ECSWorld::CreateEntity("Camera");
+	auto mainCameraEntity = sl::ECSWorld::CreateEntity("Editor Camera");
 	mainCameraEntity.AddComponent<sl::CameraComponent>();
 	mainCameraEntity.AddComponent<sl::CornerstoneComponent>("Currently we only support that only one camera in the scene.");
 	sl::ECSWorld::SetMainCameraEntity(mainCameraEntity);

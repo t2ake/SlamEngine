@@ -48,10 +48,9 @@ private:
 	void ShowImGuizmoTransform();
 
 	// Dock space
-	// ImGuiDockNodeFlags m_dockSpaceFlag = ImGuiDockNodeFlags_None
-	int m_dockSpaceFlag = 0;
+	int m_dockSpaceFlag = 0; // ImGuiDockNodeFlags m_dockSpaceFlag = ImGuiDockNodeFlags_None
 	
-	// Menubar
+	// Debug panel
 	bool m_debugImGuiDemo = false;
 	bool m_styleEditor = false;
 	bool m_debugItemPicker = false;
@@ -66,12 +65,10 @@ private:
 	// Scene viewport
 	uint32_t m_sceneViewportSizeX = 0;
 	uint32_t m_sceneViewportSizeY = 0;
+	glm::vec2 m_sceneViewportWindowPos{ -1.0f, -1.0f };
 
 	// ImGuizmo
-	int m_imguizmoMode = -1;
-
-	// Transform
-	glm::vec2 m_sceneViewportWindowPos{ -1.0f, -1.0f };
+	int m_imguizmoMode = 7; // ImGuizmo::OPERATION m_imguizmoMode = ImGuizmo::OPERATION::TRANSLATE
 	
 	sl::EventCallback m_eventCallback;
 };
