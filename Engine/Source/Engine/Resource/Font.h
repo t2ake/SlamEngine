@@ -17,6 +17,7 @@ public:
 	static void SetThin(ImFont *pFont) { pThin = pFont; }
 	static ImFont *GetThin() { return pThin; }
 
+private:
 	inline static ImFont *pRegular = nullptr;
 	inline static ImFont *pBold = nullptr;
 	inline static ImFont *pThin = nullptr;

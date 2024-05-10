@@ -71,7 +71,7 @@ struct ScrollingBuffer
 	}
 };
 
-bool AlignButton(const char *label, float align = 0.5f, float offset = 0.0f)
+bool AlignButton(const char *label, float align = 0.5f, float customOffset = 0.0f)
 {
 	float size = ImGui::CalcTextSize(label).x + ImGui::GetStyle().FramePadding.x * 2.0f;
 	float avail = ImGui::GetContentRegionAvail().x;
@@ -79,7 +79,7 @@ bool AlignButton(const char *label, float align = 0.5f, float offset = 0.0f)
 	float startOffset = (avail - size) * align;
 	if (startOffset > 0.0f)
 	{
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + startOffset + offset);
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + startOffset + customOffset);
 	}
 
 	return ImGui::Button(label);
@@ -132,11 +132,11 @@ void ImGuiLayer::OnUpdate(float deltaTime)
 	sl::ImGuiContext::NewFrame();
 
 	ShowDebugPanels();
+	ShowTools();
 
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), (ImGuiDockNodeFlags)m_dockSpaceFlag);
 
 	ShowMenuBar();
-	ShowTools();
 	ShowEntityList();
 	ShowLog();
 	ShowInfo(deltaTime);
@@ -172,6 +172,48 @@ void ImGuiLayer::ShowDebugPanels()
 	{
 		ImGui::DebugStartItemPicker();
 	}
+}
+
+void ImGuiLayer::ShowTools()
+{
+	if (m_sceneViewportWindowPos.x < 0.0f || m_sceneViewportWindowPos.y < 0.0f)
+	{
+		return;
+	}
+
+	constexpr float ToolWindowOffset = 8.0f;
+	float titleBarSize = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
+	ImGui::SetNextWindowPos(ImVec2{ m_sceneViewportWindowPos.x + ToolWindowOffset,
+		m_sceneViewportWindowPos.y + ToolWindowOffset + titleBarSize });
+
+	ImGui::Begin("Tools", nullptr,
+		ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar |
+		ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoBackground);
+
+	// TODO: Icon
+	if (ImGui::Button("M", ImVec2{ 32.0f, 32.0f }))
+	{
+		m_imguizmoMode = -1;
+	}
+	if (ImGui::Button("T", ImVec2{ 32.0f, 32.0f }))
+	{
+		m_imguizmoMode = ImGuizmo::OPERATION::TRANSLATE;
+	}
+	if (ImGui::Button("R", ImVec2{ 32.0f, 32.0f }))
+	{
+		m_imguizmoMode = ImGuizmo::OPERATION::ROTATE;
+	}
+	if (ImGui::Button("S", ImVec2{ 32.0f, 32.0f }))
+	{
+		m_imguizmoMode = ImGuizmo::OPERATION::SCALE;
+	}
+	if (ImGui::Button("U", ImVec2{ 32.0f, 32.0f }))
+	{
+		m_imguizmoMode = ImGuizmo::OPERATION::UNIVERSAL;
+	}
+
+	ImGui::End();
 }
 
 void ImGuiLayer::ShowMenuBar()
@@ -222,47 +264,13 @@ void ImGuiLayer::ShowMenuBar()
 	ImGui::EndMainMenuBar();
 }
 
-void ImGuiLayer::ShowTools()
-{
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
-	ImGui::Begin("Tools", nullptr, ImGuiWindowFlags_NoDecoration);
-	ImGui::PopStyleVar();
-	
-	if (ImGui::Button("M", ImVec2{ 32.0f, 32.0f }))
-	{
-		m_imguizmoMode = -1;
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("T", ImVec2{ 32.0f, 32.0f }))
-	{
-		m_imguizmoMode = ImGuizmo::OPERATION::TRANSLATE;
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("R", ImVec2{ 32.0f, 32.0f }))
-	{
-		m_imguizmoMode = ImGuizmo::OPERATION::ROTATE;
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("S", ImVec2{ 32.0f, 32.0f }))
-	{
-		m_imguizmoMode = ImGuizmo::OPERATION::SCALE;
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("U", ImVec2{ 32.0f, 32.0f }))
-	{
-		m_imguizmoMode = ImGuizmo::OPERATION::UNIVERSAL;
-	}
-
-	ImGui::End();
-}
-
 void ImGuiLayer::ShowEntityList()
 {
 	ImGui::Begin("Entity List");
 
 	RightClickFocus();
 
-	if (ImGui::Button("Add"))
+	if (AlignButton("Add New Entity"))
 	{
 		sl::ECSWorld::CreateEntity("Empty Entity");
 	}
@@ -422,6 +430,7 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 		ImGui::SameLine();
 		if (AlignButton(" : ", 1.0f, ImGui::GetStyle().WindowPadding.x / 2.0f))
 		{
+			// Don't know why WindowPadding.x / 2 works perfect here.
 			ImGui::OpenPopup("ComponentPopup");
 		}
 		ImGui::PopStyleColor();
@@ -504,6 +513,7 @@ void ImGuiLayer::StartWithText(std::string text)
 	ImGui::AlignTextToFramePadding();
 	ImGui::Text(text.c_str());
 
+	// TODO: Some hard code size here, need to be parameterised in the future.
 	ImGui::SameLine(m_maxTextSize + 50.0f);
 	ImGui::SetNextItemWidth(-8.0f);
 }
@@ -714,8 +724,11 @@ void ImGuiLayer::ShowDetails()
 void ImGuiLayer::ShowSceneViewport()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
-	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoDecoration);
+	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoScrollbar);
 	ImGui::PopStyleVar();
+
+	auto windowPos = ImGui::GetWindowPos();
+	m_sceneViewportWindowPos = glm::vec2{ windowPos.x, windowPos.y };
 
 	// Scene viewport event stuff
 	{
