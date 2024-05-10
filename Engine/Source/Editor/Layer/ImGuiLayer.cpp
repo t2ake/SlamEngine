@@ -78,7 +78,7 @@ struct OrientationCamera
 {
 	glm::mat4 GetView()
 	{
-		return glm::lookAt(-m_frontDir * 8.0f, glm::vec3{ 0.0f }, m_upDir);
+		return glm::lookAt(-m_frontDir * 1.9f, glm::vec3{ 0.0f }, m_upDir);
 	}
 
 	glm::mat4 GetProjection()
@@ -243,18 +243,21 @@ void ImGuiLayer::ShowOrientationOverlay()
 {
 	static OrientationCamera s_fakeCamera;
 
-	constexpr float CrtWindowSize = 128.0f;
+	constexpr float CrtWindowSize = 100.0f;
 	float titleBarSize = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
-	ImGui::SetNextWindowPos(ImVec2{
-		m_sceneViewportWindowPos.x + m_sceneViewportSizeX - ToolOverlayOffset - CrtWindowSize,
-		m_sceneViewportWindowPos.y + ToolOverlayOffset + titleBarSize });
-	ImGui::SetNextWindowSize(ImVec2{ CrtWindowSize, CrtWindowSize });
 
+	ImVec2 windowPos = ImVec2{
+		m_sceneViewportWindowPos.x + m_sceneViewportSizeX - ToolOverlayOffset - CrtWindowSize,
+		m_sceneViewportWindowPos.y + ToolOverlayOffset + titleBarSize };
+	constexpr ImVec2 windowSize = ImVec2{ CrtWindowSize, CrtWindowSize };
+
+	ImGui::SetNextWindowPos(windowPos);
+	ImGui::SetNextWindowSize(windowSize);
 	ImGui::Begin("Orientation", nullptr, OverlayFlags);
 
 	ImGuizmo::SetDrawlist();
 	ImGuizmo::SetOrthographic(false);
-	ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
+	ImGuizmo::SetRect(windowPos.x, windowPos.y, windowSize.x, windowSize.y);
 
 	auto &camera = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>();
 	s_fakeCamera.m_frontDir = camera.GetFront();
@@ -263,7 +266,7 @@ void ImGuiLayer::ShowOrientationOverlay()
 	const glm::mat4 view = s_fakeCamera.GetView();
 	const glm::mat4 projection = s_fakeCamera.GetProjection();
 
-	ImGuizmo::DrawCubes(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(glm::scale(glm::mat4{ 1.0f }, glm::vec3{ CrtWindowSize / 32.0f })), 1);
+	ImGuizmo::DrawCubes(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(glm::mat4{ 1.0f }), 1);
 
 	ImGui::End();
 }
@@ -877,6 +880,7 @@ void ImGuiLayer::ShowImGuizmoTransform()
 	}
 
 	// ImGuizmo::DrawGrid(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(glm::mat4{ 1.0f }), 10000.0f);
+	// ImGuizmo::DrawCubes(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(glm::mat4{ 1.0f }), 1);
 }
 
 // For ImGuiLayer::m_dockSpaceFlag
