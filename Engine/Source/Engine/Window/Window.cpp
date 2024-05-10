@@ -11,12 +11,9 @@
 namespace sl
 {
 
-Window::Window(std::string title, uint32_t width, uint32_t height)
+Window::Window(std::string title, uint32_t width, uint32_t height) :
+	m_title(std::move(title)), m_width(width), m_height(height)
 {
-	m_title = std::move(title);
-	m_width = width;
-	m_height = height;
-
 	SL_ENGINE_INFO("Create window \"{}\" ({}, {})", m_title, m_width, m_height);
 
 	bool success = glfwInit();

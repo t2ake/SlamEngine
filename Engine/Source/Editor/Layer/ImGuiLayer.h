@@ -21,13 +21,16 @@ public:
 	virtual void OnRender() override;
 	virtual void EndFrame() override;
 
-	uint32_t GetSceneViewportSizeX() const { return m_viewportSizeX; }
-	uint32_t GetSceneViewportSizeY() const { return m_viewportSizeY; }
+	uint32_t GetSceneViewportSizeX() const { return m_sceneViewportSizeX; }
+	uint32_t GetSceneViewportSizeY() const { return m_sceneViewportSizeY; }
 
 	void SetEventCallback(sl::EventCallback fun) { m_eventCallback = std::move(fun); }
 
 private:
 	void ShowDebugPanels();
+	void ShowToolOverlay();
+	void ShowOrientationOverlay();
+
 	void ShowMenuBar();
 	void ShowEntityList();
 	void ShowLog();
@@ -39,11 +42,10 @@ private:
 	template<class T>
 	void AddComponent(const char *label);
 	void StartWithText(std::string text);
-
 	void ShowDetails();
+
 	void ShowSceneViewport();
-	void ShowImGuizmo();
-	void ShowTools();
+	void ShowImGuizmoTransform();
 
 	// Dock space
 	// ImGuiDockNodeFlags m_dockSpaceFlag = ImGuiDockNodeFlags_None
@@ -62,8 +64,8 @@ private:
 	float m_maxTextSize = 0.0f;
 
 	// Scene viewport
-	uint32_t m_viewportSizeX = 0;
-	uint32_t m_viewportSizeY = 0;
+	uint32_t m_sceneViewportSizeX = 0;
+	uint32_t m_sceneViewportSizeY = 0;
 
 	// ImGuizmo
 	int m_imguizmoMode = -1;

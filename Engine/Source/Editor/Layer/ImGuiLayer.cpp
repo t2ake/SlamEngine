@@ -8,6 +8,7 @@
 #include "RenderCore/RenderCore.h"
 #include "Resource/Font.h"
 #include "Scene/ECSWorld.h"
+#include "Window/Input.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui/imgui.h>
@@ -31,11 +32,12 @@ constexpr ImGuiTreeNodeFlags DefaultSubTreeFlags =
 	ImGuiTreeNodeFlags_DefaultOpen |
 	ImGuiTreeNodeFlags_SpanFullWidth;
 
-SL_FORCEINLINE static glm::vec3 ModVec3(const glm::vec3 &v, float m)
-{
-	// Why the second argument of glm::modf must accept a non const left value reference?
-	return glm::vec3{ std::fmod(v.x, m), std::fmod(v.y, m) , std::fmod(v.z, m) };
-}
+constexpr ImGuiWindowFlags OverlayFlags =
+	ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar |
+	ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+	ImGuiWindowFlags_NoBackground;
+
+constexpr float ToolOverlayOffset = 8.0f;
 
 // From ImPlot
 struct ScrollingBuffer
@@ -70,6 +72,29 @@ struct ScrollingBuffer
 		}
 	}
 };
+
+// A fake camera just to create orientation overlay matrix.
+struct OrientationCamera
+{
+	glm::mat4 GetView()
+	{
+		return glm::lookAt(-m_frontDir * 8.0f, glm::vec3{ 0.0f }, m_upDir);
+	}
+
+	glm::mat4 GetProjection()
+	{
+		return glm::perspective(45.0f, 1.0f, 0.01f, 10000.0f);
+	}
+
+	glm::vec3 m_frontDir{ 0.0f, 0.0f, 1.0f };
+	glm::vec3 m_upDir{ 0.0f, 1.0f, 0.0f };
+};
+
+SL_FORCEINLINE static glm::vec3 ModVec3(const glm::vec3 &v, float m)
+{
+	// Why the second argument of glm::modf must accept a non const left value reference?
+	return glm::vec3{ std::fmod(v.x, m), std::fmod(v.y, m) , std::fmod(v.z, m) };
+}
 
 bool AlignButton(const char *label, float align = 0.5f, float customOffset = 0.0f)
 {
@@ -132,7 +157,8 @@ void ImGuiLayer::OnUpdate(float deltaTime)
 	sl::ImGuiContext::NewFrame();
 
 	ShowDebugPanels();
-	ShowTools();
+	ShowToolOverlay();
+	ShowOrientationOverlay();
 
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), (ImGuiDockNodeFlags)m_dockSpaceFlag);
 
@@ -174,22 +200,19 @@ void ImGuiLayer::ShowDebugPanels()
 	}
 }
 
-void ImGuiLayer::ShowTools()
+void ImGuiLayer::ShowToolOverlay()
 {
 	if (m_sceneViewportWindowPos.x < 0.0f || m_sceneViewportWindowPos.y < 0.0f)
 	{
 		return;
 	}
 
-	constexpr float ToolWindowOffset = 8.0f;
 	float titleBarSize = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
-	ImGui::SetNextWindowPos(ImVec2{ m_sceneViewportWindowPos.x + ToolWindowOffset,
-		m_sceneViewportWindowPos.y + ToolWindowOffset + titleBarSize });
+	ImGui::SetNextWindowPos(ImVec2{
+		m_sceneViewportWindowPos.x + ToolOverlayOffset,
+		m_sceneViewportWindowPos.y + ToolOverlayOffset + titleBarSize });
 
-	ImGui::Begin("Tools", nullptr,
-		ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar |
-		ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-		ImGuiWindowFlags_NoBackground);
+	ImGui::Begin("Tools", nullptr, OverlayFlags);
 
 	// TODO: Icon
 	if (ImGui::Button("M", ImVec2{ 32.0f, 32.0f }))
@@ -212,6 +235,35 @@ void ImGuiLayer::ShowTools()
 	{
 		m_imguizmoMode = ImGuizmo::OPERATION::UNIVERSAL;
 	}
+
+	ImGui::End();
+}
+
+void ImGuiLayer::ShowOrientationOverlay()
+{
+	static OrientationCamera s_fakeCamera;
+
+	constexpr float CrtWindowSize = 128.0f;
+	float titleBarSize = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
+	ImGui::SetNextWindowPos(ImVec2{
+		m_sceneViewportWindowPos.x + m_sceneViewportSizeX - ToolOverlayOffset - CrtWindowSize,
+		m_sceneViewportWindowPos.y + ToolOverlayOffset + titleBarSize });
+	ImGui::SetNextWindowSize(ImVec2{ CrtWindowSize, CrtWindowSize });
+
+	ImGui::Begin("Orientation", nullptr, OverlayFlags);
+
+	ImGuizmo::SetDrawlist();
+	ImGuizmo::SetOrthographic(false);
+	ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
+
+	auto &camera = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>();
+	s_fakeCamera.m_frontDir = camera.GetFront();
+	s_fakeCamera.m_upDir = camera.GetUp();
+
+	const glm::mat4 view = s_fakeCamera.GetView();
+	const glm::mat4 projection = s_fakeCamera.GetProjection();
+
+	ImGuizmo::DrawCubes(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(glm::scale(glm::mat4{ 1.0f }, glm::vec3{ CrtWindowSize / 32.0f })), 1);
 
 	ImGui::End();
 }
@@ -753,15 +805,15 @@ void ImGuiLayer::ShowSceneViewport()
 		auto crtSize = ImGui::GetContentRegionAvail();
 		uint32_t crtSizeX = (uint32_t)crtSize.x;
 		uint32_t crtSizeY = (uint32_t)crtSize.y;
-		if (crtSizeX != m_viewportSizeX || crtSizeY != m_viewportSizeY)
+		if (crtSizeX != m_sceneViewportSizeX || crtSizeY != m_sceneViewportSizeY)
 		{
 			sl::SceneViewportResizeEvent event{ crtSizeX , crtSizeY };
 			m_eventCallback(event);
 
-			m_viewportSizeX = crtSizeX;
-			m_viewportSizeY = crtSizeY;
+			m_sceneViewportSizeX = crtSizeX;
+			m_sceneViewportSizeY = crtSizeY;
 
-			sl::RenderCore::GetMainFrameBuffer()->Resize(m_viewportSizeX, m_viewportSizeY);
+			sl::RenderCore::GetMainFrameBuffer()->Resize(m_sceneViewportSizeX, m_sceneViewportSizeY);
 		}
 	}
 
@@ -772,21 +824,21 @@ void ImGuiLayer::ShowSceneViewport()
 		// even when the camera is moving, using an internal imgui mechanism.
 		// I haven't come up with a better solution, but it works.
 		ImVec2 pos = ImGui::GetCursorPos();
-		ImGui::InvisibleButton("SceneViewport", ImVec2{ (float)m_viewportSizeX, (float)m_viewportSizeY },
+		ImGui::InvisibleButton("SceneViewport", ImVec2{ (float)m_sceneViewportSizeX, (float)m_sceneViewportSizeY },
 				ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
 		ImGui::SetCursorPos(pos);
 	}
 
 	// Draw main frame buffer color attachment
 	uint32_t handle = sl::RenderCore::GetMainFrameBuffer()->GetColorAttachmentHandle();
-	ImGui::Image((void *)(uint64_t)handle, ImVec2{ (float)m_viewportSizeX, (float)m_viewportSizeY }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
+	ImGui::Image((void *)(uint64_t)handle, ImVec2{ (float)m_sceneViewportSizeX, (float)m_sceneViewportSizeY }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 
-	ShowImGuizmo();
+	ShowImGuizmoTransform();
 
 	ImGui::End();
 }
 
-void ImGuiLayer::ShowImGuizmo()
+void ImGuiLayer::ShowImGuizmoTransform()
 {
 	if (m_imguizmoMode < 0 || !m_selectedEntity || sl::ECSWorld::GetMainCameraEntity() == m_selectedEntity)
 	{
@@ -794,8 +846,9 @@ void ImGuiLayer::ShowImGuizmo()
 	}
 
 	auto &camera = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>();
-	ImGuizmo::SetOrthographic(sl::ProjectionType::Orthographic == camera.m_projectionType ? true : false);
+
 	ImGuizmo::SetDrawlist();
+	ImGuizmo::SetOrthographic(sl::ProjectionType::Orthographic == camera.m_projectionType ? true : false);
 	ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
 
 	const glm::mat4 &view = camera.GetView();
@@ -804,18 +857,26 @@ void ImGuiLayer::ShowImGuizmo()
 	auto &transform = m_selectedEntity.GetComponent<sl::TransformComponent>();
 	glm::mat4 manipulatedTransform = transform.GetTransform();
 
+	bool useSnap = sl::Input::IsKeyPressed(SL_KEY_LEFT_CONTROL);
+	float snap = (ImGuizmo::OPERATION::ROTATE == m_imguizmoMode ? 45.0f : 0.5f);
+	float snaps[] = { snap, snap, snap };
+
 	ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection),
-		(ImGuizmo::OPERATION)m_imguizmoMode, ImGuizmo::LOCAL, glm::value_ptr(manipulatedTransform));
+		(ImGuizmo::OPERATION)m_imguizmoMode, ImGuizmo::LOCAL, glm::value_ptr(manipulatedTransform),
+		nullptr, useSnap ? snaps : nullptr);
 
 	if(ImGuizmo::IsUsing())
 	{
 		glm::vec3 newPosition, newRotation, newScale;
-		ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(manipulatedTransform), glm::value_ptr(newPosition), glm::value_ptr(newRotation), glm::value_ptr(newScale));
+		ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(manipulatedTransform),
+			glm::value_ptr(newPosition), glm::value_ptr(newRotation), glm::value_ptr(newScale));
 
 		transform.m_position = newPosition;
 		transform.m_rotation += glm::radians(newRotation) - transform.m_rotation;
 		transform.m_scale = newScale;
 	}
+
+	// ImGuizmo::DrawGrid(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(glm::mat4{ 1.0f }), 10000.0f);
 }
 
 // For ImGuiLayer::m_dockSpaceFlag

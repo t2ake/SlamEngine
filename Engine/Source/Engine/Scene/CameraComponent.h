@@ -23,6 +23,10 @@ struct CameraComponent
 	const glm::mat4 &GetView();
 	const glm::mat4 &GetProjection();
 	const glm::mat4 &GetViewProjection();
+
+	const glm::vec3 &GetFront();
+	const glm::vec3 &GetUp();
+
 	void Recalculate();
 
 	ProjectionType m_projectionType = ProjectionType::Perspective;

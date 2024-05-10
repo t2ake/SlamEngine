@@ -43,6 +43,18 @@ const glm::mat4 &CameraComponent::GetViewProjection()
 	return m_viewProjectionMat;
 }
 
+const glm::vec3 &CameraComponent::GetFront()
+{
+	Recalculate();
+	return m_frontDir;
+}
+
+const glm::vec3 &CameraComponent::GetUp()
+{
+	Recalculate();
+	return m_upDir;
+}
+
 void CameraComponent::Recalculate()
 {
 	if (!m_isDirty)
