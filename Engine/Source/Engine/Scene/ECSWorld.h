@@ -24,11 +24,11 @@ public:
 	static void DestroyEntity(Entity entity);
 
 	static void SetMainCameraEntity(Entity entity);
-	static Entity GetMainCameraEntity();
+	static Entity GetEditorCameraEntity();
 
 private:
 	static entt::registry m_registry;
-	static Entity m_mainCameraEntity;
+	static Entity m_editorCameraEntity;
 };
 
 // Basically, Entity is just a tool class that allows us to use ECS more intuitively.

@@ -80,9 +80,15 @@ struct OrientationCamera
 		return glm::lookAt(-m_frontDir * 1.9f, glm::vec3{ 0.0f }, m_upDir);
 	}
 
-	glm::mat4 GetProjection()
+	constexpr glm::mat4 GetProjection()
 	{
-		return glm::perspective(45.0f, 1.0f, 0.01f, 10000.0f);
+		return glm::mat4{
+			{ 1.79259f, 0.0f, 0.0f, 0.0f },
+			{ 0.0f, 1.79259f, 0.0f, 0.0f },
+			{ 0.0f, 0.0f, -1.0f, -1.0f },
+			{ 0.0f, 0.0f, -0.02f, 0.0f },
+		};
+		// return glm::perspective(45.0f, 1.0f, 0.01f, 10000.0f);
 	}
 
 	glm::vec3 m_frontDir{ 0.0f, 0.0f, 1.0f };
@@ -133,7 +139,7 @@ ImGuiLayer::~ImGuiLayer()
 
 void ImGuiLayer::OnAttach()
 {
-	m_selectedEntity = sl::ECSWorld::GetMainCameraEntity();
+	m_selectedEntity = sl::ECSWorld::GetEditorCameraEntity();
 }
 
 void ImGuiLayer::OnDetach()
@@ -288,12 +294,12 @@ void ImGuiLayer::ShowOrientationOverlay()
 	ImGuizmo::SetOrthographic(false);
 	ImGuizmo::SetRect(windowPos.x, windowPos.y, windowSize.x, windowSize.y);
 
-	auto &camera = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>();
+	auto &camera = sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::CameraComponent>();
 	s_fakeCamera.m_frontDir = camera.GetFront();
 	s_fakeCamera.m_upDir = camera.GetUp();
 
 	const glm::mat4 view = s_fakeCamera.GetView();
-	const glm::mat4 projection = s_fakeCamera.GetProjection();
+	constexpr glm::mat4 projection = s_fakeCamera.GetProjection();
 	ImGuizmo::DrawCubes(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(glm::mat4{ 1.0f }), 1);
 
 	ImGui::End();
@@ -394,6 +400,10 @@ void ImGuiLayer::ShowEntityList()
 			if (ImGui::MenuItem("Destory Entity"))
 			{
 				sl::ECSWorld::DestroyEntity(entity);
+				if (m_selectedEntity == entity)
+				{
+					m_selectedEntity.Reset();
+				}
 			}
 			ImGui::EndPopup();
 		}
@@ -869,12 +879,12 @@ void ImGuiLayer::ShowSceneViewport()
 
 void ImGuiLayer::ShowImGuizmoTransform()
 {
-	if (m_imguizmoMode < 0 || !m_selectedEntity || sl::ECSWorld::GetMainCameraEntity() == m_selectedEntity)
+	if (m_imguizmoMode < 0 || !m_selectedEntity || sl::ECSWorld::GetEditorCameraEntity() == m_selectedEntity)
 	{
 		return;
 	}
 
-	auto &camera = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>();
+	auto &camera = sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::CameraComponent>();
 
 	ImGuizmo::SetDrawlist();
 	ImGuizmo::SetOrthographic(sl::ProjectionType::Orthographic == camera.m_projectionType ? true : false);

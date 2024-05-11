@@ -79,7 +79,7 @@ void CameraControllerLayer::UpdateMainCamera(float deltaTime)
 
 void CameraControllerLayer::UpdateFPSCamera(float deltaTime)
 {
-	auto [camera, transform] = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent, sl::TransformComponent>();
+	auto [camera, transform] = sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::CameraComponent, sl::TransformComponent>();
 
 	if (!m_isRotating)
 	{
@@ -180,7 +180,7 @@ bool CameraControllerLayer::OnMouseScroll(sl::MouseScrollEvent &event)
 		return false;
 	}
 
-	auto &camera = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>();
+	auto &camera = sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::CameraComponent>();
 
 	camera.m_moveSpeedMouseScrollMultiplier += event.GetOffsetY() * 0.1f;
 	camera.m_moveSpeedMouseScrollMultiplier = std::clamp(camera.m_moveSpeedMouseScrollMultiplier, 0.1f, 10.0f);
@@ -190,7 +190,7 @@ bool CameraControllerLayer::OnMouseScroll(sl::MouseScrollEvent &event)
 
 bool CameraControllerLayer::OnSceneViewportResize(sl::SceneViewportResizeEvent &event)
 {
-	auto &camera = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>();
+	auto &camera = sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::CameraComponent>();
 
 	float aspect = (float)event.GetWidth() / (float)event.GetHeight();
 	float fovMultiplier = aspect * 9.0f / 16.0f;

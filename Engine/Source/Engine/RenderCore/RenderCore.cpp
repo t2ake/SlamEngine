@@ -18,24 +18,22 @@ void RenderCore::SetDefaultState()
 	m_pRenderAPI->SetDefaultState();
 }
 
-void RenderCore::SetClearColor(float r, float g, float b, float a)
+void RenderCore::ClearColor(float r, float g, float b, float a)
 {
 	m_pRenderAPI->SetClearColor(r, g, b, a);
+	m_pRenderAPI->ClearColor();
 }
 
-void RenderCore::SetClearDepth(float depth)
+void RenderCore::ClearDepth(float depth)
 {
 	m_pRenderAPI->SetClearDepth(depth);
+	m_pRenderAPI->ClearDepth();
 }
 
-void RenderCore::SetClearStencil(int stencil)
+void RenderCore::ClearStencil(int  stencil)
 {
 	m_pRenderAPI->SetClearStencil(stencil);
-}
-
-void RenderCore::Clear(uint8_t attachments)
-{
-	m_pRenderAPI->Clear(attachments);
+	m_pRenderAPI->ClearStencil();
 }
 
 void RenderCore::Submit(VertexArray *pVertexArray, Shader *pShader)

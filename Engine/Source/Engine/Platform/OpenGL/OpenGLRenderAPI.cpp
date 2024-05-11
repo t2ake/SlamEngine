@@ -28,23 +28,19 @@ void OpenGLRenderAPI::SetClearStencil(int stencil)
 	glClearStencil(stencil);
 }
 
-void OpenGLRenderAPI::Clear(uint8_t attachments)
+void OpenGLRenderAPI::ClearColor()
 {
-	uint32_t clearMask = 0;
-	if (attachments & SL_CLEAR_COLOR)
-	{
-		clearMask |= GL_COLOR_BUFFER_BIT;
-	}
-	if (attachments & SL_CLEAR_DEPTH)
-	{
-		clearMask |= GL_DEPTH_BUFFER_BIT;
-	}
-	if (attachments & SL_CLEAR_STENCIL)
-	{
-		clearMask |= GL_STENCIL_BUFFER_BIT;
-	}
+	glClear(GL_COLOR_BUFFER_BIT);
+}
 
-	glClear(clearMask);
+void OpenGLRenderAPI::ClearDepth()
+{
+	glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void OpenGLRenderAPI::ClearStencil()
+{
+	glClear(GL_STENCIL_BUFFER_BIT);
 }
 
 void OpenGLRenderAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)

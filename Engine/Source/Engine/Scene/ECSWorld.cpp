@@ -4,7 +4,7 @@ namespace sl
 {
 
 entt::registry ECSWorld::m_registry;
-Entity ECSWorld::m_mainCameraEntity;
+Entity ECSWorld::m_editorCameraEntity;
 
 Entity ECSWorld::CreateEntity(std::string name)
 {
@@ -34,12 +34,12 @@ void ECSWorld::DestroyEntity(Entity entity)
 
 void ECSWorld::SetMainCameraEntity(Entity entity)
 {
-	m_mainCameraEntity = entity;
+	m_editorCameraEntity = entity;
 }
 
-Entity ECSWorld::GetMainCameraEntity()
+Entity ECSWorld::GetEditorCameraEntity()
 {
-	return m_mainCameraEntity;
+	return m_editorCameraEntity;
 }
 
 } // namespace sl
