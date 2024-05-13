@@ -18,6 +18,13 @@
 namespace
 {
 
+constexpr ImGuiWindowFlags OverlayButtonFlags =
+	ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar |
+	ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+	ImGuiWindowFlags_NoBackground;
+
+constexpr ImGuiWindowFlags OverlayViewFlags = OverlayButtonFlags | ImGuiWindowFlags_NoMouseInputs;
+
 constexpr ImGuiTreeNodeFlags DefaultTreeFlags =
 	ImGuiTreeNodeFlags_AllowOverlap |
 	ImGuiTreeNodeFlags_DefaultOpen |
@@ -31,12 +38,28 @@ constexpr ImGuiTreeNodeFlags DefaultSubTreeFlags =
 	ImGuiTreeNodeFlags_DefaultOpen |
 	ImGuiTreeNodeFlags_SpanFullWidth;
 
-constexpr ImGuiWindowFlags OverlayButtonFlags =
-	ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar |
-	ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-	ImGuiWindowFlags_NoBackground;
+// A fake camera just to create orientation overlay matrix.
+struct OrientationCamera
+{
+	glm::mat4 GetView()
+	{
+		return glm::lookAt(-m_frontDir * 1.9f, glm::vec3{ 0.0f }, m_upDir);
+	}
 
-constexpr ImGuiWindowFlags OverlayViewFlags = OverlayButtonFlags | ImGuiWindowFlags_NoMouseInputs;
+	constexpr glm::mat4 GetProjection()
+	{
+		return glm::mat4{
+			{ 1.79259f, 0.0f, 0.0f, 0.0f },
+			{ 0.0f, 1.79259f, 0.0f, 0.0f },
+			{ 0.0f, 0.0f, -1.0f, -1.0f },
+			{ 0.0f, 0.0f, -0.02f, 0.0f },
+		};
+		// return glm::perspective(45.0f, 1.0f, 0.01f, 10000.0f);
+	}
+
+	glm::vec3 m_frontDir{ 0.0f, 0.0f, 1.0f };
+	glm::vec3 m_upDir{ 0.0f, 1.0f, 0.0f };
+};
 
 // From ImPlot
 struct ScrollingBuffer
@@ -72,55 +95,38 @@ struct ScrollingBuffer
 	}
 };
 
-// A fake camera just to create orientation overlay matrix.
-struct OrientationCamera
+SL_FORCEINLINE static float GetTitleBarSize(bool runtime = false)
 {
-	glm::mat4 GetView()
-	{
-		return glm::lookAt(-m_frontDir * 1.9f, glm::vec3{ 0.0f }, m_upDir);
-	}
-
-	constexpr glm::mat4 GetProjection()
-	{
-		return glm::mat4{
-			{ 1.79259f, 0.0f, 0.0f, 0.0f },
-			{ 0.0f, 1.79259f, 0.0f, 0.0f },
-			{ 0.0f, 0.0f, -1.0f, -1.0f },
-			{ 0.0f, 0.0f, -0.02f, 0.0f },
-		};
-		// return glm::perspective(45.0f, 1.0f, 0.01f, 10000.0f);
-	}
-
-	glm::vec3 m_frontDir{ 0.0f, 0.0f, 1.0f };
-	glm::vec3 m_upDir{ 0.0f, 1.0f, 0.0f };
-};
-
-SL_FORCEINLINE static glm::vec3 ModVec3(const glm::vec3 &v, float m)
-{
-	// Why the second argument of glm::modf must accept a non const left value reference?
-	return glm::vec3{ std::fmod(v.x, m), std::fmod(v.y, m) , std::fmod(v.z, m) };
+	static float s_size = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
+	return runtime ? (ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f) : s_size;
 }
 
-bool AlignButton(const char *label, float align = 0.5f, float customOffset = 0.0f)
-{
-	float size = ImGui::CalcTextSize(label).x + ImGui::GetStyle().FramePadding.x * 2.0f;
-	float avail = ImGui::GetContentRegionAvail().x;
-
-	float startOffset = (avail - size) * align;
-	if (startOffset > 0.0f)
-	{
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + startOffset + customOffset);
-	}
-
-	return ImGui::Button(label);
-}
-
-void RightClickFocus()
+SL_FORCEINLINE static void RightClickFocus()
 {
 	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered())
 	{
 		ImGui::SetWindowFocus();
 	}
+}
+
+SL_FORCEINLINE static bool AlignButton(const char *label, float align = 0.5f, float customOffset = 0.0f)
+{
+	float size = ImGui::CalcTextSize(label).x + ImGui::GetStyle().FramePadding.x * 2.0f;
+	float avail = ImGui::GetContentRegionAvail().x;
+	float offset = (avail - size) * align;
+
+	if (offset > 0.0f)
+	{
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset + customOffset);
+	}
+
+	return ImGui::Button(label);
+}
+
+SL_FORCEINLINE static glm::vec3 ModVec3(const glm::vec3 &v, float m)
+{
+	// Why the second argument of glm::modf must accept a non const left value reference?
+	return glm::vec3{ std::fmod(v.x, m), std::fmod(v.y, m) , std::fmod(v.z, m) };
 }
 
 }
@@ -161,16 +167,16 @@ void ImGuiLayer::OnUpdate(float deltaTime)
 {
 	sl::ImGuiContext::NewFrame();
 
-	ShowDebugPanels();
+	ShowDebugPanel();
 	ShowToolOverlay();
 	ShowOrientationOverlay();
 
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), (ImGuiDockNodeFlags)m_dockSpaceFlag);
 
 	ShowMenuBar();
-	ShowEntityList();
-	ShowLog();
 	ShowInfo(deltaTime);
+	ShowLog();
+	ShowEntityList();
 	ShowDetails();
 	ShowSceneViewport();
 }
@@ -185,13 +191,13 @@ void ImGuiLayer::EndFrame()
 
 }
 
-void ImGuiLayer::ShowDebugPanels()
+void ImGuiLayer::ShowDebugPanel()
 {
 	if (m_debugImGuiDemo)
 	{
 		ImGui::ShowDemoWindow(&m_debugImGuiDemo);
 	}
-	if (m_styleEditor)
+	if (m_debugStyleEditor)
 	{
 		ImGui::ShowStyleEditor();
 	}
@@ -207,16 +213,10 @@ void ImGuiLayer::ShowDebugPanels()
 
 void ImGuiLayer::ShowToolOverlay()
 {
-	if (m_sceneViewportWindowPos.x < 0.0f || m_sceneViewportWindowPos.y < 0.0f)
-	{
-		return;
-	}
-
 	constexpr float ToolOverlayOffset = 10.0f;
-	float titleBarSize = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
 	ImGui::SetNextWindowPos(ImVec2{
-		m_sceneViewportWindowPos.x + ToolOverlayOffset,
-		m_sceneViewportWindowPos.y + ToolOverlayOffset + titleBarSize });
+		(float)m_sceneViewportWindowPosX + ToolOverlayOffset,
+		(float)m_sceneViewportWindowPosY + ToolOverlayOffset + GetTitleBarSize()});
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
 	ImGui::Begin("Tools", nullptr, OverlayButtonFlags);
@@ -232,12 +232,12 @@ void ImGuiLayer::ShowToolOverlay()
 	};
 	constexpr std::array<const char *, 5> Icons =
 	{
+		// TODO: Icon
 		"M", "T", "R", "S", "U",
 	};
-
 	auto SelectableButton = [this](size_t index)
 	{
-		int op = Operations[index];
+		const int op = Operations[index];
 		bool selected = false;
 
 		if (m_imguizmoMode == op)
@@ -259,15 +259,13 @@ void ImGuiLayer::ShowToolOverlay()
 		}
 	};
 
-	// TODO: Icon
 	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
-
 	for (size_t i = 0; i <= 4; ++i)
 	{
 		SelectableButton(i);
 	}
-
 	ImGui::PopStyleVar();
+
 	ImGui::End();
 }
 
@@ -277,11 +275,10 @@ void ImGuiLayer::ShowOrientationOverlay()
 
 	constexpr float OrientationWindowSize = 100.0f;
 	constexpr float OrientationOverlayOffset = 10.0f;
-	float titleBarSize = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
 
 	ImVec2 windowPos = ImVec2{
-		m_sceneViewportWindowPos.x + m_sceneViewportSizeX - OrientationOverlayOffset - OrientationWindowSize,
-		m_sceneViewportWindowPos.y + OrientationOverlayOffset + titleBarSize };
+		(float)m_sceneViewportWindowPosX + (float)m_sceneViewportSizeX - OrientationWindowSize - OrientationOverlayOffset,
+		(float)m_sceneViewportWindowPosY + GetTitleBarSize() + OrientationOverlayOffset };
 	constexpr ImVec2 windowSize = ImVec2{ OrientationWindowSize, OrientationWindowSize };
 
 	ImGui::SetNextWindowPos(windowPos);
@@ -345,7 +342,7 @@ void ImGuiLayer::ShowMenuBar()
 	if (ImGui::BeginMenu("Debug"))
 	{
 		ImGui::MenuItem("ImGui Demo", "", &m_debugImGuiDemo);
-		ImGui::MenuItem("Style Editor", "", &m_styleEditor);
+		ImGui::MenuItem("Style Editor", "", &m_debugStyleEditor);
 		ImGui::MenuItem("ID Stack", "", &m_debugIDStack);
 		ImGui::MenuItem("Item Picker", "", &m_debugItemPicker);
 		ImGui::EndMenu();
@@ -353,15 +350,93 @@ void ImGuiLayer::ShowMenuBar()
 	ImGui::EndMainMenuBar();
 }
 
+void ImGuiLayer::ShowInfo(float deltaTime)
+{
+	ImGui::Begin("Info");
+	RightClickFocus();
+
+	// Infos
+	{
+		ImGui::Text("Backend: %s", nameof::nameof_enum(sl::RenderCore::GetBackend()).data());
+		ImGui::Separator();
+	}
+
+	// FPS plot
+	{
+		// Stores in millisecond.
+		static float s_sumTime = 0.0f;
+		static float s_deltaTimeMultiplier = 10.0f;
+		static ScrollingBuffer s_coastBuffer;
+		static ScrollingBuffer s_fpsBuffer;
+
+		constexpr float History = 1000.0f;
+		constexpr float Delay = 1000.0f;
+
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Delta Time Multiplier:");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(-1.0f);
+		ImGui::DragFloat("##DeltaTimeMultiplier", &s_deltaTimeMultiplier, 1.0f, 1.0f, 1000.0f);
+
+		s_sumTime += deltaTime;
+		if (s_sumTime > Delay)
+		{
+			// Waiting for programme to stabilise.
+			s_coastBuffer.AddPoint(s_sumTime, s_deltaTimeMultiplier * deltaTime);
+			s_fpsBuffer.AddPoint(s_sumTime, 1000.0f / deltaTime);
+		}
+
+		constexpr ImPlotFlags PlotFlag = ImPlotFlags_CanvasOnly;
+		constexpr ImPlotAxisFlags AxisFlagX = ImPlotAxisFlags_NoTickLabels;
+		constexpr ImPlotAxisFlags AxisFlagY = ImPlotAxisFlags_AutoFit;
+		if (ImPlot::BeginPlot("Monitor", ImVec2(-1.0f, 150.0f), PlotFlag))
+		{
+			ImPlot::SetupAxes(nullptr, nullptr, AxisFlagX, AxisFlagY);
+			ImPlot::SetupAxisLimits(ImAxis_X1, s_sumTime - History, s_sumTime, ImGuiCond_Always);
+			ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
+			if (s_sumTime > Delay)
+			{
+				ImPlot::PlotShaded("Coast in ms",
+					&s_coastBuffer.Data[0].x,
+					&s_coastBuffer.Data[0].y,
+					s_coastBuffer.Data.size(),
+					0, 0,
+					s_coastBuffer.Offset,
+					2 * sizeof(float));
+
+				ImPlot::PlotLine("FPS",
+					&s_fpsBuffer.Data[0].x,
+					&s_fpsBuffer.Data[0].y,
+					s_fpsBuffer.Data.size(),
+					0,
+					s_fpsBuffer.Offset,
+					2 * sizeof(float));
+			}
+			ImPlot::EndPlot();
+		}
+	}
+
+	ImGui::End();
+}
+
+void ImGuiLayer::ShowLog()
+{
+	ImGui::Begin("Log");
+	RightClickFocus();
+
+	ImGui::Text("TODO");
+
+	ImGui::End();
+}
+
 void ImGuiLayer::ShowEntityList()
 {
 	ImGui::Begin("Entity List");
-
 	RightClickFocus();
 
 	if (AlignButton("Add New Entity"))
 	{
-		sl::ECSWorld::CreateEntity("Empty Entity");
+		sl::ECSWorld::CreateEntity();
 	}
 	ImGui::Separator();
 
@@ -425,91 +500,10 @@ void ImGuiLayer::ShowEntityList()
 	ImGui::End();
 }
 
-void ImGuiLayer::ShowLog()
-{
-	ImGui::Begin("Log");
-
-	RightClickFocus();
-
-	ImGui::Text("TODO");
-
-	ImGui::End();
-}
-
-void ImGuiLayer::ShowInfo(float deltaTime)
-{
-	ImGui::Begin("Info");
-
-	RightClickFocus();
-
-	// Infos
-	{
-		ImGui::Text("Backend: %s", nameof::nameof_enum(sl::RenderCore::GetBackend()).data());
-		ImGui::Separator();
-	}
-
-	// FPS plot
-	{
-		// Stores in millisecond.
-		static float s_sumTime = 0.0f;
-		static float s_deltaTimeMultiplier = 10.0f;
-		static ScrollingBuffer s_coastBuffer;
-		static ScrollingBuffer s_fpsBuffer;
-
-		constexpr float History = 1000.0f;
-		constexpr float Delay = 1000.0f;
-
-		ImGui::AlignTextToFramePadding();
-		ImGui::Text("Delta Time Multiplier:");
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(-1.0f);
-		ImGui::DragFloat("##DeltaTimeMultiplier", &s_deltaTimeMultiplier, 1.0f, 1.0f, 1000.0f);
-
-		s_sumTime += deltaTime;
-		if (s_sumTime > Delay)
-		{
-			// Waiting for programme to stabilise.
-			s_coastBuffer.AddPoint(s_sumTime, s_deltaTimeMultiplier * deltaTime);
-			s_fpsBuffer.AddPoint(s_sumTime, 1000.0f / deltaTime);
-		}
-
-		constexpr ImPlotFlags PlotFlag = ImPlotFlags_CanvasOnly;
-		constexpr ImPlotAxisFlags AxisFlagX = ImPlotAxisFlags_NoTickLabels;
-		constexpr ImPlotAxisFlags AxisFlagY = ImPlotAxisFlags_AutoFit;
-		if (ImPlot::BeginPlot("Monitor", ImVec2(-1.0f, 150.0f), PlotFlag))
-		{
-			ImPlot::SetupAxes(nullptr, nullptr, AxisFlagX, AxisFlagY);
-			ImPlot::SetupAxisLimits(ImAxis_X1, s_sumTime - History, s_sumTime, ImGuiCond_Always);
-			ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
-			if (s_sumTime > Delay)
-			{
-				ImPlot::PlotShaded("Coast in ms",
-					&s_coastBuffer.Data[0].x,
-					&s_coastBuffer.Data[0].y,
-					s_coastBuffer.Data.size(),
-					0, 0,
-					s_coastBuffer.Offset,
-					2 * sizeof(float));
-
-				ImPlot::PlotLine("FPS",
-					&s_fpsBuffer.Data[0].x,
-					&s_fpsBuffer.Data[0].y,
-					s_fpsBuffer.Data.size(), 
-					0,
-					s_fpsBuffer.Offset,
-					2 * sizeof(float));
-			}
-			ImPlot::EndPlot();
-		}
-	}
-
-	ImGui::End();
-}
-
 template<class T, class Fun>
 void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 {
-	if (auto *pComponent = m_selectedEntity.TryGetComponent<T>(); pComponent)
+	if (T *pComponent = m_selectedEntity.TryGetComponent<T>(); pComponent)
 	{
 		ImGui::PushID(nameof::nameof_type<T>().data());
 
@@ -519,8 +513,8 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 		ImGui::PopFont();
 
 		// Draw component menu button
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 		ImGui::SameLine();
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 		if (AlignButton(" : ", 1.0f, ImGui::GetStyle().WindowPadding.x / 2.0f))
 		{
 			// Don't know why WindowPadding.x / 2 works perfect here.
@@ -552,7 +546,7 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 			ImGui::EndPopup();
 		}
 
-		// Draw component specific item
+		// Draw component specific items
 		if (componentTreeOpen)
 		{
 			uiFunction(pComponent);
@@ -561,27 +555,11 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 		if (removeComponent)
 		{
 			m_selectedEntity.RemoveComponent<T>();
-			m_maxTextSize = 0.0f;
+			m_maxTextSize = 56.0f;
 		}
 
 		ImGui::Separator();
 		ImGui::PopID();
-	}
-}
-
-template<class T>
-void ImGuiLayer::AddComponent(const char *label)
-{
-	if (ImGui::MenuItem(label))
-	{
-		if (!m_selectedEntity.TryGetComponent<T>())
-		{
-			m_selectedEntity.AddComponent<T>();
-		}
-		else
-		{
-			SL_ENGINE_WARN("Entity \"{}\" already has component \"{}\"", m_selectedEntity.GetComponent<sl::TagComponent>().m_name, label);
-		}
 	}
 }
 
@@ -611,10 +589,25 @@ void ImGuiLayer::StartWithText(std::string text)
 	ImGui::SetNextItemWidth(-8.0f);
 }
 
+template<class T>
+void ImGuiLayer::AddComponent(const char *label)
+{
+	if (ImGui::MenuItem(label))
+	{
+		if (!m_selectedEntity.TryGetComponent<T>())
+		{
+			m_selectedEntity.AddComponent<T>();
+		}
+		else
+		{
+			SL_ENGINE_WARN("Entity \"{}\" already has component \"{}\"", m_selectedEntity.GetComponent<sl::TagComponent>().m_name, label);
+		}
+	}
+}
+
 void ImGuiLayer::ShowDetails()
 {
 	ImGui::Begin("Details");
-
 	RightClickFocus();
 
 	if (!m_selectedEntity)
@@ -624,7 +617,7 @@ void ImGuiLayer::ShowDetails()
 	}
 
 	// Draw Tag component
-	DrawComponent<sl::TagComponent>("Tag", [this](auto *pComponent)
+	DrawComponent<sl::TagComponent>("Tag", [this](sl::TagComponent *pComponent)
 	{
 		std::string &name = pComponent->m_name;
 
@@ -646,7 +639,7 @@ void ImGuiLayer::ShowDetails()
 	});
 
 	// Draw Transform component
-	DrawComponent<sl::TransformComponent>("Transform", [this](auto *pComponent)
+	DrawComponent<sl::TransformComponent>("Transform", [this](sl::TransformComponent *pComponent)
 	{
 		bool cameraMayBeDirty = false;
 
@@ -673,30 +666,29 @@ void ImGuiLayer::ShowDetails()
 		{
 			if (auto *pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>(); pCamera)
 			{
-				pCamera->m_isDirty = true;
+				pCamera->m_isDirty = true; 
 			}
 		}
 	});
 
 	// Draw Camera component
-	DrawComponent<sl::CameraComponent>("Camera", [this](auto *pComponent)
+	DrawComponent<sl::CameraComponent>("Camera", [this](sl::CameraComponent *pComponent)
 	{
-		constexpr const char *ProjectionTypeNames[] =
+		constexpr size_t Count = nameof::detail::count_v<sl::ProjectionType>;
+		constexpr std::array<const char *, Count> ProjectionTypeNames =
 		{
 			nameof::nameof_enum(sl::ProjectionType::Perspective).data(),
 			nameof::nameof_enum(sl::ProjectionType::Orthographic).data(),
 		};
 
-		const char *crtProjectionTypeName = ProjectionTypeNames[static_cast<size_t>(pComponent->m_projectionType)];
 		StartWithText("Projection");
-		if (ImGui::BeginCombo("##Projection", crtProjectionTypeName, ImGuiComboFlags_WidthFitPreview))
+		if (ImGui::BeginCombo("##Projection", ProjectionTypeNames[(size_t)pComponent->m_projectionType], ImGuiComboFlags_WidthFitPreview))
 		{
-			for (size_t i = 0; i < 2; ++i)
+			for (size_t i = 0; i < Count; ++i)
 			{
-				bool isSelected = (ProjectionTypeNames[i] == crtProjectionTypeName);
-				if (ImGui::Selectable(ProjectionTypeNames[i], isSelected))
+				if (ImGui::Selectable(ProjectionTypeNames[i], i == (size_t)pComponent->m_projectionType))
 				{
-					pComponent->m_projectionType = static_cast<sl::ProjectionType>(i);
+					pComponent->m_projectionType = (sl::ProjectionType)i;
 					pComponent->m_isDirty = true;
 				}
 			}
@@ -710,20 +702,20 @@ void ImGuiLayer::ShowDetails()
 
 			float fovDegrees = glm::degrees(pComponent->m_fov);
 			StartWithText("FOV");
-			if (ImGui::DragFloat("##FOV", &fovDegrees, 0.1f, 1.0f, 180.0f))
+			if (ImGui::DragFloat("##FOV", &fovDegrees, 0.1f, 1.0f, 120.0f))
 			{
 				pComponent->m_fov = glm::radians(fovDegrees);
 				pComponent->m_isDirty = true;
 			}
 
 			StartWithText("Near Plane");
-			if (ImGui::DragFloat("##NearPlane", &(pComponent->m_nearPlane), 0.001f, 0.001f, 100000.0f))
+			if (ImGui::DragFloat("##NearPlane", &(pComponent->m_nearPlane), 0.001f, 0.01f, 1.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
 
 			StartWithText("Far Plane");
-			if (ImGui::DragFloat("##FarPlane", &(pComponent->m_farPlane), 1.0f, 0.001f, 100000.0f))
+			if (ImGui::DragFloat("##FarPlane", &(pComponent->m_farPlane), 100.0f, 1.0f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
@@ -737,19 +729,19 @@ void ImGuiLayer::ShowDetails()
 			ImGui::Indent();
 
 			StartWithText("Size");
-			if (ImGui::DragFloat("##Size", &(pComponent->m_orthoSize), 0.1f, 0.1f, 100000.0f))
+			if (ImGui::DragFloat("##Size", &(pComponent->m_orthoSize), 100.0f, 1.0f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
 
 			StartWithText("Near Clip");
-			if (ImGui::DragFloat("##NearClip", &(pComponent->m_orthoNearClip), 0.1f, -100000.0f, 100000.0f))
+			if (ImGui::DragFloat("##NearClip", &(pComponent->m_orthoNearClip), 100.0f, -100000.0f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
 
 			StartWithText("Far Clip");
-			if (ImGui::DragFloat("##FarClip", &(pComponent->m_orthoFarClip), 0.1f, -100000.0f, 100000.0f))
+			if (ImGui::DragFloat("##FarClip", &(pComponent->m_orthoFarClip), 100.0f, -100000.0f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
@@ -764,22 +756,22 @@ void ImGuiLayer::ShowDetails()
 
 			float rotateSpeedDegrees = glm::degrees(pComponent->m_rotateSpeed);
 			StartWithText("Rotate Speed");
-			if (ImGui::DragFloat("##RotateSpeed", &rotateSpeedDegrees, 0.001f, 0.001f, 1.0f))
+			if (ImGui::DragFloat("##RotateSpeed", &rotateSpeedDegrees, 0.001f, 0.001f, 0.5f))
 			{
 				pComponent->m_rotateSpeed = glm::radians(rotateSpeedDegrees);
 			}
 
 			StartWithText("Move Speed");
-			ImGui::DragFloat("##MoveSpeed", &(pComponent->m_maxMoveSpeed), 0.001f, 0.001f, 1.0f);
+			ImGui::DragFloat("##MoveSpeed", &(pComponent->m_maxMoveSpeed), 0.001f, 0.001f, 0.5f);
 
 			StartWithText("Acceleration");
-			ImGui::DragFloat("##Acceleration", &(pComponent->m_maxSpeedToAcceleration), 0.001f, 0.001f, 1.0f);
+			ImGui::DragFloat("##Acceleration", &(pComponent->m_maxSpeedToAcceleration), 0.001f, 0.001f, 0.5f);
 
 			StartWithText("Shift Multiplier");
-			ImGui::DragFloat("##ShiftMultiplier", &(pComponent->m_moveSpeedKeyShiftMultiplier), 0.1f, 0.1f, 10.0f);
+			ImGui::DragFloat("##ShiftMultiplier", &(pComponent->m_moveSpeedKeyShiftMultiplier), 0.01f, 0.1f, 10.0f);
 
 			StartWithText("Scroll Multiplier");
-			ImGui::DragFloat("##ScrollMultiplier", &(pComponent->m_moveSpeedMouseScrollMultiplier), 0.1f, 0.1f, 10.0f);
+			ImGui::DragFloat("##ScrollMultiplier", &(pComponent->m_moveSpeedMouseScrollMultiplier), 0.01f, 0.1f, 10.0f);
 
 			ImGui::Unindent();
 		}
@@ -789,7 +781,10 @@ void ImGuiLayer::ShowDetails()
 	DrawComponent<sl::RenderingComponent>("Rendering", [this](auto *pComponent)
 	{
 		StartWithText("Shader");
-		ImGui::Text(pComponent->m_pShader->GetName().c_str());
+		if (auto *pShader = pComponent->m_pShader; pShader)
+		{
+			ImGui::Text(pShader->GetName().c_str());
+		}
 	});
 
 	// Draw Cornerstone component
@@ -807,6 +802,7 @@ void ImGuiLayer::ShowDetails()
 	if (ImGui::BeginPopup("AddComponent"))
 	{
 		AddComponent<sl::CameraComponent>("Camera");
+		AddComponent<sl::RenderingComponent>("Rendering");
 		AddComponent<sl::CornerstoneComponent>("Cornerstone");
 		ImGui::EndPopup();
 	}
@@ -817,14 +813,15 @@ void ImGuiLayer::ShowDetails()
 void ImGuiLayer::ShowSceneViewport()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
-	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoScrollbar);
+	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 	ImGui::PopStyleVar();
 
 	ImVec2 windowPos = ImGui::GetWindowPos();
-	m_sceneViewportWindowPos = glm::vec2{ windowPos.x, windowPos.y };
-	ImVec2 crtSceneViewportSize = ImGui::GetContentRegionAvail();
+	m_sceneViewportWindowPosX = (uint32_t)windowPos.x;
+	m_sceneViewportWindowPosY = (uint32_t)windowPos.y;
 
 	// Resize event
+	ImVec2 crtSceneViewportSize = ImGui::GetContentRegionAvail();
 	uint32_t crtSizeX = (uint32_t)crtSceneViewportSize.x;
 	uint32_t crtSizeY = (uint32_t)crtSceneViewportSize.y;
 	if (crtSizeX != m_sceneViewportSizeX || crtSizeY != m_sceneViewportSizeY)
@@ -850,7 +847,7 @@ void ImGuiLayer::ShowSceneViewport()
 	{
 		// The invisible button is designed to prevent the mouse from hovering over the ui item
 		// even when the camera is moving(and the mouse is captured), using an internal imgui mechanism.
-		// I haven't come out with a better solution, but it works anyway.
+		// I haven't come up with a better solution, but it works.
 		ImGui::SetCursorPos(crtCursorPos);
 		ImGui::InvisibleButton("InvisibleButton", crtSceneViewportSize,
 			ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);

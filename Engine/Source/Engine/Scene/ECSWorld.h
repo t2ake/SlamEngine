@@ -19,7 +19,7 @@ class ECSWorld final
 public:
 	static entt::registry &GetRegistry() { return m_registry; }
 
-	static Entity CreateEntity(std::string name = "Default Name");
+	static Entity CreateEntity(std::string name = "Empty Entity");
 	// Destroy an entity and all its components.
 	static void DestroyEntity(Entity entity);
 

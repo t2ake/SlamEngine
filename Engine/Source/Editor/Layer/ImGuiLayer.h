@@ -27,14 +27,14 @@ public:
 	void SetEventCallback(sl::EventCallback fun) { m_eventCallback = std::move(fun); }
 
 private:
-	void ShowDebugPanels();
+	void ShowDebugPanel();
 	void ShowToolOverlay();
 	void ShowOrientationOverlay();
 
 	void ShowMenuBar();
-	void ShowEntityList();
-	void ShowLog();
 	void ShowInfo(float deltaTime);
+	void ShowLog();
+	void ShowEntityList();
 
 	// Just used inside ImGuiLayer
 	template<class T, class Fun>
@@ -52,7 +52,7 @@ private:
 	
 	// Debug panel
 	bool m_debugImGuiDemo = false;
-	bool m_styleEditor = false;
+	bool m_debugStyleEditor = false;
 	bool m_debugItemPicker = false;
 	bool m_debugIDStack = false;
 
@@ -63,9 +63,10 @@ private:
 	float m_maxTextSize = 0.0f;
 
 	// Scene viewport
+	uint32_t m_sceneViewportWindowPosX = 0;
+	uint32_t m_sceneViewportWindowPosY = 0;
 	uint32_t m_sceneViewportSizeX = 0;
 	uint32_t m_sceneViewportSizeY = 0;
-	glm::vec2 m_sceneViewportWindowPos{ -1.0f, -1.0f };
 
 	// ImGuizmo
 	int m_imguizmoMode = 7; // ImGuizmo::OPERATION m_imguizmoMode = ImGuizmo::OPERATION::TRANSLATE
