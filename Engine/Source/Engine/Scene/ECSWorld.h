@@ -15,6 +15,7 @@ namespace sl
 class ECSWorld final
 {
 	friend class Entity;
+	friend class SceneSerializer;
 
 public:
 	static entt::registry &GetRegistry() { return m_registry; }

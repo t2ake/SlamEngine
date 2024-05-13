@@ -12,12 +12,6 @@ project("Editor")
 	objdir(path.join(IntermediatePath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"))
 	
 	-- Set definitions.
-	defines
-	{
-		"SL_ROOT_PATH=\""..RootPath.."\"",
-		"SL_ASSET_PATH=\""..path.join(RootPath, "Engine/Asset").."\"",
-		"SPDLOG_NO_EXCEPTIONS", "SPDLOG_USE_STD_FORMAT",
-	}
 	
 	filter { "configurations:Debug" }
 		defines { "SL_DEBUG" }
@@ -28,6 +22,13 @@ project("Editor")
 	filter { "system:Windows" }
 		defines { "SL_WINDOWS" }
 	filter {}
+	
+	defines
+	{
+		"SL_ROOT_PATH=\""..RootPath.."\"",
+		"SL_ASSET_PATH=\""..path.join(RootPath, "Engine/Asset").."\"",
+		"SPDLOG_NO_EXCEPTIONS", "SPDLOG_USE_STD_FORMAT",
+	}
 	
 	-- Set include paths.
 	includedirs

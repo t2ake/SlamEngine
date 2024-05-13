@@ -33,5 +33,16 @@ cd %GLFW_PATH%
 cmake -B build -DCMAKE_CONFIGURATION_TYPES="Release;Debug" -DUSE_MSVC_RUNTIME_LIBRARY_DLL=OFF
 cmake --build build --target glfw --config Release
 cmake --build build --target glfw --config Debug
+echo.
+
+rem yaml-cpp
+set "YAMLCPP_PATH=%THIRD_PARTY_PATH%\yaml-cpp"
+echo [ yaml-cpp ] path: %YAMLCPP_PATH%
+cd %YAMLCPP_PATH%
+
+cmake -B build -DCMAKE_CONFIGURATION_TYPES="Release;Debug" -DYAML_MSVC_SHARED_RT=OFF
+cmake --build build --target yaml-cpp --config Release
+cmake --build build --target yaml-cpp --config Debug
+echo.
 
 pause

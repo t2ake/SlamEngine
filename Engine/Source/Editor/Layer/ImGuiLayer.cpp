@@ -8,6 +8,7 @@
 #include "RenderCore/RenderCore.h"
 #include "Resource/Font.h"
 #include "Scene/ECSWorld.h"
+#include "Scene/SceneSerializer.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui/imgui.h>
@@ -317,7 +318,7 @@ void ImGuiLayer::ShowMenuBar()
 		}
 		if (ImGui::MenuItem("Save"))
 		{
-
+			sl::SceneSerializer::SerializeYAML();
 		}
 		ImGui::Separator();
 		if (ImGui::MenuItem("Exit"))

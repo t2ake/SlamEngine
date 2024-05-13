@@ -4,9 +4,10 @@
 *.filters
 *.user
 
+*.yaml
+
 build
 
 /Engine/bin/*
-
 /Engine/int/*
 !/Engine/int/imgui.ini

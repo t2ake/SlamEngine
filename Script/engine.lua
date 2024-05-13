@@ -11,12 +11,6 @@ project("Slam")
 	objdir(path.join(IntermediatePath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"))
 	
 	-- Set definitions.
-	defines
-	{
-		"SL_ROOT_PATH=\""..RootPath.."\"",
-		"SL_ASSET_PATH=\""..path.join(RootPath, "Engine/Asset").."\"",
-		"SPDLOG_NO_EXCEPTIONS", "SPDLOG_USE_STD_FORMAT",
-	}
 	
 	filter { "configurations:Debug" }
 		defines { "SL_DEBUG" }
@@ -27,6 +21,14 @@ project("Slam")
 	filter { "system:Windows" }
 		defines { "SL_WINDOWS" }
 	filter {}
+	
+	defines
+	{
+		"SL_ROOT_PATH=\""..RootPath.."\"",
+		"SL_ASSET_PATH=\""..path.join(RootPath, "Engine/Asset").."\"",
+		"SPDLOG_NO_EXCEPTIONS", "SPDLOG_USE_STD_FORMAT",
+		"YAML_CPP_STATIC_DEFINE",
+	}
 	
 	-- Set include paths.
 	includedirs
@@ -39,6 +41,7 @@ project("Slam")
 		path.join(ThirdPartyPath, "imgui"),
 		path.join(ThirdPartyPath, "glm"),
 		path.join(ThirdPartyPath, "entt/src"),
+		path.join(ThirdPartyPath, "yaml-cpp/include"),
 	}
 	
 	-- Set files.
@@ -56,10 +59,12 @@ project("Slam")
 			path.join(ThirdPartyPath, "build/imgui/bin/Debug"),
 			path.join(ThirdPartyPath, "build/implot/bin/Debug"),
 			path.join(ThirdPartyPath, "build/imguizmo/bin/Debug"),
+			path.join(ThirdPartyPath, "build/imguizmo/bin/Debug"),
+			path.join(ThirdPartyPath, "yaml-cpp/build/Debug"),
 		}
 		links
 		{
-			"glfw3", "glad", "imgui", "implot", "imguizmo",
+			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cppd",
 		}
 	filter { "configurations:Release" }
 		libdirs
@@ -69,10 +74,11 @@ project("Slam")
 			path.join(ThirdPartyPath, "build/imgui/bin/Release"),
 			path.join(ThirdPartyPath, "build/implot/bin/Release"),
 			path.join(ThirdPartyPath, "build/imguizmo/bin/Release"),
+			path.join(ThirdPartyPath, "yaml-cpp/build/Release"),
 		}
 		links
 		{
-			"glfw3", "glad", "imgui", "implot", "imguizmo",
+			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cpp",
 		}
 	filter { "configurations:Final" }
 		libdirs
@@ -82,10 +88,11 @@ project("Slam")
 			path.join(ThirdPartyPath, "build/imgui/bin/Release"),
 			path.join(ThirdPartyPath, "build/implot/bin/Release"),
 			path.join(ThirdPartyPath, "build/imguizmo/bin/Release"),
+			path.join(ThirdPartyPath, "yaml-cpp/build/Release"),
 		}
 		links
 		{
-			"glfw3", "glad", "imgui", "implot", "imguizmo",
+			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cpp",
 		}
 	filter {}
 	

@@ -23,3 +23,5 @@ nameof 0.10.4
 implot 0.16
 
 imguizmo 1.84 WIP
+
+yaml-cpp 0.8.0
