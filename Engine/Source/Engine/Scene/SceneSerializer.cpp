@@ -54,6 +54,8 @@ void SceneSerializer::SerializeYAML(const char *sceneName)
 			out << YAML::Key << "Camera Component";
 			out << YAML::BeginMap;
 			
+			out << YAML::Key << "Projection Type" << YAML::Value << pCamera->m_projectionType;
+
 			out << YAML::Key << "Perspective";
 			out << YAML::BeginMap;
 			out << YAML::Key << "FOV" << YAML::Value << pCamera->m_fov;
@@ -183,6 +185,12 @@ bool SceneSerializer::DeserializeYAML(const char *sceneName)
 			if (auto camera = entity["Camera Component"]; camera)
 			{
 				SL_ENGINE_TRACE("    Camera Component:");
+
+				if (auto projectionType = camera["Projection Type"]; projectionType)
+				{
+					SL_ENGINE_TRACE("      Projection Type: {}", nameof::nameof_enum(projectionType.as<sl::ProjectionType>()));
+				}
+
 				if (auto perspective = camera["Perspective"]; perspective)
 				{
 					SL_ENGINE_TRACE("      Perspective:");

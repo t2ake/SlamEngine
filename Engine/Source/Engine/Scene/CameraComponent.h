@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Defines.h"
+
 #include <glm/mat4x4.hpp>
 #include <glm/trigonometric.hpp>
 #include <glm/vec2.hpp>
@@ -7,12 +9,6 @@
 
 namespace sl
 {
-
-enum class ProjectionType : uint8_t
-{
-	Perspective = 0,
-	Orthographic = 1,
-};
 
 struct CameraComponent
 {
