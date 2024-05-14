@@ -310,11 +310,11 @@ void ImGuiLayer::ShowMenuBar()
 	{
 		if (ImGui::MenuItem("New"))
 		{
-
+			SL_EDITOR_ERROR("TODO: New scene button");
 		}
 		if (ImGui::MenuItem("Open"))
 		{
-
+			sl::SceneSerializer::DeserializeYAML();
 		}
 		if (ImGui::MenuItem("Save"))
 		{

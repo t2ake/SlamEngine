@@ -130,7 +130,7 @@ void Editor::OnEvent(sl::Event &event)
 
 bool Editor::OnWindowClose(sl::WindowCloseEvent &event)
 {
-	SL_EDITOR_TRACE("Window closed");
+	SL_EDITOR_TRACE("Window close");
 	m_isRunning = false;
 
 	return true;
@@ -140,7 +140,7 @@ bool Editor::OnWindowResize(sl::WindowResizeEvent &event)
 {
 	if (0 == event.GetWidth() || 0 == event.GetHeight())
 	{
-		SL_EDITOR_TRACE("Window minimized");
+		SL_EDITOR_TRACE("Window minimise");
 		m_isMinimized = true;
 	}
 	else

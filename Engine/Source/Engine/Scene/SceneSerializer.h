@@ -11,8 +11,8 @@ public:
 	static void SerializeYAML(const char *sceneName = "MyScene");
 	static void SerializeBinary();
 
-	static void DeserializeYAML();
-	static void DeserializeBinary();
+	static bool DeserializeYAML(const char *sceneName = "MyScene");
+	static bool DeserializeBinary();
 };
 
 } // namespace sl
