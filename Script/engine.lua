@@ -5,13 +5,12 @@ project("Slam")
 	language("C++")
 	cppdialect("C++20")
 	
-	-- Project, binary and intermediate files path.
+	-- Project, binary and intermediate file paths
 	location(IntermediatePath)
 	targetdir(path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"))
 	objdir(path.join(IntermediatePath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"))
 	
-	-- Set definitions.
-	
+	-- Definitions
 	filter { "configurations:Debug" }
 		defines { "SL_DEBUG" }
 	filter { "configurations:Release" }
@@ -30,7 +29,7 @@ project("Slam")
 		"YAML_CPP_STATIC_DEFINE",
 	}
 	
-	-- Set include paths.
+	-- Include paths
 	includedirs
 	{
 		EnginePath,
@@ -44,13 +43,13 @@ project("Slam")
 		path.join(ThirdPartyPath, "yaml-cpp/include"),
 	}
 	
-	-- Set files.
+	-- Files
 	files
 	{
 		path.join(EnginePath, "**.*"),
 	}
 	
-	-- Link to thirdparty libs.
+	-- Thirdparty libs
 	filter { "configurations:Debug" }
 		libdirs
 		{
@@ -66,21 +65,7 @@ project("Slam")
 		{
 			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cppd",
 		}
-	filter { "configurations:Release" }
-		libdirs
-		{
-			path.join(ThirdPartyPath, "glfw/build/src/Release"),
-			path.join(ThirdPartyPath, "build/glad/bin/Release"),
-			path.join(ThirdPartyPath, "build/imgui/bin/Release"),
-			path.join(ThirdPartyPath, "build/implot/bin/Release"),
-			path.join(ThirdPartyPath, "build/imguizmo/bin/Release"),
-			path.join(ThirdPartyPath, "yaml-cpp/build/Release"),
-		}
-		links
-		{
-			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cpp",
-		}
-	filter { "configurations:Final" }
+	filter { "configurations:Release or configurations:Final" }
 		libdirs
 		{
 			path.join(ThirdPartyPath, "glfw/build/src/Release"),
@@ -96,13 +81,11 @@ project("Slam")
 		}
 	filter {}
 	
-	-- Use /MT and /MTd.
+	-- Runtime library
 	staticruntime "on"
 	filter { "configurations:Debug" }
 		runtime("Debug") -- /MTd
-	filter { "configurations:Release" }
-		runtime("Release") -- /MT
-	filter { "configurations:Final" }
+	filter { "configurations:Release or configurations:Final" }
 		runtime("Release") -- /MT
 	filter {}
 	

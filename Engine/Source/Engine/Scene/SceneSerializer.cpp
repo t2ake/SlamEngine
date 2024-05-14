@@ -99,7 +99,7 @@ void SceneSerializer::SerializeYAML(const char *sceneName)
 			out << YAML::Key << "RenderingComponent";
 			out << YAML::BeginMap;
 
-			out << YAML::Key << "Shader" << YAML::Value << "Shader name goes hera";
+			out << YAML::Key << "Shader" << YAML::Value << "Shader name goes here";
 
 			out << YAML::EndMap;
 		}
@@ -117,8 +117,7 @@ void SceneSerializer::SerializeYAML(const char *sceneName)
 		out << YAML::EndMap; // Entity
 	}
 	out << YAML::EndSeq; // Entities
-
-	out << YAML::EndMap;
+	out << YAML::EndMap; // Scene
 	
 	std::string outputPath = Path::FromeRoot(Path::Join("Project", sceneName));
 	outputPath += ".yaml";
