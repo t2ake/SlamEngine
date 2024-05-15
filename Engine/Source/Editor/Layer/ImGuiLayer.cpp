@@ -1,5 +1,6 @@
 #include "ImGuiLayer.h"
 
+#include "Core/EnumOf.hpp"
 #include "Core/Log.h"
 #include "Event/CameraEvent.h"
 #include "Event/SceneViewportEvent.h"
@@ -675,7 +676,7 @@ void ImGuiLayer::ShowDetails()
 	// Draw Camera component
 	DrawComponent<sl::CameraComponent>("Camera", [this](sl::CameraComponent *pComponent)
 	{
-		constexpr size_t Count = nameof::detail::count_v<sl::ProjectionType>;
+		constexpr size_t Count = nameof::enum_count<sl::ProjectionType>();
 		constexpr std::array<const char *, Count> ProjectionTypeNames =
 		{
 			nameof::nameof_enum(sl::ProjectionType::Perspective).data(),

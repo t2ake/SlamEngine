@@ -12,20 +12,26 @@ public:
 
 	static constexpr const char *RootPath{ SL_ROOT_PATH };
 	static constexpr const char *AssetPath{ SL_ASSET_PATH };
+	static constexpr const char *ProjectPath{ SL_PROJECT_PATH };
 
-	static bool Exists(const std::string &path)
+	static bool Exists(std::string_view path)
 	{
 		return std::filesystem::exists(path);
 	}
 
-	static std::string FromeRoot(std::string path = "")
+	static std::string FromeRoot(std::string_view path = "")
 	{
 		return (std::filesystem::path{ RootPath } / path).generic_string();
 	}
 
-	static std::string FromeAsset(std::string path = "")
+	static std::string FromeAsset(std::string_view path = "")
 	{
-		return (std::filesystem::path{ SL_ASSET_PATH } / path).generic_string();
+		return (std::filesystem::path{ AssetPath } / path).generic_string();
+	}
+
+	static std::string FromeProject(std::string_view path = "")
+	{
+		return (std::filesystem::path{ ProjectPath } / path).generic_string();
 	}
 
 	template<class... Args>

@@ -4,7 +4,7 @@ workspace("SlamEngine")
 	architecture("x64")
 	configurations{ "Debug", "Release", "Final" }
 	
-	-- No optimization in Debug mode.
+	-- No optimization in Debug mode
 	filter { "configurations:Debug" }
 		symbols("On")
 		optimize("Off")
@@ -13,7 +13,7 @@ workspace("SlamEngine")
 		symbols("On")
 		optimize("On")
 		
-	-- Full optimization in Final maode.
+	-- Full optimization in Final maode
 	filter { "configurations:Final" }
 		symbols("Off")
 		optimize("Full")

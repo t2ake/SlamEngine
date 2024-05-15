@@ -1,14 +1,14 @@
 print("Generating utility...")
 
-project("Rebuild")
+project("Build")
 	kind("Utility")
 	
-	-- Project, binary and intermediate files path.
+	-- Project, binary and intermediate file paths
 	location(IntermediatePath)
 	targetdir(path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"))
 	objdir(path.join(IntermediatePath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"))
 	
-	-- Set files.
+	-- Files
 	files
 	{
 		path.join(RootPath, "Setup.bat"),
@@ -22,7 +22,6 @@ project("Rebuild")
 	
 	flags
 	{
-		-- Exclude a source code file from the build, for the current configuration.
 		"ExcludeFromBuild",
 	}
 	
