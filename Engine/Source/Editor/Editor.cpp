@@ -23,6 +23,7 @@ Editor::Editor(EditorInitor initor)
 	sl::RenderCore::Init(initor.m_backend);
 	m_pWindow = new sl::Window(std::move(initor.title), initor.m_width, initor.m_height);
 	m_pWindow->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
+
 	sl::ImGuiContext::Init(m_pWindow->GetNativeWindow());
 	sl::Input::Init(m_pWindow->GetNativeWindow());
 

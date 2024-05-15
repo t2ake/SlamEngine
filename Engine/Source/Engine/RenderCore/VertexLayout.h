@@ -1,27 +1,13 @@
 #pragma once
 
+#include "Core/Defines.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>
 
 namespace sl
 {
-
-enum class AttribType : uint8_t
-{
-	Int8 = 0,
-	Uint8,
-	Int16,
-	Uint16,
-	Int32,
-	Uint32,
-
-	Half, // Need to be supported in CPU side
-	Float,
-	Double,
-
-	Count,
-};
 
 struct VertexLayoutElement
 {

@@ -1,12 +1,14 @@
 #include "VertexLayout.h"
 
+#include "Core/EnumOf.hpp"
+
 namespace sl
 {
 
 namespace
 {
 
-static constexpr uint32_t AttribTypeToSize[(size_t)AttribType::Count] =
+inline constexpr uint32_t AttribTypeSize[nameof::enum_count<AttribType>()] =
 {
 	1, // AttribType::Int8
 	1, // AttribType::Uint8
@@ -24,7 +26,7 @@ static constexpr uint32_t AttribTypeToSize[(size_t)AttribType::Count] =
 VertexLayoutElement::VertexLayoutElement(std::string name, AttribType type, uint32_t count, bool normalize) :
 	m_name(std::move(name)), m_type(type), m_count(count), m_normalize(normalize)
 {
-	m_size = AttribTypeToSize[(size_t)type] * m_count;
+	m_size = AttribTypeSize[(size_t)type] * m_count;
 }
 
 VertexLayout::VertexLayout(std::initializer_list<VertexLayoutElement> elements) :

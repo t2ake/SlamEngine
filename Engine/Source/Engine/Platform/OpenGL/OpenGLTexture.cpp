@@ -38,15 +38,18 @@ OpenGLTexture2D::OpenGLTexture2D(std::string path) :
 		internalFormat = GL_RGBA8;
 		format = GL_RGBA;
 	}
-
-	if (!internalFormat || !format)
+	else
 	{
 		SL_ENGINE_ERROR("Unknown image format of {}", m_path);
+		stbi_image_free(pData);
 		return;
 	}
 
 	glCreateTextures(GL_TEXTURE_2D, 1, &m_handle);
 	glTextureStorage2D(m_handle, 1, internalFormat, m_width, m_height);
+
+	glTextureParameteri(m_handle, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTextureParameteri(m_handle, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
 	glTextureParameteri(m_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTextureParameteri(m_handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

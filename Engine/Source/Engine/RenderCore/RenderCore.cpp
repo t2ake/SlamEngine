@@ -7,15 +7,13 @@ namespace sl
 
 void RenderCore::Init(GraphicsBackend backend)
 {
-	SL_ENGINE_ASSERT(!m_pRenderAPI);
-
 	m_backend = backend;
 	m_pRenderAPI = RenderAPI::Create();
 }
 
 void RenderCore::SetDefaultState()
 {
-	m_pRenderAPI->SetDefaultState();
+	m_pRenderAPI->EnableBlend();
 }
 
 void RenderCore::ClearColor(float r, float g, float b, float a)
@@ -34,6 +32,11 @@ void RenderCore::ClearStencil(int  stencil)
 {
 	m_pRenderAPI->SetClearStencil(stencil);
 	m_pRenderAPI->ClearStencil();
+}
+
+void RenderCore::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+{
+	m_pRenderAPI->SetViewport(x, y, width, height);
 }
 
 void RenderCore::Submit(VertexArray *pVertexArray, Shader *pShader)

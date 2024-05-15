@@ -26,8 +26,8 @@ SandboxLayer::SandboxLayer()
 	sl::VertexBuffer *pVertexBuffer = sl::VertexBuffer::Create(vertices, sizeof(vertices));
 	pVertexBuffer->SetLayout(sl::VertexLayout
 	{
-		{"Position", sl::AttribType::Float, 3},
-		{"UV", sl::AttribType::Float, 2},
+		{ "Position", sl::AttribType::Float, 3 },
+		{ "UV", sl::AttribType::Float, 2 },
 	});
 	sl::IndexBuffer *pIndexBuffer = sl::IndexBuffer::Create(indices, sizeof(indices));
 

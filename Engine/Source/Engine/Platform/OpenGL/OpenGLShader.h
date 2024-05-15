@@ -10,8 +10,8 @@ namespace sl
 class OpenGLShader : public Shader
 {
 public:
-	OpenGLShader(std::string name, std::string vertexPath, std::string fragmentPath);
-	OpenGLShader(std::string name, std::string computePath);
+	OpenGLShader(std::string_view name, std::string_view vertexPath, std::string_view fragmentPath);
+	OpenGLShader(std::string_view name, std::string_view computePath);
 	virtual ~OpenGLShader() override;
 
 	virtual void Bind() const override;

@@ -1,5 +1,6 @@
 #include "OpenGLVertexArray.h"
 
+#include "Core/EnumOf.hpp"
 #include "Core/Log.h"
 
 #include <glad/glad.h>
@@ -10,7 +11,7 @@ namespace sl
 namespace
 {
 
-static constexpr GLenum AttribTypeToOpenGLType[(size_t)AttribType::Count] =
+static constexpr GLenum AttribTypeToOpenGLType[nameof::enum_count<AttribType>()] =
 {
 	GL_BYTE,           // AttribType::Int8
 	GL_UNSIGNED_BYTE,  // AttribType::Uint8
@@ -62,7 +63,8 @@ void OpenGLVertexArray::SetVertexBuffer(VertexBuffer *pVertexBuffer)
 	for (const auto &element : layout)
 	{
 		glEnableVertexAttribArray(index);
-		glVertexAttribPointer(index,
+		glVertexAttribPointer(
+			index,
 			element.m_count,
 			AttribTypeToOpenGLType[(size_t)element.m_type],
 			element.m_normalize ? GL_TRUE : GL_FALSE,

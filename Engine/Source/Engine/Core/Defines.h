@@ -28,9 +28,18 @@ enum class GraphicsBackend : uint8_t
 	Metal,
 };
 
-#define SL_CLEAR_NONE    UINT8_C(0x00)
-#define SL_CLEAR_COLOR   UINT8_C(0x01)
-#define SL_CLEAR_DEPTH   UINT8_C(0x02)
-#define SL_CLEAR_STENCIL UINT8_C(0x04)
+enum class AttribType : uint8_t
+{
+	Int8 = 0,
+	Uint8,
+	Int16,
+	Uint16,
+	Int32,
+	Uint32,
+
+	Half,
+	Float,
+	Double,
+};
 
 } // namespace sl
