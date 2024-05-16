@@ -2,29 +2,12 @@
 
 #include "Core/EnumOf.hpp"
 #include "Core/Log.h"
+#include "Platform/OpenGL/OpenGLDefines.h"
 
 #include <glad/glad.h>
 
 namespace sl
 {
-
-namespace
-{
-
-static constexpr GLenum AttribTypeToOpenGLType[nameof::enum_count<AttribType>()] =
-{
-	GL_BYTE,           // AttribType::Int8
-	GL_UNSIGNED_BYTE,  // AttribType::Uint8
-	GL_SHORT,          // AttribType::Int16
-	GL_UNSIGNED_SHORT, // AttribType::Uint16
-	GL_INT,            // AttribType::Int32
-	GL_UNSIGNED_INT,   // AttribType::Uint32
-	GL_HALF_FLOAT,     // AttribType::Half
-	GL_FLOAT,          // AttribType::Float
-	GL_DOUBLE,         // AttribType::Double
-};
-
-}
 
 OpenGLVertexArray::OpenGLVertexArray()
 {
@@ -66,7 +49,7 @@ void OpenGLVertexArray::SetVertexBuffer(VertexBuffer *pVertexBuffer)
 		glVertexAttribPointer(
 			index,
 			element.m_count,
-			AttribTypeToOpenGLType[(size_t)element.m_type],
+			GLAttribType[(size_t)element.m_type],
 			element.m_normalize ? GL_TRUE : GL_FALSE,
 			layout.GetStride(),
 			(void *)(uint64_t)element.m_offset);

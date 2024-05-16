@@ -42,16 +42,44 @@ enum class AttribType : uint8_t
 	Double,
 };
 
-enum class DepthFunc : uint8_t
+enum class ShaderType : uint8_t
+{
+	VertexShader = 0,
+	FragmentShader,
+	ComputeShader,
+	// Geometry
+	// Raytracing
+};
+
+enum class ShaderProgramType : uint8_t
+{
+	Standard = 0,
+	Compute,
+	// VertexOnly
+};
+
+enum class CompareFunction : uint8_t
 {
 	Never = 0,
 	Less,
-	Equal,
-	LEqual,
+	LessEqual,
 	Greater,
+	GreaterEqual,
+	Equal,
 	NotEqual,
-	GEqual,
 	Always,
+};
+
+enum class StencilOperation : uint8_t
+{
+	Keep = 0,
+	Zero,
+	Replace,
+	Increase,
+	IncreaseWrap,
+	Decrease,
+	DecreaseWrap,
+	Invert,
 };
 
 #define SL_SAMPLER_NONE                   UINT32_C(0x00000000)

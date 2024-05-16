@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Defines.h"
+
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -12,23 +14,6 @@
 namespace sl
 {
 
-enum class ShaderType
-{
-	VertexShader,
-	FragmentShader,
-	ComputeShader,
-	// Geometry
-	// Raytracing
-};
-
-enum class ShaderProgramType
-{
-	Standard,
-	Compute,
-	// Vertex only
-};
-
-// TODO: Shader resource
 // TODO: Shader should hold a mapping from Texture to slot.
 class Shader
 {

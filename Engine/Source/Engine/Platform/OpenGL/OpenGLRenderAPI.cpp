@@ -42,20 +42,35 @@ void OpenGLRenderAPI::EnableDepthTest()
 	glEnable(GL_DEPTH_TEST);
 }
 
-void OpenGLRenderAPI::SetDepthBufferWriteable(bool writeable)
+void OpenGLRenderAPI::DepthBufferWriteable(bool writeable)
 {
 	glDepthMask(writeable);
 }
 
-void OpenGLRenderAPI::SetDepthFunc(DepthFunc func)
+void OpenGLRenderAPI::DepthFunc(CompareFunction func)
 {
-	glDepthFunc(GLDepthFunc[(size_t)func]);
+	glDepthFunc(GLCompareFunc[(size_t)func]);
+}
+
+void OpenGLRenderAPI::StencilOp(StencilOperation fail, StencilOperation zfail, StencilOperation zpass)
+{
+	glStencilOp(GLStencilOp[(size_t)fail], GLStencilOp[(size_t)zfail], GLStencilOp[(size_t)zpass]);
 }
 
 void OpenGLRenderAPI::EnableBlend()
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void OpenGLRenderAPI::EnableStencil()
+{
+	glEnable(GL_STENCIL_TEST);
+}
+
+void OpenGLRenderAPI::StencilMask(uint32_t mask)
+{
+	glStencilMask(mask);
 }
 
 void OpenGLRenderAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)

@@ -1,6 +1,7 @@
 #include "OpenGLShader.h"
 
 #include "Core/Log.h"
+#include "Platform/OpenGL/OpenGLDefines.h"
 
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -13,29 +14,6 @@ namespace sl
 
 namespace
 {
-
-static GLenum GetOpenGLShaderType(ShaderType type)
-{
-	switch (type)
-	{
-		case ShaderType::VertexShader:
-		{
-			return GL_VERTEX_SHADER;
-		}
-		case ShaderType::FragmentShader:
-		{
-			return GL_FRAGMENT_SHADER;
-		}
-		case ShaderType::ComputeShader:
-		{
-			return GL_COMPUTE_SHADER;
-		}
-		default:
-		{
-			return GL_INVALID_ENUM;
-		}
-	}
-}
 
 std::string LoadShaderFile(std::string_view path)
 {
@@ -103,82 +81,82 @@ void OpenGLShader::Unbind() const
 
 void OpenGLShader::UploadUniform(const std::string &name, int value)
 {
-	glUniform1i((GLint)GetUniformLocation(name), value);
+	glUniform1i(GetUniformLocation(name), value);
 }
 
 void OpenGLShader::UploadUniform(const std::string &name, const glm::ivec2 &value)
 {
-	glUniform2i((GLint)GetUniformLocation(name), value.x, value.y);
+	glUniform2i(GetUniformLocation(name), value.x, value.y);
 }
 
 void OpenGLShader::UploadUniform(const std::string &name, const glm::ivec3 &value)
 {
-	glUniform3i((GLint)GetUniformLocation(name), value.x, value.y, value.z);
+	glUniform3i(GetUniformLocation(name), value.x, value.y, value.z);
 }
 
 void OpenGLShader::UploadUniform(const std::string &name, const glm::ivec4 &value)
 {
-	glUniform4i((GLint)GetUniformLocation(name), value.x, value.y, value.z, value.w);
+	glUniform4i(GetUniformLocation(name), value.x, value.y, value.z, value.w);
 }
 
 void OpenGLShader::UploadUniform(const std::string &name, unsigned int value)
 {
-	glUniform1ui((GLint)GetUniformLocation(name), value);
+	glUniform1ui(GetUniformLocation(name), value);
 }
 
 void OpenGLShader::UploadUniform(const std::string &name, const glm::uvec2 &value)
 {
-	glUniform2ui((GLint)GetUniformLocation(name), value.x, value.y);
+	glUniform2ui(GetUniformLocation(name), value.x, value.y);
 }
 
 void OpenGLShader::UploadUniform(const std::string &name, const glm::uvec3 &value)
 {
-	glUniform3ui((GLint)GetUniformLocation(name), value.x, value.y, value.z);
+	glUniform3ui(GetUniformLocation(name), value.x, value.y, value.z);
 }
 
 void OpenGLShader::UploadUniform(const std::string &name, const glm::uvec4 &value)
 {
-	glUniform4ui((GLint)GetUniformLocation(name), value.x, value.y, value.z, value.w);
+	glUniform4ui(GetUniformLocation(name), value.x, value.y, value.z, value.w);
 }
 
 void OpenGLShader::UploadUniform(const std::string &name, float value)
 {
-	glUniform1f((GLint)GetUniformLocation(name), value);
+	glUniform1f(GetUniformLocation(name), value);
 }
 
 void OpenGLShader::UploadUniform(const std::string &name, const glm::vec2 &value)
 {
-	glUniform2f((GLint)GetUniformLocation(name), value.x, value.y);
+	glUniform2f(GetUniformLocation(name), value.x, value.y);
 }
 
 void OpenGLShader::UploadUniform(const std::string &name, const glm::vec3 &value)
 {
-	glUniform3f((GLint)GetUniformLocation(name), value.x, value.y, value.z);
+	glUniform3f(GetUniformLocation(name), value.x, value.y, value.z);
 }
 
 void OpenGLShader::UploadUniform(const std::string &name, const glm::vec4 &value)
 {
-	glUniform4f((GLint)GetUniformLocation(name), value.x, value.y, value.z, value.w);
+	glUniform4f(GetUniformLocation(name), value.x, value.y, value.z, value.w);
 }
 
 void OpenGLShader::UploadUniform(const std::string &name, const glm::mat2 &value)
 {
-	glUniformMatrix2fv((GLint)GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
+	glUniformMatrix2fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void OpenGLShader::UploadUniform(const std::string &name, const glm::mat3 &value)
 {
-	glUniformMatrix3fv((GLint)GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
+	glUniformMatrix3fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void OpenGLShader::UploadUniform(const std::string &name, const glm::mat4 &value)
 {
-	glUniformMatrix4fv((GLint)GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
+	glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 bool OpenGLShader::CompileShader(std::string src, ShaderType type)
 {
-	GLuint shaderHandle = glCreateShader(GetOpenGLShaderType(type));
+	GLuint shaderHandle = glCreateShader(GLShaderType[(size_t)type]);
 
 	const GLchar *source = static_cast<const GLchar *>(src.c_str());
 	glShaderSource(shaderHandle, 1, &source, nullptr);
