@@ -28,7 +28,7 @@ public:
 
 	virtual void EnableStencil() = 0;
 	virtual void StencilMask(uint32_t mask) = 0;
-	virtual void StencilFunc(CompareFunction func) = 0;
+	virtual void StencilFunc(CompareFunction func, int32_t ref, int32_t mask) = 0;
 	virtual void StencilOp(StencilOperation fail, StencilOperation zFail, StencilOperation zPass) = 0;
 
 	virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;

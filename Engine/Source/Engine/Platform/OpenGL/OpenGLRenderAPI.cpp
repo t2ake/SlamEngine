@@ -52,11 +52,6 @@ void OpenGLRenderAPI::DepthFunc(CompareFunction func)
 	glDepthFunc(GLCompareFunc[(size_t)func]);
 }
 
-void OpenGLRenderAPI::StencilOp(StencilOperation fail, StencilOperation zfail, StencilOperation zpass)
-{
-	glStencilOp(GLStencilOp[(size_t)fail], GLStencilOp[(size_t)zfail], GLStencilOp[(size_t)zpass]);
-}
-
 void OpenGLRenderAPI::EnableBlend()
 {
 	glEnable(GL_BLEND);
@@ -71,6 +66,16 @@ void OpenGLRenderAPI::EnableStencil()
 void OpenGLRenderAPI::StencilMask(uint32_t mask)
 {
 	glStencilMask(mask);
+}
+
+void OpenGLRenderAPI::StencilFunc(CompareFunction func, int32_t ref, int32_t mask)
+{
+	glStencilFunc(GLCompareFunc[(size_t)func], ref, mask);
+}
+
+void OpenGLRenderAPI::StencilOp(StencilOperation fail, StencilOperation zfail, StencilOperation zpass)
+{
+	glStencilOp(GLStencilOp[(size_t)fail], GLStencilOp[(size_t)zfail], GLStencilOp[(size_t)zpass]);
 }
 
 void OpenGLRenderAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)

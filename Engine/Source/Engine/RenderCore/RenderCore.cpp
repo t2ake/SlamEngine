@@ -14,7 +14,7 @@ void RenderCore::Init(GraphicsBackend backend)
 void RenderCore::SetDefaultState()
 {
 	m_pRenderAPI->EnableDepthTest();
-	m_pRenderAPI->SetDepthFunc(CompareFunction::Less);
+	m_pRenderAPI->DepthFunc(CompareFunction::Less);
 
 	m_pRenderAPI->EnableBlend();
 }
