@@ -8,7 +8,7 @@ namespace sl
 class OpenGLTexture2D : public Texture2D
 {
 public:
-	OpenGLTexture2D(std::string path);
+	OpenGLTexture2D(std::string path, bool mipmap, uint32_t flags = 0);
 	virtual ~OpenGLTexture2D() override;
 
 	virtual uint32_t GetHeight() const override { return m_height; }

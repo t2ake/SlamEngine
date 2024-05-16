@@ -7,7 +7,7 @@
 namespace sl
 {
 
-Texture2D *Texture2D::Create(std::string path)
+Texture2D *Texture2D::Create(std::string path, bool mipmap, uint32_t flags)
 {
 	switch (RenderCore::GetBackend())
 	{
@@ -18,7 +18,7 @@ Texture2D *Texture2D::Create(std::string path)
 		}
 		case GraphicsBackend::OpenGL:
 		{
-			return new OpenGLTexture2D{ std::move(path) };
+			return new OpenGLTexture2D{ std::move(path), mipmap, flags };
 			break;
 		}
 		default:
