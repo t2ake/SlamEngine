@@ -17,6 +17,10 @@ public:
 	virtual void ClearDepth() override;
 	virtual void ClearStencil() override;
 
+	virtual void EnableDepthTest() override;
+	virtual void SetDepthBufferWriteable(bool writeable) override;
+	virtual void SetDepthFunc(DepthFunc func) override;
+
 	virtual void EnableBlend() override;
 
 	virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;

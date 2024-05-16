@@ -44,6 +44,7 @@ void RendererLayer::OnRender()
 
 		sl::RenderCore::GetMainFrameBuffer()->Bind();
 		sl::RenderCore::ClearColor(0.1f, 0.1f, 0.1f, 1.0);
+		sl::RenderCore::ClearDepth(1.0f);
 
 		rendering.m_pShader->Bind();
 		rendering.m_pShader->UploadUniform("u_ModelViewProjection", viewProjection * transform.GetTransform());

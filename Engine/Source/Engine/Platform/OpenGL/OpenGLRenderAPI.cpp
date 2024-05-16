@@ -1,5 +1,7 @@
 #include "OpenGLRenderAPI.h"
 
+#include "Platform/OpenGL/OpenGLDefines.h"
+
 #include <glad/glad.h>
 
 namespace sl
@@ -33,6 +35,21 @@ void OpenGLRenderAPI::ClearDepth()
 void OpenGLRenderAPI::ClearStencil()
 {
 	glClear(GL_STENCIL_BUFFER_BIT);
+}
+
+void OpenGLRenderAPI::EnableDepthTest()
+{
+	glEnable(GL_DEPTH_TEST);
+}
+
+void OpenGLRenderAPI::SetDepthBufferWriteable(bool writeable)
+{
+	glDepthMask(writeable);
+}
+
+void OpenGLRenderAPI::SetDepthFunc(DepthFunc func)
+{
+	glDepthFunc(GLDepthFunc[(size_t)func]);
 }
 
 void OpenGLRenderAPI::EnableBlend()

@@ -1,44 +1,14 @@
 #include "OpenGLTexture.h"
 
+#include "Core/Log.h"
+#include "Platform/OpenGL/OpenGLDefines.h"
 #include "RenderCore/RenderCore.h"
-#include "Core//Log.h"
 
 #include <glad/glad.h>
 #include <stb/stb_image.h>
 
 namespace sl
 {
-
-namespace
-{
-
-static constexpr GLint TextureFilter[] =
-{
-	0,
-	GL_NEAREST,
-	GL_LINEAR,
-};
-
-static constexpr GLint TextureMipmapFilter[] =
-{
-	0,
-	GL_NEAREST_MIPMAP_NEAREST,
-	GL_NEAREST_MIPMAP_LINEAR,
-	GL_LINEAR_MIPMAP_NEAREST,
-	GL_LINEAR_MIPMAP_LINEAR,
-};
-
-static constexpr GLint TextureWrap[] =
-{
-	0,
-	GL_CLAMP_TO_EDGE,
-	GL_CLAMP_TO_BORDER,
-	GL_MIRRORED_REPEAT,
-	GL_REPEAT,
-	// GL_MIRROR_CLAMP_TO_EDGE,
-};
-
-}
 
 OpenGLTexture2D::OpenGLTexture2D(std::string path, bool mipmap, uint32_t flags) :
 	m_path(std::move(path))
@@ -82,8 +52,8 @@ OpenGLTexture2D::OpenGLTexture2D(std::string path, bool mipmap, uint32_t flags) 
 	stbi_image_free(pData);
 	
 	// Wraps
-	glTextureParameteri(m_handle, GL_TEXTURE_WRAP_S, TextureWrap[(flags & SL_SAMPLER_U_MASK) >> SL_SAMPLER_U_SHIFT]);
-	glTextureParameteri(m_handle, GL_TEXTURE_WRAP_T, TextureWrap[(flags & SL_SAMPLER_V_MASK) >> SL_SAMPLER_V_SHIFT]);
+	glTextureParameteri(m_handle, GL_TEXTURE_WRAP_S, GLTextureWrap[(flags & SL_SAMPLER_U_MASK) >> SL_SAMPLER_U_SHIFT]);
+	glTextureParameteri(m_handle, GL_TEXTURE_WRAP_T, GLTextureWrap[(flags & SL_SAMPLER_V_MASK) >> SL_SAMPLER_V_SHIFT]);
 	if ((flags & SL_SAMPLER_UVW_BORDER) == SL_SAMPLER_UVW_BORDER)
 	{
 		// TODO: Parameterlize it.
@@ -95,13 +65,13 @@ OpenGLTexture2D::OpenGLTexture2D(std::string path, bool mipmap, uint32_t flags) 
 	if (mipmap)
 	{
 		glGenerateTextureMipmap(m_handle);
-		glTextureParameteri(m_handle, GL_TEXTURE_MIN_FILTER, TextureMipmapFilter[(flags & SL_SAMPLER_MIPMAP_MASK) >> SL_SAMPLER_MIPMAP_SHIFT]);
+		glTextureParameteri(m_handle, GL_TEXTURE_MIN_FILTER, GLTextureMipmapFilter[(flags & SL_SAMPLER_MIPMAP_MASK) >> SL_SAMPLER_MIPMAP_SHIFT]);
 	}
 	else
 	{
-		glTextureParameteri(m_handle, GL_TEXTURE_MIN_FILTER, TextureFilter[(flags & SL_SAMPLER_MIN_MASK) >> SL_SAMPLER_MIN_SHIFT]);
+		glTextureParameteri(m_handle, GL_TEXTURE_MIN_FILTER, GLTextureFilter[(flags & SL_SAMPLER_MIN_MASK) >> SL_SAMPLER_MIN_SHIFT]);
 	}
-	glTextureParameteri(m_handle, GL_TEXTURE_MAG_FILTER, TextureFilter[(flags & SL_SAMPLER_MAG_MASK) >> SL_SAMPLER_MAG_SHIFT]);
+	glTextureParameteri(m_handle, GL_TEXTURE_MAG_FILTER, GLTextureFilter[(flags & SL_SAMPLER_MAG_MASK) >> SL_SAMPLER_MAG_SHIFT]);
 }
 
 OpenGLTexture2D::~OpenGLTexture2D()

@@ -42,6 +42,18 @@ enum class AttribType : uint8_t
 	Double,
 };
 
+enum class DepthFunc : uint8_t
+{
+	Never = 0,
+	Less,
+	Equal,
+	LEqual,
+	Greater,
+	NotEqual,
+	GEqual,
+	Always,
+};
+
 #define SL_SAMPLER_NONE                   UINT32_C(0x00000000)
 							              
 #define SL_SAMPLER_U_CLAMP                UINT32_C(0x00000001)
