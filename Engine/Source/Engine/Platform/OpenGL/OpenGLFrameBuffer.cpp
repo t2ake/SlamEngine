@@ -66,9 +66,7 @@ void OpenGLFrameBuffer::Create()
 
 	glCreateTextures(GL_TEXTURE_2D, 1, &m_color);
 	glBindTexture(GL_TEXTURE_2D, m_color);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, m_width, m_height);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_color, 0);
 
 	glCreateTextures(GL_TEXTURE_2D, 1, &m_depth);
@@ -76,7 +74,10 @@ void OpenGLFrameBuffer::Create()
 	glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, m_width, m_height);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_depth, 0);
 
-	SL_ENGINE_ASSERT_INFO(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "FrameBuffer isn't complete");
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		SL_ENGINE_ERROR("Incomplete frame buffer!");
+	}
 }
 
 } // namespace sl

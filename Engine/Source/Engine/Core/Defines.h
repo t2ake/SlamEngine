@@ -42,6 +42,13 @@ enum class AttribType : uint8_t
 	Double,
 };
 
+enum class TextureFormat : uint8_t
+{
+	// TODO: More formats
+	RGB8,
+	RGBA8,
+};
+
 enum class ShaderType : uint8_t
 {
 	VertexShader = 0,
@@ -168,28 +175,40 @@ enum class StencilOperation : uint8_t
 #define SL_SAMPLER_MIPMAP_MASK            UINT32_C(0x000f0000)
 #define SL_SAMPLER_MIPMAP_SHIFT           16
 
-#define SL_SAMPLER_UVW_CLAMP (0 \
+#define SL_SAMPLER_CLAMP (0 \
 	| SL_SAMPLER_U_CLAMP \
 	| SL_SAMPLER_V_CLAMP \
 	| SL_SAMPLER_W_CLAMP \
 	)
 
-#define SL_SAMPLER_UVW_BORDER (0 \
+#define SL_SAMPLER_BORDER (0 \
 	| SL_SAMPLER_U_BORDER \
 	| SL_SAMPLER_V_BORDER \
 	| SL_SAMPLER_W_BORDER \
 	)
 
-#define SL_SAMPLER_UVW_MIRROR (0 \
+#define SL_SAMPLER_MIRROR (0 \
 	| SL_SAMPLER_U_MIRROR \
 	| SL_SAMPLER_V_MIRROR \
 	| SL_SAMPLER_W_MIRROR \
 	)
 
-#define SL_SAMPLER_UVW_REPEAT (0 \
+#define SL_SAMPLER_REPEAT (0 \
 	| SL_SAMPLER_U_REPEAT \
 	| SL_SAMPLER_V_REPEAT \
 	| SL_SAMPLER_W_REPEAT \
+	)
+
+#define SL_SAMPLER_NEAREST (0 \
+	| SL_SAMPLER_MIN_NEAREST \
+	| SL_SAMPLER_MAG_NEAREST \
+	| SL_SAMPLER_MIPMAP_NEAREST_NEAREST \
+	)
+
+#define SL_SAMPLER_LINEAR (0 \
+	| SL_SAMPLER_MIN_LINEAR \
+	| SL_SAMPLER_MAG_LINEAR \
+	| SL_SAMPLER_MIPMAP_LINEAR_LINEAR \
 	)
 
 } // namespace sl

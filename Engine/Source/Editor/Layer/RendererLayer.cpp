@@ -1,6 +1,7 @@
 #include "RendererLayer.h"
 
 #include "RenderCore/RenderCore.h"
+#include "Resource/TextureResource.h"
 #include "Scene/ECSWorld.h"
 
 void RendererLayer::OnAttach()
@@ -48,7 +49,7 @@ void RendererLayer::OnRender()
 
 		rendering.m_pShader->Bind();
 		rendering.m_pShader->UploadUniform("u_ModelViewProjection", viewProjection * transform.GetTransform());
-		rendering.GetTexture(0)->Bind(0);
+		rendering.m_pTexture->GetTexture()->Bind(0);
 		sl::RenderCore::Submit(rendering.m_pVertexArray, rendering.m_pShader);
 
 		sl::RenderCore::GetMainFrameBuffer()->Unbind();

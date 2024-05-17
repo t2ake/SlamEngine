@@ -10,51 +10,20 @@
 namespace sl
 {
 
-OpenGLTexture2D::OpenGLTexture2D(std::string path, bool mipmap, uint32_t flags) :
-	m_path(std::move(path))
+OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height, bool mipmap, TextureFormat format, uint32_t flags, const void *pData) :
+	m_width(width), m_height(height), m_hasMip(mipmap)
 {
-	// The first pixel should at the bottom left.
-	stbi_set_flip_vertically_on_load(true);
-
-	int width, height, channels;
-	auto *pData = stbi_load(m_path.c_str(), &width, &height, &channels, 0);
-	if (!pData)
-	{
-		SL_ENGINE_ERROR("Failed to load image {}", m_path);
-		return;
-	}
-
-	m_width = (uint32_t)width;
-	m_height = (uint32_t)height;
-
-	GLenum internalFormat = 0;
-	GLenum format = 0;
-	if (3 == channels)
-	{
-		internalFormat = GL_RGB8;
-		format = GL_RGB;
-	}
-	else if (4 == channels)
-	{
-		internalFormat = GL_RGBA8;
-		format = GL_RGBA;
-	}
-	else
-	{
-		SL_ENGINE_ERROR("Unknown image format of {}", m_path);
-		stbi_image_free(pData);
-		return;
-	}
-
 	glCreateTextures(GL_TEXTURE_2D, 1, &m_handle);
-	glTextureStorage2D(m_handle, 1, internalFormat, m_width, m_height);
-	glTextureSubImage2D(m_handle, 0, 0, 0, m_width, m_height, format, GL_UNSIGNED_BYTE, pData);
-	stbi_image_free(pData);
-	
+	glTextureStorage2D(m_handle, 1, GLInternalTextureFormat[(size_t)format], m_width, m_height);
+	if (pData)
+	{
+		glTextureSubImage2D(m_handle, 0, 0, 0, m_width, m_height, GLTextureFormat[(size_t)format], GL_UNSIGNED_BYTE, pData);
+	}
+
 	// Wraps
 	glTextureParameteri(m_handle, GL_TEXTURE_WRAP_S, GLTextureWrap[(flags & SL_SAMPLER_U_MASK) >> SL_SAMPLER_U_SHIFT]);
 	glTextureParameteri(m_handle, GL_TEXTURE_WRAP_T, GLTextureWrap[(flags & SL_SAMPLER_V_MASK) >> SL_SAMPLER_V_SHIFT]);
-	if ((flags & SL_SAMPLER_UVW_BORDER) == SL_SAMPLER_UVW_BORDER)
+	if ((flags & SL_SAMPLER_BORDER) == SL_SAMPLER_BORDER)
 	{
 		// TODO: Parameterlize it.
 		float borderColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };

@@ -2,6 +2,7 @@
 
 #include "Core/Path.hpp"
 #include "RenderCore/RenderCore.h"
+#include "Resource/TextureResource.h"
 #include "Scene/ECSWorld.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -39,13 +40,15 @@ SandboxLayer::SandboxLayer()
 		sl::Path::FromeAsset("Shader/vs_Test.glsl"),
 		sl::Path::FromeAsset("Shader/fs_Test.glsl"));
 
-	sl::Texture2D *pTextureJoucho = sl::Texture2D::Create(sl::Path::FromeAsset("Texture/jc.png"), true,
-		SL_SAMPLER_UVW_REPEAT | SL_SAMPLER_MIPMAP_LINEAR_LINEAR | SL_SAMPLER_MAG_LINEAR);
+	sl::TextureResource *pTextureResource = new sl::TextureResource{
+		sl::Path::FromeAsset("Texture/jc.png"),
+		sl::TextureFormat::RGB8,
+		SL_SAMPLER_REPEAT | SL_SAMPLER_LINEAR };
 
 	auto entity = sl::ECSWorld::CreateEntity("Test Mesh");
 	auto &rendering = entity.AddComponent<sl::RenderingComponent>();
 	rendering.m_pVertexArray = pVertexArray;
-	rendering.SetTexture(pTextureJoucho, 0);
+	rendering.m_pTexture = pTextureResource;
 	rendering.m_pShader = pShader;
 }
 

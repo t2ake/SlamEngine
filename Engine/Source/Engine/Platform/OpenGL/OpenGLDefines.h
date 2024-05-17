@@ -23,6 +23,18 @@ inline constexpr GLenum GLAttribType[nameof::enum_count<AttribType>()] =
 	GL_DOUBLE,         // AttribType::Double
 };
 
+inline constexpr GLenum GLTextureFormat[nameof::enum_count<TextureFormat>()] =
+{
+	GL_RGB,
+	GL_RGBA,
+};
+
+inline constexpr GLenum GLInternalTextureFormat[nameof::enum_count<TextureFormat>()] =
+{
+	GL_RGB8,
+	GL_RGBA8,
+};
+
 inline constexpr GLenum GLShaderType[nameof::enum_count<ShaderType>()] =
 {
 	GL_VERTEX_SHADER,   // ShaderType::VertexShader
