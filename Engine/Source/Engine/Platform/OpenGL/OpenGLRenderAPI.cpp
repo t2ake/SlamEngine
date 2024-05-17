@@ -55,7 +55,16 @@ void OpenGLRenderAPI::DepthFunc(CompareFunction func)
 void OpenGLRenderAPI::EnableBlend()
 {
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void OpenGLRenderAPI::BlendFunc(BlendFunction sfactor, BlendFunction dfactor)
+{
+	glBlendFunc(GLBlendFunc[(size_t)sfactor], GLBlendFunc[(size_t)dfactor]);
+}
+
+void OpenGLRenderAPI::BlendColor(float r, float g, float b, float a)
+{
+	glBlendColor(r, g, b, a);
 }
 
 void OpenGLRenderAPI::EnableStencil()

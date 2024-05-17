@@ -42,6 +42,38 @@ inline constexpr GLenum GLCompareFunc[nameof::enum_count<CompareFunction>()] =
 	GL_ALWAYS,	 // DepthFunc::Always
 };
 
+inline constexpr GLenum GLBlendFunc[nameof::enum_count<BlendFunction>()] =
+{
+	GL_ZERO,					 // BlendFunction::Zero
+	GL_ONE,						 // BlendFunction::One
+	GL_SRC_COLOR,				 // BlendFunction::SrcColor
+	GL_ONE_MINUS_SRC_COLOR,		 // BlendFunction::OneMinusSrcColor
+	GL_DST_COLOR,				 // BlendFunction::DstColor
+	GL_ONE_MINUS_DST_COLOR,		 // BlendFunction::OneMinusDstColor
+	GL_SRC_ALPHA,				 // BlendFunction::SrcAlpha
+	GL_ONE_MINUS_SRC_ALPHA,		 // BlendFunction::OneMinusSrcAlpha
+	GL_DST_ALPHA,				 // BlendFunction::DstAlpha
+	GL_ONE_MINUS_DST_ALPHA,		 // BlendFunction::OneMinusDstAlpha
+	GL_CONSTANT_COLOR,			 // BlendFunction::ConstantColor
+	GL_ONE_MINUS_CONSTANT_COLOR, // BlendFunction::OneMinusConstantColor
+	GL_CONSTANT_ALPHA,			 // BlendFunction::ConstantAlpha
+	GL_ONE_MINUS_CONSTANT_ALPHA, // BlendFunction::OneMinusConstantAlpha
+	GL_SRC_ALPHA_SATURATE,		 // BlendFunction::SrcAlphaSaturate
+	GL_SRC1_COLOR,				 // BlendFunction::Src1Color
+	GL_ONE_MINUS_SRC1_COLOR,	 // BlendFunction::OneMinusSrc1Color
+	GL_SRC1_ALPHA,				 // BlendFunction::Src1Alpha
+	GL_ONE_MINUS_SRC1_ALPHA,	 // BlendFunction::OneMinusSrc1Alpha
+};
+
+inline constexpr GLenum GLBlendEquation[nameof::enum_count<BlendEquation>()] =
+{
+	GL_FUNC_ADD,			  // BlendEquation::FunctionAdd
+	GL_FUNC_SUBTRACT,		  // BlendEquation::FunctionSubtract
+	GL_FUNC_REVERSE_SUBTRACT, // BlendEquation::FunctionReverseSubTrect
+	GL_MIN,					  // BlendEquation::Min
+	GL_MAX,					  // BlendEquation::Max
+};
+
 inline constexpr GLenum GLStencilOp[nameof::enum_count<StencilOperation>()] =
 {
 	GL_KEEP,	  // StencilOp::Keep

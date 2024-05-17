@@ -70,6 +70,38 @@ enum class CompareFunction : uint8_t
 	Always,
 };
 
+enum class BlendFunction : uint8_t
+{
+	Zero,
+	One,
+	SrcColor,
+	OneMinusSrcColor,
+	DstColor,
+	OneMinusDstColor,
+	SrcAlpha,
+	OneMinusSrcAlpha,
+	DstAlpha,
+	OneMinusDstAlpha,
+	ConstantColor,
+	OneMinusConstantColor,
+	ConstantAlpha,
+	OneMinusConstantAlpha,
+	SrcAlphaSaturate,
+	Src1Color,
+	OneMinusSrc1Color,
+	Src1Alpha,
+	OneMinusSrc1Alpha,
+};
+
+enum class BlendEquation : uint8_t
+{
+	FunctionAdd,
+	FunctionSubtract,
+	FunctionReverseSubTrect,
+	Min,
+	Max,
+};
+
 enum class StencilOperation : uint8_t
 {
 	Keep = 0,

@@ -25,6 +25,8 @@ public:
 	virtual void DepthFunc(CompareFunction func) = 0;
 
 	virtual void EnableBlend() = 0;
+	virtual void BlendFunc(BlendFunction sfactor, BlendFunction dfactor) = 0;
+	virtual void BlendColor(float r, float g, float b, float a) = 0;
 
 	virtual void EnableStencil() = 0;
 	virtual void StencilMask(uint32_t mask) = 0;

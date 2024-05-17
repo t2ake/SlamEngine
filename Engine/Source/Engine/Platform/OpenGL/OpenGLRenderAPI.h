@@ -22,6 +22,8 @@ public:
 	virtual void DepthFunc(CompareFunction func) override;
 
 	virtual void EnableBlend() override;
+	virtual void BlendFunc(BlendFunction sfactor, BlendFunction dfactor) override;
+	virtual void BlendColor(float r, float g, float b, float a) override;
 
 	virtual void EnableStencil() override;
 	virtual void StencilMask(uint32_t mask) override;

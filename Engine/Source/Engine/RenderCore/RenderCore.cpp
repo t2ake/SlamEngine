@@ -17,6 +17,7 @@ void RenderCore::SetDefaultState()
 	m_pRenderAPI->DepthFunc(CompareFunction::Less);
 
 	m_pRenderAPI->EnableBlend();
+	m_pRenderAPI->BlendFunc(BlendFunction::SrcAlpha, BlendFunction::OneMinusSrcAlpha);
 }
 
 void RenderCore::ClearColor(float r, float g, float b, float a)
