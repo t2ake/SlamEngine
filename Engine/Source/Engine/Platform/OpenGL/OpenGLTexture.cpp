@@ -17,7 +17,7 @@ OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height, bool mipmap, T
 	glTextureStorage2D(m_handle, 1, GLInternalTextureFormat[(size_t)format], m_width, m_height);
 	if (pData)
 	{
-		glTextureSubImage2D(m_handle, 0, 0, 0, m_width, m_height, GLTextureFormat[(size_t)format], GL_UNSIGNED_BYTE, pData);
+		glTextureSubImage2D(m_handle, 0, 0, 0, m_width, m_height, GLTextureFormat[(size_t)format], GLDataType[(size_t)format], pData);
 	}
 
 	// Wraps

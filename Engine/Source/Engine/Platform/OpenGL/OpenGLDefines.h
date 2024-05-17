@@ -23,16 +23,73 @@ inline constexpr GLenum GLAttribType[nameof::enum_count<AttribType>()] =
 	GL_DOUBLE,         // AttribType::Double
 };
 
-inline constexpr GLenum GLTextureFormat[nameof::enum_count<TextureFormat>()] =
-{
-	GL_RGB,
-	GL_RGBA,
-};
-
 inline constexpr GLenum GLInternalTextureFormat[nameof::enum_count<TextureFormat>()] =
 {
-	GL_RGB8,
-	GL_RGBA8,
+	GL_R8,				   // TextureFormat::R8
+	GL_R16,				   // TextureFormat::R16
+	GL_RG8,				   // TextureFormat::RG8
+	GL_RG16,			   // TextureFormat::RG16
+	GL_RGB8,			   // TextureFormat::RGB8
+	GL_RGB16,			   // TextureFormat::RGB16
+	GL_RGBA8,			   // TextureFormat::RGBA8
+	GL_RGBA16,			   // TextureFormat::RGBA16
+	GL_R32F,			   // TextureFormat::R32F
+	GL_RG32F,			   // TextureFormat::RG32F
+	GL_RGB32F,			   // TextureFormat::RGB32F
+	GL_RGBA32F,			   // TextureFormat::RGBA32F
+
+	GL_DEPTH_COMPONENT16,  // TextureFormat::D16
+	GL_DEPTH_COMPONENT24,  // TextureFormat::D24
+	GL_DEPTH_COMPONENT32F, // TextureFormat::D32F
+	GL_DEPTH24_STENCIL8,   // TextureFormat::D24S8
+	GL_DEPTH32F_STENCIL8,  // TextureFormat::D32FS8
+	GL_STENCIL_INDEX8,	   // TextureFormat::S8
+};
+
+inline constexpr GLenum GLTextureFormat[nameof::enum_count<TextureFormat>()] =
+{
+	GL_RED,	 // TextureFormat::R8
+	GL_RED,	 // TextureFormat::R16
+	GL_RG,	 // TextureFormat::RG8
+	GL_RG,	 // TextureFormat::RG16
+	GL_RGB,	 // TextureFormat::RGB8
+	GL_RGB,	 // TextureFormat::RGB16
+	GL_RGBA, // TextureFormat::RGBA8
+	GL_RGBA, // TextureFormat::RGBA16
+	GL_RED,	 // TextureFormat::R32F
+	GL_RG,	 // TextureFormat::RG32F
+	GL_RGB,	 // TextureFormat::RGB32F
+	GL_RGBA, // TextureFormat::RGBA32F
+
+	GL_INVALID_ENUM,
+	GL_INVALID_ENUM,
+	GL_INVALID_ENUM,
+	GL_INVALID_ENUM,
+	GL_INVALID_ENUM,
+	GL_INVALID_ENUM,
+};
+
+inline constexpr GLenum GLDataType[nameof::enum_count<TextureFormat>()] =
+{
+	GL_UNSIGNED_BYTE,
+	GL_UNSIGNED_SHORT,
+	GL_UNSIGNED_BYTE,
+	GL_UNSIGNED_SHORT,
+	GL_UNSIGNED_BYTE,
+	GL_UNSIGNED_SHORT,
+	GL_UNSIGNED_BYTE,
+	GL_UNSIGNED_SHORT,
+	GL_FLOAT,
+	GL_FLOAT,
+	GL_FLOAT,
+	GL_FLOAT,
+
+	GL_INVALID_ENUM,
+	GL_INVALID_ENUM,
+	GL_INVALID_ENUM,
+	GL_INVALID_ENUM,
+	GL_INVALID_ENUM,
+	GL_INVALID_ENUM,
 };
 
 inline constexpr GLenum GLShaderType[nameof::enum_count<ShaderType>()] =

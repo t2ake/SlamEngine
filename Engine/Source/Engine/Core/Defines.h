@@ -44,9 +44,25 @@ enum class AttribType : uint8_t
 
 enum class TextureFormat : uint8_t
 {
-	// TODO: More formats
+	R8,
+	R16,
+	RG8,
+	RG16,
 	RGB8,
+	RGB16,
 	RGBA8,
+	RGBA16,
+	R32F,
+	RG32F,
+	RGB32F,
+	RGBA32F,
+
+	D16,
+	D24,
+	D32F,
+	D24S8,
+	D32FS8,
+	S8,
 };
 
 enum class ShaderType : uint8_t
@@ -79,7 +95,7 @@ enum class CompareFunction : uint8_t
 
 enum class BlendFunction : uint8_t
 {
-	Zero,
+	Zero = 0,
 	One,
 	SrcColor,
 	OneMinusSrcColor,
@@ -102,7 +118,7 @@ enum class BlendFunction : uint8_t
 
 enum class BlendEquation : uint8_t
 {
-	FunctionAdd,
+	FunctionAdd = 0,
 	FunctionSubtract,
 	FunctionReverseSubTrect,
 	Min,
@@ -111,7 +127,7 @@ enum class BlendEquation : uint8_t
 
 enum class CullingMode : uint8_t
 {
-	Front,
+	Front = 0,
 	Back,
 	FrontAndBack,
 	FrontNitherBack,
@@ -119,7 +135,7 @@ enum class CullingMode : uint8_t
 
 enum class FrontFace : uint8_t
 {
-	CCW,
+	CCW = 0,
 	CW,
 };
 

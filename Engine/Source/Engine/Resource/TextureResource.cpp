@@ -1,7 +1,8 @@
 #include "TextureResource.h"
 
-#include "Core/Log.h"
 #include "Core/EnumOf.hpp"
+#include "Core/Log.h"
+#include "Core/Path.hpp"
 #include "RenderCore/Texture.h"
 
 #include <stb/stb_image.h>
@@ -14,14 +15,48 @@ namespace
 
 static constexpr uint32_t TextureFormatChanles[nameof::enum_count<TextureFormat>()] =
 {
-	3,
-	4,
+	1, // TextureFormat::R8
+	1, // TextureFormat::R16
+	2, // TextureFormat::RG8
+	2, // TextureFormat::RG16
+	3, // TextureFormat::RGB8
+	3, // TextureFormat::RGB16
+	4, // TextureFormat::RGBA8
+	4, // TextureFormat::RGBA16
+	1, // TextureFormat::R32F
+	2, // TextureFormat::RG32F
+	3, // TextureFormat::RGB32F
+	4, // TextureFormat::RGBA32F
+
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
 };
 
 static constexpr uint32_t TextureFormatBytes[nameof::enum_count<TextureFormat>()] =
 {
-	1,
-	1,
+	1, // TextureFormat::R8
+	2, // TextureFormat::R16
+	1, // TextureFormat::RG8
+	2, // TextureFormat::RG16
+	1, // TextureFormat::RGB8
+	2, // TextureFormat::RGB16
+	1, // TextureFormat::RGBA8
+	2, // TextureFormat::RGBA16
+	4, // TextureFormat::R32F
+	4, // TextureFormat::RG32F
+	4, // TextureFormat::RGB32F
+	4, // TextureFormat::RGBA32F
+
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
 };
 
 }
@@ -29,6 +64,14 @@ static constexpr uint32_t TextureFormatBytes[nameof::enum_count<TextureFormat>()
 TextureResource::TextureResource(std::string_view path, TextureFormat format, uint32_t flags) :
 	m_filePath(path)
 {
+	if (!Path::Exists(m_filePath.c_str()))
+	{
+		SL_ENGINE_ERROR("\"{}\" does not exist!", m_filePath.c_str());
+		return;
+	}
+
+	SL_ENGINE_TRACE("Loading {} texture \"{}\"", (stbi_is_hdr(m_filePath.c_str()) ? "HDR" : "LDR"), m_filePath.c_str());
+
 	// The first pixel should at the bottom left.
 	stbi_set_flip_vertically_on_load(true);
 
@@ -36,12 +79,22 @@ TextureResource::TextureResource(std::string_view path, TextureFormat format, ui
 	uint32_t requiredBytes = TextureFormatBytes[(size_t)format];
 
 	int width, height, channels;
-	stbi_uc *pData = nullptr;
+	void *pData = nullptr;
 	switch(requiredBytes)
 	{
 		case 1:
 		{
 			pData = stbi_load(m_filePath.c_str(), &width, &height, &channels, requiredChanles);
+			break;
+		}
+		case 2:
+		{
+			pData = stbi_load_16(m_filePath.c_str(), &width, &height, &channels, requiredChanles);
+			break;
+		}
+		case 4:
+		{
+			pData = stbi_loadf(m_filePath.c_str(), &width, &height, &channels, requiredChanles);
 			break;
 		}
 		default:

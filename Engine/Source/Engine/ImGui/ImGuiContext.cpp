@@ -17,7 +17,6 @@ namespace sl
 void ImGuiContext::Init(void *pNativeWindow)
 {
 	// 1. Init imgui
-	SL_ENGINE_INFO("Init ImGui");
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImPlot::CreateContext();

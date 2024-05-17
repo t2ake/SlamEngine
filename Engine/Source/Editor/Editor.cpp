@@ -27,6 +27,13 @@ Editor::Editor(EditorInitor initor)
 	sl::ImGuiContext::Init(m_pWindow->GetNativeWindow());
 	sl::Input::Init(m_pWindow->GetNativeWindow());
 
+	sl::Texture2D *pTextures[2] =
+	{
+		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::RGB8, SL_SAMPLER_CLAMP | SL_SAMPLER_LINEAR),
+		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D24S8, SL_SAMPLER_CLAMP | SL_SAMPLER_LINEAR),
+	};
+	// sl::RenderCore::SetMainFrameBuffer(sl::FrameBuffer::Create(pTextures, 2, true));
+
 	sl::RenderCore::SetMainFrameBuffer(sl::FrameBuffer::Create(1280, 720));
 	sl::RenderCore::SetDefaultState();
 
