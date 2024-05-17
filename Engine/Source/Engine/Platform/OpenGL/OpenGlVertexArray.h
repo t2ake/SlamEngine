@@ -21,10 +21,10 @@ public:
 	virtual IndexBuffer *GetIndexBuffer() override { return m_pIndexBuffer; }
 
 private:
-	uint32_t m_handle = 0;
-
 	VertexBuffer *m_pVertexBuffer = nullptr;
 	IndexBuffer *m_pIndexBuffer = nullptr;
+
+	uint32_t m_handle = 0;
 };
 
 } // namespace sl

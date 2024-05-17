@@ -26,14 +26,14 @@ public:
 private:
 	void Create();
 
-	uint32_t m_handle = 0;
-	uint32_t m_color = 0;
-	uint32_t m_depth = 0;
-
 	// TODO: 4k for now, should be queried from the GPU driver rather than hard coded here.
 	uint32_t m_maxSize = 4096;
 	uint32_t m_width = 0;
 	uint32_t m_height = 0;
+
+	uint32_t m_color = 0;
+	uint32_t m_depth = 0;
+	uint32_t m_handle = 0;
 };
 
 } // namespace sl

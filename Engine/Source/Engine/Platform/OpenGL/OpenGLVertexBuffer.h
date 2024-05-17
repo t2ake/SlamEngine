@@ -19,8 +19,9 @@ public:
 	virtual const VertexLayout &GetLayout() const override { return m_layout; }
 
 private:
-	uint32_t m_handle = 0;
 	VertexLayout m_layout;
+
+	uint32_t m_handle = 0;
 };
 
 } // namespace sl
