@@ -102,6 +102,20 @@ enum class BlendEquation : uint8_t
 	Max,
 };
 
+enum class CullingMode : uint8_t
+{
+	Front,
+	Back,
+	FrontAndBack,
+	FrontNitherBack,
+};
+
+enum class FrontFace : uint8_t
+{
+	CCW,
+	CW,
+};
+
 enum class StencilOperation : uint8_t
 {
 	Keep = 0,

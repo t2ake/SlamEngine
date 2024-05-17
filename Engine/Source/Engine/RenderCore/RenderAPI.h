@@ -21,17 +21,22 @@ public:
 	virtual void ClearStencil() = 0;
 
 	virtual void EnableDepthTest() = 0;
-	virtual void DepthBufferWriteable(bool writeable) = 0;
-	virtual void DepthFunc(CompareFunction func) = 0;
+	virtual void SetDepthBufferWriteable(bool writeable) = 0;
+	virtual void SetDepthFunc(CompareFunction func) = 0;
 
 	virtual void EnableBlend() = 0;
-	virtual void BlendFunc(BlendFunction sfactor, BlendFunction dfactor) = 0;
-	virtual void BlendColor(float r, float g, float b, float a) = 0;
+	virtual void SetBlendFunc(BlendFunction sfactor, BlendFunction dfactor) = 0;
+	virtual void SetBlendColor(float r, float g, float b, float a) = 0;
 
 	virtual void EnableStencil() = 0;
-	virtual void StencilMask(uint32_t mask) = 0;
-	virtual void StencilFunc(CompareFunction func, int32_t ref, int32_t mask) = 0;
-	virtual void StencilOp(StencilOperation fail, StencilOperation zFail, StencilOperation zPass) = 0;
+	virtual void SetStencilMask(uint32_t mask) = 0;
+	virtual void SetStencilFunc(CompareFunction func, int32_t ref, int32_t mask) = 0;
+	virtual void SetStencilOp(StencilOperation fail, StencilOperation zFail, StencilOperation zPass) = 0;
+
+	virtual void EnableCullFace() = 0;
+	virtual void DisableCullFace() = 0;
+	virtual void SetCullFace(CullingMode mode) = 0;
+	virtual void SetFrontFace(FrontFace face) = 0;
 
 	virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
 

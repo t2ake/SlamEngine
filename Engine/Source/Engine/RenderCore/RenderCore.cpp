@@ -14,10 +14,10 @@ void RenderCore::Init(GraphicsBackend backend)
 void RenderCore::SetDefaultState()
 {
 	m_pRenderAPI->EnableDepthTest();
-	m_pRenderAPI->DepthFunc(CompareFunction::Less);
+	m_pRenderAPI->SetDepthFunc(CompareFunction::Less);
 
 	m_pRenderAPI->EnableBlend();
-	m_pRenderAPI->BlendFunc(BlendFunction::SrcAlpha, BlendFunction::OneMinusSrcAlpha);
+	m_pRenderAPI->SetBlendFunc(BlendFunction::SrcAlpha, BlendFunction::OneMinusSrcAlpha);
 }
 
 void RenderCore::ClearColor(float r, float g, float b, float a)
@@ -36,6 +36,18 @@ void RenderCore::ClearStencil(int  stencil)
 {
 	m_pRenderAPI->SetClearStencil(stencil);
 	m_pRenderAPI->ClearStencil();
+}
+
+void RenderCore::Culling(CullingMode mode)
+{
+	if (CullingMode::FrontNitherBack == mode)
+	{
+		m_pRenderAPI->DisableCullFace();
+		return;
+	}
+
+	m_pRenderAPI->EnableCullFace();
+	m_pRenderAPI->SetCullFace(mode);
 }
 
 void RenderCore::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)

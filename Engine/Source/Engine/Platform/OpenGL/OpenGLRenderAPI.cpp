@@ -42,12 +42,12 @@ void OpenGLRenderAPI::EnableDepthTest()
 	glEnable(GL_DEPTH_TEST);
 }
 
-void OpenGLRenderAPI::DepthBufferWriteable(bool writeable)
+void OpenGLRenderAPI::SetDepthBufferWriteable(bool writeable)
 {
 	glDepthMask(writeable);
 }
 
-void OpenGLRenderAPI::DepthFunc(CompareFunction func)
+void OpenGLRenderAPI::SetDepthFunc(CompareFunction func)
 {
 	glDepthFunc(GLCompareFunc[(size_t)func]);
 }
@@ -57,12 +57,12 @@ void OpenGLRenderAPI::EnableBlend()
 	glEnable(GL_BLEND);
 }
 
-void OpenGLRenderAPI::BlendFunc(BlendFunction sfactor, BlendFunction dfactor)
+void OpenGLRenderAPI::SetBlendFunc(BlendFunction sfactor, BlendFunction dfactor)
 {
 	glBlendFunc(GLBlendFunc[(size_t)sfactor], GLBlendFunc[(size_t)dfactor]);
 }
 
-void OpenGLRenderAPI::BlendColor(float r, float g, float b, float a)
+void OpenGLRenderAPI::SetBlendColor(float r, float g, float b, float a)
 {
 	glBlendColor(r, g, b, a);
 }
@@ -72,19 +72,39 @@ void OpenGLRenderAPI::EnableStencil()
 	glEnable(GL_STENCIL_TEST);
 }
 
-void OpenGLRenderAPI::StencilMask(uint32_t mask)
+void OpenGLRenderAPI::SetStencilMask(uint32_t mask)
 {
 	glStencilMask(mask);
 }
 
-void OpenGLRenderAPI::StencilFunc(CompareFunction func, int32_t ref, int32_t mask)
+void OpenGLRenderAPI::SetStencilFunc(CompareFunction func, int32_t ref, int32_t mask)
 {
 	glStencilFunc(GLCompareFunc[(size_t)func], ref, mask);
 }
 
-void OpenGLRenderAPI::StencilOp(StencilOperation fail, StencilOperation zfail, StencilOperation zpass)
+void OpenGLRenderAPI::SetStencilOp(StencilOperation fail, StencilOperation zfail, StencilOperation zpass)
 {
 	glStencilOp(GLStencilOp[(size_t)fail], GLStencilOp[(size_t)zfail], GLStencilOp[(size_t)zpass]);
+}
+
+void OpenGLRenderAPI::EnableCullFace()
+{
+	glEnable(GL_CULL_FACE);
+}
+
+void OpenGLRenderAPI::DisableCullFace()
+{
+	glDisable(GL_CULL_FACE);
+}
+
+void OpenGLRenderAPI::SetCullFace(CullingMode mode)
+{
+	glCullFace(GLCullingMode[(size_t)mode]);
+}
+
+void OpenGLRenderAPI::SetFrontFace(FrontFace face)
+{
+	glFrontFace(GLFrontFace[(size_t)face]);
 }
 
 void OpenGLRenderAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)

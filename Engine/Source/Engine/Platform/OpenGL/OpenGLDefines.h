@@ -86,6 +86,19 @@ inline constexpr GLenum GLStencilOp[nameof::enum_count<StencilOperation>()] =
 	GL_INVERT,	  // StencilOp::Invert
 };
 
+inline constexpr GLenum GLCullingMode[nameof::enum_count<CullingMode>() - 1] =
+{
+	GL_FRONT,		   // CullingMode::Front
+	GL_BACK,		   // CullingMode::Back
+	GL_FRONT_AND_BACK, // CullingMode::FrontAndBack
+};
+
+inline constexpr GLenum GLFrontFace[nameof::enum_count<FrontFace>()] =
+{
+	GL_CCW, // FrontFace::CCW
+	GL_CW,  // FrontFace::CW
+};
+
 inline constexpr GLint GLTextureFilter[] =
 {
 	0,

@@ -26,6 +26,8 @@ public:
 	static void ClearDepth(float depth);
 	static void ClearStencil(int stencil);
 
+	static void Culling(CullingMode mode);
+
 	static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
 	static void Submit(VertexArray *pVertexArray, Shader *pShader);
