@@ -20,21 +20,18 @@ Editor::Editor(EditorInitor initor)
 {
 	sl::Log::Init();
 
-	sl::RenderCore::Init(initor.m_backend);
+	sl::RenderCore::SetBackend(initor.m_backend);
 	m_pWindow = new sl::Window(std::move(initor.title), initor.m_width, initor.m_height);
 	m_pWindow->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
 	sl::ImGuiContext::Init(m_pWindow->GetNativeWindow());
 	sl::Input::Init(m_pWindow->GetNativeWindow());
 
-	sl::Texture2D *pTextures[2] =
-	{
-		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::RGB8, SL_SAMPLER_CLAMP | SL_SAMPLER_LINEAR),
-		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D24S8, SL_SAMPLER_CLAMP | SL_SAMPLER_LINEAR),
-	};
-	// sl::RenderCore::SetMainFrameBuffer(sl::FrameBuffer::Create(pTextures, 2, true));
-
-	sl::RenderCore::SetMainFrameBuffer(sl::FrameBuffer::Create(1280, 720));
+	sl::RenderCore::Init();
+	sl::RenderCore::SetMainFrameBuffer(sl::FrameBuffer::Create({
+		sl::Texture2D::Create(m_pWindow->GetWidth(), m_pWindow->GetHeight(), false, sl::TextureFormat::RGB8, SL_SAMPLER_CLAMP | SL_SAMPLER_LINEAR),
+		sl::Texture2D::Create(m_pWindow->GetWidth(), m_pWindow->GetHeight(), false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_LINEAR),
+	}));
 	sl::RenderCore::SetDefaultState();
 
 	auto mainCameraEntity = sl::ECSWorld::CreateEntity("Editor Camera");

@@ -5,10 +5,19 @@
 namespace sl
 {
 
-void RenderCore::Init(GraphicsBackend backend)
+void RenderCore::SetBackend(GraphicsBackend backend)
 {
 	m_backend = backend;
+}
+
+void RenderCore::Init()
+{
 	m_pRenderAPI = RenderAPI::Create();
+	m_info = m_pRenderAPI->GetBackendInfo();
+
+	SL_ENGINE_TRACE("  Max texture size: {}", m_info.m_maxTextureSize);
+	SL_ENGINE_TRACE("  Max framebuffer size: {}", m_info.m_maxFramebufferSize);
+	SL_ENGINE_TRACE("  Max framebuffer color attachment count: {}", m_info.m_maxFramebufferColorAttachmentCount);
 }
 
 void RenderCore::SetDefaultState()

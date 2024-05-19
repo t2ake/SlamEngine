@@ -834,7 +834,7 @@ void ImGuiLayer::ShowSceneViewport()
 		m_sceneViewportSizeX = crtSizeX;
 		m_sceneViewportSizeY = crtSizeY;
 
-		sl::RenderCore::GetMainFrameBuffer()->Resize(m_sceneViewportSizeX, m_sceneViewportSizeY);
+		// sl::RenderCore::GetMainFrameBuffer()->Resize(m_sceneViewportSizeX, m_sceneViewportSizeY);
 	}
 
 	// Draw main frame buffer color attachment

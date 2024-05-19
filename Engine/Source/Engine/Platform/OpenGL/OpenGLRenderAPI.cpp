@@ -7,6 +7,25 @@
 namespace sl
 {
 
+BackendInfo OpenGLRenderAPI::GetBackendInfo()
+{
+	BackendInfo info;
+
+	int maxTextureSize = 0;
+	int maxFramebufferSize = 0;
+	int maxFramebufferColorAttachmentCount = 0;
+
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+	glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maxFramebufferSize);
+	glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxFramebufferColorAttachmentCount);
+	
+	info.m_maxTextureSize = maxTextureSize;
+	info.m_maxFramebufferSize = maxFramebufferSize;
+	info.m_maxFramebufferColorAttachmentCount = (uint32_t)maxFramebufferColorAttachmentCount;
+
+	return info;
+}
+
 void OpenGLRenderAPI::SetClearColor(float r, float g, float b, float a)
 {
 	glClearColor(r, g, b, a);

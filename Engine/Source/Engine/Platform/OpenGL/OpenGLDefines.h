@@ -41,6 +41,7 @@ inline constexpr GLenum GLInternalTextureFormat[nameof::enum_count<TextureFormat
 	GL_DEPTH_COMPONENT16,  // TextureFormat::D16
 	GL_DEPTH_COMPONENT24,  // TextureFormat::D24
 	GL_DEPTH_COMPONENT32F, // TextureFormat::D32F
+	GL_DEPTH_COMPONENT32,  // TextureFormat::D32
 	GL_DEPTH24_STENCIL8,   // TextureFormat::D24S8
 	GL_DEPTH32F_STENCIL8,  // TextureFormat::D32FS8
 	GL_STENCIL_INDEX8,	   // TextureFormat::S8
@@ -67,22 +68,23 @@ inline constexpr GLenum GLTextureFormat[nameof::enum_count<TextureFormat>()] =
 	GL_INVALID_ENUM,
 	GL_INVALID_ENUM,
 	GL_INVALID_ENUM,
+	GL_INVALID_ENUM,
 };
 
 inline constexpr GLenum GLDataType[nameof::enum_count<TextureFormat>()] =
 {
-	GL_UNSIGNED_BYTE,
-	GL_UNSIGNED_SHORT,
-	GL_UNSIGNED_BYTE,
-	GL_UNSIGNED_SHORT,
-	GL_UNSIGNED_BYTE,
-	GL_UNSIGNED_SHORT,
-	GL_UNSIGNED_BYTE,
-	GL_UNSIGNED_SHORT,
-	GL_FLOAT,
-	GL_FLOAT,
-	GL_FLOAT,
-	GL_FLOAT,
+	GL_UNSIGNED_BYTE,  // TextureFormat::R8
+	GL_UNSIGNED_SHORT, // TextureFormat::R16
+	GL_UNSIGNED_BYTE,  // TextureFormat::RG8
+	GL_UNSIGNED_SHORT, // TextureFormat::RG16
+	GL_UNSIGNED_BYTE,  // TextureFormat::RGB8
+	GL_UNSIGNED_SHORT, // TextureFormat::RGB16
+	GL_UNSIGNED_BYTE,  // TextureFormat::RGBA8
+	GL_UNSIGNED_SHORT, // TextureFormat::RGBA16
+	GL_FLOAT,		   // TextureFormat::R32F
+	GL_FLOAT,		   // TextureFormat::RG32F
+	GL_FLOAT,		   // TextureFormat::RGB32F
+	GL_FLOAT,		   // TextureFormat::RGBA32F
 
 	GL_INVALID_ENUM,
 	GL_INVALID_ENUM,
@@ -90,6 +92,15 @@ inline constexpr GLenum GLDataType[nameof::enum_count<TextureFormat>()] =
 	GL_INVALID_ENUM,
 	GL_INVALID_ENUM,
 	GL_INVALID_ENUM,
+	GL_INVALID_ENUM,
+};
+
+inline constexpr GLenum GLAttachmentPoint[nameof::enum_count<AttachmentType>()] =
+{
+	GL_DEPTH_ATTACHMENT,		 // AttachmentType::Depth
+	GL_DEPTH_STENCIL_ATTACHMENT, // AttachmentType::Stencil
+	GL_STENCIL_ATTACHMENT,		 // AttachmentType::DepthAndStencil
+	GL_COLOR_ATTACHMENT0,		 // AttachmentType::Color
 };
 
 inline constexpr GLenum GLShaderType[nameof::enum_count<ShaderType>()] =

@@ -7,7 +7,7 @@
 namespace sl
 {
 
-FrameBuffer *FrameBuffer::Create(uint32_t width, uint32_t height)
+FrameBuffer *FrameBuffer::Create(std::vector<Texture2D *> textures, bool destroy)
 {
 	switch (RenderCore::GetBackend())
 	{
@@ -18,7 +18,7 @@ FrameBuffer *FrameBuffer::Create(uint32_t width, uint32_t height)
 		}
 		case GraphicsBackend::OpenGL:
 		{
-			return new OpenGLFrameBuffer{ width, height };
+			return new OpenGLFrameBuffer{ textures };
 			break;
 		}
 		default:

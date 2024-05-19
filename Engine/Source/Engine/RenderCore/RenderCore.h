@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RenderCore/BackendInfo.h"
 #include "RenderCore/FrameBuffer.h"
 #include "RenderCore/RenderAPI.h"
 #include "RenderCore/Shader.h"
@@ -14,8 +15,14 @@ class RenderCore final
 public:
 	RenderCore() = delete;
 
-	static void Init(GraphicsBackend backend);
+	static void SetBackend(GraphicsBackend backend);
 	static GraphicsBackend GetBackend() { return m_backend; }
+
+	static void Init();
+
+	static uint32_t GetMaxTextureSize() { return m_info.m_maxTextureSize; }
+	static uint32_t GetMaxFramebufferSize() { return m_info.m_maxFramebufferSize; }
+	static uint32_t GetMaxFramebufferColorAttachmentCount() { return m_info.m_maxFramebufferColorAttachmentCount; }
 
 	static void SetMainFrameBuffer(FrameBuffer *pBuffer) { m_pMainFrameBuffer = pBuffer; }
 	static FrameBuffer *GetMainFrameBuffer() { return m_pMainFrameBuffer; }
@@ -35,6 +42,8 @@ public:
 private:
 	inline static GraphicsBackend m_backend = GraphicsBackend::None;
 	inline static RenderAPI *m_pRenderAPI = nullptr;
+
+	inline static BackendInfo m_info = {};
 
 	inline static FrameBuffer *m_pMainFrameBuffer = nullptr;
 };

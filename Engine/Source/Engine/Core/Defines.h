@@ -59,11 +59,40 @@ enum class TextureFormat : uint8_t
 
 	D16,
 	D24,
+	D32,
 	D32F,
 	D24S8,
 	D32FS8,
 	S8,
 };
+
+enum class AttachmentType : uint8_t
+{
+	Depth,
+	Stencil,
+	DepthAndStencil,
+	Color,
+};
+
+inline AttachmentType GetAttachmentType(TextureFormat format)
+{
+	if (format == TextureFormat::D16 || format == TextureFormat::D24 || format == TextureFormat::D32 || format == TextureFormat::D32F)
+	{
+		return AttachmentType::Depth;
+	}
+	else if (format == TextureFormat::D24S8 || format == TextureFormat::D32FS8)
+	{
+		return AttachmentType::DepthAndStencil;
+	}
+	else if (format == TextureFormat::S8)
+	{
+		return AttachmentType::Stencil;
+	}
+	else
+	{
+		return AttachmentType::Color;
+	}
+}
 
 enum class ShaderType : uint8_t
 {

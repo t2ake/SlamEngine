@@ -16,8 +16,13 @@ public:
 public:
 	virtual ~Texture2D() = default;
 
+	virtual uint32_t GetHandle() const = 0;
+	
 	virtual uint32_t GetHeight() const = 0;
 	virtual uint32_t GetWidth() const = 0;
+	virtual TextureFormat GetFormat() const = 0;
+
+	virtual void Resize(uint32_t width, uint32_t height, const void *pData = nullptr) = 0;
 
 	virtual void Bind(uint32_t slot) const = 0;
 };

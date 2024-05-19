@@ -10,6 +10,8 @@ class OpenGLRenderAPI : public RenderAPI
 public:
 	virtual ~OpenGLRenderAPI() = default;
 
+	virtual BackendInfo GetBackendInfo() override;
+
 	virtual void SetClearColor(float r, float g, float b, float a) override;
 	virtual void SetClearDepth(float depth) override;
 	virtual void SetClearStencil(int  stencil) override;

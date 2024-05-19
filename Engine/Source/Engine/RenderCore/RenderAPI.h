@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Defines.h"
+#include "RenderCore/BackendInfo.h"
 
 namespace sl
 {
@@ -12,6 +13,8 @@ public:
 
 public:
 	virtual ~RenderAPI() = default;
+
+	virtual BackendInfo GetBackendInfo() = 0;
 
 	virtual void SetClearColor(float r, float g, float b, float a) = 0;
 	virtual void SetClearDepth(float depth) = 0;
