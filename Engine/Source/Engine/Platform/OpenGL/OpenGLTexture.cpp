@@ -37,6 +37,8 @@ void OpenGLTexture2D::Resize(uint32_t width, uint32_t height, const void *pData)
 	glDeleteTextures(1, &m_handle);
 	m_handle = 0;
 
+	m_width = width;
+	m_height = height;
 	Create(pData);
 }
 

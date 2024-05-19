@@ -37,7 +37,6 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool des
 
 	m_width = minWidth;
 	m_height = minHeight;
-
 	Create();
 }
 

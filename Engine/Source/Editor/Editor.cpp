@@ -29,8 +29,9 @@ Editor::Editor(EditorInitor initor)
 
 	sl::RenderCore::Init();
 	sl::RenderCore::SetMainFrameBuffer(sl::FrameBuffer::Create({
-		sl::Texture2D::Create(m_pWindow->GetWidth(), m_pWindow->GetHeight(), false, sl::TextureFormat::RGB8, SL_SAMPLER_CLAMP | SL_SAMPLER_LINEAR),
-		sl::Texture2D::Create(m_pWindow->GetWidth(), m_pWindow->GetHeight(), false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_LINEAR),
+		// Size is meaningless here.
+		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::RGB8, SL_SAMPLER_CLAMP | SL_SAMPLER_LINEAR),
+		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_LINEAR),
 	}));
 	sl::RenderCore::SetDefaultState();
 
