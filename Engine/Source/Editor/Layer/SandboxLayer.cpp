@@ -48,7 +48,7 @@ SandboxLayer::SandboxLayer()
 	auto entity = sl::ECSWorld::CreateEntity("Test Mesh");
 	auto &rendering = entity.AddComponent<sl::RenderingComponent>();
 	rendering.m_pVertexArray = pVertexArray;
-	rendering.m_pTexture = pTextureResource;
+	rendering.m_pTextureResource = pTextureResource;
 	rendering.m_pShader = pShader;
 }
 

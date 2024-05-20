@@ -21,7 +21,7 @@ OpenGLContext::OpenGLContext(void *pWindow) : m_pWindow(pWindow)
 	SL_ENGINE_INFO("  Version: {}", (const char *)glGetString(GL_VERSION));
 }
 
-void OpenGLContext::Bind()
+void OpenGLContext::MakeCurrent()
 {
 	glfwMakeContextCurrent(static_cast<GLFWwindow *>(m_pWindow));
 }

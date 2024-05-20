@@ -51,7 +51,7 @@ void Window::BegineFrame()
 
 void Window::EndFrame()
 {
-	m_pRenderContext->Bind();
+	m_pRenderContext->MakeCurrent();
 	m_pRenderContext->SwapBuffers();
 	glfwPollEvents();
 }
@@ -66,20 +66,12 @@ void Window::SetVSync(bool VSync)
 
 void Window::CaptureCursor()
 {
-	if (!m_isCursorCaptured)
-	{
-		glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		m_isCursorCaptured = true;
-	}
+	glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Window::ReleaseCursor()
 {
-	if (m_isCursorCaptured)
-	{
-		glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		m_isCursorCaptured = false;
-	}
+	glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void Window::SetCallbacks()

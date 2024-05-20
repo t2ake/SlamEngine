@@ -28,12 +28,12 @@ Editor::Editor(EditorInitor initor)
 	sl::Input::Init(m_pWindow->GetNativeWindow());
 
 	sl::RenderCore::Init();
+	sl::RenderCore::SetDefaultState();
 	sl::RenderCore::SetMainFrameBuffer(sl::FrameBuffer::Create({
 		// Size is meaningless here.
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::RGB8, SL_SAMPLER_CLAMP | SL_SAMPLER_LINEAR),
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_LINEAR),
 	}));
-	sl::RenderCore::SetDefaultState();
 
 	auto mainCameraEntity = sl::ECSWorld::CreateEntity("Editor Camera");
 	mainCameraEntity.AddComponent<sl::CameraComponent>();
@@ -123,7 +123,7 @@ void Editor::OnEvent(sl::Event &event)
 	dispatcher.Dispatch<sl::CameraActivateEvent>(BIND_EVENT_CALLBACK(Editor::OnCameraActivate));
 	dispatcher.Dispatch<sl::MouseButtonReleaseEvent>(BIND_EVENT_CALLBACK(Editor::OnMouseButtonRelease));
 
-	// Iterate layers from end to begin / top to bottom.
+	// Iterate layers from top to bottom / from end to begin.
 	for (auto it = m_pLayerStack->rend(); it != m_pLayerStack->rbegin(); ++it)
 	{
 		if (event.GetIsHandled())

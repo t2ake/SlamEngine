@@ -11,7 +11,7 @@ public:
 	OpenGLContext(void *pWindow);
 	virtual ~OpenGLContext() override = default;
 
-	virtual void Bind() override;
+	virtual void MakeCurrent() override;
 	virtual void SwapBuffers() override;
 
 private:

@@ -18,7 +18,7 @@ FrameBuffer *FrameBuffer::Create(std::vector<Texture2D *> textures, bool destroy
 		}
 		case GraphicsBackend::OpenGL:
 		{
-			return new OpenGLFrameBuffer{ textures };
+			return new OpenGLFrameBuffer{ std::move(textures) };
 			break;
 		}
 		default:

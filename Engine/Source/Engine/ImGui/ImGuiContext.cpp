@@ -41,7 +41,7 @@ void ImGuiContext::Init(void *pNativeWindow)
 	sl::Font::SetThin(pThinFont);
 	io.FontDefault = pRegularFont;
 
-	// 4. Set style
+	// 4. Set color and style
 	SetColor();
 	SetStyle();
 

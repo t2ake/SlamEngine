@@ -25,7 +25,6 @@ project("Slam")
 	{
 		"SL_ROOT_PATH=\""..RootPath.."\"",
 		"SL_ASSET_PATH=\""..path.join(RootPath, "Engine/Asset").."\"",
-		"SL_PROJECT_PATH=\""..path.join(RootPath, "Engine/Project").."\"",
 		"SPDLOG_NO_EXCEPTIONS", "SPDLOG_USE_STD_FORMAT",
 		"YAML_CPP_STATIC_DEFINE",
 	}

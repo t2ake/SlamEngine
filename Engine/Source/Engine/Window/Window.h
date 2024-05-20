@@ -48,7 +48,6 @@ private:
 	uint32_t m_width = 1280;
 	uint32_t m_height = 720;
 	bool m_isVSync = true;
-	bool m_isCursorCaptured = false;
 
 	EventCallback m_eventCallback = nullptr;
 };

@@ -13,8 +13,13 @@ namespace sl
 OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool destroy) :
 	m_destroyTextureWithFramebuffer(destroy)
 {
-	uint32_t minWidth = INT_MAX;
-	uint32_t minHeight = INT_MAX;
+	SL_ENGINE_ASSERT_INFO(!textures.empty(), "Can not create framebuffer without a texture!");
+
+	bool hasColor = false;
+	bool isDifferent = false;
+
+	uint32_t minWidth = textures[0]->GetHeight();
+	uint32_t minHeight = textures[0]->GetHeight();
 	uint32_t colorAttachmentIndex = 0;
 	m_attachments.reserve(textures.size());
 
@@ -25,14 +30,28 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool des
 
 		if (AttachmentType::Color == type)
 		{
+			hasColor = true;
 			attachmentPoint += colorAttachmentIndex++;
-			SL_ENGINE_ASSERT(attachmentPoint < (GL_COLOR_ATTACHMENT0 + RenderCore::GetMaxFramebufferColorAttachmentCount()));
+
+			SL_ENGINE_ASSERT_INFO(attachmentPoint < GL_COLOR_ATTACHMENT0 + RenderCore::GetMaxFramebufferColorAttachmentCount(),
+				"Color attachments count exceeds the limit!");
 		}
+		SL_ENGINE_ASSERT_INFO(hasColor, "Can not create framebuffer without a color attachment!");
 
 		m_attachments.emplace_back(pTexture, attachmentPoint);
 
-		minWidth = std::min(minWidth, pTexture->GetWidth());
-		minHeight = std::min(minHeight, pTexture->GetHeight());
+		uint32_t textureWidth = pTexture->GetWidth();
+		uint32_t textureHeight = pTexture->GetHeight();
+		if (minWidth != textureWidth || minHeight != textureHeight)
+		{
+			isDifferent = true;
+			minWidth = std::min(minWidth, textureWidth);
+			minHeight = std::min(minHeight, textureHeight);
+		}
+	}
+	if (isDifferent)
+	{
+		SL_ENGINE_WARN("Creating framebuffer with textures of different sizes, shrink to the minimal one.");
 	}
 
 	m_width = minWidth;

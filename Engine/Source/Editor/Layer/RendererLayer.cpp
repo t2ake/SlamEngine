@@ -49,7 +49,7 @@ void RendererLayer::OnRender()
 
 		rendering.m_pShader->Bind();
 		rendering.m_pShader->UploadUniform("u_ModelViewProjection", viewProjection * transform.GetTransform());
-		rendering.m_pTexture->GetTexture()->Bind(0);
+		rendering.m_pTextureResource->GetTexture()->Bind(0);
 		sl::RenderCore::Submit(rendering.m_pVertexArray, rendering.m_pShader);
 
 		sl::RenderCore::GetMainFrameBuffer()->Unbind();
