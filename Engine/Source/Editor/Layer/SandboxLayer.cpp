@@ -43,7 +43,7 @@ SandboxLayer::SandboxLayer()
 	sl::TextureResource *pTextureResource = new sl::TextureResource{
 		sl::Path::FromeAsset("Texture/jc.png"),
 		sl::TextureFormat::RGB8,
-		SL_SAMPLER_REPEAT | SL_SAMPLER_LINEAR };
+		SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR };
 
 	auto entity = sl::ECSWorld::CreateEntity("Test Mesh");
 	auto &rendering = entity.AddComponent<sl::RenderingComponent>();

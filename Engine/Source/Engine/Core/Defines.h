@@ -213,10 +213,10 @@ enum class StencilOperation : uint8_t
 #define SL_SAMPLER_MAG_MASK               UINT32_C(0x0000c000)
 #define SL_SAMPLER_MAG_SHIFT              14
 										  
-#define SL_SAMPLER_MIPMAP_NEAREST_NEAREST UINT32_C(0x00010000) // Nearest between mipmaps, nearest between pixels.
-#define SL_SAMPLER_MIPMAP_LINEAR_NEAREST  UINT32_C(0x00020000) // Linear between mipmaps, nearest between pixels.
-#define SL_SAMPLER_MIPMAP_NEAREST_LINEAR  UINT32_C(0x00030000) // Nearest between mipmaps, linear between pixels.
-#define SL_SAMPLER_MIPMAP_LINEAR_LINEAR   UINT32_C(0x00040000) // Linear between mipmaps, linear between pixels.
+#define SL_SAMPLER_MIPMAP_NEAREST_NEAREST UINT32_C(0x00010000) // Nearest between pixels, nearest between mipmaps.
+#define SL_SAMPLER_MIPMAP_NEAREST_LINEAR  UINT32_C(0x00030000) // Nearest between pixels, linear between mipmaps.
+#define SL_SAMPLER_MIPMAP_LINEAR_NEAREST  UINT32_C(0x00020000) // Linear between pixels, nearest between mipmaps.
+#define SL_SAMPLER_MIPMAP_LINEAR_LINEAR   UINT32_C(0x00040000) // Linear between pixels, linear between mipmaps.
 #define SL_SAMPLER_MIPMAP_MASK            UINT32_C(0x000f0000)
 #define SL_SAMPLER_MIPMAP_SHIFT           16
 
@@ -250,7 +250,13 @@ enum class StencilOperation : uint8_t
 	| SL_SAMPLER_MIPMAP_NEAREST_NEAREST \
 	)
 
-#define SL_SAMPLER_LINEAR (0 \
+#define SL_SAMPLER_BILINEAR (0 \
+	| SL_SAMPLER_MIN_LINEAR \
+	| SL_SAMPLER_MAG_LINEAR \
+	| SL_SAMPLER_MIPMAP_LINEAR_NEAREST \
+	)
+
+#define SL_SAMPLER_TRILINEAR (0 \
 	| SL_SAMPLER_MIN_LINEAR \
 	| SL_SAMPLER_MAG_LINEAR \
 	| SL_SAMPLER_MIPMAP_LINEAR_LINEAR \
