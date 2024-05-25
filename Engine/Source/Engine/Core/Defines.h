@@ -44,17 +44,56 @@ enum class AttribType : uint8_t
 
 enum class TextureFormat : uint8_t
 {
-	R8,
+	R8,  // Unsigned normalized integer
+	R8S, // Signed normalized integer
+	R8U, // Unsigned integer
+	R8I, // Signed integer
 	R16,
-	RG8,
-	RG16,
-	RGB8,
-	RGB16,
-	RGBA8,
-	RGBA16,
+	R16S,
+	R16U,
+	R16I,
+	R16F,
+	R32U,
+	R32I,
 	R32F,
+
+	RG8,
+	RG8S,
+	RG8U,
+	RG8I,
+	RG16,
+	RG16S,
+	RG16U,
+	RG16I,
+	RG16F,
+	RG32U,
+	RG32I,
 	RG32F,
+
+	RGB8,
+	RGB8S,
+	RGB8U,
+	RGB8I,
+	RGB16,
+	RGB16S,
+	RGB16U,
+	RGB16I,
+	RGB16F,
+	RGB32U,
+	RGB32I,
 	RGB32F,
+
+	RGBA8,
+	RGBA8S,
+	RGBA8U,
+	RGBA8I,
+	RGBA16,
+	RGBA16S,
+	RGBA16U,
+	RGBA16I,
+	RGBA16F,
+	RGBA32U,
+	RGBA32I,
 	RGBA32F,
 
 	D16,
@@ -64,6 +103,8 @@ enum class TextureFormat : uint8_t
 	D24S8,
 	D32FS8,
 	S8,
+
+	// TODO: Compress format
 };
 
 enum class AttachmentType : uint8_t
