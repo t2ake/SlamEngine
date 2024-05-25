@@ -41,9 +41,7 @@ SandboxLayer::SandboxLayer()
 		sl::Path::FromeAsset("Shader/fs_Test.glsl"));
 
 	sl::TextureResource *pTextureResource = new sl::TextureResource{
-		sl::Path::FromeAsset("Texture/jc.png"),
-		sl::TextureFormat::RGB8,
-		SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR };
+		sl::Path::FromeAsset("Texture/jc.png"), SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR };
 
 	auto entity = sl::ECSWorld::CreateEntity("Test Mesh");
 	auto &rendering = entity.AddComponent<sl::RenderingComponent>();

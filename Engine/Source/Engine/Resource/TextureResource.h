@@ -14,7 +14,7 @@ class TextureResource
 {
 public:
 	TextureResource() = default;
-	TextureResource(std::string_view path, TextureFormat format, uint32_t flags = 0);
+	TextureResource(std::string_view path, uint32_t flags = 0);
 	~TextureResource();
 
 	Texture2D *GetTexture() const { return m_pTexture; }
