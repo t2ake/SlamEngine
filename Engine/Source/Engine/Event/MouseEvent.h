@@ -76,6 +76,32 @@ private:
 	int m_button;
 };
 
+class MouseButtonAcrossEvent : public Event
+{
+public:
+	MouseButtonAcrossEvent() = default;
+
+	static EventType GetStaticEventType()
+	{
+		return EventType::MouseButtonAcross;
+	}
+
+	virtual EventType GetEventType() const override
+	{
+		return GetStaticEventType();
+	}
+
+	virtual std::string ToString() const override
+	{
+		return "MouseButtonAcross";
+	}
+
+	virtual uint8_t GetCategories() const override
+	{
+		return SL_EVENT_CATEGORY_INPUT | SL_EVENT_CATEGORY_MOUSE;
+	}
+};
+
 class MouseMoveEvent : public Event
 {
 public:

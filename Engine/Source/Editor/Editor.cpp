@@ -87,6 +87,37 @@ void Editor::BegineFrame()
 	{
 		pLayer->BeginFrame();
 	}
+
+	// TODO: Make window class as a layer and move these to it.
+	if (sl::CameraControllerMode::None != m_cameraMode)
+	{
+		glm::vec2 globalMousePos = sl::Input::GetGlobalMousePos();
+		SL_ENGINE_DEBUG(globalMousePos);
+		if (globalMousePos.x <= 0)
+		{
+			m_pWindow->SetGlobalCursorpos((float)m_pWindow->GetMonitorWidth() - 2.0f, globalMousePos.y);
+			sl::MouseButtonAcrossEvent event;
+			OnEvent(event);
+		}
+		if (globalMousePos.x >= (float)m_pWindow->GetMonitorWidth() - 1.0f)
+		{
+			m_pWindow->SetGlobalCursorpos(1, globalMousePos.y);
+			sl::MouseButtonAcrossEvent event;
+			OnEvent(event);
+		}
+		if (globalMousePos.y <= 0)
+		{
+			m_pWindow->SetGlobalCursorpos(globalMousePos.x, (float)m_pWindow->GetMonitorHeight() - 2.0f);
+			sl::MouseButtonAcrossEvent event;
+			OnEvent(event);
+		}
+		if (globalMousePos.y >= (float)m_pWindow->GetMonitorHeight() - 1.0f)
+		{
+			m_pWindow->SetGlobalCursorpos(globalMousePos.x, 1.0f);
+			sl::MouseButtonAcrossEvent event;
+			OnEvent(event);
+		}
+	}
 }
 
 void Editor::Update()
@@ -159,14 +190,14 @@ bool Editor::OnWindowResize(sl::WindowResizeEvent &event)
 
 bool Editor::OnCameraActivate(sl::CameraActivateEvent &event)
 {
-	m_pWindow->CaptureCursor();
+	m_cameraMode = event.GetMode();
 
 	return false;
 }
 
 bool Editor::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event)
 {
-	m_pWindow->ReleaseCursor();
+	m_cameraMode = sl::CameraControllerMode::None;
 
 	return false;
 }

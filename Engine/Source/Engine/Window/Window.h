@@ -32,8 +32,13 @@ public:
 	bool &GetIsVSync() { return m_isVSync; }
 	bool GetIsVSync() const { return m_isVSync; }
 
+	uint32_t GetMonitorWidth() const { return m_monitorWidth; }
+	uint32_t GetMonitorHeight() const { return m_monitorHeight; }
+
 	void CaptureCursor();
 	void ReleaseCursor();
+	void SetCursorpos(float x, float y);
+	void SetGlobalCursorpos(float x, float y);
 
 	void SetEventCallback(EventCallback fun) { m_eventCallback = std::move(fun); }
 	void DespatchEvent(Event &event) { m_eventCallback(event); }
@@ -44,10 +49,13 @@ private:
 	void *m_pNativeWindow = nullptr;
 	RenderContext *m_pRenderContext = nullptr;
 
-	std::string m_title = "Default Title";
-	uint32_t m_width = 1280;
-	uint32_t m_height = 720;
+	std::string m_title;
+	uint32_t m_width;
+	uint32_t m_height;
 	bool m_isVSync = true;
+
+	uint32_t m_monitorWidth;
+	uint32_t m_monitorHeight;
 
 	EventCallback m_eventCallback = nullptr;
 };

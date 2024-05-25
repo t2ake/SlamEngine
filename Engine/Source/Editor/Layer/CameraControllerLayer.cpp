@@ -37,6 +37,7 @@ void CameraControllerLayer::OnEvent(sl::Event &event)
 	dispatcher.Dispatch<sl::SceneViewportResizeEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnSceneViewportResize));
 	dispatcher.Dispatch<sl::CameraActivateEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnCameraActivate));
 	dispatcher.Dispatch<sl::MouseButtonReleaseEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnMouseButtonRelease));
+	dispatcher.Dispatch<sl::MouseButtonAcrossEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnMouseButtonAcross));
 }
 
 void CameraControllerLayer::BeginFrame()
@@ -228,4 +229,12 @@ bool CameraControllerLayer::OnKeyRelease(sl::KeyReleaseEvent &event)
 	}
 
 	return false;
+}
+
+bool CameraControllerLayer::OnMouseButtonAcross(sl::MouseButtonAcrossEvent &event)
+{
+	auto &camera = sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::CameraComponent>();
+	camera.m_mouseLastPos = sl::Input::GetMousePos();
+
+	return true;
 }

@@ -62,6 +62,7 @@ private:
 	bool m_isMinimized = false;
 
 	sl::Timer m_timer;
+	sl::CameraControllerMode m_cameraMode = sl::CameraControllerMode::None;
 	sl::Window *m_pWindow = nullptr;
 	sl::LayerStack *m_pLayerStack = nullptr;
 	

@@ -27,6 +27,10 @@ Window::Window(std::string title, uint32_t width, uint32_t height) :
 	SL_ENGINE_ASSERT_INFO(m_pNativeWindow, "GLFW creat window failed!");
 	m_pRenderContext = RenderContext::Create(m_pNativeWindow);
 
+	const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+	m_monitorWidth = mode->width;
+	m_monitorHeight = mode->height;
+
 	glfwSetWindowUserPointer(static_cast<GLFWwindow *>(m_pNativeWindow), this);
 	SetCallbacks();
 
@@ -72,6 +76,18 @@ void Window::CaptureCursor()
 void Window::ReleaseCursor()
 {
 	glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
+void Window::SetCursorpos(float x, float y)
+{
+	glfwSetCursorPos(static_cast<GLFWwindow *>(m_pNativeWindow), (double)x, (double)y);
+}
+
+void Window::SetGlobalCursorpos(float x, float y)
+{
+	int windowPosX, windowPosY;
+	glfwGetWindowPos(static_cast<GLFWwindow *>(m_pNativeWindow), &windowPosX, &windowPosY);
+	glfwSetCursorPos(static_cast<GLFWwindow *>(m_pNativeWindow), (double)x - (double)windowPosX, (double)y - (double)windowPosY);
 }
 
 void Window::SetCallbacks()

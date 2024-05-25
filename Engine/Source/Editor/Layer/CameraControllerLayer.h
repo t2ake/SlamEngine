@@ -11,6 +11,7 @@ class SceneViewportResizeEvent;
 class CameraActivateEvent;
 class MouseButtonReleaseEvent;
 class KeyReleaseEvent;
+class MouseButtonAcrossEvent;
 
 }
 
@@ -36,6 +37,7 @@ private:
 	bool OnCameraActivate(sl::CameraActivateEvent &event);
 	bool OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event);
 	bool OnKeyRelease(sl::KeyReleaseEvent &event);
+	bool OnMouseButtonAcross(sl::MouseButtonAcrossEvent &event);
 
 	sl::CameraControllerMode m_controllerMode = sl::CameraControllerMode::None;
 	bool m_isRotating = false;
