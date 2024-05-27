@@ -844,32 +844,22 @@ void ImGuiLayer::ShowSceneViewport()
 
 	ShowImGuizmoTransform();
 
-	// ImGuizmo transform moving should not be blocked by InvisibleButton.
-	if (!ImGuizmo::IsOver())
+	if (ImGui::IsWindowHovered() && !ImGuizmo::IsOver())
 	{
-		// The invisible button is designed to prevent the mouse from hovering over the ui item
-		// even when the camera is moving(and the mouse is captured), using an internal imgui mechanism.
-		// I haven't come up with a better solution, but it works.
-		ImGui::SetCursorPos(crtCursorPos);
-		ImGui::InvisibleButton("InvisibleButton", crtSceneViewportSize,
-			ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
-		if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenOverlappedByWindow))
+		// Camera event
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
 		{
-			// Camera event
-			if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+			ImGui::SetWindowFocus();
+			sl::CameraActivateEvent event{ sl::CameraControllerMode::FPS };
+			m_eventCallback(event);
+		}
+		else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+		{
+			ImGui::SetWindowFocus();
+			if (ImGui::IsKeyDown(ImGuiKey_LeftAlt))
 			{
-				ImGui::SetWindowFocus();
-				sl::CameraActivateEvent event{ sl::CameraControllerMode::FPS };
+				sl::CameraActivateEvent event{ sl::CameraControllerMode::Editor };
 				m_eventCallback(event);
-			}
-			else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-			{
-				ImGui::SetWindowFocus();
-				if (ImGui::IsKeyDown(ImGuiKey_LeftAlt))
-				{
-					sl::CameraActivateEvent event{ sl::CameraControllerMode::Editor };
-					m_eventCallback(event);
-				}
 			}
 		}
 	}

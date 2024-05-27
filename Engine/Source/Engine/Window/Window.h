@@ -28,17 +28,17 @@ public:
 	uint32_t &GetHeight() { return m_height; }
 	uint32_t GetHeight() const { return m_height; }
 
+	uint32_t GetMonitorWidth() const { return m_monitorWidth; }
+	uint32_t GetMonitorHeight() const { return m_monitorHeight; }
+
 	void SetVSync(bool VSync);
 	bool &GetIsVSync() { return m_isVSync; }
 	bool GetIsVSync() const { return m_isVSync; }
 
-	uint32_t GetMonitorWidth() const { return m_monitorWidth; }
-	uint32_t GetMonitorHeight() const { return m_monitorHeight; }
-
 	void CaptureCursor();
 	void ReleaseCursor();
-	void SetCursorpos(float x, float y);
-	void SetGlobalCursorpos(float x, float y);
+	void SetCursorPos(float x, float y);
+	void SetGlobalCursorPos(float x, float y);
 
 	void SetEventCallback(EventCallback fun) { m_eventCallback = std::move(fun); }
 	void DespatchEvent(Event &event) { m_eventCallback(event); }
@@ -52,10 +52,9 @@ private:
 	std::string m_title;
 	uint32_t m_width;
 	uint32_t m_height;
-	bool m_isVSync = true;
-
 	uint32_t m_monitorWidth;
 	uint32_t m_monitorHeight;
+	bool m_isVSync = true;
 
 	EventCallback m_eventCallback = nullptr;
 };

@@ -62,10 +62,8 @@ void Window::EndFrame()
 
 void Window::SetVSync(bool VSync)
 {
-#ifndef SL_FINAL
 	m_isVSync = VSync;
 	glfwSwapInterval(m_isVSync ? 1 : 0);
-#endif
 }
 
 void Window::CaptureCursor()
@@ -78,12 +76,12 @@ void Window::ReleaseCursor()
 	glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
-void Window::SetCursorpos(float x, float y)
+void Window::SetCursorPos(float x, float y)
 {
 	glfwSetCursorPos(static_cast<GLFWwindow *>(m_pNativeWindow), (double)x, (double)y);
 }
 
-void Window::SetGlobalCursorpos(float x, float y)
+void Window::SetGlobalCursorPos(float x, float y)
 {
 	int windowPosX, windowPosY;
 	glfwGetWindowPos(static_cast<GLFWwindow *>(m_pNativeWindow), &windowPosX, &windowPosY);

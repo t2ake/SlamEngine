@@ -28,13 +28,12 @@ glm::vec2 Input::GetMousePos()
 
 glm::vec2 Input::GetGlobalMousePos()
 {
+	int windowPosX, windowPosY;
 	double cursorPosX, cursorPosY;
+	glfwGetWindowPos(static_cast<GLFWwindow *>(m_pWindow), &windowPosX, &windowPosY);
 	glfwGetCursorPos(static_cast<GLFWwindow *>(m_pWindow), &cursorPosX, &cursorPosY);
 
-	int windowPosX, windowPosY;
-	glfwGetWindowPos(static_cast<GLFWwindow *>(m_pWindow), &windowPosX, &windowPosY);
-
-	return { (float)windowPosX + (float)cursorPosX , (float)windowPosY + (float)cursorPosY };
+	return { (float)windowPosX + (float)cursorPosX, (float)windowPosY + (float)cursorPosY };
 }
 
 } // namespace sl

@@ -91,29 +91,33 @@ void Editor::BegineFrame()
 	// TODO: Make window class as a layer and move these to it.
 	if (sl::CameraControllerMode::None != m_cameraMode)
 	{
+		float newPosX = -1.0f;
+		float newPosY = -1.0f;
 		glm::vec2 globalMousePos = sl::Input::GetGlobalMousePos();
-		SL_ENGINE_DEBUG(globalMousePos);
 		if (globalMousePos.x <= 0)
 		{
-			m_pWindow->SetGlobalCursorpos((float)m_pWindow->GetMonitorWidth() - 2.0f, globalMousePos.y);
-			sl::MouseButtonAcrossEvent event;
-			OnEvent(event);
+			newPosX = (float)m_pWindow->GetMonitorWidth() - 2.0f;
+			newPosY = globalMousePos.y;
 		}
 		if (globalMousePos.x >= (float)m_pWindow->GetMonitorWidth() - 1.0f)
 		{
-			m_pWindow->SetGlobalCursorpos(1, globalMousePos.y);
-			sl::MouseButtonAcrossEvent event;
-			OnEvent(event);
+			newPosX = 1.0f;
+			newPosY = globalMousePos.y;
 		}
 		if (globalMousePos.y <= 0)
 		{
-			m_pWindow->SetGlobalCursorpos(globalMousePos.x, (float)m_pWindow->GetMonitorHeight() - 2.0f);
-			sl::MouseButtonAcrossEvent event;
-			OnEvent(event);
+			newPosX = globalMousePos.x;
+			newPosY = (float)m_pWindow->GetMonitorHeight() - 2.0f;
 		}
 		if (globalMousePos.y >= (float)m_pWindow->GetMonitorHeight() - 1.0f)
 		{
-			m_pWindow->SetGlobalCursorpos(globalMousePos.x, 1.0f);
+			newPosX = globalMousePos.x;
+			newPosY = 1.0f;
+		}
+
+		if (newPosX > 0.0f && newPosY > 0.0f)
+		{
+			m_pWindow->SetGlobalCursorPos(newPosX, newPosY);
 			sl::MouseButtonAcrossEvent event;
 			OnEvent(event);
 		}
