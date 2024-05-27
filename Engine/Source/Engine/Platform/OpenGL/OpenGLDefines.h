@@ -1,7 +1,5 @@
 #pragma once
 
-// Do not include this file in any headers.
-
 #include "Core/Defines.h"
 #include "Core/EnumOf.hpp"
 

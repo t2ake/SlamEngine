@@ -44,7 +44,23 @@ void CameraControllerLayer::BeginFrame()
 }
 void CameraControllerLayer::OnUpdate(float deltaTime)
 {
-	UpdateMainCamera(deltaTime);
+	const auto &mode = sl::ECSWorld::GetEditorCameraComponent().m_controllerMode;
+
+	if (sl::CameraControllerMode::None == mode)
+	{
+		m_isRotating = false;
+		m_isMoving = false;
+		return;
+	}
+
+	if (sl::CameraControllerMode::FPS == mode)
+	{
+		UpdateFPSMode(deltaTime);
+	}
+	else if (sl::CameraControllerMode::Editor == mode)
+	{
+		UpdateEditorMode(deltaTime);
+	}
 }
 
 void CameraControllerLayer::OnRender()
@@ -57,28 +73,7 @@ void CameraControllerLayer::EndFrame()
 
 }
 
-void CameraControllerLayer::UpdateMainCamera(float deltaTime)
-{
-	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
-
-	if (sl::CameraControllerMode::None == camera.m_controllerMode)
-	{
-		m_isRotating = false;
-		m_isMoving = false;
-		return;
-	}
-
-	if (sl::CameraControllerMode::FPS == camera.m_controllerMode)
-	{
-		UpdateFPSCamera(deltaTime);
-	}
-	else if(sl::CameraControllerMode::Editor == camera.m_controllerMode)
-	{
-		UpdateEditorCamera(deltaTime);
-	}
-}
-
-void CameraControllerLayer::UpdateFPSCamera(float deltaTime)
+void CameraControllerLayer::UpdateFPSMode(float deltaTime)
 {
 	auto [camera, transform] = sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::CameraComponent, sl::TransformComponent>();
 
@@ -147,6 +142,7 @@ void CameraControllerLayer::UpdateFPSCamera(float deltaTime)
 			// When pressing buttons in the opposite direction at the same time.
 			finalMoveDir = glm::vec3{ 0.0f, 0.0f, 0.0f };
 		}
+
 		camera.m_lastMoveDir = finalMoveDir;
 	}
 	else
@@ -169,7 +165,7 @@ void CameraControllerLayer::UpdateFPSCamera(float deltaTime)
 	camera.m_isDirty = true;
 }
 
-void CameraControllerLayer::UpdateEditorCamera(float deltaTime)
+void CameraControllerLayer::UpdateEditorMode(float deltaTime)
 {
 	// TODO
 }
@@ -190,11 +186,10 @@ bool CameraControllerLayer::OnMouseScroll(sl::MouseScrollEvent &event)
 
 bool CameraControllerLayer::OnSceneViewportResize(sl::SceneViewportResizeEvent &event)
 {
-	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
-
 	float aspect = (float)event.GetWidth() / (float)event.GetHeight();
 	float fovMultiplier = aspect * 9.0f / 16.0f;
 
+	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
 	camera.m_aspect = aspect;
 	camera.m_fovMultiplier = fovMultiplier;
 	camera.m_isDirty = true;
@@ -204,12 +199,12 @@ bool CameraControllerLayer::OnSceneViewportResize(sl::SceneViewportResizeEvent &
 
 bool CameraControllerLayer::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event)
 {
-	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
+	auto &mode = sl::ECSWorld::GetEditorCameraComponent().m_controllerMode;
 
-	if ((sl::CameraControllerMode::FPS == camera.m_controllerMode && SL_MOUSE_BUTTON_2 == event.GetButton()) ||
-		(sl::CameraControllerMode::Editor == camera.m_controllerMode && SL_MOUSE_BUTTON_1 == event.GetButton()))
+	if ((sl::CameraControllerMode::FPS == mode && SL_MOUSE_BUTTON_2 == event.GetButton()) ||
+		(sl::CameraControllerMode::Editor == mode && SL_MOUSE_BUTTON_1 == event.GetButton()))
 	{
-		camera.m_controllerMode = sl::CameraControllerMode::None;
+		mode = sl::CameraControllerMode::None;
 	}
 
 	return false;
@@ -217,11 +212,11 @@ bool CameraControllerLayer::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &ev
 
 bool CameraControllerLayer::OnKeyRelease(sl::KeyReleaseEvent &event)
 {
-	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
+	auto &mode = sl::ECSWorld::GetEditorCameraComponent().m_controllerMode;
 
-	if (sl::CameraControllerMode::Editor == camera.m_controllerMode && SL_KEY_LEFT_ALT == event.GetKey())
+	if (sl::CameraControllerMode::Editor == mode && SL_KEY_LEFT_ALT == event.GetKey())
 	{
-		camera.m_controllerMode = sl::CameraControllerMode::None;
+		mode = sl::CameraControllerMode::None;
 	}
 
 	return false;
@@ -229,8 +224,7 @@ bool CameraControllerLayer::OnKeyRelease(sl::KeyReleaseEvent &event)
 
 bool CameraControllerLayer::OnMouseButtonAcross(sl::MouseButtonAcrossEvent &event)
 {
-	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
-	camera.m_mouseLastPos = sl::Input::GetMousePos();
+	sl::ECSWorld::GetEditorCameraComponent().m_mouseLastPos = sl::Input::GetMousePos();
 
 	return true;
 }

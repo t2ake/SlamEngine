@@ -10,8 +10,6 @@ namespace sl
 class Event;
 class WindowCloseEvent;
 class WindowResizeEvent;
-class MouseButtonReleaseEvent;
-class Window;
 class LayerStack;
 
 }
@@ -20,6 +18,7 @@ class CameraControllerLayer;
 class ImGuiLayer;
 class RendererLayer;
 class SandboxLayer;
+class WindowLayer;
 
 struct EditorInitor
 {
@@ -43,8 +42,6 @@ public:
 
 	void Run();
 
-	sl::Window *GetWindow() const { return m_pWindow; }
-
 private:
 	void BegineFrame();
 	void Update();
@@ -59,11 +56,11 @@ private:
 	bool m_isMinimized = false;
 
 	sl::Timer m_timer;
-	sl::Window *m_pWindow = nullptr;
 	sl::LayerStack *m_pLayerStack = nullptr;
 	
 	CameraControllerLayer *m_pCameraControllerLayer = nullptr;
 	ImGuiLayer *m_pImGuiLayer = nullptr;
 	RendererLayer *m_pRendererLayer = nullptr;
 	SandboxLayer *m_pSandboxLayer = nullptr;
+	WindowLayer *m_pWindowLayer = nullptr;
 };

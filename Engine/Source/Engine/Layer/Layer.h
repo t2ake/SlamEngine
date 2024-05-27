@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 namespace sl
 {
 
@@ -20,13 +18,6 @@ public:
 	virtual void OnUpdate(float deltaTime) = 0;
 	virtual void OnRender() = 0;
 	virtual void EndFrame() = 0;
-
-	void SetName(std::string name) { m_name = std::move(name); }
-	std::string &GetName() { return m_name; }
-	const std::string &GetName() const { return m_name; }
-
-private:
-	std::string m_name = "Default Layer Name";
 };
 
 } // namespace sl

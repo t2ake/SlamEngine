@@ -34,6 +34,11 @@ void RendererLayer::OnRender()
 	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
 	const glm::mat4 &viewProjection = camera.GetViewProjection();
 
+	sl::RenderCore::GetMainFrameBuffer()->Bind();
+	// TODO: these should be stored in framebuffer.
+	sl::RenderCore::ClearColor(0.1f, 0.1f, 0.1f, 1.0);
+	sl::RenderCore::ClearDepth(1.0f);
+
 	auto group = sl::ECSWorld::GetRegistry().group<sl::RenderingComponent>(entt::get<sl::TransformComponent>);
 	for (auto entity : group)
 	{
@@ -43,17 +48,13 @@ void RendererLayer::OnRender()
 			continue;
 		}
 
-		sl::RenderCore::GetMainFrameBuffer()->Bind();
-		sl::RenderCore::ClearColor(0.1f, 0.1f, 0.1f, 1.0);
-		sl::RenderCore::ClearDepth(1.0f);
-
 		rendering.m_pShader->Bind();
 		rendering.m_pShader->UploadUniform("u_ModelViewProjection", viewProjection * transform.GetTransform());
 		rendering.m_pTextureResource->GetTexture()->Bind(0);
 		sl::RenderCore::Submit(rendering.m_pVertexArray, rendering.m_pShader);
-
-		sl::RenderCore::GetMainFrameBuffer()->Unbind();
 	}
+
+	sl::RenderCore::GetMainFrameBuffer()->Unbind();
 }
 
 void RendererLayer::EndFrame()

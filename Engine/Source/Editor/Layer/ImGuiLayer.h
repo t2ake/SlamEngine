@@ -21,9 +21,6 @@ public:
 	virtual void OnRender() override;
 	virtual void EndFrame() override;
 
-	uint32_t GetSceneViewportSizeX() const { return m_sceneViewportSizeX; }
-	uint32_t GetSceneViewportSizeY() const { return m_sceneViewportSizeY; }
-
 	void SetEventCallback(sl::EventCallback fun) { m_eventCallback = std::move(fun); }
 
 private:
@@ -56,7 +53,7 @@ private:
 	bool m_debugItemPicker = false;
 	bool m_debugIDStack = false;
 
-	// Entity list
+	// Entity list and many other panels
 	sl::Entity m_selectedEntity;
 
 	// Details

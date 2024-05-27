@@ -7,7 +7,6 @@
 #include "ImGui/ImGuiContext.h"
 #include "RenderCore/RenderCore.h"
 #include "Resource/Font.h"
-#include "Scene/ECSWorld.h"
 #include "Scene/SceneSerializer.h"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -49,7 +48,8 @@ struct OrientationCamera
 
 	constexpr glm::mat4 GetProjection()
 	{
-		return glm::mat4{
+		return glm::mat4
+		{
 			{ 1.79259f, 0.0f, 0.0f, 0.0f },
 			{ 0.0f, 1.79259f, 0.0f, 0.0f },
 			{ 0.0f, 0.0f, -1.0f, -1.0f },
@@ -134,9 +134,8 @@ SL_FORCEINLINE static glm::vec3 ModVec3(const glm::vec3 &v, float m)
 
 ImGuiLayer::ImGuiLayer()
 {
-	SetName("ImGui Layer");
-
 	m_dockSpaceFlag |= ImGuiDockNodeFlags_NoUndocking;
+	m_selectedEntity = sl::ECSWorld::GetEditorCameraEntity();
 }
 
 ImGuiLayer::~ImGuiLayer()
@@ -146,7 +145,7 @@ ImGuiLayer::~ImGuiLayer()
 
 void ImGuiLayer::OnAttach()
 {
-	m_selectedEntity = sl::ECSWorld::GetEditorCameraEntity();
+
 }
 
 void ImGuiLayer::OnDetach()
@@ -837,7 +836,6 @@ void ImGuiLayer::ShowSceneViewport()
 	}
 
 	// Draw main frame buffer color attachment
-	ImVec2 crtCursorPos = ImGui::GetCursorPos();
 	uint32_t handle = sl::RenderCore::GetMainFrameBuffer()->GetColorAttachmentHandle();
 	ImGui::Image((void *)(uint64_t)handle, crtSceneViewportSize, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 

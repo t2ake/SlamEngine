@@ -5,6 +5,7 @@
 class RendererLayer : public sl::Layer
 {
 public:
+	RendererLayer() = default;
 	virtual ~RendererLayer() override = default;
 
 	virtual void OnAttach() override;

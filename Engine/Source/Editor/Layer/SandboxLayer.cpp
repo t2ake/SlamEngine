@@ -9,8 +9,6 @@
 
 SandboxLayer::SandboxLayer()
 {
-	SetName("Sandbox Layer");
-
 	auto &transform = sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::TransformComponent>();
 	transform.m_position = glm::vec3{ 0.0f, 0.0f, 5.0f };
 	transform.m_rotation = glm::vec3{ 0.0f, -90.0f, 0.0f };

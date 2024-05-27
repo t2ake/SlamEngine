@@ -27,9 +27,8 @@ public:
 	virtual void EndFrame() override;
 
 private:
-	void UpdateMainCamera(float deltaTime);
-	void UpdateFPSCamera(float deltaTime);
-	void UpdateEditorCamera(float deltaTime);
+	void UpdateFPSMode(float deltaTime);
+	void UpdateEditorMode(float deltaTime);
 
 	bool OnMouseScroll(sl::MouseScrollEvent &event);
 	bool OnSceneViewportResize(sl::SceneViewportResizeEvent &event);

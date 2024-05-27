@@ -14,17 +14,18 @@
 #include "Layer/ImGuiLayer.h"
 #include "Layer/RendererLayer.h"
 #include "Layer/SandboxLayer.h"
+#include "Layer/WindowLayer.h"
 
 Editor::Editor(EditorInitor initor)
 {
 	sl::Log::Init();
 
 	sl::RenderCore::SetBackend(initor.m_backend);
-	m_pWindow = new sl::Window(std::move(initor.title), initor.m_width, initor.m_height);
-	m_pWindow->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
+	sl::Window *pWindow = new sl::Window(std::move(initor.title), initor.m_width, initor.m_height);
+	pWindow->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
-	sl::ImGuiContext::Init(m_pWindow->GetNativeWindow());
-	sl::Input::Init(m_pWindow->GetNativeWindow());
+	sl::Input::Init(pWindow->GetNativeWindow());
+	sl::ImGuiContext::Init(pWindow->GetNativeWindow());
 
 	sl::RenderCore::Init();
 	sl::RenderCore::SetDefaultState();
@@ -39,16 +40,21 @@ Editor::Editor(EditorInitor initor)
 	mainCameraEntity.AddComponent<sl::CornerstoneComponent>("Currently we only support that only one camera in the scene.");
 	sl::ECSWorld::SetEditorCameraEntity(mainCameraEntity);
 
+	m_pWindowLayer = new WindowLayer;
 	m_pSandboxLayer = new SandboxLayer;
-	m_pCameraControllerLayer = new CameraControllerLayer;
 	m_pRendererLayer = new RendererLayer;
+	m_pCameraControllerLayer = new CameraControllerLayer;
 	m_pImGuiLayer = new ImGuiLayer;
+
+	m_pWindowLayer->SetWindow(pWindow);
+	m_pWindowLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 	m_pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
 	m_pLayerStack = new sl::LayerStack;
+	m_pLayerStack->PushLayer(m_pWindowLayer);
 	m_pLayerStack->PushLayer(m_pSandboxLayer);
-	m_pLayerStack->PushLayer(m_pCameraControllerLayer);
 	m_pLayerStack->PushLayer(m_pRendererLayer);
+	m_pLayerStack->PushLayer(m_pCameraControllerLayer);
 	m_pLayerStack->PushLayer(m_pImGuiLayer);
 
 	m_timer.Tick();
@@ -59,7 +65,6 @@ Editor::~Editor()
 	sl::ImGuiContext::Shutdown();
 
 	delete m_pLayerStack;
-	delete m_pWindow;
 }
 
 void Editor::Run()
@@ -86,41 +91,6 @@ void Editor::BegineFrame()
 	{
 		pLayer->BeginFrame();
 	}
-
-	// TODO: Make window class as a layer and move these to it.
-	if (sl::CameraControllerMode::None != sl::ECSWorld::GetEditorCameraComponent().m_controllerMode)
-	{
-		float newPosX = -1.0f;
-		float newPosY = -1.0f;
-		glm::vec2 globalMousePos = sl::Input::GetGlobalMousePos();
-		if (globalMousePos.x <= 0)
-		{
-			newPosX = (float)m_pWindow->GetMonitorWidth() - 2.0f;
-			newPosY = globalMousePos.y;
-		}
-		if (globalMousePos.x >= (float)m_pWindow->GetMonitorWidth() - 1.0f)
-		{
-			newPosX = 1.0f;
-			newPosY = globalMousePos.y;
-		}
-		if (globalMousePos.y <= 0)
-		{
-			newPosX = globalMousePos.x;
-			newPosY = (float)m_pWindow->GetMonitorHeight() - 2.0f;
-		}
-		if (globalMousePos.y >= (float)m_pWindow->GetMonitorHeight() - 1.0f)
-		{
-			newPosX = globalMousePos.x;
-			newPosY = 1.0f;
-		}
-
-		if (newPosX > 0.0f && newPosY > 0.0f)
-		{
-			m_pWindow->SetGlobalCursorPos(newPosX, newPosY);
-			sl::MouseButtonAcrossEvent event;
-			OnEvent(event);
-		}
-	}
 }
 
 void Editor::Update()
@@ -145,8 +115,6 @@ void Editor::EndFrame()
 	{
 		pLayer->EndFrame();
 	}
-
-	m_pWindow->EndFrame();
 }
 
 void Editor::OnEvent(sl::Event &event)
