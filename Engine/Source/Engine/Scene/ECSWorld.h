@@ -23,8 +23,9 @@ public:
 	// Destroy an entity and all its components.
 	static void DestroyEntity(Entity entity);
 
-	static void SetMainCameraEntity(Entity entity);
+	static void SetEditorCameraEntity(Entity entity);
 	static Entity GetEditorCameraEntity();
+	static CameraComponent &GetEditorCameraComponent();
 
 private:
 	static entt::registry m_registry;
@@ -95,23 +96,17 @@ public:
 		return !ECSWorld::m_registry.orphan(m_handle);
 	}
 
-	// 'remove' is safer than 'erase'.
 	template<class T>
 	auto RemoveComponent()
 	{
 		if (auto *pCornerstone = TryGetComponent<sl::CornerstoneComponent>(); pCornerstone && !pCornerstone->m_info.empty())
 		{
 			SL_ENGINE_WARN("Remove Cornerstone component from \"{}\"", GetComponent<sl::TagComponent>().m_name);
-			SL_ENGINE_WARN("  Info: {}", pCornerstone->m_info);
+			SL_ENGINE_WARN("  Info: {}", pCornerstone->m_info.c_str());
 		}
+	
+		// 'registry::remove' is safer than 'registry::erase'.
 		return ECSWorld::m_registry.remove<T>(m_handle);
-	}
-
-	// Attempting to erase a component from an entity that doesn't own it results in undefined behavior.
-	template<class T>
-	void EraseComponent()
-	{
-		ECSWorld::m_registry.erase<T>(m_handle);
 	}
 
 	operator bool() const { return entt::null != m_handle; }

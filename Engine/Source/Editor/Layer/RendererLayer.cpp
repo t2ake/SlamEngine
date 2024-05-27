@@ -31,7 +31,7 @@ void RendererLayer::OnUpdate(float deltaTime)
 
 void RendererLayer::OnRender()
 {
-	auto &camera = sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::CameraComponent>();
+	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
 	const glm::mat4 &viewProjection = camera.GetViewProjection();
 
 	auto group = sl::ECSWorld::GetRegistry().group<sl::RenderingComponent>(entt::get<sl::TransformComponent>);

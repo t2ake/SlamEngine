@@ -8,7 +8,6 @@ namespace sl
 
 class MouseScrollEvent;
 class SceneViewportResizeEvent;
-class CameraActivateEvent;
 class MouseButtonReleaseEvent;
 class KeyReleaseEvent;
 class MouseButtonAcrossEvent;
@@ -34,12 +33,10 @@ private:
 
 	bool OnMouseScroll(sl::MouseScrollEvent &event);
 	bool OnSceneViewportResize(sl::SceneViewportResizeEvent &event);
-	bool OnCameraActivate(sl::CameraActivateEvent &event);
 	bool OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event);
 	bool OnKeyRelease(sl::KeyReleaseEvent &event);
 	bool OnMouseButtonAcross(sl::MouseButtonAcrossEvent &event);
 
-	sl::CameraControllerMode m_controllerMode = sl::CameraControllerMode::None;
 	bool m_isRotating = false;
 	bool m_isMoving = false;
 };

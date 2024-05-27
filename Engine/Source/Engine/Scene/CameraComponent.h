@@ -10,6 +10,19 @@
 namespace sl
 {
 
+enum class ProjectionType : uint8_t
+{
+	Perspective = 0,
+	Orthographic,
+};
+
+enum class CameraControllerMode : uint8_t
+{
+	None = 0,
+	FPS,
+	Editor,
+};
+
 struct CameraComponent
 {
 	static constexpr glm::vec3 WorldUp = { 0.0f, 1.0f, 0.0f };
@@ -26,7 +39,8 @@ struct CameraComponent
 	void Recalculate();
 
 	ProjectionType m_projectionType = ProjectionType::Perspective;
-
+	CameraControllerMode m_controllerMode = CameraControllerMode::None;
+	
 	// Perspective datas
 	float m_aspect = 1920.0f / 1080.0f;
 	float m_fov = glm::radians(45.0f); // Stores in radians

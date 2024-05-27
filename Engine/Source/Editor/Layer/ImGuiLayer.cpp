@@ -2,7 +2,6 @@
 
 #include "Core/EnumOf.hpp"
 #include "Core/Log.h"
-#include "Event/CameraEvent.h"
 #include "Event/SceneViewportEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
@@ -293,7 +292,7 @@ void ImGuiLayer::ShowOrientationOverlay()
 	ImGuizmo::SetOrthographic(false);
 	ImGuizmo::SetRect(windowPos.x, windowPos.y, windowSize.x, windowSize.y);
 
-	auto &camera = sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::CameraComponent>();
+	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
 	s_fakeCamera.m_frontDir = camera.GetFront();
 	s_fakeCamera.m_upDir = camera.GetUp();
 
@@ -850,16 +849,14 @@ void ImGuiLayer::ShowSceneViewport()
 		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
 		{
 			ImGui::SetWindowFocus();
-			sl::CameraActivateEvent event{ sl::CameraControllerMode::FPS };
-			m_eventCallback(event);
+			sl::ECSWorld::GetEditorCameraComponent().m_controllerMode = sl::CameraControllerMode::FPS;
 		}
 		else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 		{
 			ImGui::SetWindowFocus();
 			if (ImGui::IsKeyDown(ImGuiKey_LeftAlt))
 			{
-				sl::CameraActivateEvent event{ sl::CameraControllerMode::Editor };
-				m_eventCallback(event);
+				sl::ECSWorld::GetEditorCameraComponent().m_controllerMode = sl::CameraControllerMode::Editor;
 			}
 		}
 	}
@@ -873,7 +870,7 @@ void ImGuiLayer::ShowImGuizmoTransform()
 		return;
 	}
 
-	auto &camera = sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::CameraComponent>();
+	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
 
 	ImGuizmo::SetDrawlist();
 	ImGuizmo::SetOrthographic(sl::ProjectionType::Orthographic == camera.m_projectionType ? true : false);

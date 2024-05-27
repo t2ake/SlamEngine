@@ -10,7 +10,6 @@ namespace sl
 class Event;
 class WindowCloseEvent;
 class WindowResizeEvent;
-class CameraActivateEvent;
 class MouseButtonReleaseEvent;
 class Window;
 class LayerStack;
@@ -55,14 +54,11 @@ private:
 	void OnEvent(sl::Event &event);
 	bool OnWindowClose(sl::WindowCloseEvent &event);
 	bool OnWindowResize(sl::WindowResizeEvent &event);
-	bool OnCameraActivate(sl::CameraActivateEvent &event);
-	bool OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event);
 
 	bool m_isRunning = true;
 	bool m_isMinimized = false;
 
 	sl::Timer m_timer;
-	sl::CameraControllerMode m_cameraMode = sl::CameraControllerMode::None;
 	sl::Window *m_pWindow = nullptr;
 	sl::LayerStack *m_pLayerStack = nullptr;
 	

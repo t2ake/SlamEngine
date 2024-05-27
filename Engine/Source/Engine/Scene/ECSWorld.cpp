@@ -23,7 +23,7 @@ void ECSWorld::DestroyEntity(Entity entity)
 	}
 	if (entity.TryGetComponent<sl::CornerstoneComponent>())
 	{
-		SL_ENGINE_WARN("Attempt to destroy Entity \"{}\" with Cornerstone Component!", entity.GetComponent<sl::TagComponent>().m_name);
+		SL_ENGINE_WARN("Attempt to destroy entity \"{}\" with Cornerstone component!", entity.GetComponent<sl::TagComponent>().m_name);
 		return;
 	}
 
@@ -32,7 +32,7 @@ void ECSWorld::DestroyEntity(Entity entity)
 	entity.Reset();
 }
 
-void ECSWorld::SetMainCameraEntity(Entity entity)
+void ECSWorld::SetEditorCameraEntity(Entity entity)
 {
 	m_editorCameraEntity = entity;
 }
@@ -40,6 +40,11 @@ void ECSWorld::SetMainCameraEntity(Entity entity)
 Entity ECSWorld::GetEditorCameraEntity()
 {
 	return m_editorCameraEntity;
+}
+
+CameraComponent &ECSWorld::GetEditorCameraComponent()
+{
+	return m_editorCameraEntity.GetComponent<CameraComponent>();
 }
 
 } // namespace sl

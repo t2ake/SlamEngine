@@ -10,7 +10,8 @@ namespace sl
 void CameraComponent::Reset()
 {
 	m_projectionType = ProjectionType::Perspective;
-
+	m_controllerMode = CameraControllerMode::None;
+	
 	m_fov = glm::radians(45.0f);
 	m_nearPlane = 0.01f;
 	m_farPlane = 10000.0f;

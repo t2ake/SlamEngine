@@ -1,7 +1,6 @@
 #include "Editor.h"
 
 #include "Core/Log.h"
-#include "Event/CameraEvent.h"
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
@@ -38,7 +37,7 @@ Editor::Editor(EditorInitor initor)
 	auto mainCameraEntity = sl::ECSWorld::CreateEntity("Editor Camera");
 	mainCameraEntity.AddComponent<sl::CameraComponent>();
 	mainCameraEntity.AddComponent<sl::CornerstoneComponent>("Currently we only support that only one camera in the scene.");
-	sl::ECSWorld::SetMainCameraEntity(mainCameraEntity);
+	sl::ECSWorld::SetEditorCameraEntity(mainCameraEntity);
 
 	m_pSandboxLayer = new SandboxLayer;
 	m_pCameraControllerLayer = new CameraControllerLayer;
@@ -89,7 +88,7 @@ void Editor::BegineFrame()
 	}
 
 	// TODO: Make window class as a layer and move these to it.
-	if (sl::CameraControllerMode::None != m_cameraMode)
+	if (sl::CameraControllerMode::None != sl::ECSWorld::GetEditorCameraComponent().m_controllerMode)
 	{
 		float newPosX = -1.0f;
 		float newPosY = -1.0f;
@@ -155,8 +154,6 @@ void Editor::OnEvent(sl::Event &event)
 	sl::EventDispatcher dispatcher{ event };
 	dispatcher.Dispatch<sl::WindowCloseEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowClose));
 	dispatcher.Dispatch<sl::WindowResizeEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowResize));
-	dispatcher.Dispatch<sl::CameraActivateEvent>(BIND_EVENT_CALLBACK(Editor::OnCameraActivate));
-	dispatcher.Dispatch<sl::MouseButtonReleaseEvent>(BIND_EVENT_CALLBACK(Editor::OnMouseButtonRelease));
 
 	// Iterate layers from top to bottom / from end to begin.
 	for (auto it = m_pLayerStack->rend(); it != m_pLayerStack->rbegin(); ++it)
@@ -190,18 +187,4 @@ bool Editor::OnWindowResize(sl::WindowResizeEvent &event)
 	}
 
 	return true;
-}
-
-bool Editor::OnCameraActivate(sl::CameraActivateEvent &event)
-{
-	m_cameraMode = event.GetMode();
-
-	return false;
-}
-
-bool Editor::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event)
-{
-	m_cameraMode = sl::CameraControllerMode::None;
-
-	return false;
 }
