@@ -31,8 +31,8 @@ Editor::Editor(EditorInitor initor)
 	sl::RenderCore::SetDefaultState();
 	sl::RenderCore::SetMainFrameBuffer(sl::FrameBuffer::Create({
 		// Size is meaningless here.
-		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::RGBA8, SL_SAMPLER_CLAMP | SL_SAMPLER_TRILINEAR),
-		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_TRILINEAR),
+		sl::Texture2D::Create(2, 2, false, sl::TextureFormat::RGBA8, SL_SAMPLER_CLAMP | SL_SAMPLER_TRILINEAR),
+		sl::Texture2D::Create(2, 2, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_TRILINEAR),
 	}));
 
 	auto mainCameraEntity = sl::ECSWorld::CreateEntity("Editor Camera");

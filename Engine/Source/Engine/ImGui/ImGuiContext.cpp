@@ -186,6 +186,7 @@ void ImGuiContext::SetStyle()
 	style.ScrollbarRounding = 4.0f;
 	style.GrabRounding = 4.0f;
 	style.TabRounding = 4.0f;
+	style.WindowMenuButtonPosition = ImGuiDir_None;
 	style.DockingSeparatorSize = 1.0f;
 }
 

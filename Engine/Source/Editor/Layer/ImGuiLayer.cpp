@@ -25,18 +25,18 @@ constexpr ImGuiWindowFlags OverlayButtonFlags =
 
 constexpr ImGuiWindowFlags OverlayViewFlags = OverlayButtonFlags | ImGuiWindowFlags_NoMouseInputs;
 
-constexpr ImGuiTreeNodeFlags DefaultTreeFlags =
-	ImGuiTreeNodeFlags_AllowOverlap |
-	ImGuiTreeNodeFlags_DefaultOpen |
-	ImGuiTreeNodeFlags_OpenOnDoubleClick |
-	ImGuiTreeNodeFlags_OpenOnArrow |
-	ImGuiTreeNodeFlags_CollapsingHeader;
-
 constexpr ImGuiTreeNodeFlags DefaultSubTreeFlags =
 	ImGuiTreeNodeFlags_NoTreePushOnOpen |
 	ImGuiTreeNodeFlags_NoAutoOpenOnLog |
 	ImGuiTreeNodeFlags_DefaultOpen |
-	ImGuiTreeNodeFlags_SpanFullWidth;
+	ImGuiTreeNodeFlags_OpenOnDoubleClick |
+	ImGuiTreeNodeFlags_OpenOnArrow |
+	ImGuiTreeNodeFlags_SpanAvailWidth;
+
+constexpr ImGuiTreeNodeFlags DefaultTreeFlags =
+	DefaultSubTreeFlags |
+	ImGuiTreeNodeFlags_Framed |
+	ImGuiTreeNodeFlags_AllowOverlap;
 
 // A fake camera just to create orientation overlay matrix.
 struct OrientationCamera
@@ -445,11 +445,12 @@ void ImGuiLayer::ShowEntityList()
 	{
 		ImGui::PushID((void *)(uint64_t)(uint32_t)entity);
 
+		// TODO: hierarchy
 		ImGuiTreeNodeFlags treeNodeFlag =
 			ImGuiTreeNodeFlags_OpenOnDoubleClick |
 			ImGuiTreeNodeFlags_OpenOnArrow |
 			ImGuiTreeNodeFlags_SpanAvailWidth |
-			ImGuiTreeNodeFlags_Leaf; // TODO: hierarchy
+			ImGuiTreeNodeFlags_Leaf;
 		if (m_selectedEntity == entity)
 		{
 			treeNodeFlag |= ImGuiTreeNodeFlags_Selected;
