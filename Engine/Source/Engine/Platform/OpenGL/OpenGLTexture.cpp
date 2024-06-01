@@ -21,6 +21,11 @@ OpenGLTexture2D::~OpenGLTexture2D()
 	glDeleteTextures(1, &m_handle);
 }
 
+void OpenGLTexture2D::Clear(const void *pClearData) const
+{
+	glClearTexImage(m_handle, 0, GLTextureFormat[(size_t)m_format], GLDataType[(size_t)m_format], pClearData);
+}
+
 void OpenGLTexture2D::Resize(uint32_t width, uint32_t height, const void *pData)
 {
 	if (width <= 0 || height <= 0 || width > RenderCore::GetMaxTextureSize() || height > RenderCore::GetMaxTextureSize())

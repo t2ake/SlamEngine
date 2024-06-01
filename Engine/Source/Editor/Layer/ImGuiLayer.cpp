@@ -96,10 +96,10 @@ struct ScrollingBuffer
 	}
 };
 
-SL_FORCEINLINE static float GetTitleBarSize(bool runtime = false)
+SL_FORCEINLINE static float GetTitleBarSize()
 {
 	static float s_size = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
-	return runtime ? (ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f) : s_size;
+	return s_size;
 }
 
 SL_FORCEINLINE static void RightClickFocus()
@@ -462,7 +462,6 @@ void ImGuiLayer::ShowEntityList()
 		// Left click to select entity.
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
 		{
-			SL_ENGINE_TRACE("Select entity: \"{}\"", tag.m_name);
 			m_selectedEntity = entity;
 		}
 
@@ -788,6 +787,16 @@ void ImGuiLayer::ShowDetails()
 		}
 	});
 
+	// Draw entity ID component
+	DrawComponent<sl::EntityIDComponent>("Entity ID", [this](auto *pComponent)
+	{
+		StartWithText("Shader");
+		if (auto *pShader = pComponent->m_pShader; pShader)
+		{
+			ImGui::Text(pShader->GetName().c_str());
+		}
+	});
+
 	// Draw Cornerstone component
 	DrawComponent<sl::CornerstoneComponent>("Cornerstone", [this](auto *pComponent)
 	{
@@ -816,59 +825,49 @@ void ImGuiLayer::ShowSceneViewport()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
 	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 	ImGui::PopStyleVar();
+	RightClickFocus();
 
-	ImVec2 windowPos = ImGui::GetWindowPos();
-	m_sceneViewportWindowPosX = (uint32_t)windowPos.x;
-	m_sceneViewportWindowPosY = (uint32_t)windowPos.y;
+	m_sceneViewportWindowPosX = (uint32_t)ImGui::GetWindowPos().x;
+	m_sceneViewportWindowPosY = (uint32_t)ImGui::GetWindowPos().y;
 
 	// Resize event
-	ImVec2 crtSceneViewportSize = ImGui::GetContentRegionAvail();
-	uint32_t crtSizeX = (uint32_t)crtSceneViewportSize.x;
-	uint32_t crtSizeY = (uint32_t)crtSceneViewportSize.y;
-	if (crtSizeX != m_sceneViewportSizeX || crtSizeY != m_sceneViewportSizeY)
+	uint32_t crtSceneViewportSizeX = (uint32_t)ImGui::GetContentRegionAvail().x;
+	uint32_t crtSceneViewportSizeY = (uint32_t)ImGui::GetContentRegionAvail().y;
+	if (crtSceneViewportSizeX != m_sceneViewportSizeX || crtSceneViewportSizeY != m_sceneViewportSizeY)
 	{
-		sl::SceneViewportResizeEvent event{ crtSizeX , crtSizeY };
+		m_sceneViewportSizeX = crtSceneViewportSizeX;
+		m_sceneViewportSizeY = crtSceneViewportSizeY;
+
+		sl::SceneViewportResizeEvent event{ m_sceneViewportSizeX , m_sceneViewportSizeY };
 		m_eventCallback(event);
-
-		sl::RenderCore::GetMainFrameBuffer()->Resize(crtSizeX, crtSizeY);
-
-		m_sceneViewportSizeX = crtSizeX;
-		m_sceneViewportSizeY = crtSizeY;
 	}
 
 	// Draw main frame buffer color attachment
-	uint32_t handle = sl::RenderCore::GetMainFrameBuffer()->GetColorAttachmentHandle();
-	ImGui::Image((void *)(uint64_t)handle, crtSceneViewportSize, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
+	uint32_t handle = sl::RenderCore::GetMainFramebuffer()->GetAttachmentHandle(0);
+	ImGui::Image((void *)(uint64_t)handle, ImGui::GetContentRegionAvail(), ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 
-	ShowImGuizmoTransform();
-
-	if (ImGui::IsWindowHovered() && !ImGuizmo::IsOver())
+	// ImGuizmo
+	if (m_imguizmoMode >= 0 && m_selectedEntity && sl::ECSWorld::GetEditorCameraEntity() != m_selectedEntity)
 	{
-		// Camera event
-		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-		{
-			ImGui::SetWindowFocus();
-			sl::ECSWorld::GetEditorCameraComponent().m_controllerMode = sl::CameraControllerMode::FPS;
-		}
-		else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-		{
-			ImGui::SetWindowFocus();
-			if (ImGui::IsKeyDown(ImGuiKey_LeftAlt))
-			{
-				sl::ECSWorld::GetEditorCameraComponent().m_controllerMode = sl::CameraControllerMode::Editor;
-			}
-		}
+		ShowImGuizmoTransform();
 	}
+	if (ImGuizmo::IsOver())
+	{
+		ImGui::End();
+		return;
+	}
+
+	// Camera controller mode
+	SetCameraControllerMode();
+
+	// Mouse pick
+	MousePick();
+
 	ImGui::End();
 }
 
 void ImGuiLayer::ShowImGuizmoTransform()
 {
-	if (m_imguizmoMode < 0 || !m_selectedEntity || sl::ECSWorld::GetEditorCameraEntity() == m_selectedEntity)
-	{
-		return;
-	}
-
 	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
 
 	ImGuizmo::SetDrawlist();
@@ -902,6 +901,55 @@ void ImGuiLayer::ShowImGuizmoTransform()
 
 	// ImGuizmo::DrawGrid(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(glm::mat4{ 1.0f }), 10000.0f);
 	// ImGuizmo::DrawCubes(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(glm::mat4{ 1.0f }), 1);
+}
+
+void ImGuiLayer::SetCameraControllerMode()
+{
+	if (ImGui::IsWindowHovered())
+	{
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+		{
+			sl::ECSWorld::GetEditorCameraComponent().m_controllerMode = sl::CameraControllerMode::FPS;
+		}
+		else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
+		{
+			sl::ECSWorld::GetEditorCameraComponent().m_controllerMode = sl::CameraControllerMode::Editor;
+		}
+	}
+}
+
+void ImGuiLayer::MousePick()
+{
+	// Origin is on the upper left.
+	uint32_t mouseLocalPosX = (uint32_t)ImGui::GetMousePos().x - m_sceneViewportWindowPosX;
+	uint32_t mouseLocalPosY = (uint32_t)ImGui::GetMousePos().y - (m_sceneViewportWindowPosY + (uint32_t)GetTitleBarSize());
+
+	// When mouse within the scene viewport range.
+	if (mouseLocalPosX >= 0 && mouseLocalPosX < m_sceneViewportSizeX &&
+		mouseLocalPosY >= 0 && mouseLocalPosY < m_sceneViewportSizeY &&
+		ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	{
+		auto *pEntityIDFB = sl::RenderCore::GetEntityIDFramebuffer();
+		int entityID = pEntityIDFB->ReadPixel(0, mouseLocalPosX, mouseLocalPosY);
+
+		if (entityID < 0)
+		{
+			m_selectedEntity.Reset();
+			return;
+		}
+
+		sl::Entity crtEntity{ (uint32_t)entityID };
+		if (crtEntity == m_selectedEntity)
+		{
+			return;
+		}
+
+		SL_ENGINE_TRACE("Select enttiy ID: {}, Name: \"{}\", Mouse position: ({}, {})",
+			entityID, crtEntity.GetComponent<sl::TagComponent>().m_name.c_str(),
+			mouseLocalPosX, mouseLocalPosY);
+
+		m_selectedEntity = crtEntity;
+	}
 }
 
 // For ImGuiLayer::m_dockSpaceFlag

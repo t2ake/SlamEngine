@@ -43,6 +43,8 @@ private:
 
 	void ShowSceneViewport();
 	void ShowImGuizmoTransform();
+	void SetCameraControllerMode();
+	void MousePick();
 
 	// Dock space
 	int m_dockSpaceFlag = 0; // ImGuiDockNodeFlags m_dockSpaceFlag = ImGuiDockNodeFlags_None
