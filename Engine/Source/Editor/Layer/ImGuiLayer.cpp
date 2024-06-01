@@ -249,7 +249,7 @@ void ImGuiLayer::ShowToolOverlay()
 		{
 			ImGui::PopStyleVar();
 		}
-		if (ImGui::Button(Icons[index], ImVec2{32.0f, 32.0f}))
+		if (ImGui::Button(Icons[index], ImVec2{ 32.0f, 32.0f }))
 		{
 			m_imguizmoMode = op;
 		}
@@ -851,7 +851,7 @@ void ImGuiLayer::ShowSceneViewport()
 	{
 		ShowImGuizmoTransform();
 	}
-	if (ImGuizmo::IsOver())
+	if (ImGuizmo::IsOver() || !ImGui::IsWindowHovered())
 	{
 		ImGui::End();
 		return;
@@ -905,51 +905,49 @@ void ImGuiLayer::ShowImGuizmoTransform()
 
 void ImGuiLayer::SetCameraControllerMode()
 {
-	if (ImGui::IsWindowHovered())
+	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
 	{
-		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-		{
-			sl::ECSWorld::GetEditorCameraComponent().m_controllerMode = sl::CameraControllerMode::FPS;
-		}
-		else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
-		{
-			sl::ECSWorld::GetEditorCameraComponent().m_controllerMode = sl::CameraControllerMode::Editor;
-		}
+		sl::ECSWorld::GetEditorCameraComponent().m_controllerMode = sl::CameraControllerMode::FPS;
+	}
+	else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
+	{
+		sl::ECSWorld::GetEditorCameraComponent().m_controllerMode = sl::CameraControllerMode::Editor;
 	}
 }
 
 void ImGuiLayer::MousePick()
 {
-	// Origin is on the upper left.
+	if (!ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	{
+		return;
+	}
+
+	// Origin is on the upper left of scene viewport.
 	uint32_t mouseLocalPosX = (uint32_t)ImGui::GetMousePos().x - m_sceneViewportWindowPosX;
 	uint32_t mouseLocalPosY = (uint32_t)ImGui::GetMousePos().y - (m_sceneViewportWindowPosY + (uint32_t)GetTitleBarSize());
+	SL_ENGINE_ASSERT(mouseLocalPosX >= 0 && mouseLocalPosY >= 0 &&
+		mouseLocalPosX < m_sceneViewportSizeX && mouseLocalPosY < m_sceneViewportSizeY);
 
-	// When mouse within the scene viewport range.
-	if (mouseLocalPosX >= 0 && mouseLocalPosX < m_sceneViewportSizeX &&
-		mouseLocalPosY >= 0 && mouseLocalPosY < m_sceneViewportSizeY &&
-		ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	auto *pEntityIDFB = sl::RenderCore::GetEntityIDFramebuffer();
+	int entityID = pEntityIDFB->ReadPixel(0, mouseLocalPosX, mouseLocalPosY);
+
+	if (entityID < 0)
 	{
-		auto *pEntityIDFB = sl::RenderCore::GetEntityIDFramebuffer();
-		int entityID = pEntityIDFB->ReadPixel(0, mouseLocalPosX, mouseLocalPosY);
-
-		if (entityID < 0)
-		{
-			m_selectedEntity.Reset();
-			return;
-		}
-
-		sl::Entity crtEntity{ (uint32_t)entityID };
-		if (crtEntity == m_selectedEntity)
-		{
-			return;
-		}
-
-		SL_ENGINE_TRACE("Select enttiy ID: {}, Name: \"{}\", Mouse position: ({}, {})",
-			entityID, crtEntity.GetComponent<sl::TagComponent>().m_name.c_str(),
-			mouseLocalPosX, mouseLocalPosY);
-
-		m_selectedEntity = crtEntity;
+		m_selectedEntity.Reset();
+		return;
 	}
+
+	sl::Entity crtEntity{ (uint32_t)entityID };
+	if (crtEntity == m_selectedEntity)
+	{
+		return;
+	}
+
+	SL_ENGINE_TRACE("Select enttiy ID: {}, Name: \"{}\", Mouse position: ({}, {})",
+		entityID, crtEntity.GetComponent<sl::TagComponent>().m_name.c_str(),
+		mouseLocalPosX, mouseLocalPosY);
+
+	m_selectedEntity = crtEntity;
 }
 
 // For ImGuiLayer::m_dockSpaceFlag
