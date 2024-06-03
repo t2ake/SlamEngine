@@ -4,8 +4,6 @@
 *.filters
 *.user
 
-*.yaml
-
 build
 
 /Engine/bin/*

@@ -76,21 +76,21 @@ void RendererLayer::EntityIDPass()
 	sl::RenderCore::GetEntityIDFramebuffer()->Clear(0, &entityIDClearData);
 	sl::RenderCore::ClearDepth(1.0f);
 
-	auto view = sl::ECSWorld::GetRegistry().view<sl::RenderingComponent, sl::TransformComponent, sl::EntityIDComponent>();
+	auto view = sl::ECSWorld::GetRegistry().view<sl::RenderingComponent, sl::TransformComponent>();
 	for (auto entity : view)
 	{
-		auto [rendering, transform, entityID] = view.get<sl::RenderingComponent, sl::TransformComponent, sl::EntityIDComponent>(entity);
+		auto [rendering, transform] = view.get<sl::RenderingComponent, sl::TransformComponent>(entity);
 		if (!rendering.m_pVertexArray)
 		{
 			continue;
 		}
 
-		entityID.m_pShader->Bind();
-		entityID.m_pShader->UploadUniform("u_modelViewProjection", m_viewProjectionCache * transform.GetTransform());
-		entityID.m_pShader->UploadUniform("u_entityID", (int)entity);
+		rendering.m_pIDShader->Bind();
+		rendering.m_pIDShader->UploadUniform("u_modelViewProjection", m_viewProjectionCache * transform.GetTransform());
+		rendering.m_pIDShader->UploadUniform("u_entityID", (int)entity);
 
 		// PENDING: Should we separate mesh data from RenderingComponent?
-		sl::RenderCore::Submit(rendering.m_pVertexArray, entityID.m_pShader);
+		sl::RenderCore::Submit(rendering.m_pVertexArray, rendering.m_pIDShader);
 	}
 
 	sl::RenderCore::GetEntityIDFramebuffer()->Unbind();

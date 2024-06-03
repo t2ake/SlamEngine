@@ -23,8 +23,8 @@ inline constexpr uint32_t AttribTypeSize[nameof::enum_count<AttribType>()] =
 
 }
 
-VertexLayoutElement::VertexLayoutElement(std::string name, AttribType type, uint32_t count, bool normalize) :
-	m_name(std::move(name)), m_type(type), m_count(count), m_normalize(normalize)
+VertexLayoutElement::VertexLayoutElement(std::string_view name, AttribType type, uint32_t count, bool normalize) :
+	m_name(name), m_type(type), m_count(count), m_normalize(normalize)
 {
 	m_size = AttribTypeSize[(size_t)type] * m_count;
 }

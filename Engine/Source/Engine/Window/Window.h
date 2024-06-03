@@ -12,7 +12,7 @@ class Window final
 public:
 	Window() = delete;
 
-	Window(std::string title, uint32_t width, uint32_t height);
+	Window(std::string_view title, uint32_t width, uint32_t height);
 	~Window();
 
 	void BegineFrame();

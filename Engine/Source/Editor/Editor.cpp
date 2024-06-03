@@ -21,7 +21,7 @@ Editor::Editor(EditorInitor initor)
 	sl::Log::Init();
 
 	sl::RenderCore::SetBackend(initor.m_backend);
-	sl::Window *pWindow = new sl::Window(std::move(initor.title), initor.m_width, initor.m_height);
+	sl::Window *pWindow = new sl::Window(initor.title, initor.m_width, initor.m_height);
 	pWindow->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
 	sl::Input::Init(pWindow->GetNativeWindow());
@@ -30,13 +30,12 @@ Editor::Editor(EditorInitor initor)
 	sl::RenderCore::Init();
 	sl::RenderCore::SetDefaultState();
 
+	// Size is meaningless here.
 	sl::RenderCore::SetMainFramebuffer(sl::FrameBuffer::Create({
-		// Size is meaningless here.
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::RGBA8, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
 	}));
 	sl::RenderCore::SetEntityIDFramebuffer(sl::FrameBuffer::Create({
-		// Size is meaningless here.
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::R32I, SL_SAMPLER_CLAMP | SL_SAMPLER_NEAREST),
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
 	}));

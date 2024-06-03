@@ -3,7 +3,6 @@
 #include "Core/Log.h"
 #include "Scene/CameraComponent.h"
 #include "Scene/CornerstoneComponent.h"
-#include "Scene/EntityIDComponent.h"
 #include "Scene/RenderingComponent.h"
 #include "Scene/TagComponent.h"
 #include "Scene/TransformComponent.h"
@@ -101,12 +100,6 @@ public:
 	template<class T>
 	auto RemoveComponent()
 	{
-		if (auto *pCornerstone = TryGetComponent<sl::CornerstoneComponent>(); pCornerstone && !pCornerstone->m_info.empty())
-		{
-			SL_ENGINE_WARN("Remove Cornerstone component from \"{}\"", GetComponent<sl::TagComponent>().m_name);
-			SL_ENGINE_WARN("  Info: {}", pCornerstone->m_info.c_str());
-		}
-	
 		// 'registry::remove' is safer than 'registry::erase'.
 		return ECSWorld::m_registry.remove<T>(m_handle);
 	}

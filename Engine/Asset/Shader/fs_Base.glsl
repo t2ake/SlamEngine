@@ -1,6 +1,6 @@
 #version 460 core
 
-in vec2 v_uv;
+layout(location = 0) in vec2 v_uv;
 
 layout(location = 0) out vec4 o_color;
 

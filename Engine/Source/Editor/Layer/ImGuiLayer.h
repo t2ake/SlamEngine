@@ -6,6 +6,8 @@
 
 #include <glm/vec2.hpp>
 
+#include <string_view>
+
 class ImGuiLayer : public sl::Layer
 {
 public:
@@ -38,7 +40,7 @@ private:
 	void DrawComponent(const char *label, Fun uiFunction);
 	template<class T>
 	void AddComponent(const char *label);
-	void StartWithText(std::string text);
+	void StartWithText(std::string_view text);
 	void ShowDetails();
 
 	void ShowSceneViewport();

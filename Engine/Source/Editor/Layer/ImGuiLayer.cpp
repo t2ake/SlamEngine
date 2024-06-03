@@ -313,11 +313,11 @@ void ImGuiLayer::ShowMenuBar()
 		}
 		if (ImGui::MenuItem("Open"))
 		{
-			sl::SceneSerializer::DeserializeYAML();
+			sl::SceneSerializer::DeserializeYAML("DemoScene");
 		}
 		if (ImGui::MenuItem("Save"))
 		{
-			sl::SceneSerializer::SerializeYAML();
+			sl::SceneSerializer::SerializeYAML("DemoScene");
 		}
 		ImGui::Separator();
 		if (ImGui::MenuItem("Exit"))
@@ -563,7 +563,7 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 	}
 }
 
-void ImGuiLayer::StartWithText(std::string text)
+void ImGuiLayer::StartWithText(std::string_view text)
 {
 	static sl::Entity s_crtEntity;
 	if (s_crtEntity != m_selectedEntity)
@@ -576,13 +576,13 @@ void ImGuiLayer::StartWithText(std::string text)
 		s_crtEntity = m_selectedEntity;
 	}
 
-	float crtTextSize = ImGui::CalcTextSize(text.c_str()).x;
+	float crtTextSize = ImGui::CalcTextSize(text.data()).x;
 	m_maxTextSize = std::max(m_maxTextSize, crtTextSize);
 
 	float offset = ImGui::GetStyle().IndentSpacing + ImGui::GetFontSize();
 	ImGui::SetCursorPosX(offset);
 	ImGui::AlignTextToFramePadding();
-	ImGui::Text(text.c_str());
+	ImGui::Text(text.data());
 
 	// TODO: Some hard code size here, need to be parameterised in the future.
 	ImGui::SameLine(m_maxTextSize + 50.0f);
@@ -778,27 +778,19 @@ void ImGuiLayer::ShowDetails()
 	});
 
 	// Draw Rendering component
-	DrawComponent<sl::RenderingComponent>("Rendering", [this](auto *pComponent)
+	DrawComponent<sl::RenderingComponent>("Rendering", [this](sl::RenderingComponent *pComponent)
 	{
 		StartWithText("Shader");
-		if (auto *pShader = pComponent->m_pShader; pShader)
-		{
-			ImGui::Text(pShader->GetName().c_str());
-		}
-	});
+		auto *pShader = pComponent->m_pShader;
+		ImGui::Text(pShader ? pShader->GetName().c_str() : "");
 
-	// Draw entity ID component
-	DrawComponent<sl::EntityIDComponent>("Entity ID", [this](auto *pComponent)
-	{
-		StartWithText("Shader");
-		if (auto *pShader = pComponent->m_pShader; pShader)
-		{
-			ImGui::Text(pShader->GetName().c_str());
-		}
+		StartWithText("ID Shader");
+		auto *pIDShader = pComponent->m_pIDShader;
+		ImGui::Text(pIDShader ? pIDShader->GetName().c_str() : "");
 	});
 
 	// Draw Cornerstone component
-	DrawComponent<sl::CornerstoneComponent>("Cornerstone", [this](auto *pComponent)
+	DrawComponent<sl::CornerstoneComponent>("Cornerstone", [this](sl::CornerstoneComponent *pComponent)
 	{
 		StartWithText("Info");
 		ImGui::TextWrapped(pComponent->m_info.c_str());
@@ -813,7 +805,6 @@ void ImGuiLayer::ShowDetails()
 	{
 		AddComponent<sl::CameraComponent>("Camera");
 		AddComponent<sl::RenderingComponent>("Rendering");
-		AddComponent<sl::CornerstoneComponent>("Cornerstone");
 		ImGui::EndPopup();
 	}
 
@@ -943,8 +934,8 @@ void ImGuiLayer::MousePick()
 		return;
 	}
 
-	SL_ENGINE_TRACE("Select enttiy ID: {}, Name: \"{}\", Mouse position: ({}, {})",
-		entityID, crtEntity.GetComponent<sl::TagComponent>().m_name.c_str(),
+	SL_ENGINE_TRACE("Select enttiy Name: \"{}\", ID: {}, Mouse position: ({}, {})",
+		crtEntity.GetComponent<sl::TagComponent>().m_name.c_str(), entityID,
 		mouseLocalPosX, mouseLocalPosY);
 
 	m_selectedEntity = crtEntity;

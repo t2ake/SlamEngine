@@ -2,6 +2,7 @@
 
 #include "Core/Log.h"
 #include "Core/Path.hpp"
+#include "RenderCore/RenderCore.h"
 #include "Scene/ECSWorld.h"
 #include "Scene/YAMLConvert.hpp"
 
@@ -87,7 +88,11 @@ void SceneSerializer::SerializeYAML(std::string_view sceneName)
 			out << YAML::Key << "Rendering Component";
 			out << YAML::BeginMap;
 
-			out << YAML::Key << "Shader" << YAML::Value << "Shader name goes here";
+			auto *pShader = pRendering->m_pShader;
+			out << YAML::Key << "Shader" << YAML::Value << (pShader ? pShader->GetName().c_str() : "");
+
+			auto *pIDShader = pRendering->m_pIDShader;
+			out << YAML::Key << "ID Shader" << YAML::Value << (pIDShader ? pIDShader->GetName().c_str() : "");
 
 			out << YAML::EndMap;
 		}
@@ -126,7 +131,6 @@ bool SceneSerializer::DeserializeYAML(std::string_view sceneName)
 {
 	std::string relativePath = std::string{ "Scene/" } + sceneName.data() + ".yaml";
 	std::string finalPath = Path::FromeAsset(relativePath);
-	SL_ENGINE_INFO("Deserialize scene data file: \"{}\"", finalPath);
 
 	std::ifstream fileStream{ finalPath };
 	if (fileStream.fail())
@@ -135,6 +139,7 @@ bool SceneSerializer::DeserializeYAML(std::string_view sceneName)
 		return false;
 	}
 
+	SL_ENGINE_INFO("Deserialize scene data file: \"{}\"", finalPath);
 	std::stringstream stringStream;
 	stringStream << fileStream.rdbuf();
 
@@ -256,12 +261,16 @@ bool SceneSerializer::DeserializeYAML(std::string_view sceneName)
 			}
 
 			// Redering Component
-			if (auto redering = entity["Redering Component"]; redering)
+			if (auto redering = entity["Rendering Component"]; redering)
 			{
-				SL_ENGINE_TRACE("    Redering Component:");
+				SL_ENGINE_TRACE("    Rendering Component:");
 				if (auto shader = redering["Shader"]; shader)
 				{
 					SL_ENGINE_TRACE("      Shader: {}", shader.as<std::string>());
+				}
+				if (auto shader = redering["ID Shader"]; shader)
+				{
+					SL_ENGINE_TRACE("      ID Shader: {}", shader.as<std::string>());
 				}
 			}
 

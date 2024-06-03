@@ -38,7 +38,7 @@ SandboxLayer::SandboxLayer()
 		sl::Path::FromeAsset("Shader/vs_Base.glsl"),
 		sl::Path::FromeAsset("Shader/fs_Base.glsl"));
 
-	sl::Shader *pEntityIDShader = sl::Shader::Creat("EntityID",
+	sl::Shader *pIDShader = sl::Shader::Creat("EntityID",
 		sl::Path::FromeAsset("Shader/vs_EntityID.glsl"),
 		sl::Path::FromeAsset("Shader/fs_EntityID.glsl"));
 
@@ -51,9 +51,7 @@ SandboxLayer::SandboxLayer()
 	rendering.m_pVertexArray = pVertexArray;
 	rendering.m_pTextureResource = pTextureResource;
 	rendering.m_pShader = pShader;
-
-	auto &entityID = entity.AddComponent<sl::EntityIDComponent>();
-	entityID.m_pShader = pEntityIDShader;
+	rendering.m_pIDShader = pIDShader;
 }
 
 SandboxLayer::~SandboxLayer()

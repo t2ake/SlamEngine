@@ -8,11 +8,13 @@
 
 #include <GLFW/glfw3.h>
 
+#include <string_view>
+
 namespace sl
 {
 
-Window::Window(std::string title, uint32_t width, uint32_t height) :
-	m_title(std::move(title)), m_width(width), m_height(height)
+Window::Window(std::string_view title, uint32_t width, uint32_t height) :
+	m_title(title), m_width(width), m_height(height)
 {
 	SL_ENGINE_INFO("Create window \"{}\" ({}, {})", m_title, m_width, m_height);
 

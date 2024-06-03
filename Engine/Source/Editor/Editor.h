@@ -22,7 +22,7 @@ class WindowLayer;
 
 struct EditorInitor
 {
-	std::string title;
+	std::string_view title;
 	uint32_t m_width;
 	uint32_t m_height;
 	sl::GraphicsBackend m_backend;

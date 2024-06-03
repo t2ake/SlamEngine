@@ -9,7 +9,7 @@ Entity ECSWorld::m_editorCameraEntity;
 Entity ECSWorld::CreateEntity(std::string name)
 {
 	Entity entity{ m_registry.create() };
-	entity.AddComponent<TagComponent>(std::move(name));
+	entity.AddComponent<TagComponent>(name);
 	entity.AddComponent<TransformComponent>();
 
 	return entity;

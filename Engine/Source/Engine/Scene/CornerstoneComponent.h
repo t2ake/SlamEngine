@@ -9,7 +9,7 @@ struct CornerstoneComponent
 {
 	void Reset()
 	{
-		m_info = "";
+		
 	}
 
 	std::string m_info;

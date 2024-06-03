@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace sl
@@ -11,7 +12,7 @@ namespace sl
 
 struct VertexLayoutElement
 {
-	VertexLayoutElement(std::string name, AttribType type, uint32_t count, bool normalize = false);
+	VertexLayoutElement(std::string_view name, AttribType type, uint32_t count, bool normalize = false);
 
 	std::string m_name;
 	AttribType m_type;
