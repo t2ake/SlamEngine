@@ -149,66 +149,65 @@ inline constexpr GLenum GLTextureFormat[nameof::enum_count<TextureFormat>()] =
 
 inline constexpr GLenum GLDataType[nameof::enum_count<TextureFormat>()] =
 {
-	GL_UNSIGNED_BYTE,  // TextureFormat::R8
-	GL_BYTE,           // TextureFormat::R8S
-	GL_UNSIGNED_BYTE,  // TextureFormat::R8U
-	GL_BYTE,           // TextureFormat::R8I
-	GL_UNSIGNED_SHORT, // TextureFormat::R16
-	GL_SHORT,          // TextureFormat::R16S
-	GL_UNSIGNED_SHORT, // TextureFormat::R16U
-	GL_SHORT,          // TextureFormat::R16I
-	GL_HALF_FLOAT,     // TextureFormat::R16F
-	GL_UNSIGNED_INT,   // TextureFormat::R32U
-	GL_INT,            // TextureFormat::R32I
-	GL_FLOAT,          // TextureFormat::R32F
+	GL_UNSIGNED_BYTE,                  // TextureFormat::R8
+	GL_BYTE,                           // TextureFormat::R8S
+	GL_UNSIGNED_BYTE,                  // TextureFormat::R8U
+	GL_BYTE,                           // TextureFormat::R8I
+	GL_UNSIGNED_SHORT,                 // TextureFormat::R16
+	GL_SHORT,                          // TextureFormat::R16S
+	GL_UNSIGNED_SHORT,                 // TextureFormat::R16U
+	GL_SHORT,                          // TextureFormat::R16I
+	GL_HALF_FLOAT,                     // TextureFormat::R16F
+	GL_UNSIGNED_INT,                   // TextureFormat::R32U
+	GL_INT,                            // TextureFormat::R32I
+	GL_FLOAT,                          // TextureFormat::R32F
 
-	GL_UNSIGNED_BYTE,  // TextureFormat::RG8
-	GL_BYTE,           // TextureFormat::RG8S
-	GL_UNSIGNED_BYTE,  // TextureFormat::RG8U
-	GL_BYTE,           // TextureFormat::RG8I
-	GL_UNSIGNED_SHORT, // TextureFormat::RG16
-	GL_SHORT,          // TextureFormat::RG16S
-	GL_UNSIGNED_SHORT, // TextureFormat::RG16U
-	GL_SHORT,          // TextureFormat::RG16I
-	GL_HALF_FLOAT,     // TextureFormat::RG16F
-	GL_UNSIGNED_INT,   // TextureFormat::RG32U
-	GL_INT,            // TextureFormat::RG32I
-	GL_FLOAT,          // TextureFormat::RG32F
+	GL_UNSIGNED_BYTE,                  // TextureFormat::RG8
+	GL_BYTE,                           // TextureFormat::RG8S
+	GL_UNSIGNED_BYTE,                  // TextureFormat::RG8U
+	GL_BYTE,                           // TextureFormat::RG8I
+	GL_UNSIGNED_SHORT,                 // TextureFormat::RG16
+	GL_SHORT,                          // TextureFormat::RG16S
+	GL_UNSIGNED_SHORT,                 // TextureFormat::RG16U
+	GL_SHORT,                          // TextureFormat::RG16I
+	GL_HALF_FLOAT,                     // TextureFormat::RG16F
+	GL_UNSIGNED_INT,                   // TextureFormat::RG32U
+	GL_INT,                            // TextureFormat::RG32I
+	GL_FLOAT,                          // TextureFormat::RG32F
 
-	GL_UNSIGNED_BYTE,  // TextureFormat::RGB8
-	GL_BYTE,           // TextureFormat::RGB8S
-	GL_UNSIGNED_BYTE,  // TextureFormat::RGB8U
-	GL_BYTE,           // TextureFormat::RGB8I
-	GL_UNSIGNED_SHORT, // TextureFormat::RGB16
-	GL_SHORT,          // TextureFormat::RGB16S
-	GL_UNSIGNED_SHORT, // TextureFormat::RGB16U
-	GL_SHORT,          // TextureFormat::RGB16I
-	GL_HALF_FLOAT,     // TextureFormat::RGB16F
-	GL_UNSIGNED_INT,   // TextureFormat::RGB32U
-	GL_INT,            // TextureFormat::RGB32I
-	GL_FLOAT,          // TextureFormat::RGB32F
+	GL_UNSIGNED_BYTE,                  // TextureFormat::RGB8
+	GL_BYTE,                           // TextureFormat::RGB8S
+	GL_UNSIGNED_BYTE,                  // TextureFormat::RGB8U
+	GL_BYTE,                           // TextureFormat::RGB8I
+	GL_UNSIGNED_SHORT,                 // TextureFormat::RGB16
+	GL_SHORT,                          // TextureFormat::RGB16S
+	GL_UNSIGNED_SHORT,                 // TextureFormat::RGB16U
+	GL_SHORT,                          // TextureFormat::RGB16I
+	GL_HALF_FLOAT,                     // TextureFormat::RGB16F
+	GL_UNSIGNED_INT,                   // TextureFormat::RGB32U
+	GL_INT,                            // TextureFormat::RGB32I
+	GL_FLOAT,                          // TextureFormat::RGB32F
 
-	GL_UNSIGNED_BYTE,  // TextureFormat::RGBA8
-	GL_BYTE,           // TextureFormat::RGBA8S
-	GL_UNSIGNED_BYTE,  // TextureFormat::RGBA8U
-	GL_BYTE,           // TextureFormat::RGBA8I
-	GL_UNSIGNED_SHORT, // TextureFormat::RGBA16
-	GL_SHORT,          // TextureFormat::RGBA16S
-	GL_UNSIGNED_SHORT, // TextureFormat::RGBA16U
-	GL_SHORT,          // TextureFormat::RGBA16I
-	GL_HALF_FLOAT,     // TextureFormat::RGBA16F
-	GL_UNSIGNED_INT,   // TextureFormat::RGBA32U
-	GL_INT,            // TextureFormat::RGBA32I
-	GL_FLOAT,          // TextureFormat::RGBA32F
+	GL_UNSIGNED_BYTE,                  // TextureFormat::RGBA8
+	GL_BYTE,                           // TextureFormat::RGBA8S
+	GL_UNSIGNED_BYTE,                  // TextureFormat::RGBA8U
+	GL_BYTE,                           // TextureFormat::RGBA8I
+	GL_UNSIGNED_SHORT,                 // TextureFormat::RGBA16
+	GL_SHORT,                          // TextureFormat::RGBA16S
+	GL_UNSIGNED_SHORT,                 // TextureFormat::RGBA16U
+	GL_SHORT,                          // TextureFormat::RGBA16I
+	GL_HALF_FLOAT,                     // TextureFormat::RGBA16F
+	GL_UNSIGNED_INT,                   // TextureFormat::RGBA32U
+	GL_INT,                            // TextureFormat::RGBA32I
+	GL_FLOAT,                          // TextureFormat::RGBA32F
 
-	// TODO: Depth / Stencil data type
-	GL_INVALID_ENUM,   // TextureFormat::D16
-	GL_INVALID_ENUM,   // TextureFormat::D24
-	GL_INVALID_ENUM,   // TextureFormat::D32F
-	GL_INVALID_ENUM,   // TextureFormat::D32
-	GL_INVALID_ENUM,   // TextureFormat::D24S8
-	GL_INVALID_ENUM,   // TextureFormat::D32FS8
-	GL_INVALID_ENUM,   // TextureFormat::S8
+	GL_UNSIGNED_SHORT,                 // TextureFormat::D16
+	GL_UNSIGNED_INT,                   // TextureFormat::D24
+	GL_UNSIGNED_INT,                   // TextureFormat::D32
+	GL_FLOAT,                          // TextureFormat::D32F
+	GL_UNSIGNED_INT_24_8,              // TextureFormat::D24S8
+	GL_FLOAT_32_UNSIGNED_INT_24_8_REV, // TextureFormat::D32FS8
+	GL_UNSIGNED_BYTE,                  // TextureFormat::S8
 };
 
 inline constexpr GLenum GLAttachmentPoint[nameof::enum_count<AttachmentType>()] =

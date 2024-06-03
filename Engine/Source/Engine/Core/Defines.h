@@ -31,10 +31,10 @@ enum class AttribType : uint8_t
 
 enum class TextureFormat : uint8_t
 {
-	R8 = 0,  // Unsigned normalized integer
-	R8S,     // Signed normalized integer
-	R8U,     // Unsigned integer
-	R8I,     // Signed integer
+	R8 = 0, // Unsigned normalized integer
+	R8S,    // Signed normalized integer
+	R8U,    // Unsigned integer
+	R8I,    // Signed integer
 	R16,
 	R16S,
 	R16U,
