@@ -81,19 +81,6 @@ project("Slam")
 		}
 	filter {}
 	
-	-- Runtime library
-	staticruntime "on"
-	filter { "configurations:Debug" }
-		runtime("Debug") -- /MTd
-	filter { "configurations:Release or configurations:Final" }
-		runtime("Release") -- /MT
-	filter {}
-	
-	rtti("Off")
-	exceptionhandling("Off")
-	justmycode("Off")
-	editAndContinue("Off")
-	
 	flags
 	{
 		-- Treat all warnings as errors.

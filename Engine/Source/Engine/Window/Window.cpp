@@ -1,10 +1,12 @@
 #include "Window.h"
 
+#include "Core/Defines.h"
 #include "Core/Log.h"
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
 #include "RenderCore/RenderContext.h"
+#include "RenderCore/RenderCore.h"
 
 #include <GLFW/glfw3.h>
 
@@ -21,9 +23,16 @@ Window::Window(std::string_view title, uint32_t width, uint32_t height) :
 	bool success = glfwInit();
 	SL_ENGINE_ASSERT_INFO(success, "GLFW init failed!");
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	if (GraphicsBackend::OpenGL == RenderCore::GetBackend())
+	{
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	}
+	else
+	{
+		SL_ENGINE_ASSERT_INFO(false, "Slam only support OpenGL for now!");
+	}
 
 	m_pNativeWindow = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
 	SL_ENGINE_ASSERT_INFO(m_pNativeWindow, "GLFW creat window failed!");

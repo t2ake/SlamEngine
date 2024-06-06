@@ -14,14 +14,20 @@ BackendInfo OpenGLRenderAPI::GetBackendInfo()
 	int maxTextureSize = 0;
 	int maxFramebufferSize = 0;
 	int maxFramebufferColorAttachmentCount = 0;
+	int maxVertexUniformComponentCount = 0;
+	int maxFragmentUniformComponentCount = 0;
 
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
 	glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maxFramebufferSize);
 	glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxFramebufferColorAttachmentCount);
+	glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS, &maxVertexUniformComponentCount);
+	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, &maxFragmentUniformComponentCount);
 	
 	info.m_maxTextureSize = (uint32_t)maxTextureSize;
 	info.m_maxFramebufferSize = (uint32_t)maxFramebufferSize;
 	info.m_maxFramebufferColorAttachmentCount = (uint32_t)maxFramebufferColorAttachmentCount;
+	info.m_maxVertexUniformComponentCount = (uint32_t)maxVertexUniformComponentCount;
+	info.m_maxFragmentUniformComponentCount = (uint32_t)maxFragmentUniformComponentCount;
 
 	return info;
 }

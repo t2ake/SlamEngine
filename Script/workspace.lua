@@ -3,25 +3,34 @@ workspace("SlamEngine")
 	
 	architecture("x64")
 	configurations{ "Debug", "Release", "Final" }
-	
-	-- No optimization in Debug mode
+	staticruntime "on" -- Runtime library
+
+	-- Debug mode, no optimization
 	filter { "configurations:Debug" }
 		symbols("On")
 		optimize("Off")
+		runtime("Debug") -- /MTd
 		
+	-- Release mode
 	filter { "configurations:Release" }
 		symbols("On")
 		optimize("On")
-		
-	-- Full optimization in Final maode
+		runtime("Release") -- /MT
+
+	-- Final maode, full optimization
 	filter { "configurations:Final" }
 		symbols("Off")
 		optimize("Full")
-		
+		runtime("Release") -- /MT
+
 	filter { "system:Windows" }
 		systemversion("latest")
 		
 	filter {}
-	
+	rtti("Off")
+	exceptionhandling("Off")
+	justmycode("Off")
+	editAndContinue("Off")
+
 	startproject("Editor")
 	

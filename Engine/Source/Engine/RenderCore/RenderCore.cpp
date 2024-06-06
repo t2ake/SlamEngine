@@ -18,6 +18,8 @@ void RenderCore::Init()
 	SL_ENGINE_TRACE("  Max texture size: {}", m_info.m_maxTextureSize);
 	SL_ENGINE_TRACE("  Max framebuffer size: {}", m_info.m_maxFramebufferSize);
 	SL_ENGINE_TRACE("  Max framebuffer color attachment count: {}", m_info.m_maxFramebufferColorAttachmentCount);
+	SL_ENGINE_TRACE("  Max vertex uniform component count: {}", m_info.m_maxVertexUniformComponentCount);
+	SL_ENGINE_TRACE("  Max fragment uniform component count: {}", m_info.m_maxFragmentUniformComponentCount);
 }
 
 void RenderCore::SetDefaultState()
