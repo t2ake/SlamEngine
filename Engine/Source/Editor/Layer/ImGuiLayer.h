@@ -28,7 +28,6 @@ public:
 private:
 	void ShowDebugPanel();
 	void ShowToolOverlay();
-	void ShowOrientationOverlay();
 
 	void ShowMenuBar();
 	void ShowInfo(float deltaTime);
@@ -44,6 +43,7 @@ private:
 	void ShowDetails();
 
 	void ShowSceneViewport();
+	void ShowImGuizmoOrientation();
 	void ShowImGuizmoTransform();
 	void SetCameraControllerMode();
 	void MousePick();

@@ -23,8 +23,6 @@ constexpr ImGuiWindowFlags OverlayButtonFlags =
 	ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
 	ImGuiWindowFlags_NoBackground;
 
-constexpr ImGuiWindowFlags OverlayViewFlags = OverlayButtonFlags | ImGuiWindowFlags_NoMouseInputs;
-
 constexpr ImGuiTreeNodeFlags DefaultSubTreeFlags =
 	ImGuiTreeNodeFlags_NoTreePushOnOpen |
 	ImGuiTreeNodeFlags_NoAutoOpenOnLog |
@@ -37,30 +35,6 @@ constexpr ImGuiTreeNodeFlags DefaultTreeFlags =
 	DefaultSubTreeFlags |
 	ImGuiTreeNodeFlags_Framed |
 	ImGuiTreeNodeFlags_AllowOverlap;
-
-// A fake camera just to create orientation overlay matrix.
-struct OrientationCamera
-{
-	glm::mat4 GetView()
-	{
-		return glm::lookAt(-m_frontDir * 1.9f, glm::vec3{ 0.0f }, m_upDir);
-	}
-
-	constexpr glm::mat4 GetProjection()
-	{
-		return glm::mat4
-		{
-			{ 1.79259f, 0.0f, 0.0f, 0.0f },
-			{ 0.0f, 1.79259f, 0.0f, 0.0f },
-			{ 0.0f, 0.0f, -1.0f, -1.0f },
-			{ 0.0f, 0.0f, -0.02f, 0.0f },
-		};
-		// return glm::perspective(45.0f, 1.0f, 0.01f, 10000.0f);
-	}
-
-	glm::vec3 m_frontDir{ 0.0f, 0.0f, 1.0f };
-	glm::vec3 m_upDir{ 0.0f, 1.0f, 0.0f };
-};
 
 // From ImPlot
 struct ScrollingBuffer
@@ -96,13 +70,13 @@ struct ScrollingBuffer
 	}
 };
 
-SL_FORCEINLINE static float GetTitleBarSize()
+SL_FORCEINLINE float GetTitleBarSize()
 {
 	static float s_size = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
 	return s_size;
 }
 
-SL_FORCEINLINE static void RightClickFocus()
+SL_FORCEINLINE void RightClickFocus()
 {
 	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered())
 	{
@@ -110,7 +84,7 @@ SL_FORCEINLINE static void RightClickFocus()
 	}
 }
 
-SL_FORCEINLINE static bool AlignButton(const char *label, float align = 0.5f, float customOffset = 0.0f)
+SL_FORCEINLINE bool AlignButton(const char *label, float align = 0.5f, float customOffset = 0.0f)
 {
 	float size = ImGui::CalcTextSize(label).x + ImGui::GetStyle().FramePadding.x * 2.0f;
 	float avail = ImGui::GetContentRegionAvail().x;
@@ -124,13 +98,13 @@ SL_FORCEINLINE static bool AlignButton(const char *label, float align = 0.5f, fl
 	return ImGui::Button(label);
 }
 
-SL_FORCEINLINE static glm::vec3 ModVec3(const glm::vec3 &v, float m)
+SL_FORCEINLINE glm::vec3 ModVec3(const glm::vec3 &v, float m)
 {
 	// Why the second argument of glm::modf must accept a non const left value reference?
 	return glm::vec3{ std::fmod(v.x, m), std::fmod(v.y, m) , std::fmod(v.z, m) };
 }
 
-}
+} // namespace
 
 ImGuiLayer::ImGuiLayer()
 {
@@ -169,7 +143,6 @@ void ImGuiLayer::OnUpdate(float deltaTime)
 
 	ShowDebugPanel();
 	ShowToolOverlay();
-	ShowOrientationOverlay();
 
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), (ImGuiDockNodeFlags)m_dockSpaceFlag);
 
@@ -265,39 +238,6 @@ void ImGuiLayer::ShowToolOverlay()
 		SelectableButton(i);
 	}
 	ImGui::PopStyleVar();
-
-	ImGui::End();
-}
-
-void ImGuiLayer::ShowOrientationOverlay()
-{
-	static OrientationCamera s_fakeCamera;
-
-	constexpr float OrientationWindowSize = 100.0f;
-	constexpr float OrientationOverlayOffset = 10.0f;
-
-	ImVec2 windowPos = ImVec2{
-		(float)m_sceneViewportWindowPosX + (float)m_sceneViewportSizeX - OrientationWindowSize - OrientationOverlayOffset,
-		(float)m_sceneViewportWindowPosY + GetTitleBarSize() + OrientationOverlayOffset };
-	constexpr ImVec2 windowSize = ImVec2{ OrientationWindowSize, OrientationWindowSize };
-
-	ImGui::SetNextWindowPos(windowPos);
-	ImGui::SetNextWindowSize(windowSize);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
-	ImGui::Begin("Orientation", nullptr, OverlayViewFlags);
-	ImGui::PopStyleVar();
-
-	ImGuizmo::SetDrawlist();
-	ImGuizmo::SetOrthographic(false);
-	ImGuizmo::SetRect(windowPos.x, windowPos.y, windowSize.x, windowSize.y);
-
-	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
-	s_fakeCamera.m_frontDir = camera.GetFront();
-	s_fakeCamera.m_upDir = camera.GetUp();
-
-	const glm::mat4 view = s_fakeCamera.GetView();
-	constexpr glm::mat4 projection = s_fakeCamera.GetProjection();
-	ImGuizmo::DrawCubes(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(glm::mat4{ 1.0f }), 1);
 
 	ImGui::End();
 }
@@ -838,6 +778,7 @@ void ImGuiLayer::ShowSceneViewport()
 	ImGui::Image((void *)(uint64_t)handle, ImGui::GetContentRegionAvail(), ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 
 	// ImGuizmo
+	ShowImGuizmoOrientation();
 	if (m_imguizmoMode >= 0 && m_selectedEntity && sl::ECSWorld::GetEditorCameraEntity() != m_selectedEntity)
 	{
 		ShowImGuizmoTransform();
@@ -857,13 +798,26 @@ void ImGuiLayer::ShowSceneViewport()
 	ImGui::End();
 }
 
+void ImGuiLayer::ShowImGuizmoOrientation()
+{
+	constexpr float Length = 100.0f;
+	ImVec2 pos = ImVec2{
+		(float)m_sceneViewportWindowPosX + (float)m_sceneViewportSizeX - Length,
+		(float)m_sceneViewportWindowPosY + GetTitleBarSize() };
+
+	auto view = sl::ECSWorld::GetEditorCameraComponent().GetView();
+	ImGuizmo::ViewManipulate(glm::value_ptr(view), Length, pos, ImVec2{ Length , Length }, 0);
+}
+
 void ImGuiLayer::ShowImGuizmoTransform()
 {
 	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
 
 	ImGuizmo::SetDrawlist();
 	ImGuizmo::SetOrthographic(sl::ProjectionType::Orthographic == camera.m_projectionType ? true : false);
-	ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
+	ImGuizmo::AllowAxisFlip(false);
+	ImGuizmo::SetRect((float)m_sceneViewportWindowPosX, (float)m_sceneViewportWindowPosY + GetTitleBarSize(),
+		(float)m_sceneViewportSizeX, (float)m_sceneViewportSizeY);
 
 	const glm::mat4 &view = camera.GetView();
 	const glm::mat4 &projection = camera.GetProjection();
@@ -889,9 +843,6 @@ void ImGuiLayer::ShowImGuizmoTransform()
 		transform.m_rotation += glm::radians(newRotation) - transform.m_rotation;
 		transform.m_scale = newScale;
 	}
-
-	// ImGuizmo::DrawGrid(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(glm::mat4{ 1.0f }), 10000.0f);
-	// ImGuizmo::DrawCubes(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(glm::mat4{ 1.0f }), 1);
 }
 
 void ImGuiLayer::SetCameraControllerMode()
