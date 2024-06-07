@@ -778,31 +778,39 @@ void ImGuiLayer::ShowSceneViewport()
 	uint32_t handle = sl::RenderCore::GetMainFramebuffer()->GetAttachmentHandle(0);
 	ImGui::Image((void *)(uint64_t)handle, ImGui::GetContentRegionAvail(), ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 
-	auto& cameraControllerMode = sl::ECSWorld::GetEditorCameraComponent().m_controllerMode;
+	auto& camera= sl::ECSWorld::GetEditorCameraComponent();
 
 	// ImGuizmo
 	ShowImGuizmoOrientation();
-	if (m_imguizmoMode >= 0 && m_selectedEntity && sl::ECSWorld::GetEditorCameraEntity() != m_selectedEntity)
+	if (m_imguizmoMode >= 0 && m_selectedEntity)
 	{
 		ShowImGuizmoTransform();
 	}
-	if (!ImGui::IsWindowHovered() || sl::CameraControllerMode::None != cameraControllerMode || ImGuizmo::IsOver())
+
+	// Mouse outside scene viewport || Camera is using || ImGuizmo is using
+	if (!ImGui::IsWindowHovered() || camera.IsUsing() || ImGuizmo::IsUsing())
 	{
 		ImGui::End();
 		return;
 	}
 
-	// Set camera controller mode, its related to mouse position so we cant just call them inside OnEnvent.
+	// Set camera controller mode or mouse pick entity,
+	// which related to mouse position so we cant just call them inside OnEnvent.
 	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
 	{
-		cameraControllerMode = sl::CameraControllerMode::FPS;
+		camera.m_controllerMode = sl::CameraControllerMode::FPS;
 	}
-	else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
+	else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 	{
-		cameraControllerMode = sl::CameraControllerMode::Editor;
+		if (ImGui::IsKeyDown(ImGuiKey_LeftAlt))
+		{
+			camera.m_controllerMode = sl::CameraControllerMode::Editor;
+		}
+		else
+		{
+			MousePick();
+		}
 	}
-	
-	MousePick();
 
 	ImGui::End();
 }
@@ -821,7 +829,7 @@ void ImGuiLayer::ShowImGuizmoOrientation()
 void ImGuiLayer::ShowImGuizmoTransform()
 {
 	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
-	if (sl::CameraControllerMode::None != camera.m_controllerMode)
+	if (camera.IsUsing())
 	{
 		ImGuizmo::Enable(false);
 	}
@@ -864,13 +872,6 @@ void ImGuiLayer::ShowImGuizmoTransform()
 
 void ImGuiLayer::MousePick()
 {
-	// We dont want to pick entity when camera is moveing.
-	if (!ImGui::IsMouseClicked(ImGuiMouseButton_Left) ||
-		sl::CameraControllerMode::None != sl::ECSWorld::GetEditorCameraComponent().m_controllerMode)
-	{
-		return;
-	}
-
 	// Origin is on the upper left of scene viewport.
 	uint32_t mouseLocalPosX = (uint32_t)ImGui::GetMousePos().x - m_sceneViewportWindowPosX;
 	uint32_t mouseLocalPosY = (uint32_t)ImGui::GetMousePos().y - (m_sceneViewportWindowPosY + (uint32_t)GetTitleBarSize());
@@ -901,8 +902,7 @@ void ImGuiLayer::MousePick()
 
 bool ImGuiLayer::OnKeyPressed(sl::KeyPressEvent& event)
 {
-	if (ImGuizmo::IsUsing() ||
-		sl::CameraControllerMode::None != sl::ECSWorld::GetEditorCameraComponent().m_controllerMode)
+	if (sl::ECSWorld::GetEditorCameraComponent().IsUsing() || ImGuizmo::IsUsing())
 	{
 		return false;
 	}
