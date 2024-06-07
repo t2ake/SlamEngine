@@ -2,6 +2,7 @@
 
 #include "Core/EnumOf.hpp"
 #include "Core/Log.h"
+#include "Event/KeyEvent.h"
 #include "Event/SceneViewportEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
@@ -129,7 +130,8 @@ void ImGuiLayer::OnDetach()
 
 void ImGuiLayer::OnEvent(sl::Event &event)
 {
-
+	sl::EventDispatcher dispatcher(event);
+	dispatcher.Dispatch<sl::KeyPressEvent>(BIND_EVENT_CALLBACK(ImGuiLayer::OnKeyPressed));
 }
 
 void ImGuiLayer::BeginFrame()
@@ -195,18 +197,17 @@ void ImGuiLayer::ShowToolOverlay()
 	ImGui::Begin("Tools", nullptr, OverlayButtonFlags);
 	ImGui::PopStyleVar();
 
-	constexpr std::array<int, 5> Operations =
+	constexpr std::array<int, 4> Operations =
 	{
 		-1,
 		ImGuizmo::OPERATION::TRANSLATE,
 		ImGuizmo::OPERATION::ROTATE,
 		ImGuizmo::OPERATION::SCALE,
-		ImGuizmo::OPERATION::UNIVERSAL,
 	};
-	constexpr std::array<const char *, 5> Icons =
+	constexpr std::array<const char *, 4> Icons =
 	{
 		// TODO: Icon
-		"M", "T", "R", "S", "U",
+		"M", "T", "R", "S",
 	};
 	auto SelectableButton = [this](size_t index)
 	{
@@ -233,7 +234,7 @@ void ImGuiLayer::ShowToolOverlay()
 	};
 
 	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
-	for (size_t i = 0; i <= 4; ++i)
+	for (size_t i = 0; i < 4; ++i)
 	{
 		SelectableButton(i);
 	}
@@ -777,22 +778,30 @@ void ImGuiLayer::ShowSceneViewport()
 	uint32_t handle = sl::RenderCore::GetMainFramebuffer()->GetAttachmentHandle(0);
 	ImGui::Image((void *)(uint64_t)handle, ImGui::GetContentRegionAvail(), ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 
+	auto& cameraControllerMode = sl::ECSWorld::GetEditorCameraComponent().m_controllerMode;
+
 	// ImGuizmo
 	ShowImGuizmoOrientation();
 	if (m_imguizmoMode >= 0 && m_selectedEntity && sl::ECSWorld::GetEditorCameraEntity() != m_selectedEntity)
 	{
 		ShowImGuizmoTransform();
 	}
-	if (ImGuizmo::IsOver() || !ImGui::IsWindowHovered())
+	if (!ImGui::IsWindowHovered() || sl::CameraControllerMode::None != cameraControllerMode || ImGuizmo::IsOver())
 	{
 		ImGui::End();
 		return;
 	}
 
-	// Camera controller mode
-	SetCameraControllerMode();
-
-	// Mouse pick
+	// Set camera controller mode, its related to mouse position so we cant just call them inside OnEnvent.
+	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+	{
+		cameraControllerMode = sl::CameraControllerMode::FPS;
+	}
+	else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
+	{
+		cameraControllerMode = sl::CameraControllerMode::Editor;
+	}
+	
 	MousePick();
 
 	ImGui::End();
@@ -812,6 +821,14 @@ void ImGuiLayer::ShowImGuizmoOrientation()
 void ImGuiLayer::ShowImGuizmoTransform()
 {
 	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
+	if (sl::CameraControllerMode::None != camera.m_controllerMode)
+	{
+		ImGuizmo::Enable(false);
+	}
+	else
+	{
+		ImGuizmo::Enable(true);
+	}
 
 	ImGuizmo::SetDrawlist();
 	ImGuizmo::SetOrthographic(sl::ProjectionType::Orthographic == camera.m_projectionType ? true : false);
@@ -845,21 +862,11 @@ void ImGuiLayer::ShowImGuizmoTransform()
 	}
 }
 
-void ImGuiLayer::SetCameraControllerMode()
-{
-	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-	{
-		sl::ECSWorld::GetEditorCameraComponent().m_controllerMode = sl::CameraControllerMode::FPS;
-	}
-	else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
-	{
-		sl::ECSWorld::GetEditorCameraComponent().m_controllerMode = sl::CameraControllerMode::Editor;
-	}
-}
-
 void ImGuiLayer::MousePick()
 {
-	if (!ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	// We dont want to pick entity when camera is moveing.
+	if (!ImGui::IsMouseClicked(ImGuiMouseButton_Left) ||
+		sl::CameraControllerMode::None != sl::ECSWorld::GetEditorCameraComponent().m_controllerMode)
 	{
 		return;
 	}
@@ -890,6 +897,46 @@ void ImGuiLayer::MousePick()
 		mouseLocalPosX, mouseLocalPosY);
 
 	m_selectedEntity = crtEntity;
+}
+
+bool ImGuiLayer::OnKeyPressed(sl::KeyPressEvent& event)
+{
+	if (ImGuizmo::IsUsing() ||
+		sl::CameraControllerMode::None != sl::ECSWorld::GetEditorCameraComponent().m_controllerMode)
+	{
+		return false;
+	}
+
+	auto key = event.GetKey();
+	switch (key)
+	{
+		case SL_KEY_Q:
+		{
+			m_imguizmoMode = -1;
+			break;
+		}
+		case SL_KEY_W:
+		{
+			m_imguizmoMode = ImGuizmo::OPERATION::TRANSLATE;
+			break;
+		}
+		case SL_KEY_E:
+		{
+			m_imguizmoMode = ImGuizmo::OPERATION::ROTATE;
+			break;
+		}
+		case SL_KEY_R:
+		{
+			m_imguizmoMode = ImGuizmo::OPERATION::SCALE;
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+
+	return false;
 }
 
 // For ImGuiLayer::m_dockSpaceFlag

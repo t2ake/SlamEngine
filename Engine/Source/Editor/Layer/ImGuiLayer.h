@@ -8,6 +8,13 @@
 
 #include <string_view>
 
+namespace sl
+{
+
+class KeyPressEvent;
+
+}
+
 class ImGuiLayer : public sl::Layer
 {
 public:
@@ -45,8 +52,9 @@ private:
 	void ShowSceneViewport();
 	void ShowImGuizmoOrientation();
 	void ShowImGuizmoTransform();
-	void SetCameraControllerMode();
 	void MousePick();
+
+	bool OnKeyPressed(sl::KeyPressEvent& event);
 
 	// Dock space
 	int m_dockSpaceFlag = 0; // ImGuiDockNodeFlags m_dockSpaceFlag = ImGuiDockNodeFlags_None
