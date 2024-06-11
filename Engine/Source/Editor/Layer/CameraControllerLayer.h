@@ -10,7 +10,6 @@ class MouseScrollEvent;
 class SceneViewportResizeEvent;
 class MouseButtonReleaseEvent;
 class KeyReleaseEvent;
-class MouseButtonAcrossEvent;
 
 }
 
@@ -34,7 +33,6 @@ private:
 	bool OnSceneViewportResize(sl::SceneViewportResizeEvent &event);
 	bool OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event);
 	bool OnKeyRelease(sl::KeyReleaseEvent &event);
-	bool OnMouseButtonAcross(sl::MouseButtonAcrossEvent &event);
 
 	bool m_isRotating = false;
 	bool m_isMoving = false;

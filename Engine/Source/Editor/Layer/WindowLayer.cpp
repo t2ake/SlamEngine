@@ -5,6 +5,8 @@
 #include "Window/Input.h"
 #include "Window/Window.h"
 
+#include <imgui.h>
+
 WindowLayer::~WindowLayer()
 {
 	delete m_pWindow;
@@ -32,21 +34,25 @@ void WindowLayer::BeginFrame()
 
 void WindowLayer::OnUpdate(float deltaTime)
 {
-	if (sl::CameraControllerMode::None == sl::ECSWorld::GetEditorCameraComponent().m_controllerMode)
+	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
+
+	if (!camera.IsUsing() && !ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 	{
 		return;
 	}
 
 	float newPosX = -1.0f;
 	float newPosY = -1.0f;
-	glm::vec2 globalMousePos = sl::Input::GetGlobalMousePos();
+	const float monitorWidth = (float)m_pWindow->GetMonitorWidth();
+	const float monitorHeight = (float)m_pWindow->GetMonitorHeight();
+	const glm::vec2 globalMousePos = sl::Input::GetGlobalMousePos();
 
 	if (globalMousePos.x <= 0)
 	{
-		newPosX = (float)m_pWindow->GetMonitorWidth() - 2.0f;
+		newPosX = monitorWidth - 2.0f;
 		newPosY = globalMousePos.y;
 	}
-	if (globalMousePos.x >= (float)m_pWindow->GetMonitorWidth() - 1.0f)
+	if (globalMousePos.x >= monitorWidth - 1.0f)
 	{
 		newPosX = 1.0f;
 		newPosY = globalMousePos.y;
@@ -54,9 +60,9 @@ void WindowLayer::OnUpdate(float deltaTime)
 	if (globalMousePos.y <= 0)
 	{
 		newPosX = globalMousePos.x;
-		newPosY = (float)m_pWindow->GetMonitorHeight() - 2.0f;
+		newPosY = monitorHeight - 2.0f;
 	}
-	if (globalMousePos.y >= (float)m_pWindow->GetMonitorHeight() - 1.0f)
+	if (globalMousePos.y >= monitorHeight - 1.0f)
 	{
 		newPosX = globalMousePos.x;
 		newPosY = 1.0f;
@@ -65,8 +71,10 @@ void WindowLayer::OnUpdate(float deltaTime)
 	if (newPosX > 0.0f && newPosY > 0.0f)
 	{
 		m_pWindow->SetGlobalCursorPos(newPosX, newPosY);
-		sl::MouseButtonAcrossEvent event;
-		m_eventCallback(event);
+
+		// To avoid some "system mouse pos caching module" generating a huge mouse pos delta.
+		ImGui::GetIO().AddMousePosEvent(-FLT_MAX, -FLT_MAX);
+		camera.m_mouseLastPos = sl::Input::GetMousePos();
 	}
 }
 
