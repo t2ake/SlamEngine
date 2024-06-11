@@ -5,6 +5,7 @@
 #include "RenderCore/RenderAPI.h"
 #include "RenderCore/Shader.h"
 #include "RenderCore/Texture.h"
+#include "RenderCore/UniformBuffer.h"
 #include "RenderCore/VertexArray.h"
 
 namespace sl
@@ -29,7 +30,7 @@ public:
 
 	static void SetEntityIDFramebuffer(FrameBuffer *pBuffer) { m_pEntityIDFrameBuffer = pBuffer; }
 	static FrameBuffer *GetEntityIDFramebuffer() { return m_pEntityIDFrameBuffer; }
-	
+
 	static void SetDefaultState();
 
 	static void ClearColor(float r, float g, float b, float a);
@@ -44,9 +45,8 @@ public:
 
 private:
 	inline static GraphicsBackend m_backend = GraphicsBackend::None;
-	inline static RenderAPI *m_pRenderAPI = nullptr;
-
 	inline static BackendInfo m_info = {};
+	inline static RenderAPI *m_pRenderAPI = nullptr;
 
 	inline static FrameBuffer *m_pMainFrameBuffer = nullptr;
 	inline static FrameBuffer *m_pEntityIDFrameBuffer = nullptr;

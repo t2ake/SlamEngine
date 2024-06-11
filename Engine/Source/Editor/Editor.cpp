@@ -51,16 +51,23 @@ Editor::Editor(EditorInitor initor)
 	m_pCameraControllerLayer = new CameraControllerLayer;
 	m_pImGuiLayer = new ImGuiLayer;
 
-	m_pWindowLayer->SetWindow(pWindow);
-	m_pWindowLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
-	m_pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
-
 	m_pLayerStack = new sl::LayerStack;
 	m_pLayerStack->PushLayer(m_pWindowLayer);
 	m_pLayerStack->PushLayer(m_pSandboxLayer);
 	m_pLayerStack->PushLayer(m_pRendererLayer);
 	m_pLayerStack->PushLayer(m_pCameraControllerLayer);
 	m_pLayerStack->PushLayer(m_pImGuiLayer);
+
+	m_pWindowLayer->SetWindow(pWindow);
+	m_pWindowLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
+
+	m_pRendererLayer->SetUniformBuffer(sl::UniformBuffer::Create(0, sl::UniformBufferLayout
+	{
+		{ "u_viewProjection", sl::AttribType::mat4f },
+		{ "u_cameraPos", sl::AttribType::vec4f },
+	}));
+
+	m_pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
 	m_timer.Tick();
 }

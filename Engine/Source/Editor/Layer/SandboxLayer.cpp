@@ -13,14 +13,14 @@ SandboxLayer::SandboxLayer()
 	transform.m_position = glm::vec3{ 0.0f, 0.0f, 5.0f };
 	transform.m_rotation = glm::vec3{ 0.0f, -90.0f, 0.0f };
 	
-	float vertices[] =
+	constexpr float vertices[] =
 	{
 		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
 		 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
 		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
 		-0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
 	};
-	uint32_t indices[] = { 0, 1, 3, 1, 2, 3 };
+	constexpr uint32_t indices[] = { 0, 1, 3, 1, 2, 3 };
 
 	sl::VertexBuffer *pVertexBuffer = sl::VertexBuffer::Create(vertices, sizeof(vertices));
 	pVertexBuffer->SetLayout(sl::VertexLayout

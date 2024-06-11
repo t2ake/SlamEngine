@@ -27,6 +27,10 @@ enum class AttribType : uint8_t
 	Half,
 	Float,
 	Double,
+
+	// Uniform buffer
+	vec4f,
+	mat4f,
 };
 
 enum class TextureFormat : uint8_t

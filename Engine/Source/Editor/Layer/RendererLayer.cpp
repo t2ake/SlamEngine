@@ -33,7 +33,8 @@ void RendererLayer::OnUpdate(float deltaTime)
 
 void RendererLayer::OnRender()
 {
-	m_viewProjectionCache = sl::ECSWorld::GetEditorCameraComponent().GetViewProjection();
+	m_pUniformBuffer->Upload("u_viewProjection", sl::ECSWorld::GetEditorCameraComponent().GetViewProjection());
+	m_pUniformBuffer->Upload("u_cameraPos", glm::vec4{sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::TransformComponent>().m_position, 1.0f});
 
 	BasePass();
 	EntityIDPass();
@@ -60,7 +61,7 @@ void RendererLayer::BasePass()
 		}
 
 		rendering.m_pShader->Bind();
-		rendering.m_pShader->UploadUniform("u_modelViewProjection", m_viewProjectionCache * transform.GetTransform());
+		rendering.m_pShader->UploadUniform("u_model", transform.GetTransform());
 		rendering.m_pTextureResource->GetTexture()->Bind(0);
 
 		sl::RenderCore::Submit(rendering.m_pVertexArray, rendering.m_pShader);
@@ -86,7 +87,7 @@ void RendererLayer::EntityIDPass()
 		}
 
 		rendering.m_pIDShader->Bind();
-		rendering.m_pIDShader->UploadUniform("u_modelViewProjection", m_viewProjectionCache * transform.GetTransform());
+		rendering.m_pShader->UploadUniform("u_model", transform.GetTransform());
 		rendering.m_pIDShader->UploadUniform("u_entityID", (int)entity);
 
 		// PENDING: Should we separate mesh data from RenderingComponent?

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RenderCore/VertexLayout.h"
+#include "RenderCore/Layout.h"
 
 namespace sl
 {

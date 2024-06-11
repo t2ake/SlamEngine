@@ -8,6 +8,7 @@ namespace sl
 {
 
 class SceneViewportResizeEvent;
+class UniformBuffer;
 
 }
 
@@ -26,11 +27,14 @@ public:
 	virtual void OnRender() override;
 	virtual void EndFrame() override;
 
+	void SetUniformBuffer(sl::UniformBuffer *pBuffer) { m_pUniformBuffer = pBuffer; }
+	sl::UniformBuffer *GetUniformBuffer() { return m_pUniformBuffer; }
+
 private:
 	void BasePass();
 	void EntityIDPass();
 
 	bool OnSceneViewportResize(sl::SceneViewportResizeEvent &event);
 
-	glm::mat4 m_viewProjectionCache;
+	sl::UniformBuffer *m_pUniformBuffer = nullptr;
 };
