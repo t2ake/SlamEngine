@@ -20,11 +20,11 @@ struct TransformComponent
 	}
 
 	TransformComponent() = default;
-	TransformComponent(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) :
+	TransformComponent(const glm::vec3 &position, const glm::vec3 &rotation, const glm::vec3 &scale) :
 		m_position(position), m_rotation(rotation), m_scale(scale) {}
 
 	glm::vec3 GetRotationDegrees() const { return glm::degrees(m_rotation); }
-	void SetRotationDegrees(glm::vec3 degrees) { m_rotation = glm::radians(std::move(degrees)); }
+	void SetRotationDegrees(const glm::vec3 &degrees) { m_rotation = glm::radians(degrees); }
 
 	glm::mat4 GetTransform() const
 	{

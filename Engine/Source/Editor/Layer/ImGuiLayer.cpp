@@ -99,10 +99,13 @@ SL_FORCEINLINE bool AlignButton(const char *label, float align = 0.5f, float cus
 	return ImGui::Button(label);
 }
 
-SL_FORCEINLINE glm::vec3 ModVec3(const glm::vec3 &v, float m)
+SL_FORCEINLINE glm::vec3 RotationModAndRepeat(const glm::vec3 &v)
 {
-	// Why the second argument of glm::modf must accept a non const left value reference?
-	return glm::vec3{ std::fmod(v.x, m), std::fmod(v.y, m) , std::fmod(v.z, m) };
+	glm::vec3 ret = v + glm::vec3{ 180.0f };
+	ret = glm::vec3{ std::fmod(ret.x, 360.0f), std::fmod(ret.y, 360.0f) , std::fmod(ret.z, 360.0f) };
+	ret -= 180.0f;
+
+	return ret;
 }
 
 } // namespace
@@ -512,7 +515,7 @@ void ImGuiLayer::StartWithText(std::string_view text)
 		// ImGui::CalcTextSize("Position").x == 56.0f
 		// ImGui::CalcTextSize("Rotation").x == 56.0f
 		// Just a little trick to avoid Tag Component flickering when it is rendered the first time,
-		// as we know every entity must hold both Tag and Transform component.
+		// as we known every entity must hold both Tag and Transform component.
 		m_maxTextSize = 56.0f;
 		s_crtEntity = m_selectedEntity;
 	}
@@ -591,11 +594,11 @@ void ImGuiLayer::ShowDetails()
 			cameraMayBeDirty = true;
 		}
 
-		glm::vec3 ratationDegree = ModVec3(pComponent->GetRotationDegrees(), 180.0f);
+		glm::vec3 ratationDegrees = RotationModAndRepeat(pComponent->GetRotationDegrees());
 		StartWithText("Rotation");
-		if (ImGui::DragFloat3("##Rotation", glm::value_ptr(ratationDegree), 0.1f))
+		if (ImGui::DragFloat3("##Rotation", glm::value_ptr(ratationDegrees), 0.1f))
 		{
-			pComponent->SetRotationDegrees(ratationDegree);
+			pComponent->SetRotationDegrees(ratationDegrees);
 			cameraMayBeDirty = true;
 		}
 
@@ -944,4 +947,5 @@ static_assert(std::is_same_v<ImGuiDockNodeFlags, int>);
 static_assert(ImGuiDockNodeFlags_None == 0);
 
 // For ImGuiLayer::m_imguizmoMode
+static_assert(std::is_same_v<std::underlying_type_t<ImGuizmo::OPERATION>, int>);
 static_assert(ImGuizmo::OPERATION::TRANSLATE == 7);
