@@ -40,9 +40,6 @@ constexpr ImGuiTreeNodeFlags DefaultTreeFlags =
 // From ImPlot
 struct ScrollingBuffer
 {
-	int MaxSize;
-	int Offset;
-	ImVector<ImVec2> Data;
 	ScrollingBuffer(int max_size = 1024)
 	{
 		MaxSize = max_size;
@@ -69,6 +66,10 @@ struct ScrollingBuffer
 			Offset = 0;
 		}
 	}
+
+	int MaxSize;
+	int Offset;
+	ImVector<ImVec2> Data;
 };
 
 SL_FORCEINLINE float GetTitleBarSize()
@@ -99,11 +100,20 @@ SL_FORCEINLINE bool AlignButton(const char *label, float align = 0.5f, float cus
 	return ImGui::Button(label);
 }
 
-SL_FORCEINLINE glm::vec3 RotationModAndRepeat(const glm::vec3 &v)
+glm::vec3 RotationModAndRepeat(const glm::vec3 &v)
 {
-	glm::vec3 ret = v + glm::vec3{ 180.0f };
-	ret = glm::vec3{ std::fmod(ret.x, 360.0f), std::fmod(ret.y, 360.0f) , std::fmod(ret.z, 360.0f) };
-	ret -= 180.0f;
+	glm::vec3 ret = v;
+	for (glm::vec3::length_type i = 0; i < 3; ++i)
+	{
+		while (ret[i] < 180.0f)
+		{
+			ret[i] += 360.0f;
+		}
+		while (ret[i] > 180.0f)
+		{
+			ret[i] -= 360.0f;
+		}
+	}
 
 	return ret;
 }
@@ -790,8 +800,9 @@ void ImGuiLayer::ShowSceneViewport()
 		ShowImGuizmoTransform();
 	}
 
-	// Mouse outside scene viewport || Camera is using || ImGuizmo is using
-	if (!ImGui::IsWindowHovered() || camera.IsUsing() || ImGuizmo::IsUsing())
+	if (!ImGui::IsWindowHovered() || camera.IsUsing() ||
+		ImGui::IsMouseDragging(ImGuiMouseButton_Left) ||
+		ImGuizmo::IsUsing())
 	{
 		ImGui::End();
 		return;

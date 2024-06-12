@@ -6,6 +6,7 @@
 #include "Window/Window.h"
 
 #include <imgui.h>
+#include <imguizmo/ImGuizmo.h>
 
 WindowLayer::~WindowLayer()
 {
@@ -36,7 +37,7 @@ void WindowLayer::OnUpdate(float deltaTime)
 {
 	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
 
-	if (!camera.IsUsing() && !ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+	if ((!camera.IsUsing() && !ImGui::IsMouseDragging(ImGuiMouseButton_Left)) || ImGuizmo::IsUsing())
 	{
 		return;
 	}
