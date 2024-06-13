@@ -82,77 +82,77 @@ void OpenGLShader::Unbind() const
 	glUseProgram(0);
 }
 
-void OpenGLShader::UploadUniform(const std::string &name, int value)
+void OpenGLShader::UploadUniform(std::string_view name, int value)
 {
 	glUniform1i(GetUniformLocation(name), value);
 }
 
-void OpenGLShader::UploadUniform(const std::string &name, const glm::ivec2 &value)
+void OpenGLShader::UploadUniform(std::string_view name, const glm::ivec2 &value)
 {
 	glUniform2i(GetUniformLocation(name), value.x, value.y);
 }
 
-void OpenGLShader::UploadUniform(const std::string &name, const glm::ivec3 &value)
+void OpenGLShader::UploadUniform(std::string_view name, const glm::ivec3 &value)
 {
 	glUniform3i(GetUniformLocation(name), value.x, value.y, value.z);
 }
 
-void OpenGLShader::UploadUniform(const std::string &name, const glm::ivec4 &value)
+void OpenGLShader::UploadUniform(std::string_view name, const glm::ivec4 &value)
 {
 	glUniform4i(GetUniformLocation(name), value.x, value.y, value.z, value.w);
 }
 
-void OpenGLShader::UploadUniform(const std::string &name, unsigned int value)
+void OpenGLShader::UploadUniform(std::string_view name, unsigned int value)
 {
 	glUniform1ui(GetUniformLocation(name), value);
 }
 
-void OpenGLShader::UploadUniform(const std::string &name, const glm::uvec2 &value)
+void OpenGLShader::UploadUniform(std::string_view name, const glm::uvec2 &value)
 {
 	glUniform2ui(GetUniformLocation(name), value.x, value.y);
 }
 
-void OpenGLShader::UploadUniform(const std::string &name, const glm::uvec3 &value)
+void OpenGLShader::UploadUniform(std::string_view name, const glm::uvec3 &value)
 {
 	glUniform3ui(GetUniformLocation(name), value.x, value.y, value.z);
 }
 
-void OpenGLShader::UploadUniform(const std::string &name, const glm::uvec4 &value)
+void OpenGLShader::UploadUniform(std::string_view name, const glm::uvec4 &value)
 {
 	glUniform4ui(GetUniformLocation(name), value.x, value.y, value.z, value.w);
 }
 
-void OpenGLShader::UploadUniform(const std::string &name, float value)
+void OpenGLShader::UploadUniform(std::string_view name, float value)
 {
 	glUniform1f(GetUniformLocation(name), value);
 }
 
-void OpenGLShader::UploadUniform(const std::string &name, const glm::vec2 &value)
+void OpenGLShader::UploadUniform(std::string_view name, const glm::vec2 &value)
 {
 	glUniform2f(GetUniformLocation(name), value.x, value.y);
 }
 
-void OpenGLShader::UploadUniform(const std::string &name, const glm::vec3 &value)
+void OpenGLShader::UploadUniform(std::string_view name, const glm::vec3 &value)
 {
 	glUniform3f(GetUniformLocation(name), value.x, value.y, value.z);
 }
 
-void OpenGLShader::UploadUniform(const std::string &name, const glm::vec4 &value)
+void OpenGLShader::UploadUniform(std::string_view name, const glm::vec4 &value)
 {
 	glUniform4f(GetUniformLocation(name), value.x, value.y, value.z, value.w);
 }
 
-void OpenGLShader::UploadUniform(const std::string &name, const glm::mat2 &value)
+void OpenGLShader::UploadUniform(std::string_view name, const glm::mat2 &value)
 {
 	glUniformMatrix2fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void OpenGLShader::UploadUniform(const std::string &name, const glm::mat3 &value)
+void OpenGLShader::UploadUniform(std::string_view name, const glm::mat3 &value)
 {
 	glUniformMatrix3fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void OpenGLShader::UploadUniform(const std::string &name, const glm::mat4 &value)
+void OpenGLShader::UploadUniform(std::string_view name, const glm::mat4 &value)
 {
 	glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
@@ -289,18 +289,19 @@ bool OpenGLShader::CompileProgram()
 	return true;
 }
 
-int OpenGLShader::GetUniformLocation(const std::string &name)
+int OpenGLShader::GetUniformLocation(std::string_view name)
 {
 	int location;
-	const auto it = m_uniformLocationCache.find(name);
+	const auto &it = m_uniformLocationCache.find(name.data());
+
 	if (it == m_uniformLocationCache.end())
 	{
-		location = (int)glGetUniformLocation(m_programHandle, name.c_str());
+		location = (int)glGetUniformLocation(m_programHandle, name.data());
 		if (-1 == location)
 		{
 			SL_ENGINE_ERROR("Can't find uniform \"{}\" location in \"{}\"!", name, m_shaderProgramName);
 		}
-		m_uniformLocationCache[name] = location;
+		m_uniformLocationCache[name.data()] = location;
 	}
 	else
 	{
@@ -312,5 +313,5 @@ int OpenGLShader::GetUniformLocation(const std::string &name)
 
 } // namespace sl
 
-// For m_uniformLocationCache
+// For OpenGLShader::m_uniformLocationCache
 static_assert(std::is_same_v<GLint, int>);

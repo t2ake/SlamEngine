@@ -17,24 +17,24 @@ public:
 	virtual void Bind() const override;
 	virtual void Unbind() const override;
 
-	virtual void UploadUniform(const std::string &name, int value) override;
-	virtual void UploadUniform(const std::string &name, const glm::ivec2 &value) override;
-	virtual void UploadUniform(const std::string &name, const glm::ivec3 &value) override;
-	virtual void UploadUniform(const std::string &name, const glm::ivec4 &value) override;
+	virtual void UploadUniform(std::string_view name, int value) override;
+	virtual void UploadUniform(std::string_view name, const glm::ivec2 &value) override;
+	virtual void UploadUniform(std::string_view name, const glm::ivec3 &value) override;
+	virtual void UploadUniform(std::string_view name, const glm::ivec4 &value) override;
 
-	virtual void UploadUniform(const std::string &name, unsigned int value) override;
-	virtual void UploadUniform(const std::string &name, const glm::uvec2 &value) override;
-	virtual void UploadUniform(const std::string &name, const glm::uvec3 &value) override;
-	virtual void UploadUniform(const std::string &name, const glm::uvec4 &value) override;
+	virtual void UploadUniform(std::string_view name, unsigned int value) override;
+	virtual void UploadUniform(std::string_view name, const glm::uvec2 &value) override;
+	virtual void UploadUniform(std::string_view name, const glm::uvec3 &value) override;
+	virtual void UploadUniform(std::string_view name, const glm::uvec4 &value) override;
 
-	virtual void UploadUniform(const std::string &name, float value) override;
-	virtual void UploadUniform(const std::string &name, const glm::vec2 &value) override;
-	virtual void UploadUniform(const std::string &name, const glm::vec3 &value) override;
-	virtual void UploadUniform(const std::string &name, const glm::vec4 &value) override;
+	virtual void UploadUniform(std::string_view name, float value) override;
+	virtual void UploadUniform(std::string_view name, const glm::vec2 &value) override;
+	virtual void UploadUniform(std::string_view name, const glm::vec3 &value) override;
+	virtual void UploadUniform(std::string_view name, const glm::vec4 &value) override;
 
-	virtual void UploadUniform(const std::string &name, const glm::mat2 &value) override;
-	virtual void UploadUniform(const std::string &name, const glm::mat3 &value) override;
-	virtual void UploadUniform(const std::string &name, const glm::mat4 &value) override;
+	virtual void UploadUniform(std::string_view name, const glm::mat2 &value) override;
+	virtual void UploadUniform(std::string_view name, const glm::mat3 &value) override;
+	virtual void UploadUniform(std::string_view name, const glm::mat4 &value) override;
 
 	virtual const std::string &GetName() const override
 	{
@@ -45,7 +45,7 @@ private:
 	bool CompileShader(std::string src, ShaderType type);
 	bool CompileProgram();
 
-	int GetUniformLocation(const std::string &name);
+	int GetUniformLocation(std::string_view name);
 
 	std::string m_shaderProgramName = "Default Shader Name";
 	ShaderProgramType m_programType = ShaderProgramType::Standard;
