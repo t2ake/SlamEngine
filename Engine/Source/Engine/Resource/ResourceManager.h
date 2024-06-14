@@ -1,10 +1,6 @@
 #pragma once
 
-#include "Core/Core.h"
-#include "Core/Log.h"
 #include "Resource/TextureResource.h"
-
-#include <nameof/nameof.hpp>
 
 #include <map>
 #include <memory>
@@ -14,11 +10,7 @@
 namespace sl
 {
 
-template<class T>
-SL_FORCEINLINE inline std::string GetResourceName(std::string_view name)
-{
-	return std::string{ nameof::nameof_type<T>() } + name.data();
-}
+class Resource;
 
 class ResourceManager final
 {
@@ -27,47 +19,8 @@ public:
 
 	static void Update();
 
-	template<class T>
-	static void AddResource(std::string_view name, T *pTexture)
-	{
-		static_assert(std::is_base_of_v<Resource, T>);
-
-		std::string key = GetResourceName<T>(name);
-		const auto &it = m_resources.find(key);
-		if (m_resources.end() != it)
-		{
-			SL_ENGINE_WARN("Resource \"{}\" already exists!", name.data());
-			return;
-		}
-
-		m_resources[key].reset(pTexture);
-	}
-
-	template<class T, class ...Args>
-	static void AddResource(std::string_view name, Args&&... args)
-	{
-		static_assert(std::is_base_of_v<Resource, T>);
-
-		std::string key = GetResourceName<T>(name);
-		const auto &it = m_resources.find(key);
-		if (m_resources.end() != it)
-		{
-			SL_ENGINE_WARN("Resource \"{}\" already exists!", name.data());
-			return;
-		}
-
-		m_resources[key] = std::make_unique<T>(std::forward<Args>(args)...);
-	}
-
-	template<class T>
-	static TextureResource *GetResource(std::string_view name)
-	{
-		static_assert(std::is_base_of_v<Resource, T>);
-
-		std::string key = GetResourceName<T>(name);
-		const auto &it = m_resources.find(key);
-		return m_resources.end() == it ? nullptr : static_cast<T *>(it->second.get());
-	}
+	static void AddResource(std::string_view name, std::unique_ptr<Resource> pResource);
+	static Resource *GetResource(std::string_view name);
 
 private:
 	static inline std::map<std::string, std::unique_ptr<Resource>> m_resources;

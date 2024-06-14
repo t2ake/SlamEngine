@@ -42,9 +42,9 @@ SandboxLayer::SandboxLayer()
 		sl::Path::FromeAsset("Shader/vs_EntityID.glsl"),
 		sl::Path::FromeAsset("Shader/fs_EntityID.glsl"));
 
-	sl::TextureResource *pTextureResource = new sl::TextureResource{
-		sl::Path::FromeAsset("Texture/jc.png"), SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR };
-	sl::ResourceManager::AddResource("JCTexture", pTextureResource);
+	auto pTextureResource = std::make_unique<sl::TextureResource>(
+		sl::Path::FromeAsset("Texture/jc.png"), SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR);
+	sl::ResourceManager::AddResource("JCTexture", std::move(pTextureResource));
 
 	auto entity = sl::ECSWorld::CreateEntity("Test Mesh");
 

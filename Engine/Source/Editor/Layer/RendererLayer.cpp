@@ -62,7 +62,7 @@ void RendererLayer::BasePass()
 
 		rendering.m_pShader->Bind();
 		rendering.m_pShader->UploadUniform("u_model", transform.GetTransform());
-		if (auto *pTextureResource = sl::ResourceManager::GetResource<sl::TextureResource>(rendering.m_textureResourceName); pTextureResource)
+		if (auto *pTextureResource = static_cast<sl::TextureResource *>(sl::ResourceManager::GetResource(rendering.m_textureResourceName)); pTextureResource)
 		{
 			if (sl::ResourceStatus::Ready == pTextureResource->GetStatus())
 			{
