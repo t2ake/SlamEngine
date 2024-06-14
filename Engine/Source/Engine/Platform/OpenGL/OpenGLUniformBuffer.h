@@ -10,6 +10,7 @@ class OpenGLUniformBuffer : public UniformBuffer
 {
 public:
 	OpenGLUniformBuffer(uint32_t bindingPoint, UniformBufferLayout layout);
+	virtual ~OpenGLUniformBuffer() override;
 
 	virtual void Bind() const override;
 	virtual void Unbind() const override;

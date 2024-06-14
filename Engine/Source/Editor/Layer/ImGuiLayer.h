@@ -41,7 +41,6 @@ private:
 	void ShowLog();
 	void ShowEntityList();
 
-	// Just used inside ImGuiLayer
 	template<class T, class Fun>
 	void DrawComponent(const char *label, Fun uiFunction);
 	template<class T>

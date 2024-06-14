@@ -12,10 +12,17 @@ OpenGLUniformBuffer::OpenGLUniformBuffer(uint32_t bindingPoint, UniformBufferLay
 	m_layout(std::move(layout))
 {
 	glGenBuffers(1, &m_handle);
+
 	glBindBuffer(GL_UNIFORM_BUFFER, m_handle);
 	glBufferData(GL_UNIFORM_BUFFER, m_layout.GetStride(), nullptr, GL_STATIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	
 	glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, m_handle);
+}
+
+OpenGLUniformBuffer::~OpenGLUniformBuffer()
+{
+	glDeleteBuffers(1, &m_handle);
 }
 
 void OpenGLUniformBuffer::Bind() const

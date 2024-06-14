@@ -57,7 +57,7 @@ private:
 
 	sl::Timer m_timer;
 	sl::LayerStack *m_pLayerStack = nullptr;
-	
+
 	CameraControllerLayer *m_pCameraControllerLayer = nullptr;
 	ImGuiLayer *m_pImGuiLayer = nullptr;
 	RendererLayer *m_pRendererLayer = nullptr;

@@ -2,7 +2,7 @@
 
 #include "Core/Path.hpp"
 #include "RenderCore/RenderCore.h"
-#include "Resource/TextureResource.h"
+#include "Resource/ResourceManager.h"
 #include "Scene/ECSWorld.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -44,12 +44,13 @@ SandboxLayer::SandboxLayer()
 
 	sl::TextureResource *pTextureResource = new sl::TextureResource{
 		sl::Path::FromeAsset("Texture/jc.png"), SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR };
+	sl::ResourceManager::AddResource("JCTexture", pTextureResource);
 
 	auto entity = sl::ECSWorld::CreateEntity("Test Mesh");
 
 	auto &rendering = entity.AddComponent<sl::RenderingComponent>();
+	rendering.m_textureResourceName = "JCTexture";
 	rendering.m_pVertexArray = pVertexArray;
-	rendering.m_pTextureResource = pTextureResource;
 	rendering.m_pShader = pShader;
 	rendering.m_pIDShader = pIDShader;
 }

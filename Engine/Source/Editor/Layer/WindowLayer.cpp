@@ -73,7 +73,7 @@ void WindowLayer::OnUpdate(float deltaTime)
 	{
 		m_pWindow->SetGlobalCursorPos(newPosX, newPosY);
 
-		// To avoid some "system mouse pos caching module" generating a huge mouse pos delta.
+		// To avoid a huge delta mouse position for system which cache the real mouse position.
 		ImGui::GetIO().AddMousePosEvent(-FLT_MAX, -FLT_MAX);
 		camera.m_mouseLastPos = sl::Input::GetMousePos();
 	}

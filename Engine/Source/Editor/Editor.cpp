@@ -6,6 +6,7 @@
 #include "ImGui/ImGuiContext.h"
 #include "Layer/LayerStack.h"
 #include "RenderCore/RenderCore.h"
+#include "Resource/ResourceManager.h"
 #include "Scene/ECSWorld.h"
 #include "Window/Input.h"
 #include "Window/Window.h"
@@ -111,6 +112,8 @@ void Editor::Update()
 	{
 		pLayer->OnUpdate(m_timer.GetDeltatIme());
 	}
+
+	sl::ResourceManager::Update();
 }
 
 void Editor::Render()

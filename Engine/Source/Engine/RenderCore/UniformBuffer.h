@@ -14,6 +14,8 @@ public:
 	static UniformBuffer *Create(uint32_t bindignPoint, UniformBufferLayout layout);
 
 public:
+	virtual ~UniformBuffer() = default;
+
 	virtual void Bind() const = 0;
 	virtual void Unbind() const = 0;
 

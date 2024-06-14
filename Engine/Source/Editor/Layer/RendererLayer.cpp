@@ -2,7 +2,7 @@
 
 #include "Event/SceneViewportEvent.h"
 #include "RenderCore/RenderCore.h"
-#include "Resource/TextureResource.h"
+#include "Resource/ResourceManager.h"
 #include "Scene/ECSWorld.h"
 
 void RendererLayer::OnAttach()
@@ -62,7 +62,13 @@ void RendererLayer::BasePass()
 
 		rendering.m_pShader->Bind();
 		rendering.m_pShader->UploadUniform("u_model", transform.GetTransform());
-		rendering.m_pTextureResource->GetTexture()->Bind(0);
+		if (auto *pTextureResource = sl::ResourceManager::GetResource<sl::TextureResource>(rendering.m_textureResourceName); pTextureResource)
+		{
+			if (sl::ResourceStatus::Ready == pTextureResource->GetStatus())
+			{
+				pTextureResource->GetTexture()->Bind(0);
+			}
+		}
 
 		sl::RenderCore::Submit(rendering.m_pVertexArray, rendering.m_pShader);
 	}
