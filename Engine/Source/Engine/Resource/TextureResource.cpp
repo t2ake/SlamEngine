@@ -10,6 +10,12 @@
 namespace sl
 {
 
+TextureResource::TextureResource(std::string_view path, uint32_t flags) :
+	m_assetPath(path), m_flags(flags)
+{
+	SetStatus(ResourceStatus::Importing);
+}
+
 TextureResource::~TextureResource()
 {
 	OnDestroy();
@@ -112,24 +118,22 @@ void TextureResource::OnReady()
 	}
 	else if(frameCount == 60)
 	{
-		m_rowData.clear();
-		std::vector<std::byte>().swap(m_rowData);
+		DestroyCPUData();
 	}
 }
 
 void TextureResource::OnDestroy()
 {
-	m_rowData.clear();
-	std::vector<std::byte>().swap(m_rowData);
+	DestroyCPUData();
 	m_pTexture.reset();
 	
 	SetStatus(ResourceStatus::Destroyed);
 }
 
-TextureResource::TextureResource(std::string_view path, uint32_t flags) :
-	m_assetPath(path), m_flags(flags)
+void TextureResource::DestroyCPUData()
 {
-	SetStatus(ResourceStatus::Importing);
+	m_rowData.clear();
+	std::vector<std::byte>().swap(m_rowData);
 }
 
 } //namespace sl

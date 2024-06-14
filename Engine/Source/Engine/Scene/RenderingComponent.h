@@ -1,11 +1,11 @@
 #pragma once
 
+#include <optional>
 #include <string>
 
 namespace sl
 {
 
-class VertexArray;
 class Shader;
 
 struct RenderingComponent final
@@ -15,10 +15,10 @@ struct RenderingComponent final
 
 	}
 
-	std::string m_textureResourceName;
+	std::optional<std::string> m_optMeshResourceName;
+	std::optional<std::string> m_optTextureResourceName;
 
 	// TODO: Move these to ResourceManager
-	VertexArray *m_pVertexArray = nullptr;
 	Shader *m_pShader = nullptr;
 	Shader *m_pIDShader = nullptr;
 };

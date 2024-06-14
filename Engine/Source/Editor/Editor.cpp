@@ -57,10 +57,10 @@ Editor::Editor(EditorInitor initor)
 	pWindowLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
 	pRendererLayer->SetUniformBuffer(sl::UniformBuffer::Create(0, sl::UniformBufferLayout
-		{
-			{ "u_viewProjection", sl::AttribType::mat4f },
-			{ "u_cameraPos", sl::AttribType::vec4f },
-		}));
+	{
+		{ "u_viewProjection", sl::AttribType::mat4f },
+		{ "u_cameraPos", sl::AttribType::vec4f },
+	}));
 
 	pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 

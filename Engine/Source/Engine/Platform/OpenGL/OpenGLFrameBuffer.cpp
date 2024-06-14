@@ -62,7 +62,6 @@ OpenGLFrameBuffer::~OpenGLFrameBuffer()
 		{
 			delete attachment.m_pTexture;
 		}
-		m_attachments.clear();
 	}
 	
 	glDeleteFramebuffers(1, &m_handle);

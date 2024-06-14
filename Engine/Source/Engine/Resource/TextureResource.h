@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/Defines.h"
 #include "Resource/Resource.h"
 
 #include <memory>
@@ -25,9 +24,13 @@ public:
 	virtual void OnReady() override;
 	virtual void OnDestroy() override;
 
+	void SetRowData(std::vector<std::byte> data) { m_rowData = std::move(data); }
+
 	Texture2D *GetTexture() const { return m_pTexture.get(); }
 
 private:
+	void DestroyCPUData();
+
 	std::string m_assetPath;
 	std::vector<std::byte> m_rowData;
 	

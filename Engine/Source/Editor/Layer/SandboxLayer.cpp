@@ -13,44 +13,41 @@ SandboxLayer::SandboxLayer()
 	transform.m_position = glm::vec3{ 0.0f, 0.0f, 5.0f };
 	transform.m_rotation = glm::vec3{ 0.0f, -90.0f, 0.0f };
 	
-	constexpr float vertices[] =
+	auto entity = sl::ECSWorld::CreateEntity("Test Entity");
+	auto &rendering = entity.AddComponent<sl::RenderingComponent>();
+
+	std::vector<float> vertices =
 	{
 		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
 		 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
 		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
 		-0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
 	};
-	constexpr uint32_t indices[] = { 0, 1, 3, 1, 2, 3 };
+	std::vector<uint32_t> indices = { 0, 1, 3, 1, 2, 3 };
 
-	sl::VertexBuffer *pVertexBuffer = sl::VertexBuffer::Create(vertices, sizeof(vertices));
-	pVertexBuffer->SetLayout(sl::VertexLayout
+	auto pMeshResource = std::make_unique<sl::MeshResource>("TODO");
+	pMeshResource->SetLayout(sl::VertexLayout
 	{
 		{ "Position", sl::AttribType::Float, 3 },
 		{ "UV", sl::AttribType::Float, 2 },
 	});
-	sl::IndexBuffer *pIndexBuffer = sl::IndexBuffer::Create(indices, sizeof(indices));
+	pMeshResource->SetVertexRowData(std::move(vertices));
+	pMeshResource->SetIndexRowData(std::move(indices));
+	sl::ResourceManager::AddMeshResource("SquareMesh", std::move(pMeshResource));
+	rendering.m_optMeshResourceName = "SquareMesh";
 
-	sl::VertexArray *pVertexArray = sl::VertexArray::Create();
-	pVertexArray->SetVertexBuffer(pVertexBuffer);
-	pVertexArray->SetIndexBuffer(pIndexBuffer);
+	auto pTextureResource = std::make_unique<sl::TextureResource>(
+		sl::Path::FromeAsset("Texture/jc.png"), SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR);
+	sl::ResourceManager::AddTextureResource("JCTexture", std::move(pTextureResource));
+	rendering.m_optTextureResourceName = "JCTexture";
 
 	sl::Shader *pShader = sl::Shader::Creat("Base",
 		sl::Path::FromeAsset("Shader/vs_Base.glsl"),
 		sl::Path::FromeAsset("Shader/fs_Base.glsl"));
-
 	sl::Shader *pIDShader = sl::Shader::Creat("EntityID",
 		sl::Path::FromeAsset("Shader/vs_EntityID.glsl"),
 		sl::Path::FromeAsset("Shader/fs_EntityID.glsl"));
 
-	auto pTextureResource = std::make_unique<sl::TextureResource>(
-		sl::Path::FromeAsset("Texture/jc.png"), SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR);
-	sl::ResourceManager::AddResource("JCTexture", std::move(pTextureResource));
-
-	auto entity = sl::ECSWorld::CreateEntity("Test Mesh");
-
-	auto &rendering = entity.AddComponent<sl::RenderingComponent>();
-	rendering.m_textureResourceName = "JCTexture";
-	rendering.m_pVertexArray = pVertexArray;
 	rendering.m_pShader = pShader;
 	rendering.m_pIDShader = pIDShader;
 }

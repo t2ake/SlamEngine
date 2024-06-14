@@ -34,7 +34,7 @@ void RendererLayer::OnUpdate(float deltaTime)
 void RendererLayer::OnRender()
 {
 	m_pUniformBuffer->Upload("u_viewProjection", sl::ECSWorld::GetEditorCameraComponent().GetViewProjection());
-	m_pUniformBuffer->Upload("u_cameraPos", glm::vec4{sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::TransformComponent>().m_position, 1.0f});
+	m_pUniformBuffer->Upload("u_cameraPos", glm::vec4{ sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::TransformComponent>().m_position, 1.0f });
 
 	BasePass();
 	EntityIDPass();
@@ -55,14 +55,15 @@ void RendererLayer::BasePass()
 	for (auto entity : group)
 	{
 		auto [rendering, transform] = group.get<sl::RenderingComponent, sl::TransformComponent>(entity);
-		if (!rendering.m_pVertexArray || !rendering.m_pShader)
+		if (!rendering.m_optMeshResourceName || !rendering.m_optTextureResourceName || !rendering.m_pShader)
 		{
 			continue;
 		}
 
 		rendering.m_pShader->Bind();
 		rendering.m_pShader->UploadUniform("u_model", transform.GetTransform());
-		if (auto *pTextureResource = static_cast<sl::TextureResource *>(sl::ResourceManager::GetResource(rendering.m_textureResourceName)); pTextureResource)
+
+		if (auto *pTextureResource = sl::ResourceManager::GetTextureResource(rendering.m_optTextureResourceName.value()); pTextureResource)
 		{
 			if (sl::ResourceStatus::Ready == pTextureResource->GetStatus())
 			{
@@ -70,7 +71,13 @@ void RendererLayer::BasePass()
 			}
 		}
 
-		sl::RenderCore::Submit(rendering.m_pVertexArray, rendering.m_pShader);
+		if (auto *pMeshResource = sl::ResourceManager::GetMeshResource(rendering.m_optMeshResourceName.value()); pMeshResource)
+		{
+			if (sl::ResourceStatus::Ready == pMeshResource->GetStatus())
+			{
+				sl::RenderCore::Submit(pMeshResource->GetVertexArray(), rendering.m_pShader);
+			}
+		}
 	}
 
 	sl::RenderCore::GetMainFramebuffer()->Unbind();
@@ -83,11 +90,11 @@ void RendererLayer::EntityIDPass()
 	sl::RenderCore::GetEntityIDFramebuffer()->Clear(0, &entityIDClearData);
 	sl::RenderCore::ClearDepth(1.0f);
 
-	auto view = sl::ECSWorld::GetRegistry().view<sl::RenderingComponent, sl::TransformComponent>();
-	for (auto entity : view)
+	auto group = sl::ECSWorld::GetRegistry().group<sl::RenderingComponent>(entt::get<sl::TransformComponent>);
+	for (auto entity : group)
 	{
-		auto [rendering, transform] = view.get<sl::RenderingComponent, sl::TransformComponent>(entity);
-		if (!rendering.m_pVertexArray)
+		auto [rendering, transform] = group.get<sl::RenderingComponent, sl::TransformComponent>(entity);
+		if (!rendering.m_optMeshResourceName || !rendering.m_pShader)
 		{
 			continue;
 		}
@@ -96,8 +103,13 @@ void RendererLayer::EntityIDPass()
 		rendering.m_pShader->UploadUniform("u_model", transform.GetTransform());
 		rendering.m_pIDShader->UploadUniform("u_entityID", (int)entity);
 
-		// PENDING: Should we separate mesh data from RenderingComponent?
-		sl::RenderCore::Submit(rendering.m_pVertexArray, rendering.m_pIDShader);
+		if (auto *pMeshResource = sl::ResourceManager::GetMeshResource(rendering.m_optMeshResourceName.value()); pMeshResource)
+		{
+			if (sl::ResourceStatus::Ready == pMeshResource->GetStatus())
+			{
+				sl::RenderCore::Submit(pMeshResource->GetVertexArray(), rendering.m_pIDShader);
+			}
+		}
 	}
 
 	sl::RenderCore::GetEntityIDFramebuffer()->Unbind();
