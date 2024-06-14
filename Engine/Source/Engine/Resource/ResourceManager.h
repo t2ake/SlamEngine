@@ -36,11 +36,27 @@ public:
 		const auto &it = m_resources.find(key);
 		if (m_resources.end() != it)
 		{
-			SL_ENGINE_WARN("Resource \"{}\" already exists!", key.c_str());
+			SL_ENGINE_WARN("Resource \"{}\" already exists!", name.data());
 			return;
 		}
 
-		m_resources[key.c_str()].reset(pTexture);
+		m_resources[key].reset(pTexture);
+	}
+
+	template<class T, class ...Args>
+	static void AddResource(std::string_view name, Args&&... args)
+	{
+		static_assert(std::is_base_of_v<Resource, T>);
+
+		std::string key = GetResourceName<T>(name);
+		const auto &it = m_resources.find(key);
+		if (m_resources.end() != it)
+		{
+			SL_ENGINE_WARN("Resource \"{}\" already exists!", name.data());
+			return;
+		}
+
+		m_resources[key] = std::make_unique<T>(std::forward<Args>(args)...);
 	}
 
 	template<class T>

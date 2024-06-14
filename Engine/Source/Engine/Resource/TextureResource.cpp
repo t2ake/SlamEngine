@@ -98,7 +98,7 @@ void TextureResource::OnUpload()
 		return;
 	}
 
-	m_pTexture = Texture2D::Create(m_width, m_height, true, format, m_flags, m_rowData.data());
+	m_pTexture.reset(Texture2D::Create(m_width, m_height, true, format, m_flags, m_rowData.data()));
 
 	SetStatus(ResourceStatus::Ready);
 }
@@ -121,7 +121,7 @@ void TextureResource::OnDestroy()
 {
 	m_rowData.clear();
 	std::vector<std::byte>().swap(m_rowData);
-	delete m_pTexture;
+	m_pTexture.reset();
 	
 	SetStatus(ResourceStatus::Destroyed);
 }

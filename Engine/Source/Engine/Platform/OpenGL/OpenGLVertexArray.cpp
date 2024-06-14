@@ -16,9 +16,6 @@ OpenGLVertexArray::OpenGLVertexArray()
 
 OpenGLVertexArray::~OpenGLVertexArray()
 {
-	delete m_pVertexBuffer;
-	delete m_pIndexBuffer;
-
 	glDeleteVertexArrays(1, &m_handle);
 }
 
@@ -38,7 +35,7 @@ void OpenGLVertexArray::SetVertexBuffer(VertexBuffer *pVertexBuffer)
 
 	glBindVertexArray(m_handle);
 
-	m_pVertexBuffer = pVertexBuffer;
+	m_pVertexBuffer.reset(pVertexBuffer);
 	m_pVertexBuffer->Bind();
 
 	uint32_t index = 0;
@@ -63,7 +60,7 @@ void OpenGLVertexArray::SetIndexBuffer(IndexBuffer *pIndexBuffer)
 {
 	glBindVertexArray(m_handle);
 
-	m_pIndexBuffer = pIndexBuffer;
+	m_pIndexBuffer.reset(pIndexBuffer);
 	m_pIndexBuffer->Bind();
 
 	glBindVertexArray(0);

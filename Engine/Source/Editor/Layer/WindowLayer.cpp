@@ -10,7 +10,7 @@
 
 WindowLayer::~WindowLayer()
 {
-	delete m_pWindow;
+	
 }
 
 void WindowLayer::OnAttach()

@@ -1,23 +1,26 @@
 #pragma once
 
-#include "Layer/Layer.h"
-
+#include <memory>
 #include <vector>
 
 namespace sl
 {
 
+class Layer;
+
 class LayerStack final
 {
 public:
 	LayerStack() = default;
-	~LayerStack();
+	~LayerStack() = default;
 
-	void PushLayer(Layer *pLayer);
-	void PopLayer(Layer *pLayer);
+	void PushLayer(std::unique_ptr<Layer> pLayer);
+	// TODO: PopLayer
 
-	std::vector<Layer *> &GetLayers() { return m_pLayers; }
-	const std::vector<Layer *> &GetLayers() const { return m_pLayers; }
+	void BeginFrame();
+	void Update(float deltaTime);
+	void Render();
+	void EndFrame();
 
 	auto begin() { return m_pLayers.begin(); }
 	auto end() { return m_pLayers.end(); }
@@ -30,7 +33,7 @@ public:
 	auto crend() const { return std::make_reverse_iterator(m_pLayers.cend()); }
 
 private:
-	std::vector<Layer *> m_pLayers;
+	std::vector<std::unique_ptr<Layer>> m_pLayers;
 };
 
 } // namespace sl

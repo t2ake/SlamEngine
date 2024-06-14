@@ -36,7 +36,7 @@ Window::Window(std::string_view title, uint32_t width, uint32_t height) :
 
 	m_pNativeWindow = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
 	SL_ENGINE_ASSERT_INFO(m_pNativeWindow, "GLFW creat window failed!");
-	m_pRenderContext = RenderContext::Create(m_pNativeWindow);
+	m_pRenderContext.reset(RenderContext::Create(m_pNativeWindow));
 
 	const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	m_monitorWidth = mode->width;
@@ -55,8 +55,6 @@ Window::~Window()
 {
 	glfwDestroyWindow(static_cast<GLFWwindow *>(m_pNativeWindow));
 	glfwTerminate();
-
-	delete m_pRenderContext;
 }
 
 void Window::BegineFrame()

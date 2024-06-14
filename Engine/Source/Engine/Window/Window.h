@@ -4,6 +4,8 @@
 #include "Layer/Layer.h"
 #include "RenderCore/RenderContext.h"
 
+#include <memory>
+
 namespace sl
 {
 
@@ -47,7 +49,7 @@ private:
 	void SetCallbacks();
 
 	void *m_pNativeWindow = nullptr;
-	RenderContext *m_pRenderContext = nullptr;
+	std::unique_ptr<RenderContext> m_pRenderContext;
 
 	std::string m_title;
 	uint32_t m_width;

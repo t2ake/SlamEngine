@@ -2,6 +2,8 @@
 
 #include "RenderCore/VertexArray.h"
 
+#include <memory>
+
 namespace sl
 {
 
@@ -17,12 +19,12 @@ public:
 	virtual void SetVertexBuffer(VertexBuffer *pVertexBuffer) override;
 	virtual void SetIndexBuffer(IndexBuffer *pIndexBuffer) override;
 
-	virtual VertexBuffer *GetVertexBuffer() override { return m_pVertexBuffer; }
-	virtual IndexBuffer *GetIndexBuffer() override { return m_pIndexBuffer; }
+	virtual VertexBuffer *GetVertexBuffer() override { return m_pVertexBuffer.get(); }
+	virtual IndexBuffer *GetIndexBuffer() override { return m_pIndexBuffer.get(); }
 
 private:
-	VertexBuffer *m_pVertexBuffer = nullptr;
-	IndexBuffer *m_pIndexBuffer = nullptr;
+	std::unique_ptr<VertexBuffer> m_pVertexBuffer;
+	std::unique_ptr<IndexBuffer> m_pIndexBuffer;
 
 	uint32_t m_handle = 0;
 };

@@ -42,8 +42,8 @@ public:
 	}
 
 	void SetHandled(bool handled) { m_handled = handled; }
-	bool &GetIsHandled() { return m_handled; }
-	bool GetIsHandled() const { return m_handled; }
+	bool &IsHandled() { return m_handled; }
+	bool IsHandled() const { return m_handled; }
 
 private:
 	bool m_handled = false;
@@ -62,7 +62,7 @@ public:
 		// Call func if type of m_event is T.
 		if (T::GetStaticEventType() == m_event.GetEventType())
 		{
-			m_event.GetIsHandled() |= func(static_cast<T &>(m_event));
+			m_event.IsHandled() |= func(static_cast<T &>(m_event));
 			return true;
 		}
 

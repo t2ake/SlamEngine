@@ -4,6 +4,8 @@
 #include "Core/Defines.h"
 #include "Core/Timer.h"
 
+#include <memory>
+
 namespace sl
 {
 
@@ -13,12 +15,6 @@ class WindowResizeEvent;
 class LayerStack;
 
 }
-
-class CameraControllerLayer;
-class ImGuiLayer;
-class RendererLayer;
-class SandboxLayer;
-class WindowLayer;
 
 struct EditorInitor
 {
@@ -56,11 +52,5 @@ private:
 	bool m_isMinimized = false;
 
 	sl::Timer m_timer;
-	sl::LayerStack *m_pLayerStack = nullptr;
-
-	CameraControllerLayer *m_pCameraControllerLayer = nullptr;
-	ImGuiLayer *m_pImGuiLayer = nullptr;
-	RendererLayer *m_pRendererLayer = nullptr;
-	SandboxLayer *m_pSandboxLayer = nullptr;
-	WindowLayer *m_pWindowLayer = nullptr;
+	std::unique_ptr<sl::LayerStack> m_pLayerStack;
 };

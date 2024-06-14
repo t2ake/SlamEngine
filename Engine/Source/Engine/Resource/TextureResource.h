@@ -3,6 +3,7 @@
 #include "Core/Defines.h"
 #include "Resource/Resource.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -24,7 +25,7 @@ public:
 	virtual void OnReady() override;
 	virtual void OnDestroy() override;
 
-	Texture2D *GetTexture() const { return m_pTexture; }
+	Texture2D *GetTexture() const { return m_pTexture.get(); }
 
 private:
 	std::string m_assetPath;
@@ -36,7 +37,7 @@ private:
 	uint8_t m_channels = 0;
 	bool m_isHDR = false;
 
-	Texture2D *m_pTexture = nullptr;
+	std::unique_ptr<Texture2D> m_pTexture;
 };
 
 } // namespace sl

@@ -3,6 +3,8 @@
 #include "Event/Event.h"
 #include "Layer/Layer.h"
 
+#include <memory>
+
 namespace sl
 {
 
@@ -24,13 +26,13 @@ public:
 	virtual void OnRender() override;
 	virtual void EndFrame() override;
 
-	void SetWindow(sl::Window *pWindow) { m_pWindow = pWindow; }
-	sl::Window *GetWindow() const { return m_pWindow; }
+	void SetWindow(sl::Window *pWindow) { m_pWindow.reset(pWindow); }
+	sl::Window *GetWindow() const { return m_pWindow.get(); }
 
 	void SetEventCallback(sl::EventCallback fun) { m_eventCallback = std::move(fun); }
 
 private:
-	sl::Window *m_pWindow = nullptr;
+	std::unique_ptr<sl::Window> m_pWindow;
 
 	sl::EventCallback m_eventCallback;
 };

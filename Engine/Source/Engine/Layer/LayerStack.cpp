@@ -1,31 +1,45 @@
 #include "LayerStack.h"
 
+#include "Layer/Layer.h"
+
 namespace sl
 {
 
-LayerStack::~LayerStack()
-{
-	// PENDING: Should I iterate them from the top to the bottom?
-	for (Layer *pLayer : m_pLayers)
-	{
-		delete pLayer;
-	}
-	m_pLayers.clear();
-}
-
-void LayerStack::PushLayer(Layer *pLayer)
+void LayerStack::PushLayer(std::unique_ptr<Layer> pLayer)
 {
 	pLayer->OnAttach();
-	m_pLayers.emplace_back(pLayer);
+	m_pLayers.emplace_back(std::move(pLayer));
 }
 
-void LayerStack::PopLayer(Layer *pLayer)
+void LayerStack::BeginFrame()
 {
-	pLayer->OnDetach();
-	auto it = std::find(m_pLayers.begin(), m_pLayers.end(), pLayer);
-	if (it != m_pLayers.end())
+	for (auto &pLayer : m_pLayers)
 	{
-		m_pLayers.erase(it);
+		pLayer->BeginFrame();
+	}
+}
+
+void LayerStack::Update(float deltaTime)
+{
+	for (auto &pLayer : m_pLayers)
+	{
+		pLayer->OnUpdate(deltaTime);
+	}
+}
+
+void LayerStack::Render()
+{
+	for (auto &pLayer : m_pLayers)
+	{
+		pLayer->OnRender();
+	}
+}
+
+void LayerStack::EndFrame()
+{
+	for (auto &pLayer : m_pLayers)
+	{
+		pLayer->EndFrame();
 	}
 }
 

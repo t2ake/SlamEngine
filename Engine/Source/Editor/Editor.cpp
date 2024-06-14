@@ -4,16 +4,16 @@
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
-#include "Layer/LayerStack.h"
 #include "RenderCore/RenderCore.h"
-#include "Resource/ResourceManager.h"
 #include "Scene/ECSWorld.h"
 #include "Window/Input.h"
 #include "Window/Window.h"
 
 #include "Layer/CameraControllerLayer.h"
 #include "Layer/ImGuiLayer.h"
+#include "Layer/LayerStack.h"
 #include "Layer/RendererLayer.h"
+#include "Layer/ResourceManagerLayer.h"
 #include "Layer/SandboxLayer.h"
 #include "Layer/WindowLayer.h"
 
@@ -46,29 +46,31 @@ Editor::Editor(EditorInitor initor)
 	mainCameraEntity.AddComponent<sl::CornerstoneComponent>("Currently we only support that only one camera in the scene.");
 	sl::ECSWorld::SetEditorCameraEntity(mainCameraEntity);
 
-	m_pWindowLayer = new WindowLayer;
-	m_pSandboxLayer = new SandboxLayer;
-	m_pRendererLayer = new RendererLayer;
-	m_pCameraControllerLayer = new CameraControllerLayer;
-	m_pImGuiLayer = new ImGuiLayer;
+	auto pWindowLayer = std::make_unique<WindowLayer>();
+	auto pRendererLayer = std::make_unique<RendererLayer>();
+	auto pResourceManagerLayer = std::make_unique<ResourceManagerLayer>();
+	auto pCameraControllerLayer = std::make_unique<CameraControllerLayer>();
+	auto pImGuiLayer = std::make_unique<ImGuiLayer>();
+	auto pSandboxLayer = std::make_unique<SandboxLayer>();
 
-	m_pLayerStack = new sl::LayerStack;
-	m_pLayerStack->PushLayer(m_pWindowLayer);
-	m_pLayerStack->PushLayer(m_pSandboxLayer);
-	m_pLayerStack->PushLayer(m_pRendererLayer);
-	m_pLayerStack->PushLayer(m_pCameraControllerLayer);
-	m_pLayerStack->PushLayer(m_pImGuiLayer);
+	pWindowLayer->SetWindow(pWindow);
+	pWindowLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
-	m_pWindowLayer->SetWindow(pWindow);
-	m_pWindowLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
+	pRendererLayer->SetUniformBuffer(sl::UniformBuffer::Create(0, sl::UniformBufferLayout
+		{
+			{ "u_viewProjection", sl::AttribType::mat4f },
+			{ "u_cameraPos", sl::AttribType::vec4f },
+		}));
 
-	m_pRendererLayer->SetUniformBuffer(sl::UniformBuffer::Create(0, sl::UniformBufferLayout
-	{
-		{ "u_viewProjection", sl::AttribType::mat4f },
-		{ "u_cameraPos", sl::AttribType::vec4f },
-	}));
+	pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
-	m_pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
+	m_pLayerStack = std::make_unique<sl::LayerStack>();
+	m_pLayerStack->PushLayer(std::move(pWindowLayer));
+	m_pLayerStack->PushLayer(std::move(pRendererLayer));
+	m_pLayerStack->PushLayer(std::move(pResourceManagerLayer));
+	m_pLayerStack->PushLayer(std::move(pCameraControllerLayer));
+	m_pLayerStack->PushLayer(std::move(pImGuiLayer));
+	m_pLayerStack->PushLayer(std::move(pSandboxLayer));
 
 	m_timer.Tick();
 }
@@ -76,8 +78,6 @@ Editor::Editor(EditorInitor initor)
 Editor::~Editor()
 {
 	sl::ImGuiContext::Shutdown();
-
-	delete m_pLayerStack;
 }
 
 void Editor::Run()
@@ -100,36 +100,22 @@ void Editor::BegineFrame()
 {
 	m_timer.Tick();
 
-	for (sl::Layer *pLayer : *m_pLayerStack)
-	{
-		pLayer->BeginFrame();
-	}
+	m_pLayerStack->BeginFrame();
 }
 
 void Editor::Update()
 {
-	for (sl::Layer *pLayer : *m_pLayerStack)
-	{
-		pLayer->OnUpdate(m_timer.GetDeltatIme());
-	}
-
-	sl::ResourceManager::Update();
+	m_pLayerStack->Update(m_timer.GetDeltatIme());
 }
 
 void Editor::Render()
 {
-	for (sl::Layer *pLayer : *m_pLayerStack)
-	{
-		pLayer->OnRender();
-	}
+	m_pLayerStack->Render();
 }
 
 void Editor::EndFrame()
 {
-	for (sl::Layer *pLayer : *m_pLayerStack)
-	{
-		pLayer->EndFrame();
-	}
+	m_pLayerStack->EndFrame();
 }
 
 void Editor::OnEvent(sl::Event &event)
@@ -141,7 +127,7 @@ void Editor::OnEvent(sl::Event &event)
 	// Iterate layers from top to bottom / from end to begin.
 	for (auto it = m_pLayerStack->rend(); it != m_pLayerStack->rbegin(); ++it)
 	{
-		if (event.GetIsHandled())
+		if (event.IsHandled())
 		{
 			break;
 		}
