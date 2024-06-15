@@ -4,6 +4,7 @@
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
+#include "LayerStack/LayerStack.h"
 #include "RenderCore/RenderCore.h"
 #include "Scene/ECSWorld.h"
 #include "Window/Input.h"
@@ -11,7 +12,6 @@
 
 #include "Layer/CameraControllerLayer.h"
 #include "Layer/ImGuiLayer.h"
-#include "Layer/LayerStack.h"
 #include "Layer/RendererLayer.h"
 #include "Layer/ResourceManagerLayer.h"
 #include "Layer/SandboxLayer.h"

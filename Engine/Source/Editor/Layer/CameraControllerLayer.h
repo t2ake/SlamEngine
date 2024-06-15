@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/Defines.h"
-#include "Layer/Layer.h"
+#include "LayerStack/Layer.h"
 
 namespace sl
 {

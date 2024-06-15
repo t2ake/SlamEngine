@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Event/Event.h"
-#include "Layer/Layer.h"
 #include "RenderCore/RenderContext.h"
 
 #include <memory>
