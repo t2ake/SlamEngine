@@ -6,8 +6,6 @@
 
 #include <glm/vec2.hpp>
 
-#include <string_view>
-
 namespace sl
 {
 

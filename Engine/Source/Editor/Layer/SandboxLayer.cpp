@@ -13,7 +13,7 @@ SandboxLayer::SandboxLayer()
 	transform.m_position = glm::vec3{ 0.0f, 0.0f, 5.0f };
 	transform.m_rotation = glm::vec3{ 0.0f, -90.0f, 0.0f };
 	
-	auto entity = sl::ECSWorld::CreateEntity("Test Entity");
+	auto entity = sl::ECSWorld::CreateEntity("Square Entity");
 	auto &rendering = entity.AddComponent<sl::RenderingComponent>();
 
 	std::vector<float> vertices =

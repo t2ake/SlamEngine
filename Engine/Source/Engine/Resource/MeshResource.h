@@ -4,8 +4,6 @@
 #include "Resource/Resource.h"
 
 #include <memory>
-#include <string>
-#include <vector>
 
 #include <glm/vec3.hpp>
 
@@ -34,7 +32,7 @@ public:
 	VertexArray *GetVertexArray() { return m_pVertexArray.get(); }
 
 private:
-	virtual void DestroyCPUData() override;
+	virtual void DestroyRawData() override;
 
 	std::string m_assetPath;
 

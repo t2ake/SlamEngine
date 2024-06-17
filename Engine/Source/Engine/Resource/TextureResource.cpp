@@ -31,7 +31,7 @@ void TextureResource::OnImport()
 	}
 
 	SL_ENGINE_TRACE("Loading image: \"{}\"", m_assetPath.c_str());
-	const auto originalData = ResourceLoader::LoadFile(m_assetPath.c_str());
+	const auto originalData = ResourceLoader::LoadFile(m_assetPath);
 
 	// The first pixel should at the bottom left.
 	stbi_set_flip_vertically_on_load(true);
@@ -118,19 +118,19 @@ void TextureResource::OnReady()
 	}
 	else if(frameCount == 60)
 	{
-		DestroyCPUData();
+		DestroyRawData();
 	}
 }
 
 void TextureResource::OnDestroy()
 {
-	DestroyCPUData();
+	DestroyRawData();
 	m_pTexture.reset();
 	
 	SetStatus(ResourceStatus::Destroyed);
 }
 
-void TextureResource::DestroyCPUData()
+void TextureResource::DestroyRawData()
 {
 	m_rowData.clear();
 	std::vector<std::byte>().swap(m_rowData);

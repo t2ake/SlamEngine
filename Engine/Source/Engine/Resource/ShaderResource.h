@@ -37,7 +37,7 @@ public:
 	Shader* GetShaderProgram() { return m_pShaderProgram.get(); }
 
 private:
-	virtual void DestroyCPUData() override;
+	virtual void DestroyRawData() override;
 
 	ShaderProgramType m_programType;
 	ShaderInfo m_shaders[2];

@@ -4,7 +4,7 @@
 #include "RenderCore/Shader.h"
 #include "Resource/ResourceLoader.h"
 
-// TEMPLATE: Replace these by SPRI-V
+// TEMPLATE: Replace these to SPRI-V
 #include "Platform/OpenGL/OpenGLDefines.h"
 #include <glad/glad.h>
 
@@ -230,19 +230,19 @@ void ShaderResource::OnReady()
 	}
 	else if (frameCount == 60)
 	{
-		DestroyCPUData();
+		DestroyRawData();
 	}
 }
 
 void ShaderResource::OnDestroy()
 {
-	DestroyCPUData();
+	DestroyRawData();
 	m_pShaderProgram.reset();
 
 	SetStatus(ResourceStatus::Destroyed);
 }
 
-void ShaderResource::DestroyCPUData()
+void ShaderResource::DestroyRawData()
 {
 	m_shaders[0].m_rowData.clear();
 	std::vector<std::byte>().swap(m_shaders[0].m_rowData);
