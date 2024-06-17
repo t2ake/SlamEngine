@@ -2,8 +2,9 @@
 
 #include "Core/Log.h"
 
-#include <vector>
 #include <fstream>
+#include <string>
+#include <vector>
 
 namespace sl
 {
@@ -11,14 +12,14 @@ namespace sl
 class ResourceLoader final
 {
 public:
-	static std::vector<std::byte> LoadFile(const char *pFilePath)
+	static std::vector<std::byte> LoadFile(std::string_view filePath)
 	{
 		std::vector<std::byte> fileData;
 
-		std::ifstream in(pFilePath, std::ios::in | std::ios::binary);
+		std::ifstream in(filePath.data(), std::ios::in | std::ios::binary);
 		if (!in)
 		{
-			SL_ENGINE_ERROR("Can not open file: \"{}\"", pFilePath);
+			SL_ENGINE_ERROR("Can not open file: \"{}\"", filePath.data());
 			return fileData;
 		}
 

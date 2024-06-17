@@ -734,13 +734,17 @@ void ImGuiLayer::ShowDetails()
 	// Draw Rendering component
 	DrawComponent<sl::RenderingComponent>("Rendering", [this](sl::RenderingComponent *pComponent)
 	{
-		StartWithText("Shader");
-		auto *pShader = pComponent->m_pShader;
-		ImGui::Text(pShader ? pShader->GetName().c_str() : "");
+		StartWithText("Base Shader");
+		ImGui::Text(pComponent->m_optBaseShaderResourceName ? pComponent->m_optBaseShaderResourceName->c_str() : "");
 
 		StartWithText("ID Shader");
-		auto *pIDShader = pComponent->m_pIDShader;
-		ImGui::Text(pIDShader ? pIDShader->GetName().c_str() : "");
+		ImGui::Text(pComponent->m_optIDShaderResourceName ? pComponent->m_optIDShaderResourceName->c_str() : "");
+
+		StartWithText("Texture");
+		ImGui::Text(pComponent->m_optTextureResourceName ? pComponent->m_optTextureResourceName->c_str() : "");
+
+		StartWithText("Mesh");
+		ImGui::Text(pComponent->m_optMeshResourceName ? pComponent->m_optMeshResourceName->c_str() : "");
 	});
 
 	// Draw Cornerstone component

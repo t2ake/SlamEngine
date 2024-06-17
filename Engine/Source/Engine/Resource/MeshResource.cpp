@@ -1,6 +1,6 @@
 #include "MeshResource.h"
 
-#include "RenderCore/RenderCore.h"
+#include "RenderCore/VertexArray.h"
 
 namespace sl
 {

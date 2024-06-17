@@ -18,7 +18,7 @@ enum class ResourceStatus : uint8_t
 
 enum class ResourcesType : uint8_t
 {
-	Mesh,
+	Mesh = 0,
 	Bone,
 	Animation,
 	Texture,
@@ -33,6 +33,7 @@ public:
 
 	void SetStatus(ResourceStatus status) { m_status = status; }
 	ResourceStatus GetStatus() { return m_status; }
+	bool IsReady() { return ResourceStatus::Ready == m_status; }
 
 	void Update();
 
@@ -50,6 +51,8 @@ public:
 	virtual void OnDestroy() = 0;
 
 private:
+	virtual void DestroyCPUData() = 0;
+
 	ResourceStatus m_status;
 };
 

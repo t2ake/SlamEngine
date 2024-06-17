@@ -7,7 +7,7 @@
 namespace sl
 {
 
-Shader *Shader::Creat(std::string_view name, std::string_view vsSrc, std::string_view fsSrc)
+Shader *Shader::Creat(uint32_t programHandle)
 {
 	switch (RenderCore::GetBackend())
 	{
@@ -18,7 +18,7 @@ Shader *Shader::Creat(std::string_view name, std::string_view vsSrc, std::string
 		}
 		case GraphicsBackend::OpenGL:
 		{
-			return new OpenGLShader(name, vsSrc, fsSrc);
+			return new OpenGLShader(programHandle);
 			break;
 		}
 		default:

@@ -15,12 +15,10 @@ struct RenderingComponent final
 
 	}
 
-	std::optional<std::string> m_optMeshResourceName;
+	std::optional<std::string> m_optBaseShaderResourceName;
+	std::optional<std::string> m_optIDShaderResourceName;
 	std::optional<std::string> m_optTextureResourceName;
-
-	// TODO: Move these to ResourceManager
-	Shader *m_pShader = nullptr;
-	Shader *m_pIDShader = nullptr;
+	std::optional<std::string> m_optMeshResourceName;
 };
 
 } // namespace sl

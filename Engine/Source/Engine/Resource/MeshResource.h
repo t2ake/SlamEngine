@@ -34,7 +34,7 @@ public:
 	VertexArray *GetVertexArray() { return m_pVertexArray.get(); }
 
 private:
-	void DestroyCPUData();
+	virtual void DestroyCPUData() override;
 
 	std::string m_assetPath;
 
@@ -43,7 +43,6 @@ private:
 	std::vector<uint32_t> m_indicesowData;
 
 	std::unique_ptr<VertexArray> m_pVertexArray;
-
 };
 
 } // namespace sls

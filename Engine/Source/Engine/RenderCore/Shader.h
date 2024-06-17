@@ -19,7 +19,7 @@ namespace sl
 class Shader
 {
 public:
-	static Shader *Creat(std::string_view name, std::string_view vsSrc, std::string_view fsSrc);
+	static Shader *Creat(uint32_t programHandle);
 
 public:
 	virtual ~Shader() = default;
@@ -45,8 +45,6 @@ public:
 	virtual void UploadUniform(std::string_view name, const glm::mat2 &value) = 0;
 	virtual void UploadUniform(std::string_view name, const glm::mat3 &value) = 0;
 	virtual void UploadUniform(std::string_view name, const glm::mat4 &value) = 0;
-
-	virtual const std::string &GetName() const = 0;
 };
 
 } // namespace sl

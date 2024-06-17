@@ -41,15 +41,19 @@ SandboxLayer::SandboxLayer()
 	sl::ResourceManager::AddTextureResource("JCTexture", std::move(pTextureResource));
 	rendering.m_optTextureResourceName = "JCTexture";
 
-	sl::Shader *pShader = sl::Shader::Creat("Base",
+	auto pBaseShaderResource = std::make_unique<sl::ShaderResource>(
 		sl::Path::FromeAsset("Shader/vs_Base.glsl"),
-		sl::Path::FromeAsset("Shader/fs_Base.glsl"));
-	sl::Shader *pIDShader = sl::Shader::Creat("EntityID",
-		sl::Path::FromeAsset("Shader/vs_EntityID.glsl"),
-		sl::Path::FromeAsset("Shader/fs_EntityID.glsl"));
+		sl::Path::FromeAsset("Shader/fs_Base.glsl")
+	);
+	sl::ResourceManager::AddShaderResource("BaseShader", std::move(pBaseShaderResource));
+	rendering.m_optBaseShaderResourceName = "BaseShader";
 
-	rendering.m_pShader = pShader;
-	rendering.m_pIDShader = pIDShader;
+	auto pIDShaderResource = std::make_unique<sl::ShaderResource>(
+		sl::Path::FromeAsset("Shader/vs_EntityID.glsl"),
+		sl::Path::FromeAsset("Shader/fs_EntityID.glsl")
+	);
+	sl::ResourceManager::AddShaderResource("IDShader", std::move(pIDShaderResource));
+	rendering.m_optIDShaderResourceName = "IDShader";
 }
 
 SandboxLayer::~SandboxLayer()

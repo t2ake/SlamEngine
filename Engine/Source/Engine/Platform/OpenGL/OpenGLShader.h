@@ -10,8 +10,7 @@ namespace sl
 class OpenGLShader : public Shader
 {
 public:
-	OpenGLShader(std::string_view name, std::string_view vertexPath, std::string_view fragmentPath);
-	OpenGLShader(std::string_view name, std::string_view computePath);
+	OpenGLShader(uint32_t programHandle);
 	virtual ~OpenGLShader() override;
 
 	virtual void Bind() const override;
@@ -36,25 +35,10 @@ public:
 	virtual void UploadUniform(std::string_view name, const glm::mat3 &value) override;
 	virtual void UploadUniform(std::string_view name, const glm::mat4 &value) override;
 
-	virtual const std::string &GetName() const override
-	{
-		return m_shaderProgramName;
-	}
-
 private:
-	bool CompileShader(std::string src, ShaderType type);
-	bool CompileProgram();
-
 	int GetUniformLocation(std::string_view name);
 
-	std::string m_shaderProgramName = "Default Shader Name";
-	ShaderProgramType m_programType = ShaderProgramType::Standard;
-
-	uint32_t m_vertexShaderHandle = 0;
-	uint32_t m_fragmentShaderHandle = 0;
-	uint32_t m_computeShaderHandle = 0;
-	uint32_t m_programHandle = 0;
-
+	uint32_t m_programHandle;
 	std::unordered_map<std::string, int> m_uniformLocationCache;
 };
 

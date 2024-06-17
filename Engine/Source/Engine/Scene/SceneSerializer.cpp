@@ -88,11 +88,10 @@ void SceneSerializer::SerializeYAML(std::string_view sceneName)
 			out << YAML::Key << "Rendering Component";
 			out << YAML::BeginMap;
 
-			auto *pShader = pRendering->m_pShader;
-			out << YAML::Key << "Shader" << YAML::Value << (pShader ? pShader->GetName().c_str() : "");
-
-			auto *pIDShader = pRendering->m_pIDShader;
-			out << YAML::Key << "ID Shader" << YAML::Value << (pIDShader ? pIDShader->GetName().c_str() : "");
+			out << YAML::Key << "Base Shader" << YAML::Value << (pRendering->m_optBaseShaderResourceName ? pRendering->m_optBaseShaderResourceName->c_str() : "");
+			out << YAML::Key << "ID Shader" << YAML::Value << (pRendering->m_optIDShaderResourceName ? pRendering->m_optIDShaderResourceName->c_str() : "");
+			out << YAML::Key << "Texture" << YAML::Value << (pRendering->m_optTextureResourceName ? pRendering->m_optTextureResourceName->c_str() : "");
+			out << YAML::Key << "Mesh" << YAML::Value << (pRendering->m_optMeshResourceName ? pRendering->m_optMeshResourceName->c_str() : "");
 
 			out << YAML::EndMap;
 		}
@@ -264,13 +263,21 @@ bool SceneSerializer::DeserializeYAML(std::string_view sceneName)
 			if (auto redering = entity["Rendering Component"]; redering)
 			{
 				SL_ENGINE_TRACE("    Rendering Component:");
-				if (auto shader = redering["Shader"]; shader)
+				if (auto baseShader = redering["Base Shader"]; baseShader)
 				{
-					SL_ENGINE_TRACE("      Shader: {}", shader.as<std::string>());
+					SL_ENGINE_TRACE("      Base Shader: {}", baseShader.as<std::string>());
 				}
-				if (auto shader = redering["ID Shader"]; shader)
+				if (auto IDShader = redering["ID Shader"]; IDShader)
 				{
-					SL_ENGINE_TRACE("      ID Shader: {}", shader.as<std::string>());
+					SL_ENGINE_TRACE("      ID Shader: {}", IDShader.as<std::string>());
+				}
+				if (auto texture = redering["Texture"]; texture)
+				{
+					SL_ENGINE_TRACE("      Texture: {}", texture.as<std::string>());
+				}
+				if (auto mesh = redering["Mesh"]; mesh)
+				{
+					SL_ENGINE_TRACE("      Mesh: {}", mesh.as<std::string>());
 				}
 			}
 
