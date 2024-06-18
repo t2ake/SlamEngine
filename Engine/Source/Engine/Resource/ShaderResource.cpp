@@ -26,7 +26,7 @@ ShaderType ProgramTypeToShaderType(ShaderProgramType programType)
 		}
 		default:
 		{
-			SL_ENGINE_ASSERT(false);
+			SL_ASSERT(false);
 			return ShaderType::VertexShader;
 			break;
 		}

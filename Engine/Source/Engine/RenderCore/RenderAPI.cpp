@@ -13,7 +13,7 @@ RenderAPI *RenderAPI::Create()
 	{
 		case GraphicsBackend::None:
 		{
-			SL_ENGINE_ASSERT(false);
+			SL_ASSERT(false);
 			return nullptr;
 		}
 		case GraphicsBackend::OpenGL:
@@ -23,7 +23,7 @@ RenderAPI *RenderAPI::Create()
 		}
 		default:
 		{
-			SL_ENGINE_ASSERT(false);
+			SL_ASSERT(false);
 			return nullptr;
 		}
 	}

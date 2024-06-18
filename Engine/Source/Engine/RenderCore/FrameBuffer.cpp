@@ -13,7 +13,7 @@ FrameBuffer *FrameBuffer::Create(std::vector<Texture2D *> textures, bool destroy
 	{
 		case GraphicsBackend::None:
 		{
-			SL_ENGINE_ASSERT(false);
+			SL_ASSERT(false);
 			return nullptr;
 		}
 		case GraphicsBackend::OpenGL:
@@ -23,7 +23,7 @@ FrameBuffer *FrameBuffer::Create(std::vector<Texture2D *> textures, bool destroy
 		}
 		default:
 		{
-			SL_ENGINE_ASSERT(false);
+			SL_ASSERT(false);
 			return nullptr;
 		}
 	}

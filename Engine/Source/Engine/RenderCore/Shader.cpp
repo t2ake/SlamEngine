@@ -13,7 +13,7 @@ Shader *Shader::Creat(uint32_t programHandle)
 	{
 		case GraphicsBackend::None:
 		{
-			SL_ENGINE_ASSERT(false);
+			SL_ASSERT(false);
 			return nullptr;
 		}
 		case GraphicsBackend::OpenGL:
@@ -23,7 +23,7 @@ Shader *Shader::Creat(uint32_t programHandle)
 		}
 		default:
 		{
-			SL_ENGINE_ASSERT(false);
+			SL_ASSERT(false);
 			return nullptr;
 		}
 	}

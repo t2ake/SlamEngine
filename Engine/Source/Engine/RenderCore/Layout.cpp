@@ -55,7 +55,7 @@ UniformBufferLayout::UniformBufferLayout(std::initializer_list<UniformBufferLayo
 	uint32_t offset = 0;
 	for (auto &initor : initors)
 	{
-		SL_ENGINE_ASSERT_INFO(m_elements.find(initor.m_name.data()) == m_elements.end(), "Uniform buffer element already exists!");
+		SL_ASSERT_INFO(m_elements.find(initor.m_name.data()) == m_elements.end(), "Uniform buffer element already exists!");
 
 		UniformBufferLayoutElement element;
 		element.m_size = AttribTypeSize[(size_t)initor.m_type];
@@ -69,7 +69,7 @@ UniformBufferLayout::UniformBufferLayout(std::initializer_list<UniformBufferLayo
 
 void UniformBufferLayout::AddElement(std::string_view name, UniformBufferLayoutElement element)
 {
-	SL_ENGINE_ASSERT_INFO(m_elements.find(name.data()) == m_elements.end(), "Uniform buffer element already exists!");
+	SL_ASSERT_INFO(m_elements.find(name.data()) == m_elements.end(), "Uniform buffer element already exists!");
 
 	element.m_offset = m_offset;
 	m_offset += element.m_size;
@@ -80,14 +80,14 @@ void UniformBufferLayout::AddElement(std::string_view name, UniformBufferLayoutE
 
 uint32_t UniformBufferLayout::GetOffste(std::string_view name) const
 {
-	SL_ENGINE_ASSERT_INFO(m_elements.find(name.data()) != m_elements.end(), "Uniform buffer element does not exist!");
+	SL_ASSERT_INFO(m_elements.find(name.data()) != m_elements.end(), "Uniform buffer element does not exist!");
 
 	return m_elements.at(name.data()).m_offset;
 }
 
 uint32_t UniformBufferLayout::GetSize(std::string_view name) const
 {
-	SL_ENGINE_ASSERT_INFO(m_elements.find(name.data()) != m_elements.end(), "Uniform buffer element does not exist!");
+	SL_ASSERT_INFO(m_elements.find(name.data()) != m_elements.end(), "Uniform buffer element does not exist!");
 
 	return m_elements.at(name.data()).m_size;
 }

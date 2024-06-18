@@ -13,7 +13,7 @@ UniformBuffer *UniformBuffer::Create(uint32_t bindignPoint, UniformBufferLayout 
 	{
 		case GraphicsBackend::None:
 		{
-			SL_ENGINE_ASSERT(false);
+			SL_ASSERT(false);
 			return nullptr;
 		}
 		case GraphicsBackend::OpenGL:
@@ -23,7 +23,7 @@ UniformBuffer *UniformBuffer::Create(uint32_t bindignPoint, UniformBufferLayout 
 		}
 		default:
 		{
-			SL_ENGINE_ASSERT(false);
+			SL_ASSERT(false);
 			return nullptr;
 		}
 	}

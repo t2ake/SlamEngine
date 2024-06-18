@@ -13,7 +13,7 @@ VertexArray *VertexArray::Create()
 	{
 		case GraphicsBackend::None:
 		{
-			SL_ENGINE_ASSERT(false);
+			SL_ASSERT(false);
 			return nullptr;
 		}
 		case GraphicsBackend::OpenGL:
@@ -23,7 +23,7 @@ VertexArray *VertexArray::Create()
 		}
 		default:
 		{
-			SL_ENGINE_ASSERT(false);
+			SL_ASSERT(false);
 			return nullptr;
 		}
 	}

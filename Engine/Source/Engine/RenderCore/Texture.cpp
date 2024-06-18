@@ -13,7 +13,7 @@ Texture2D *Texture2D::Create(uint32_t width, uint32_t height, bool mipmap, Textu
 	{
 		case GraphicsBackend::None:
 		{
-			SL_ENGINE_ASSERT(false);
+			SL_ASSERT(false);
 			return nullptr;
 		}
 		case GraphicsBackend::OpenGL:
@@ -23,7 +23,7 @@ Texture2D *Texture2D::Create(uint32_t width, uint32_t height, bool mipmap, Textu
 		}
 		default:
 		{
-			SL_ENGINE_ASSERT(false);
+			SL_ASSERT(false);
 			return nullptr;
 		}
 	}

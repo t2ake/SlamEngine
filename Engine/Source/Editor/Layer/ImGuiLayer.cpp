@@ -576,7 +576,7 @@ void ImGuiLayer::ShowDetails()
 		std::string &name = pComponent->m_name;
 
 		constexpr size_t BufferSize = 256;
-		SL_ENGINE_ASSERT(BufferSize >= name.size());
+		SL_ASSERT(BufferSize >= name.size());
 
 		char buffer[BufferSize] = { 0 };
 		memcpy(buffer, name.c_str(), name.size());
@@ -893,7 +893,7 @@ void ImGuiLayer::MousePick()
 	// Origin is on the upper left of scene viewport.
 	uint32_t mouseLocalPosX = (uint32_t)ImGui::GetMousePos().x - m_sceneViewportWindowPosX;
 	uint32_t mouseLocalPosY = (uint32_t)ImGui::GetMousePos().y - (m_sceneViewportWindowPosY + (uint32_t)GetTitleBarSize());
-	SL_ENGINE_ASSERT(mouseLocalPosX >= 0 && mouseLocalPosY >= 0 &&
+	SL_ASSERT(mouseLocalPosX >= 0 && mouseLocalPosY >= 0 &&
 		mouseLocalPosX < m_sceneViewportSizeX && mouseLocalPosY < m_sceneViewportSizeY);
 
 	auto *pEntityIDFB = sl::RenderCore::GetEntityIDFramebuffer();

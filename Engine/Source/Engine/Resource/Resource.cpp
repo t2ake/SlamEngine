@@ -45,7 +45,7 @@ void Resource::Update()
 		}
 		default:
 		{
-			SL_ENGINE_ASSERT_INFO(false, "Unknown resource state!");
+			SL_ASSERT_INFO(false, "Unknown resource state!");
 			break;
 		}
 	}

@@ -111,8 +111,9 @@ public:
 	#define SL_LOG_FATAL(...) ::sl::Log::GetEngineLogger()->critical(__VA_ARGS__)
 
 	// Assertions
-	#define SL_ENGINE_ASSERT(x) { if(!(x)){ SL_DEBUGBREAK(); } }
-	#define SL_ENGINE_ASSERT_INFO(x, ...) { if(!(x)){ SL_LOG_FATAL(__VA_ARGS__); SL_DEBUGBREAK(); } }
+	#define SL_ASSERT(x) { if(!(x)) { SL_DEBUGBREAK(); } }
+	#define SL_ASSERT_INFO(x, ...) { if(!(x)) { SL_LOG_FATAL(__VA_ARGS__); SL_DEBUGBREAK(); } }
+	#define SL_ASSERT_OPT(x, ...) { if(!(x)) { __VA_OPT__(SL_LOG_FATAL(__VA_ARGS__);) SL_DEBUGBREAK(); } }
 #else
 	#define SL_LOG_TRACE(...)
 	#define SL_LOG_DEBUG(...)
@@ -120,6 +121,6 @@ public:
 	#define SL_LOG_WARN(...)
 	#define SL_LOG_ERROR(...)
 	#define SL_LOG_FATAL(...)
-	#define SL_ENGINE_ASSERT(x)
-	#define SL_ENGINE_ASSERT_INFO(x, ...)
+	#define SL_ASSERT(x)
+	#define SL_ASSERT_INFO(x, ...)
 #endif

@@ -19,7 +19,7 @@ Window::Window(std::string_view title, uint32_t width, uint32_t height) :
 	SL_LOG_INFO("Create window \"{}\" ({}, {})", m_title, m_width, m_height);
 
 	bool success = glfwInit();
-	SL_ENGINE_ASSERT_INFO(success, "GLFW init failed!");
+	SL_ASSERT_INFO(success, "GLFW initialization failed!");
 
 	if (GraphicsBackend::OpenGL == RenderCore::GetBackend())
 	{
@@ -29,11 +29,11 @@ Window::Window(std::string_view title, uint32_t width, uint32_t height) :
 	}
 	else
 	{
-		SL_ENGINE_ASSERT_INFO(false, "Slam only support OpenGL for now!");
+		SL_ASSERT_INFO(false, "Slam only support OpenGL for now!");
 	}
 
 	m_pNativeWindow = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
-	SL_ENGINE_ASSERT_INFO(m_pNativeWindow, "GLFW creat window failed!");
+	SL_ASSERT_INFO(m_pNativeWindow, "GLFW creating window failed!");
 	m_pRenderContext.reset(RenderContext::Create(m_pNativeWindow));
 
 	const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -140,7 +140,7 @@ void Window::SetCallbacks()
 			}
 			default:
 			{
-				SL_ENGINE_ASSERT(false);
+				SL_ASSERT(false);
 			}
 		}
 	});
@@ -172,7 +172,7 @@ void Window::SetCallbacks()
 			}
 			default:
 			{
-				SL_ENGINE_ASSERT(false);
+				SL_ASSERT(false);
 			}
 		}
 	});
@@ -213,7 +213,6 @@ void Window::SetCallbacks()
 			SL_LOG_ERROR("Only support droping one file at a time.");
 			return;
 		}
-		SL_ENGINE_ASSERT(1 == path_count);
 
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
 		WindowDropEvent event{ paths[0] };

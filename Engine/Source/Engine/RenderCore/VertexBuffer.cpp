@@ -13,7 +13,7 @@ VertexBuffer *VertexBuffer::Create(const float *pVertices, size_t size)
 	{
 		case GraphicsBackend::None:
 		{
-			SL_ENGINE_ASSERT(false);
+			SL_ASSERT(false);
 			return nullptr;
 		}
 		case GraphicsBackend::OpenGL:
@@ -23,7 +23,7 @@ VertexBuffer *VertexBuffer::Create(const float *pVertices, size_t size)
 		}
 		default:
 		{
-			SL_ENGINE_ASSERT(false);
+			SL_ASSERT(false);
 			return nullptr;
 		}
 	}

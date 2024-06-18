@@ -37,13 +37,13 @@ void OpenGLUniformBuffer::Unbind() const
 
 void OpenGLUniformBuffer::Upload(std::string_view name, const glm::vec4 &value) const
 {
-	SL_ENGINE_ASSERT(m_layout.GetSize(name) == sizeof(value));
+	SL_ASSERT(m_layout.GetSize(name) == sizeof(value));
 	glBufferSubData(GL_UNIFORM_BUFFER, m_layout.GetOffste(name), m_layout.GetSize(name), glm::value_ptr(value));
 }
 
 void OpenGLUniformBuffer::Upload(std::string_view name, const glm::mat4 &value) const
 {
-	SL_ENGINE_ASSERT(m_layout.GetSize(name) == sizeof(value));
+	SL_ASSERT(m_layout.GetSize(name) == sizeof(value));
 	glBufferSubData(GL_UNIFORM_BUFFER, m_layout.GetOffste(name), m_layout.GetSize(name), glm::value_ptr(value));
 }
 

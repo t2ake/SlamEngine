@@ -89,7 +89,7 @@ static void ResourceManager::AddResource(std::string_view name, std::unique_ptr<
 	}
 	else
 	{
-		SL_ENGINE_ASSERT(false);
+		SL_ASSERT(false);
 	}
 }
 
@@ -119,7 +119,7 @@ static T* ResourceManager::GetResource(std::string_view name)
 	}
 	else
 	{
-		SL_ENGINE_ASSERT(false);
+		SL_ASSERT(false);
 	}
 
 	return nullptr;
