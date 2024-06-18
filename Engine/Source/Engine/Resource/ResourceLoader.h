@@ -19,7 +19,7 @@ public:
 		std::ifstream in(filePath.data(), std::ios::in | std::ios::binary);
 		if (!in)
 		{
-			SL_ENGINE_ERROR("Can not open file: \"{}\"", filePath.data());
+			SL_LOG_ERROR("Can not open file: \"{}\"", filePath.data());
 			return fileData;
 		}
 

@@ -15,11 +15,11 @@ void RenderCore::Init()
 	m_pRenderAPI = RenderAPI::Create();
 	m_info = m_pRenderAPI->GetBackendInfo();
 
-	SL_ENGINE_TRACE("  Max texture size: {}", m_info.m_maxTextureSize);
-	SL_ENGINE_TRACE("  Max framebuffer size: {}", m_info.m_maxFramebufferSize);
-	SL_ENGINE_TRACE("  Max framebuffer color attachment count: {}", m_info.m_maxFramebufferColorAttachmentCount);
-	SL_ENGINE_TRACE("  Max vertex uniform component count: {}", m_info.m_maxVertexUniformComponentCount);
-	SL_ENGINE_TRACE("  Max fragment uniform component count: {}", m_info.m_maxFragmentUniformComponentCount);
+	SL_LOG_TRACE("  Max texture size: {}", m_info.m_maxTextureSize);
+	SL_LOG_TRACE("  Max framebuffer size: {}", m_info.m_maxFramebufferSize);
+	SL_LOG_TRACE("  Max framebuffer color attachment count: {}", m_info.m_maxFramebufferColorAttachmentCount);
+	SL_LOG_TRACE("  Max vertex uniform component count: {}", m_info.m_maxVertexUniformComponentCount);
+	SL_LOG_TRACE("  Max fragment uniform component count: {}", m_info.m_maxFragmentUniformComponentCount);
 }
 
 void RenderCore::SetDefaultState()

@@ -42,7 +42,7 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool des
 			minWidth = std::min(minWidth, textureWidth);
 			minHeight = std::min(minHeight, textureHeight);
 
-			SL_ENGINE_WARN("Creating framebuffer with textures of different sizes, shrink to the minimal one: ({}, {})", minWidth, minHeight);
+			SL_LOG_WARN("Creating framebuffer with textures of different sizes, shrink to the minimal one: ({}, {})", minWidth, minHeight);
 		}
 	}
 	SL_ENGINE_ASSERT_INFO(colorAttachmentIndex, "Can not create framebuffer without any color attachments!");
@@ -82,7 +82,7 @@ void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 {
 	if (width <= 0 || height <= 0 || width > RenderCore::GetMaxFramebufferSize() || height > RenderCore::GetMaxFramebufferSize())
 	{
-		SL_ENGINE_ERROR("Invalid frame bufferr size!");
+		SL_LOG_ERROR("Invalid frame bufferr size!");
 		return;
 	}
 
@@ -164,7 +164,7 @@ void OpenGLFrameBuffer::Create()
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		SL_ENGINE_ERROR("Incomplete frame buffer!");
+		SL_LOG_ERROR("Incomplete frame buffer!");
 	}
 }
 

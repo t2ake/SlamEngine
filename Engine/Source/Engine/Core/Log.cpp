@@ -20,10 +20,10 @@ void Log::Init()
 
 	std::vector<spdlog::sink_ptr> sinks{ pConsoleSink  , pFileSink };
 
-	s_pEngineLogger = std::make_shared<spdlog::logger>("Engine", sinks.begin(), sinks.end());
+	s_pEngineLogger = std::make_unique<spdlog::logger>("Engine", sinks.begin(), sinks.end());
 	s_pEngineLogger->set_level(spdlog::level::trace);
 
-	s_pEditorLogger = std::make_shared<spdlog::logger>("Editor", sinks.begin(), sinks.end());
+	s_pEditorLogger = std::make_unique<spdlog::logger>("Editor", sinks.begin(), sinks.end());
 	s_pEditorLogger->set_level(spdlog::level::trace);
 }
 

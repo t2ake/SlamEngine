@@ -61,7 +61,7 @@ static void ResourceManager::AddResource(std::string_view name, std::unique_ptr<
 	{
 		if (const auto& it = m_pShaderResources.find(name.data()); m_pShaderResources.end() != it)
 		{
-			SL_ENGINE_WARN("Resource \"{}\" already exists!", name.data());
+			SL_LOG_WARN("Resource \"{}\" already exists!", name.data());
 			return;
 		}
 
@@ -71,7 +71,7 @@ static void ResourceManager::AddResource(std::string_view name, std::unique_ptr<
 	{
 		if (const auto& it = m_pTextureResources.find(name.data()); m_pTextureResources.end() != it)
 		{
-			SL_ENGINE_WARN("Resource \"{}\" already exists!", name.data());
+			SL_LOG_WARN("Resource \"{}\" already exists!", name.data());
 			return;
 		}
 
@@ -81,7 +81,7 @@ static void ResourceManager::AddResource(std::string_view name, std::unique_ptr<
 	{
 		if (const auto& it = m_pMeshResources.find(name.data()); m_pMeshResources.end() != it)
 		{
-			SL_ENGINE_WARN("Resource \"{}\" already exists!", name.data());
+			SL_LOG_WARN("Resource \"{}\" already exists!", name.data());
 			return;
 		}
 

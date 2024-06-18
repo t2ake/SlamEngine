@@ -118,7 +118,7 @@ int OpenGLShader::GetUniformLocation(std::string_view name)
 		location = (int)glGetUniformLocation(m_programHandle, name.data());
 		if (-1 == location)
 		{
-			SL_ENGINE_ERROR("Can not find uniform location: \"{}\"", name);
+			SL_LOG_ERROR("Can not find uniform location: \"{}\"", name);
 		}
 		m_uniformLocationCache[name.data()] = location;
 	}

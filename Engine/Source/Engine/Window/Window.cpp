@@ -16,7 +16,7 @@ namespace sl
 Window::Window(std::string_view title, uint32_t width, uint32_t height) :
 	m_title(title), m_width(width), m_height(height)
 {
-	SL_ENGINE_INFO("Create window \"{}\" ({}, {})", m_title, m_width, m_height);
+	SL_LOG_INFO("Create window \"{}\" ({}, {})", m_title, m_width, m_height);
 
 	bool success = glfwInit();
 	SL_ENGINE_ASSERT_INFO(success, "GLFW init failed!");
@@ -210,7 +210,7 @@ void Window::SetCallbacks()
 	{
 		if (path_count > 1)
 		{
-			SL_ENGINE_ERROR("Only support droping one file at a time.");
+			SL_LOG_ERROR("Only support droping one file at a time.");
 			return;
 		}
 		SL_ENGINE_ASSERT(1 == path_count);
@@ -222,7 +222,7 @@ void Window::SetCallbacks()
 
 	glfwSetErrorCallback([](int error_code, const char *description)
 	{
-		SL_ENGINE_ERROR("GLFW error {}: {}", error_code, description);
+		SL_LOG_ERROR("GLFW error {}: {}", error_code, description);
 	});
 }
 

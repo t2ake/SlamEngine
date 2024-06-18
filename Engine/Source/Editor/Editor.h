@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Core/Core.h"
 #include "Core/Defines.h"
 #include "Core/Timer.h"
 
 #include <memory>
+#include <string>
 
 namespace sl
 {

@@ -24,7 +24,7 @@ constexpr uint32_t AttribTypeSize[nameof::enum_count<AttribType>()] =
 	64, // AttribType::mat4f
 };
 
-}
+} // namespace
 
 VertexLayoutElement::VertexLayoutElement(std::string_view name, AttribType type, uint32_t count, bool normalize) :
 	m_name(name), m_offset(0) , m_size(AttribTypeSize[(size_t)type] * count), m_count(count), m_type(type), m_normalize(normalize)

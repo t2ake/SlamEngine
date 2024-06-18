@@ -263,7 +263,7 @@ void ImGuiLayer::ShowMenuBar()
 	{
 		if (ImGui::MenuItem("New"))
 		{
-			SL_EDITOR_ERROR("TODO: New scene button");
+			SL_LOG_ERROR("TODO: New scene button");
 		}
 		if (ImGui::MenuItem("Open"))
 		{
@@ -554,7 +554,7 @@ void ImGuiLayer::AddComponent(const char *label)
 		}
 		else
 		{
-			SL_ENGINE_WARN("Entity \"{}\" already has component \"{}\"", m_selectedEntity.GetComponent<sl::TagComponent>().m_name, label);
+			SL_LOG_WARN("Entity \"{}\" already has component \"{}\"", m_selectedEntity.GetComponent<sl::TagComponent>().m_name, label);
 		}
 	}
 }
@@ -576,7 +576,7 @@ void ImGuiLayer::ShowDetails()
 		std::string &name = pComponent->m_name;
 
 		constexpr size_t BufferSize = 256;
-		SL_EDITOR_ASSERT(BufferSize >= name.size());
+		SL_ENGINE_ASSERT(BufferSize >= name.size());
 
 		char buffer[BufferSize] = { 0 };
 		memcpy(buffer, name.c_str(), name.size());
@@ -911,7 +911,7 @@ void ImGuiLayer::MousePick()
 		return;
 	}
 
-	SL_ENGINE_TRACE("Select enttiy Name: \"{}\", ID: {}, Mouse position: ({}, {})",
+	SL_LOG_TRACE("Select enttiy Name: \"{}\", ID: {}, Mouse position: ({}, {})",
 		crtEntity.GetComponent<sl::TagComponent>().m_name.c_str(), entityID,
 		mouseLocalPosX, mouseLocalPosY);
 

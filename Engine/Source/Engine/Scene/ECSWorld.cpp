@@ -23,11 +23,11 @@ void ECSWorld::DestroyEntity(Entity entity)
 	}
 	if (entity.TryGetComponent<sl::CornerstoneComponent>())
 	{
-		SL_ENGINE_WARN("Attempt to destroy entity \"{}\" with Cornerstone component!", entity.GetComponent<sl::TagComponent>().m_name);
+		SL_LOG_WARN("Attempt to destroy entity \"{}\" with Cornerstone component!", entity.GetComponent<sl::TagComponent>().m_name);
 		return;
 	}
 
-	SL_ENGINE_TRACE("Destroy Entity: \"{}\"", entity.GetComponent<sl::TagComponent>().m_name);
+	SL_LOG_TRACE("Destroy Entity: \"{}\"", entity.GetComponent<sl::TagComponent>().m_name);
 	m_registry.destroy(entity);
 	entity.Reset();
 }

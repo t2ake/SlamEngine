@@ -1,6 +1,7 @@
 #include "ShaderResource.h"
 
 #include "Core/Log.h"
+#include "Core/Path.hpp"
 #include "RenderCore/Shader.h"
 #include "Resource/ResourceLoader.h"
 
@@ -32,13 +33,13 @@ ShaderType ProgramTypeToShaderType(ShaderProgramType programType)
 	}
 }
 
-uint32_t CompileShader(ShaderType type, const void *src, size_t size)
+uint32_t CompileShader(ShaderType type, const char *src, size_t size)
 {
 	GLuint shaderHandle = glCreateShader(GLShaderType[(size_t)type]);
 
-	const GLchar* source = static_cast<const GLchar*>(src);
+	const GLchar* pSource = static_cast<const GLchar*>(src);
 	const GLint GLsize = (GLint)size;
-	glShaderSource(shaderHandle, 1, &source, &GLsize);
+	glShaderSource(shaderHandle, 1, &pSource, &GLsize);
 	glCompileShader(shaderHandle);
 
 #ifndef SL_FINAL
@@ -52,7 +53,7 @@ uint32_t CompileShader(ShaderType type, const void *src, size_t size)
 		// The maxLength includes the NULL character
 		std::vector<GLchar> infoLog(maxLength);
 		glGetShaderInfoLog(shaderHandle, maxLength, &maxLength, infoLog.data());
-		SL_ENGINE_ERROR("Shader compile failed: {}", infoLog.data());
+		SL_LOG_ERROR("Shader compile failed: {}", infoLog.data());
 
 		glDeleteShader(shaderHandle);
 
@@ -81,7 +82,7 @@ uint32_t CompileProgram(uint32_t vsHandle, uint32_t fsHandle)
 		// The maxLength includes the NULL character
 		std::vector<GLchar> infoLog(maxLength);
 		glGetProgramInfoLog(programHandle, maxLength, &maxLength, infoLog.data());
-		SL_ENGINE_ERROR("Shader program compile failed: {}", infoLog.data());
+		SL_LOG_ERROR("Shader program compile failed: {}", infoLog.data());
 
 		glDeleteProgram(programHandle);
 		glDeleteShader(vsHandle);
@@ -116,7 +117,7 @@ uint32_t CompileProgram(uint32_t handle)
 		// The maxLength includes the NULL character
 		std::vector<GLchar> infoLog(maxLength);
 		glGetProgramInfoLog(programHandle, maxLength, &maxLength, infoLog.data());
-		SL_ENGINE_ERROR("Shader program compile failed: {}", infoLog.data());
+		SL_LOG_ERROR("Shader program compile failed: {}", infoLog.data());
 
 		glDeleteProgram(programHandle);
 		glDeleteShader(handle);
@@ -160,10 +161,12 @@ ShaderResource::~ShaderResource()
 
 void ShaderResource::OnImport()
 {
+	SL_LOG_TRACE("Loading shader: \"{}\"", m_shaders[0].m_assetPath.c_str());
 	m_shaders[0].m_rowData = ResourceLoader::LoadFile(m_shaders[0].m_assetPath);
 
 	if (ShaderProgramType::Standard == m_programType)
 	{
+		SL_LOG_TRACE("Loading shader: \"{}\"", m_shaders[1].m_assetPath.c_str());
 		m_shaders[1].m_rowData = ResourceLoader::LoadFile(m_shaders[1].m_assetPath);
 	}
 
@@ -183,7 +186,8 @@ void ShaderResource::OnLoad()
 void ShaderResource::OnUpload()
 {
 	const auto& shader0 = m_shaders[0];
-	uint32_t shaderHandle = CompileShader(shader0.m_type, shader0.m_rowData.data(), shader0.m_rowData.size());
+	SL_LOG_TRACE("Compiling shader: \"{}\"", Path::NameWithoutExtension(shader0.m_assetPath).c_str());
+	uint32_t shaderHandle = CompileShader(shader0.m_type, (const char *)shader0.m_rowData.data(), shader0.m_rowData.size());
 
 	if (0 == shaderHandle)
 	{
@@ -195,7 +199,8 @@ void ShaderResource::OnUpload()
 	if (ShaderProgramType::Standard == m_programType)
 	{
 		const auto& fragmentShader = m_shaders[1];
-		uint32_t fsHandle = CompileShader(fragmentShader.m_type, fragmentShader.m_rowData.data(), fragmentShader.m_rowData.size());
+		SL_LOG_TRACE("Compiling shader: \"{}\"", Path::NameWithoutExtension(fragmentShader.m_assetPath).c_str());
+		uint32_t fsHandle = CompileShader(fragmentShader.m_type, (const char *)fragmentShader.m_rowData.data(), fragmentShader.m_rowData.size());
 
 		if (0 == fsHandle)
 		{
@@ -203,10 +208,12 @@ void ShaderResource::OnUpload()
 			return;
 		}
 
+		SL_LOG_TRACE("Compiling shader program");
 		programHandle = CompileProgram(shaderHandle, fsHandle);
 	}
 	else
 	{
+		SL_LOG_TRACE("Compiling shader program");
 		programHandle = CompileProgram(shaderHandle);
 	}
 

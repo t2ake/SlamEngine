@@ -20,6 +20,21 @@ public:
 		return std::filesystem::exists(path);
 	}
 
+	SL_FORCEINLINE static std::string NameWithExtension(std::string_view path)
+	{
+		return std::filesystem::path{ path }.filename().generic_string();
+	}
+
+	SL_FORCEINLINE static std::string NameWithoutExtension(std::string_view path)
+	{
+		return std::filesystem::path{ path }.stem().generic_string();
+	}
+
+	SL_FORCEINLINE static std::string Extension(std::string_view path)
+	{
+		return std::filesystem::path{ path }.extension().generic_string();
+	}
+
 	SL_FORCEINLINE static std::string FromeRoot(std::string_view path = "")
 	{
 		return (std::filesystem::path{ RootPath } / path).generic_string();

@@ -30,7 +30,7 @@ void OpenGLTexture2D::Resize(uint32_t width, uint32_t height, const void *pData)
 {
 	if (width <= 0 || height <= 0 || width > RenderCore::GetMaxTextureSize() || height > RenderCore::GetMaxTextureSize())
 	{
-		SL_ENGINE_ERROR("Invalid texture size!");
+		SL_LOG_ERROR("Invalid texture size!");
 		return;
 	}
 

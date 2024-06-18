@@ -23,14 +23,7 @@ TextureResource::~TextureResource()
 
 void TextureResource::OnImport()
 {
-	if (!Path::Exists(m_assetPath.c_str()))
-	{
-		SL_ENGINE_ERROR("File does not exist: \"{}\"", m_assetPath.c_str());
-		SetStatus(ResourceStatus::Destroying);
-		return;
-	}
-
-	SL_ENGINE_TRACE("Loading image: \"{}\"", m_assetPath.c_str());
+	SL_LOG_TRACE("Loading image: \"{}\"", m_assetPath.c_str());
 	const auto originalData = ResourceLoader::LoadFile(m_assetPath);
 
 	// The first pixel should at the bottom left.
@@ -50,7 +43,7 @@ void TextureResource::OnImport()
 
 	if (!pTextureData || width <= 0 || height <= 0 || channels <= 0)
 	{
-		SL_ENGINE_ERROR("Invalid texture: \"{}\"", m_assetPath.c_str());
+		SL_LOG_ERROR("Invalid texture: \"{}\"", m_assetPath.c_str());
 		SetStatus(ResourceStatus::Destroying);
 		return;
 	}
@@ -59,7 +52,7 @@ void TextureResource::OnImport()
 	m_height = (uint32_t)height;
 	m_channels = (uint32_t)channels;
 	m_isHDR = isHDR;
-	SL_ENGINE_TRACE("  Width: {}, Height: {}, Channels: {}, IsHDR: {}", m_width, m_height, m_channels, m_isHDR);
+	SL_LOG_TRACE("  Width: {}, Height: {}, Channels: {}, IsHDR: {}", m_width, m_height, m_channels, m_isHDR);
 
 	m_rowData.resize(m_width * m_height * m_channels * (m_isHDR ? 4 : 1));
 	memcpy(m_rowData.data(), pTextureData, m_rowData.size());
@@ -99,7 +92,7 @@ void TextureResource::OnUpload()
 	}
 	else
 	{
-		SL_ENGINE_ERROR("Unknown image texture format!");
+		SL_LOG_ERROR("Unknown image texture format!");
 		SetStatus(ResourceStatus::Destroying);
 		return;
 	}
