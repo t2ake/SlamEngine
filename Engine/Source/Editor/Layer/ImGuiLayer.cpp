@@ -574,10 +574,11 @@ void ImGuiLayer::ShowDetails()
 	DrawComponent<sl::TagComponent>("Tag", [this](sl::TagComponent *pComponent)
 	{
 		std::string &name = pComponent->m_name;
-
 		constexpr size_t BufferSize = 256;
-		SL_ASSERT(BufferSize > name.size());
-
+		SL_ASSERT(BufferSize > name.size(),
+			"ImGui ensure that InputText() returns a null-terminated character array, "
+			"it also means that character buffer[BufferSize - 1] will be discard.");
+		
 		char buffer[BufferSize] = { 0 };
 		memcpy(buffer, name.c_str(), name.size());
 
