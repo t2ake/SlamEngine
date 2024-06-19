@@ -13,7 +13,7 @@ namespace sl
 OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool destroy) :
 	m_destroyTextureWithFramebuffer(destroy)
 {
-	SL_ASSERT_INFO(!textures.empty(), "Can not create framebuffer without any textures!");
+	SL_ASSERT(!textures.empty(), "Can not create framebuffer without any textures!");
 
 	uint32_t minWidth = textures[0]->GetHeight();
 	uint32_t minHeight = textures[0]->GetHeight();
@@ -29,7 +29,7 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool des
 		{
 			attachmentPoint += colorAttachmentIndex++;
 
-			SL_ASSERT_INFO(attachmentPoint < GL_COLOR_ATTACHMENT0 + RenderCore::GetMaxFramebufferColorAttachmentCount(),
+			SL_ASSERT(attachmentPoint < GL_COLOR_ATTACHMENT0 + RenderCore::GetMaxFramebufferColorAttachmentCount(),
 				"Color attachments count exceeds the limit!");
 		}
 
@@ -45,7 +45,7 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool des
 			SL_LOG_WARN("Creating framebuffer with textures of different sizes, shrink to the minimal one: ({}, {})", minWidth, minHeight);
 		}
 	}
-	SL_ASSERT_INFO(colorAttachmentIndex, "Can not create framebuffer without any color attachments!");
+	SL_ASSERT(colorAttachmentIndex, "Can not create framebuffer without any color attachments!");
 
 	m_width = minWidth;
 	m_height = minHeight;
@@ -106,14 +106,14 @@ void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 
 void OpenGLFrameBuffer::Clear(uint32_t attachmentIndex, const void *pClearData) const
 {
-	SL_ASSERT_INFO(attachmentIndex < m_attachments.size(), "Attachment index out of range!");
+	SL_ASSERT(attachmentIndex < m_attachments.size(), "Attachment index out of range!");
 
 	m_attachments.at(attachmentIndex).m_pTexture->Clear(pClearData);
 }
 
 int OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex, uint32_t x, uint32_t y)
 {
-	SL_ASSERT_INFO(attachmentIndex < m_colorAttachmentCount, "Attachment index out of range!");
+	SL_ASSERT(attachmentIndex < m_colorAttachmentCount, "Attachment index out of range!");
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
 	glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);

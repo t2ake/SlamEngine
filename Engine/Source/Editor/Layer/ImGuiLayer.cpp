@@ -576,7 +576,7 @@ void ImGuiLayer::ShowDetails()
 		std::string &name = pComponent->m_name;
 
 		constexpr size_t BufferSize = 256;
-		SL_ASSERT(BufferSize >= name.size());
+		SL_ASSERT(BufferSize > name.size());
 
 		char buffer[BufferSize] = { 0 };
 		memcpy(buffer, name.c_str(), name.size());

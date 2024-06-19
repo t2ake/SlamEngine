@@ -30,7 +30,16 @@ workspace("SlamEngine")
 	rtti("Off")
 	exceptionhandling("Off")
 	justmycode("Off")
-	editAndContinue("Off")
+
+	filter { "action:vs*" }
+		-- To enable __VA_OPT__ stuff for VS with C++20.
+		-- https://learn.microsoft.com/en-us/cpp/preprocessor/preprocessor-experimental-overview?view=msvc-170
+
+		-- Don't know why 'usestandardpreprocessor' doesn't works here.
+		-- https://premake.github.io/docs/usestandardpreprocessor
+
+		buildoptions { "/Zc:preprocessor" }
+	filter {}
 
 	startproject("Editor")
 	

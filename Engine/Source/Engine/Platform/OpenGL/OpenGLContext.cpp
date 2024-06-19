@@ -13,7 +13,7 @@ OpenGLContext::OpenGLContext(void *pWindow) : m_pWindow(pWindow)
 	glfwMakeContextCurrent(static_cast<GLFWwindow *>(m_pWindow));
 
 	bool success = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-	SL_ASSERT_INFO(success, "GLAD context initialization failed!");
+	SL_ASSERT(success, "GLAD context initialization failed!");
 
 	SL_LOG_INFO("OpenGL inof:");
 	SL_LOG_INFO("  Vendor: {}", (const char *)glGetString(GL_VENDOR));

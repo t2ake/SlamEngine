@@ -46,7 +46,7 @@ public:
 	template<class T, class... Args>
 	decltype(auto) AddComponent(Args&&... args)
 	{
-		SL_ASSERT_INFO(!HasAllComponent<T>(), "Entity already holds component!");
+		SL_ASSERT(!HasAllComponent<T>(), "Entity already holds component!");
 		return ECSWorld::m_registry.emplace<T>(m_handle, std::forward<Args>(args)...);
 	}
 
@@ -54,7 +54,7 @@ public:
 	template<class T, class... Args>
 	decltype(auto) ReplaceComponent(Args&&... args)
 	{
-		SL_ASSERT_INFO(HasAllComponent<T>(), "Entity does not hold component!");
+		SL_ASSERT(HasAllComponent<T>(), "Entity does not hold component!");
 		return ECSWorld::m_registry.replace<T>(m_handle, std::forward<Args>(args)...);
 	}
 
@@ -69,7 +69,7 @@ public:
 	template<class... T>
 	decltype(auto) GetComponent()
 	{
-		SL_ASSERT_INFO(HasAllComponent<T...>(), "Entity does not hold component!");
+		SL_ASSERT(HasAllComponent<T...>(), "Entity does not hold any components!");
 		return ECSWorld::m_registry.get<T...>(m_handle);
 	}
 

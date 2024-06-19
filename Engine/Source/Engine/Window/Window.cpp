@@ -19,7 +19,7 @@ Window::Window(std::string_view title, uint32_t width, uint32_t height) :
 	SL_LOG_INFO("Create window \"{}\" ({}, {})", m_title, m_width, m_height);
 
 	bool success = glfwInit();
-	SL_ASSERT_INFO(success, "GLFW initialization failed!");
+	SL_ASSERT(success, "GLFW initialization failed!");
 
 	if (GraphicsBackend::OpenGL == RenderCore::GetBackend())
 	{
@@ -29,11 +29,11 @@ Window::Window(std::string_view title, uint32_t width, uint32_t height) :
 	}
 	else
 	{
-		SL_ASSERT_INFO(false, "Slam only support OpenGL for now!");
+		SL_ASSERT(false, "Slam only support OpenGL for now!");
 	}
 
 	m_pNativeWindow = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
-	SL_ASSERT_INFO(m_pNativeWindow, "GLFW creating window failed!");
+	SL_ASSERT(m_pNativeWindow, "GLFW creating window failed!");
 	m_pRenderContext.reset(RenderContext::Create(m_pNativeWindow));
 
 	const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());

@@ -31,7 +31,7 @@ void OpenGLVertexArray::Unbind() const
 
 void OpenGLVertexArray::SetVertexBuffer(VertexBuffer *pVertexBuffer)
 {
-	SL_ASSERT_INFO(pVertexBuffer->GetLayout().GetElementCount(), "VertexBuffer has no layout!");
+	SL_ASSERT(pVertexBuffer->GetLayout().GetElementCount(), "VertexBuffer has no layout!");
 
 	glBindVertexArray(m_handle);
 
