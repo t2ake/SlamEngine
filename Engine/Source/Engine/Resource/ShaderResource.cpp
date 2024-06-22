@@ -31,9 +31,9 @@ constexpr const char *BackendToDef[nameof::enum_count<GraphicsBackend>()] =
 
 constexpr shaderc_shader_kind ShaderTypeToShaderKind[nameof::enum_count<ShaderType>()] =
 {
-	shaderc_vertex_shader,	 //	ShaderType::VertexShader
-	shaderc_fragment_shader, //	ShaderType::FragmentShader
-	shaderc_compute_shader,	 //	ShaderType::ComputeShader
+	shaderc_vertex_shader,	 // ShaderType::VertexShader
+	shaderc_fragment_shader, // ShaderType::FragmentShader
+	shaderc_compute_shader,	 // ShaderType::ComputeShader
 };
 
 ShaderType ProgramTypeToShaderType(ShaderProgramType programType)

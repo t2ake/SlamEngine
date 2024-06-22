@@ -929,30 +929,30 @@ bool ImGuiLayer::OnKeyPressed(sl::KeyPressEvent& event)
 	auto key = event.GetKey();
 	switch (key)
 	{
-	case SL_KEY_Q:
-	{
-		m_imguizmoMode = -1;
-		break;
-	}
-	case SL_KEY_W:
-	{
-		m_imguizmoMode = ImGuizmo::OPERATION::TRANSLATE;
-		break;
-	}
-	case SL_KEY_E:
-	{
-		m_imguizmoMode = ImGuizmo::OPERATION::ROTATE;
-		break;
-	}
-	case SL_KEY_R:
-	{
-		m_imguizmoMode = ImGuizmo::OPERATION::SCALE;
-		break;
-	}
-	default:
-	{
-		break;
-	}
+		case SL_KEY_Q:
+		{
+			m_imguizmoMode = -1;
+			break;
+		}
+		case SL_KEY_W:
+		{
+			m_imguizmoMode = ImGuizmo::OPERATION::TRANSLATE;
+			break;
+		}
+		case SL_KEY_E:
+		{
+			m_imguizmoMode = ImGuizmo::OPERATION::ROTATE;
+			break;
+		}
+		case SL_KEY_R:
+		{
+			m_imguizmoMode = ImGuizmo::OPERATION::SCALE;
+			break;
+		}
+		default:
+		{
+			break;
+		}
 	}
 
 	return false;
