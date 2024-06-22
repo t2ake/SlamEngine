@@ -52,35 +52,23 @@ project("Editor")
 		libdirs
 		{
 			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
-			path.join(ThirdPartyPath, "glfw/build/src/Debug"),
-			path.join(ThirdPartyPath, "build/glad/bin/Debug"),
 			path.join(ThirdPartyPath, "build/imgui/bin/Debug"),
 			path.join(ThirdPartyPath, "build/imguizmo/bin/Debug"),
 		}
 		links
 		{
-			"Slam", "glfw3", "glad", "imgui", "imguizmo",
+			"Slam", "imgui", "imguizmo",
 		}
 	filter { "configurations:Release or configurations:Final" }
 		libdirs
 		{
 			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
-			path.join(ThirdPartyPath, "glfw/build/src/Release"),
-			path.join(ThirdPartyPath, "build/glad/bin/Release"),
 			path.join(ThirdPartyPath, "build/imgui/bin/Release"),
 			path.join(ThirdPartyPath, "build/imguizmo/bin/Release"),
 		}
 		links
 		{
-			"Slam", "glfw3", "glad", "imgui", "imguizmo",
+			"Slam", "imgui", "imguizmo",
 		}
 	filter {}
-
-	flags
-	{
-		-- Treat all warnings as errors.
-		"FatalWarnings",
-		-- Enable Visual Studio to use multiple compiler processes when building.
-		"MultiProcessorCompile",
-	}
 	

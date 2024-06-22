@@ -30,9 +30,9 @@ set "GLFW_PATH=%THIRD_PARTY_PATH%\glfw"
 echo [ glfw ] path: %GLFW_PATH%
 cd %GLFW_PATH%
 
-cmake -B build -DCMAKE_CONFIGURATION_TYPES="Release;Debug" -DUSE_MSVC_RUNTIME_LIBRARY_DLL=OFF
-cmake --build build --target glfw --config Release
+cmake -B build -DCMAKE_CONFIGURATION_TYPES="Debug;Release" -DUSE_MSVC_RUNTIME_LIBRARY_DLL=OFF
 cmake --build build --target glfw --config Debug
+cmake --build build --target glfw --config Release
 echo.
 
 rem yaml-cpp
@@ -40,9 +40,19 @@ set "YAMLCPP_PATH=%THIRD_PARTY_PATH%\yaml-cpp"
 echo [ yaml-cpp ] path: %YAMLCPP_PATH%
 cd %YAMLCPP_PATH%
 
-cmake -B build -DCMAKE_CONFIGURATION_TYPES="Release;Debug" -DYAML_MSVC_SHARED_RT=OFF
-cmake --build build --target yaml-cpp --config Release
+cmake -B build -DCMAKE_CONFIGURATION_TYPES="Debug;Release" -DYAML_MSVC_SHARED_RT=OFF
 cmake --build build --target yaml-cpp --config Debug
+cmake --build build --target yaml-cpp --config Release
+echo.
+
+rem shaderc
+set "SHADERC_PATH=%THIRD_PARTY_PATH%\shaderc"
+echo [ shaderc ] path: %SHADERC_PATH%
+cd %SHADERC_PATH%
+
+cmake -B build -DCMAKE_CONFIGURATION_TYPES="Debug;Release" -DSHADERC_SKIP_TESTS=ON
+cmake --build build --target shaderc_combined --config Debug
+cmake --build build --target shaderc_combined --config Release
 echo.
 
 pause

@@ -578,7 +578,7 @@ void ImGuiLayer::ShowDetails()
 		SL_ASSERT(BufferSize > name.size(),
 			"ImGui ensure that InputText() returns a null-terminated character array, "
 			"it also means that character buffer[BufferSize - 1] will be discard.");
-		
+
 		char buffer[BufferSize] = { 0 };
 		memcpy(buffer, name.c_str(), name.size());
 
@@ -929,30 +929,30 @@ bool ImGuiLayer::OnKeyPressed(sl::KeyPressEvent& event)
 	auto key = event.GetKey();
 	switch (key)
 	{
-		case SL_KEY_Q:
-		{
-			m_imguizmoMode = -1;
-			break;
-		}
-		case SL_KEY_W:
-		{
-			m_imguizmoMode = ImGuizmo::OPERATION::TRANSLATE;
-			break;
-		}
-		case SL_KEY_E:
-		{
-			m_imguizmoMode = ImGuizmo::OPERATION::ROTATE;
-			break;
-		}
-		case SL_KEY_R:
-		{
-			m_imguizmoMode = ImGuizmo::OPERATION::SCALE;
-			break;
-		}
-		default:
-		{
-			break;
-		}
+	case SL_KEY_Q:
+	{
+		m_imguizmoMode = -1;
+		break;
+	}
+	case SL_KEY_W:
+	{
+		m_imguizmoMode = ImGuizmo::OPERATION::TRANSLATE;
+		break;
+	}
+	case SL_KEY_E:
+	{
+		m_imguizmoMode = ImGuizmo::OPERATION::ROTATE;
+		break;
+	}
+	case SL_KEY_R:
+	{
+		m_imguizmoMode = ImGuizmo::OPERATION::SCALE;
+		break;
+	}
+	default:
+	{
+		break;
+	}
 	}
 
 	return false;

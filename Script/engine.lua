@@ -41,6 +41,7 @@ project("Slam")
 		path.join(ThirdPartyPath, "glm"),
 		path.join(ThirdPartyPath, "entt/src"),
 		path.join(ThirdPartyPath, "yaml-cpp/include"),
+		path.join(ThirdPartyPath, "shaderc/libshaderc/include"),
 	}
 	
 	-- Files
@@ -58,12 +59,12 @@ project("Slam")
 			path.join(ThirdPartyPath, "build/imgui/bin/Debug"),
 			path.join(ThirdPartyPath, "build/implot/bin/Debug"),
 			path.join(ThirdPartyPath, "build/imguizmo/bin/Debug"),
-			path.join(ThirdPartyPath, "build/imguizmo/bin/Debug"),
 			path.join(ThirdPartyPath, "yaml-cpp/build/Debug"),
+			path.join(ThirdPartyPath, "shaderc/build/libshaderc/Debug"),
 		}
 		links
 		{
-			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cppd",
+			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cppd", "shaderc_combined",
 		}
 	filter { "configurations:Release or configurations:Final" }
 		libdirs
@@ -74,18 +75,11 @@ project("Slam")
 			path.join(ThirdPartyPath, "build/implot/bin/Release"),
 			path.join(ThirdPartyPath, "build/imguizmo/bin/Release"),
 			path.join(ThirdPartyPath, "yaml-cpp/build/Release"),
+			path.join(ThirdPartyPath, "shaderc/build/libshaderc/Release"),
 		}
 		links
 		{
-			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cpp",
+			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cpp", "shaderc_combined",
 		}
 	filter {}
-	
-	flags
-	{
-		-- Treat all warnings as errors.
-		"FatalWarnings",
-		-- Enable Visual Studio to use multiple compiler processes when building.
-		"MultiProcessorCompile",
-	}
 	

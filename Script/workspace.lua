@@ -31,6 +31,14 @@ workspace("SlamEngine")
 	exceptionhandling("Off")
 	justmycode("Off")
 
+	flags
+	{
+		-- Treat all warnings as errors.
+		"FatalWarnings",
+		-- Enable Visual Studio to use multiple compiler processes when building.
+		"MultiProcessorCompile",
+	}
+
 	filter { "action:vs*" }
 		-- To enable __VA_OPT__ stuff for VS with C++20.
 		-- https://learn.microsoft.com/en-us/cpp/preprocessor/preprocessor-experimental-overview?view=msvc-170

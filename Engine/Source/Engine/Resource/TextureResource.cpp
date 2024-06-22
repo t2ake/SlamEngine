@@ -3,7 +3,7 @@
 #include "Core/Log.h"
 #include "Core/Path.hpp"
 #include "RenderCore/Texture.h"
-#include "Resource/ResourceLoader.h"
+#include "Resource/FileIO.h"
 
 #include <stb/stb_image.h>
 
@@ -24,7 +24,7 @@ TextureResource::~TextureResource()
 void TextureResource::OnImport()
 {
 	SL_LOG_TRACE("Loading image: \"{}\"", m_assetPath.c_str());
-	const auto originalData = ResourceLoader::LoadFile(m_assetPath);
+	const auto originalData = FileIO::LoadBinary(m_assetPath);
 
 	// The first pixel should at the bottom left.
 	stbi_set_flip_vertically_on_load(true);

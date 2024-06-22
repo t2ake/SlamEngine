@@ -12,16 +12,16 @@ namespace sl
 
 class Shader;
 
+struct ShaderInfo
+{
+	ShaderType m_type;
+	std::string m_name;
+	std::string m_assetPath;
+	std::string m_rowData;
+};
+
 class ShaderResource : public Resource
 {
-public:
-	struct ShaderInfo
-	{
-		ShaderType m_type;
-		std::string m_assetPath;
-		std::vector<std::byte> m_rowData;
-	};
-
 public:
 	ShaderResource(std::string_view vsPath, std::string_view fsPath);
 	ShaderResource(ShaderProgramType type, std::string_view path);
