@@ -24,7 +24,7 @@ TextureResource::~TextureResource()
 void TextureResource::OnImport()
 {
 	SL_LOG_TRACE("Loading image: \"{}\"", m_assetPath.c_str());
-	const auto originalData = FileIO::LoadBin(m_assetPath);
+	const auto originalData = FileIO::LoadBinary(m_assetPath);
 
 	// The first pixel should at the bottom left.
 	stbi_set_flip_vertically_on_load(true);

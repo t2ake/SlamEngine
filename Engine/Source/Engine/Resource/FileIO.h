@@ -12,7 +12,7 @@ namespace sl
 class FileIO final
 {
 public:
-	static std::vector<std::byte> LoadBin(std::string_view filePath)
+	static std::vector<std::byte> LoadBinary(std::string_view filePath)
 	{
 		std::vector<std::byte> fileData;
 
@@ -33,7 +33,11 @@ public:
 		return fileData;
 	}
 
-	static std::string LoadStr(std::string_view filePath)
+#if defined(LoadString)
+	#undef LoadString
+#endif
+
+	static std::string LoadString(std::string_view filePath)
 	{
 		std::string fileData;
 

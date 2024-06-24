@@ -211,12 +211,12 @@ ShaderResource::~ShaderResource()
 void ShaderResource::OnImport()
 {
 	SL_LOG_TRACE("Loading shader: \"{}\"", m_shaders[0].m_assetPath.c_str());
-	m_shaders[0].m_rowData = FileIO::LoadStr(m_shaders[0].m_assetPath);
+	m_shaders[0].m_rowData = FileIO::LoadString(m_shaders[0].m_assetPath);
 
 	if (ShaderProgramType::Standard == m_programType)
 	{
 		SL_LOG_TRACE("Loading shader: \"{}\"", m_shaders[1].m_assetPath.c_str());
-		m_shaders[1].m_rowData = FileIO::LoadStr(m_shaders[1].m_assetPath);
+		m_shaders[1].m_rowData = FileIO::LoadString(m_shaders[1].m_assetPath);
 	}
 
 	SetStatus(ResourceStatus::Building);
