@@ -29,7 +29,7 @@ public:
 	Texture2D *GetTexture() const { return m_pTexture.get(); }
 
 private:
-	virtual void DestroyRawData() override;
+	virtual void DestroyCPUData() override;
 
 	std::string m_assetPath;
 	std::vector<std::byte> m_rowData;

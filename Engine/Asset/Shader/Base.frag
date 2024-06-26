@@ -7,9 +7,9 @@ layout(location = 0) in vec2 v_uv;
 layout(location = 0) out vec4 o_color;
 
 // sampler
-layout(binding = 0) uniform sampler2D u_texture;
+layout(binding = 0) uniform sampler2D s_texture;
 
 void main()
 {
-	o_color = texture(u_texture, v_uv);
+	o_color = texture(s_texture, v_uv);
 }

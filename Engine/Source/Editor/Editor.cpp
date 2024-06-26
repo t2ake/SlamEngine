@@ -32,11 +32,13 @@ Editor::Editor(EditorInitor initor)
 	sl::RenderCore::SetDefaultState();
 
 	// Size is meaningless here.
-	sl::RenderCore::SetMainFramebuffer(sl::FrameBuffer::Create({
+	sl::RenderCore::SetMainFramebuffer(sl::FrameBuffer::Create(
+	{
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::RGBA8, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
 	}));
-	sl::RenderCore::SetEntityIDFramebuffer(sl::FrameBuffer::Create({
+	sl::RenderCore::SetEntityIDFramebuffer(sl::FrameBuffer::Create(
+	{
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::R32I, SL_SAMPLER_CLAMP | SL_SAMPLER_NEAREST),
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
 	}));

@@ -310,12 +310,12 @@ void ShaderResource::OnUpload()
 		SL_LOG_TRACE("Compiling fragment shader: \"{}\"", Path::NameWithoutExtension(m_shaders[1].m_assetPath).c_str());
 		uint32_t fsHandle = CompileShader(m_shaders[1]);
 
-		SL_LOG_TRACE("Compiling shader program");
+		SL_LOG_TRACE("Linking shader program");
 		programHandle = CompileProgram(shaderHandle, fsHandle);
 	}
 	else
 	{
-		SL_LOG_TRACE("Compiling shader program");
+		SL_LOG_TRACE("Linking shader program");
 		programHandle = CompileProgram(shaderHandle);
 	}
 
@@ -341,19 +341,19 @@ void ShaderResource::OnReady()
 	}
 	else if (frameCount == 60)
 	{
-		DestroyRawData();
+		DestroyCPUData();
 	}
 }
 
 void ShaderResource::OnDestroy()
 {
-	DestroyRawData();
+	DestroyCPUData();
 	m_pShaderProgram.reset();
 
 	SetStatus(ResourceStatus::Destroyed);
 }
 
-void ShaderResource::DestroyRawData()
+void ShaderResource::DestroyCPUData()
 {
 	m_shaders[0].m_rowData.clear();
 	std::string().swap(m_shaders[0].m_rowData);
@@ -361,11 +361,14 @@ void ShaderResource::DestroyRawData()
 	m_shaders[0].m_spirvData.clear();
 	std::vector<uint32_t>().swap(m_shaders[0].m_spirvData);
 
-	m_shaders[1].m_rowData.clear();
-	std::string().swap(m_shaders[1].m_rowData);
+	if (ShaderProgramType::Standard == m_programType)
+	{
+		m_shaders[1].m_rowData.clear();
+		std::string().swap(m_shaders[1].m_rowData);
 
-	m_shaders[1].m_spirvData.clear();
-	std::vector<uint32_t>().swap(m_shaders[1].m_spirvData);
+		m_shaders[1].m_spirvData.clear();
+		std::vector<uint32_t>().swap(m_shaders[1].m_spirvData);
+	}
 }
 
 } // namespace sl

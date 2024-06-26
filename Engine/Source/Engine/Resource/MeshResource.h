@@ -32,7 +32,7 @@ public:
 	VertexArray *GetVertexArray() { return m_pVertexArray.get(); }
 
 private:
-	virtual void DestroyRawData() override;
+	virtual void DestroyCPUData() override;
 
 	std::string m_assetPath;
 

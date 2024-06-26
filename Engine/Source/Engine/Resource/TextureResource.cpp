@@ -111,19 +111,19 @@ void TextureResource::OnReady()
 	}
 	else if(frameCount == 60)
 	{
-		DestroyRawData();
+		DestroyCPUData();
 	}
 }
 
 void TextureResource::OnDestroy()
 {
-	DestroyRawData();
+	DestroyCPUData();
 	m_pTexture.reset();
 	
 	SetStatus(ResourceStatus::Destroyed);
 }
 
-void TextureResource::DestroyRawData()
+void TextureResource::DestroyCPUData()
 {
 	m_rowData.clear();
 	std::vector<std::byte>().swap(m_rowData);

@@ -53,7 +53,7 @@ UniformBufferLayoutElement::UniformBufferLayoutElement(AttribType type) :
 UniformBufferLayout::UniformBufferLayout(std::initializer_list<UniformBufferLayoutElementInitor> initors)
 {
 	uint32_t offset = 0;
-	for (auto &initor : initors)
+	for (const auto &initor : initors)
 	{
 		SL_ASSERT(m_elements.find(initor.m_name.data()) == m_elements.end(), "Uniform buffer element already exists!");
 

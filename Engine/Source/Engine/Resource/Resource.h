@@ -51,7 +51,7 @@ public:
 	virtual void OnDestroy() = 0;
 
 private:
-	virtual void DestroyRawData() = 0;
+	virtual void DestroyCPUData() = 0;
 
 	ResourceStatus m_status;
 };

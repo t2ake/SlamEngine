@@ -54,19 +54,19 @@ void MeshResource::OnReady()
 	}
 	else if (frameCount == 60)
 	{
-		DestroyRawData();
+		DestroyCPUData();
 	}
 }
 
 void MeshResource::OnDestroy()
 {
-	DestroyRawData();
+	DestroyCPUData();
 	m_pVertexArray.reset();
 
 	SetStatus(ResourceStatus::Destroyed);
 }
 
-void MeshResource::DestroyRawData()
+void MeshResource::DestroyCPUData()
 {
 	m_verticesRowData.clear();
 	std::vector<float>().swap(m_verticesRowData);
