@@ -18,13 +18,14 @@ struct ShaderInfo
 	std::string m_name;
 	std::string m_assetPath;
 	std::string m_rowData;
+	std::vector<uint32_t> m_spirvData;
 };
 
 class ShaderResource : public Resource
 {
 public:
 	ShaderResource(std::string_view vsPath, std::string_view fsPath);
-	ShaderResource(ShaderProgramType type, std::string_view path);
+	ShaderResource(std::string_view path, ShaderProgramType type);
 	virtual ~ShaderResource() override;
 
 	virtual void OnImport() override;

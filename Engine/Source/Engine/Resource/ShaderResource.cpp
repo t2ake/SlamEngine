@@ -54,30 +54,97 @@ ShaderType ProgramTypeToShaderType(ShaderProgramType programType)
 	}
 }
 
+class ShaderIncluder : public shaderc::CompileOptions::IncluderInterface
+{
+public:
+	virtual shaderc_include_result *GetInclude(
+		const char *requested_source,
+		shaderc_include_type type,
+		const char *requesting_source,
+		size_t include_depth) override
+	{
+		m_pContainer = new ShaderIncluderContainer;
+		auto &container = *m_pContainer;
+
+		// Include with "../" is not supported for now.
+		container[0] = Path::FromeAsset("Shader/") + requested_source;
+		container[1] = FileIO::LoadString(container[0]);
+
+		auto *pResult = new shaderc_include_result;
+		pResult->source_name = container[0].c_str();
+		pResult->source_name_length = container[0].size();
+		pResult->content = container[1].c_str();
+		pResult->content_length = container[1].size();
+
+		return pResult;
+	}
+
+	virtual void ReleaseInclude(shaderc_include_result *pResult) override
+	{
+		delete m_pContainer;
+		delete pResult;
+	}
+
+private:
+	using ShaderIncluderContainer = std::array<std::string, 2>;
+
+	// To ensure requested data valid before calling ReleaseInclude.
+	ShaderIncluderContainer *m_pContainer = nullptr;
+};
+
 uint32_t CompileShader(sl::ShaderInfo& info)
 {
+	// 1. Preprocess
 	{
-		// 1. Preprocess
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
 
 		// Include
-		//IncluderInterface
-		
-		// Defines
+		options.SetIncluder(std::make_unique<ShaderIncluder>());
+
+		// Define
 		options.AddMacroDefinition(BackendToDef[(size_t)RenderCore::GetBackend()]);
 
 		shaderc::PreprocessedSourceCompilationResult result = compiler.PreprocessGlsl(
-			info.m_rowData.c_str(), ShaderTypeToShaderKind[(size_t)info.m_type],
+			info.m_rowData.c_str(), info.m_rowData.size(),
+			ShaderTypeToShaderKind[(size_t)info.m_type],
 			info.m_name.c_str(), options);
-		
+
 		if (result.GetCompilationStatus() != shaderc_compilation_status_success)
 		{
 			SL_LOG_ERROR("Shader preprocess failed: \"{}\"", info.m_name.c_str());
 			return 0;
 		}
-		
+
 		info.m_rowData = { result.cbegin(), result.cend() };
+	}
+
+	// 2. Compile to SPIR-V
+	{
+		shaderc::Compiler compiler;
+		shaderc::CompileOptions options;
+
+#if defined(SL_DEBUG)
+		options.SetGenerateDebugInfo();
+		options.SetOptimizationLevel(shaderc_optimization_level_zero);
+#else
+		options.SetOptimizationLevel(shaderc_optimization_level_performance);
+#endif
+
+		options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
+
+		shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(
+			info.m_rowData.c_str(), info.m_rowData.size(),
+			ShaderTypeToShaderKind[(size_t)info.m_type],
+			info.m_name.c_str(), "main", options);
+
+		if (result.GetCompilationStatus() != shaderc_compilation_status_success) {
+			SL_LOG_ERROR("Compile shader to SPIR-V failed");
+			SL_LOG_ERROR(result.GetErrorMessage());
+			return 0;
+		}
+
+		info.m_spirvData = { result.cbegin(), result.cend() };
 	}
 
 	GLuint shaderHandle = glCreateShader(GLShaderType[(size_t)info.m_type]);
@@ -193,7 +260,7 @@ ShaderResource::ShaderResource(std::string_view vsPath, std::string_view fsPath)
 	SetStatus(ResourceStatus::Importing);
 }
 
-ShaderResource::ShaderResource(ShaderProgramType type, std::string_view path) :
+ShaderResource::ShaderResource(std::string_view path, ShaderProgramType type) :
 	m_programType(type)
 {
 	m_shaders[0].m_type = ProgramTypeToShaderType(m_programType);
@@ -237,23 +304,11 @@ void ShaderResource::OnUpload()
 	SL_LOG_TRACE("Compiling vertex shader: \"{}\"", Path::NameWithoutExtension(m_shaders[0].m_assetPath).c_str());
 	uint32_t shaderHandle = CompileShader(m_shaders[0]);
 
-	if (0 == shaderHandle)
-	{
-		SetStatus(ResourceStatus::Destroying);
-		return;
-	}
-
 	uint32_t programHandle = 0;
 	if (ShaderProgramType::Standard == m_programType)
 	{
 		SL_LOG_TRACE("Compiling fragment shader: \"{}\"", Path::NameWithoutExtension(m_shaders[1].m_assetPath).c_str());
 		uint32_t fsHandle = CompileShader(m_shaders[1]);
-
-		if (0 == fsHandle)
-		{
-			SetStatus(ResourceStatus::Destroying);
-			return;
-		}
 
 		SL_LOG_TRACE("Compiling shader program");
 		programHandle = CompileProgram(shaderHandle, fsHandle);
@@ -264,11 +319,13 @@ void ShaderResource::OnUpload()
 		programHandle = CompileProgram(shaderHandle);
 	}
 
+#ifndef SL_FINAL
 	if (0 == programHandle)
 	{
 		SetStatus(ResourceStatus::Destroying);
 		return;
 	}
+#endif
 
 	m_pShaderProgram.reset(Shader::Creat(programHandle));
 
@@ -301,8 +358,14 @@ void ShaderResource::DestroyRawData()
 	m_shaders[0].m_rowData.clear();
 	std::string().swap(m_shaders[0].m_rowData);
 
+	m_shaders[0].m_spirvData.clear();
+	std::vector<uint32_t>().swap(m_shaders[0].m_spirvData);
+
 	m_shaders[1].m_rowData.clear();
 	std::string().swap(m_shaders[1].m_rowData);
+
+	m_shaders[1].m_spirvData.clear();
+	std::vector<uint32_t>().swap(m_shaders[1].m_spirvData);
 }
 
 } // namespace sl

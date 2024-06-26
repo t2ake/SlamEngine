@@ -20,6 +20,7 @@ void RenderCore::Init()
 	SL_LOG_TRACE("  Max framebuffer color attachment count: {}", m_info.m_maxFramebufferColorAttachmentCount);
 	SL_LOG_TRACE("  Max vertex uniform component count: {}", m_info.m_maxVertexUniformComponentCount);
 	SL_LOG_TRACE("  Max fragment uniform component count: {}", m_info.m_maxFragmentUniformComponentCount);
+	SL_LOG_TRACE("  Max uniform location: {}", m_info.m_maxUniformLocation);
 }
 
 void RenderCore::SetDefaultState()

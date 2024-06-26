@@ -1,8 +1,10 @@
 #version 450 core
 
+// input
 layout(location = 0) out int o_entityID;
 
-uniform int u_entityID;
+// uniform
+layout(location = 1) uniform int u_entityID;
 
 void main()
 {
