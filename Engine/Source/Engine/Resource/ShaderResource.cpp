@@ -2,15 +2,11 @@
 
 #include "Core/Log.h"
 #include "Core/Path.hpp"
-#include "nameof/nameof.hpp"
-#include "RenderCore/RenderCore.h"
 #include "RenderCore/Shader.h"
 #include "Resource/FileIO.h"
+#include "Resource/ShaderCompiler.h"
 
-#include <shaderc/shaderc.hpp>
-#include <spirv_glsl.hpp>
-
-// TEMPLATE: Replace these to SPRI-V
+// TEMPLATE: Move thses to OpenGLShader
 #include "Platform/OpenGL/OpenGLDefines.h"
 #include <glad/glad.h>
 
@@ -19,23 +15,6 @@ namespace sl
 
 namespace
 {
-
-constexpr const char *BackendToDef[nameof::enum_count<GraphicsBackend>()] =
-{
-	"SL_NONE",	    // GraphicsBackend::None
-	"SL_OPENGL",    // GraphicsBackend::OpenGL,
-	"SL_VULKAN",    // GraphicsBackend::Vulkan,
-	"SL_DIRECTX11", // GraphicsBackend::DirectX11,
-	"SL_DIRECTX12", // GraphicsBackend::DirectX12,
-	"SL_METAL",	    // GraphicsBackend::Metal,
-};
-
-constexpr shaderc_shader_kind ShaderTypeToShaderKind[nameof::enum_count<ShaderType>()] =
-{
-	shaderc_vertex_shader,	 // ShaderType::VertexShader
-	shaderc_fragment_shader, // ShaderType::FragmentShader
-	shaderc_compute_shader,	 // ShaderType::ComputeShader
-};
 
 ShaderType ProgramTypeToShaderType(ShaderProgramType programType)
 {
@@ -53,112 +32,6 @@ ShaderType ProgramTypeToShaderType(ShaderProgramType programType)
 			break;
 		}
 	}
-}
-
-class ShaderIncluder : public shaderc::CompileOptions::IncluderInterface
-{
-public:
-	virtual shaderc_include_result *GetInclude(
-		const char *requested_source,
-		shaderc_include_type type,
-		const char *requesting_source,
-		size_t include_depth) override
-	{
-		m_pContainer = new ShaderIncluderContainer;
-		auto &container = *m_pContainer;
-
-		// Include with "../" is not supported for now.
-		container[0] = Path::FromeAsset("Shader/") + requested_source;
-		container[1] = FileIO::LoadString(container[0]);
-
-		auto *pResult = new shaderc_include_result;
-		pResult->source_name = container[0].c_str();
-		pResult->source_name_length = container[0].size();
-		pResult->content = container[1].c_str();
-		pResult->content_length = container[1].size();
-
-		return pResult;
-	}
-
-	virtual void ReleaseInclude(shaderc_include_result *pResult) override
-	{
-		delete m_pContainer;
-		delete pResult;
-	}
-
-private:
-	using ShaderIncluderContainer = std::array<std::string, 2>;
-
-	// To ensure requested data valid before calling ReleaseInclude.
-	ShaderIncluderContainer *m_pContainer = nullptr;
-};
-
-bool CompileShader(sl::ShaderInfo &info)
-{
-	// 1. Preprocess
-	{
-		shaderc::Compiler compiler;
-		shaderc::CompileOptions options;
-
-		// Include
-		options.SetIncluder(std::make_unique<ShaderIncluder>());
-
-		// Definition
-		options.AddMacroDefinition(BackendToDef[(size_t)RenderCore::GetBackend()]);
-
-		shaderc::PreprocessedSourceCompilationResult result = compiler.PreprocessGlsl(
-			info.m_rowData.c_str(), info.m_rowData.size(),
-			ShaderTypeToShaderKind[(size_t)info.m_type],
-			info.m_name.c_str(), options);
-
-		if (result.GetCompilationStatus() != shaderc_compilation_status_success)
-		{
-			SL_LOG_ERROR("Shader preprocess failed: \"{}\"", info.m_name.c_str());
-			return false;
-		}
-
-		info.m_rowData = { result.cbegin(), result.cend() };
-	}
-
-	// 2. Compile to SPIR-V
-	{
-		shaderc::Compiler compiler;
-		shaderc::CompileOptions options;
-
-		#if defined(SL_DEBUG)
-		options.SetGenerateDebugInfo();
-		options.SetOptimizationLevel(shaderc_optimization_level_zero);
-		#else
-		options.SetOptimizationLevel(shaderc_optimization_level_performance);
-		#endif
-
-		// TODO: Start from vulkan glsl in the future.
-		options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
-
-		shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(
-			info.m_rowData.c_str(), info.m_rowData.size(),
-			ShaderTypeToShaderKind[(size_t)info.m_type],
-			info.m_name.c_str(), "main", options);
-
-		if (result.GetCompilationStatus() != shaderc_compilation_status_success)
-		{
-			SL_LOG_ERROR("Compile shader to SPIR-V failed");
-			SL_LOG_ERROR(result.GetErrorMessage());
-			return false;
-		}
-
-		info.m_spirvData = { result.cbegin(), result.cend() };
-	}
-
-	// 3. Compile to glsl
-	{
-		spirv_cross::CompilerGLSL glsl(info.m_spirvData);
-		spirv_cross::ShaderResources resources = glsl.get_shader_resources();
-
-		std::string source = glsl.compile();
-	}
-
-	return true;
 }
 
 uint32_t UploadShader(const sl::ShaderInfo& info)
@@ -266,11 +139,11 @@ ShaderResource::ShaderResource(std::string_view vsPath, std::string_view fsPath)
 	m_programType(ShaderProgramType::Standard)
 {
 	m_shaders[0].m_type = ShaderType::VertexShader;
-	m_shaders[0].m_name = Path::NameWithoutExtension(vsPath);
+	m_shaders[0].m_name = Path::NameWithExtension(vsPath);
 	m_shaders[0].m_assetPath = vsPath;
 
 	m_shaders[1].m_type = ShaderType::FragmentShader;
-	m_shaders[1].m_name = Path::NameWithoutExtension(fsPath);
+	m_shaders[1].m_name = Path::NameWithExtension(fsPath);
 	m_shaders[1].m_assetPath = fsPath;
 
 	SetStatus(ResourceStatus::Importing);
@@ -280,7 +153,7 @@ ShaderResource::ShaderResource(std::string_view path, ShaderProgramType type) :
 	m_programType(type)
 {
 	m_shaders[0].m_type = ProgramTypeToShaderType(m_programType);
-	m_shaders[0].m_name = Path::NameWithoutExtension(path);
+	m_shaders[0].m_name = Path::NameWithExtension(path);
 	m_shaders[0].m_assetPath = path;
 
 	SetStatus(ResourceStatus::Importing);
@@ -308,13 +181,21 @@ void ShaderResource::OnImport()
 void ShaderResource::OnBuild()
 {
 	SL_LOG_TRACE("Compiling SPIR-V: \"{}\"", m_shaders[1].m_name.c_str());
-	CompileShader(m_shaders[0]);
+	m_shaders[0].m_rowData = ShaderCompiler::CompileShader(m_shaders[0]);
 
 	if (ShaderProgramType::Standard == m_programType)
 	{
 		SL_LOG_TRACE("Compiling SPIR-V: \"{}\"", m_shaders[1].m_name.c_str());
-		CompileShader(m_shaders[1]);
+		m_shaders[1].m_rowData = ShaderCompiler::CompileShader(m_shaders[1]);
 	}
+
+#ifndef SL_FINAL
+	if (m_shaders[0].m_rowData.empty())
+	{
+		SetStatus(ResourceStatus::Destroying);
+		return;
+	}
+#endif
 
 	SetStatus(ResourceStatus::Uploading);
 }
@@ -326,13 +207,13 @@ void ShaderResource::OnLoad()
 
 void ShaderResource::OnUpload()
 {
-	SL_LOG_TRACE("Compiling vertex shader: \"{}\"", Path::NameWithoutExtension(m_shaders[0].m_assetPath).c_str());
+	SL_LOG_TRACE("Uploading shader: \"{}\"", m_shaders[0].m_name.c_str());
 	uint32_t shaderHandle = UploadShader(m_shaders[0]);
 
 	uint32_t programHandle = 0;
 	if (ShaderProgramType::Standard == m_programType)
 	{
-		SL_LOG_TRACE("Compiling fragment shader: \"{}\"", Path::NameWithoutExtension(m_shaders[1].m_assetPath).c_str());
+		SL_LOG_TRACE("Uploading shader: \"{}\"", m_shaders[1].m_name.c_str());
 		uint32_t fsHandle = UploadShader(m_shaders[1]);
 
 		SL_LOG_TRACE("Linking shader program");
@@ -383,16 +264,10 @@ void ShaderResource::DestroyCPUData()
 	m_shaders[0].m_rowData.clear();
 	std::string().swap(m_shaders[0].m_rowData);
 
-	m_shaders[0].m_spirvData.clear();
-	std::vector<uint32_t>().swap(m_shaders[0].m_spirvData);
-
 	if (ShaderProgramType::Standard == m_programType)
 	{
 		m_shaders[1].m_rowData.clear();
 		std::string().swap(m_shaders[1].m_rowData);
-
-		m_shaders[1].m_spirvData.clear();
-		std::vector<uint32_t>().swap(m_shaders[1].m_spirvData);
 	}
 }
 

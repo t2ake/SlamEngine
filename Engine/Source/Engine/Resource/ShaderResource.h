@@ -2,24 +2,14 @@
 
 #include "Core/Defines.h"
 #include "Resource/Resource.h"
+#include "Resource/ShaderInfo.h"
 
 #include <memory>
-#include <string>
-#include <vector>
 
 namespace sl
 {
 
 class Shader;
-
-struct ShaderInfo
-{
-	ShaderType m_type;
-	std::string m_name;
-	std::string m_assetPath;
-	std::string m_rowData;
-	std::vector<uint32_t> m_spirvData;
-};
 
 class ShaderResource : public Resource
 {
