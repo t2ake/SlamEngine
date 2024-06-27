@@ -55,4 +55,14 @@ cmake --build build --target shaderc_combined --config Debug
 cmake --build build --target shaderc_combined --config Release
 echo.
 
+rem spirv-cross
+set "SPIRVCROSS_PATH=%THIRD_PARTY_PATH%\spirv-cross"
+echo [ spirv-cross ] path: %SPIRVCROSS_PATH%
+cd %SPIRVCROSS_PATH%
+
+cmake -B build -DCMAKE_CONFIGURATION_TYPES="Debug;Release"
+cmake --build build --config Debug
+cmake --build build --config Release
+echo.
+
 pause

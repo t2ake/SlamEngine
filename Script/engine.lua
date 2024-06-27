@@ -42,6 +42,7 @@ project("Slam")
 		path.join(ThirdPartyPath, "entt/src"),
 		path.join(ThirdPartyPath, "yaml-cpp/include"),
 		path.join(ThirdPartyPath, "shaderc/libshaderc/include"),
+		path.join(ThirdPartyPath, "spirv-cross"),
 	}
 	
 	-- Files
@@ -61,10 +62,11 @@ project("Slam")
 			path.join(ThirdPartyPath, "build/imguizmo/bin/Debug"),
 			path.join(ThirdPartyPath, "yaml-cpp/build/Debug"),
 			path.join(ThirdPartyPath, "shaderc/build/libshaderc/Debug"),
+			path.join(ThirdPartyPath, "spirv-cross/build/Debug"),
 		}
 		links
 		{
-			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cppd", "shaderc_combined",
+			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cppd", "shaderc_combined", "spirv-cross-cored", "spirv-cross-glsld",
 		}
 	filter { "configurations:Release or configurations:Final" }
 		libdirs
@@ -76,10 +78,11 @@ project("Slam")
 			path.join(ThirdPartyPath, "build/imguizmo/bin/Release"),
 			path.join(ThirdPartyPath, "yaml-cpp/build/Release"),
 			path.join(ThirdPartyPath, "shaderc/build/libshaderc/Release"),
+			path.join(ThirdPartyPath, "spirv-cross/build/Release"),
 		}
 		links
 		{
-			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cpp", "shaderc_combined",
+			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cpp", "shaderc_combined", "spirv-cross-core", "spirv-cross-glsl",
 		}
 	filter {}
 	

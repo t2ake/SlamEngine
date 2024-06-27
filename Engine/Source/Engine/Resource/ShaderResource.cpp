@@ -8,6 +8,7 @@
 #include "Resource/FileIO.h"
 
 #include <shaderc/shaderc.hpp>
+#include <spirv_glsl.hpp>
 
 // TEMPLATE: Replace these to SPRI-V
 #include "Platform/OpenGL/OpenGLDefines.h"
@@ -92,7 +93,7 @@ private:
 	ShaderIncluderContainer *m_pContainer = nullptr;
 };
 
-uint32_t CompileShader(sl::ShaderInfo& info)
+bool CompileShader(sl::ShaderInfo &info)
 {
 	// 1. Preprocess
 	{
@@ -102,7 +103,7 @@ uint32_t CompileShader(sl::ShaderInfo& info)
 		// Include
 		options.SetIncluder(std::make_unique<ShaderIncluder>());
 
-		// Define
+		// Definition
 		options.AddMacroDefinition(BackendToDef[(size_t)RenderCore::GetBackend()]);
 
 		shaderc::PreprocessedSourceCompilationResult result = compiler.PreprocessGlsl(
@@ -113,7 +114,7 @@ uint32_t CompileShader(sl::ShaderInfo& info)
 		if (result.GetCompilationStatus() != shaderc_compilation_status_success)
 		{
 			SL_LOG_ERROR("Shader preprocess failed: \"{}\"", info.m_name.c_str());
-			return 0;
+			return false;
 		}
 
 		info.m_rowData = { result.cbegin(), result.cend() };
@@ -124,13 +125,14 @@ uint32_t CompileShader(sl::ShaderInfo& info)
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
 
-#if defined(SL_DEBUG)
+		#if defined(SL_DEBUG)
 		options.SetGenerateDebugInfo();
 		options.SetOptimizationLevel(shaderc_optimization_level_zero);
-#else
+		#else
 		options.SetOptimizationLevel(shaderc_optimization_level_performance);
-#endif
+		#endif
 
+		// TODO: Start from vulkan glsl in the future.
 		options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
 
 		shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(
@@ -138,15 +140,29 @@ uint32_t CompileShader(sl::ShaderInfo& info)
 			ShaderTypeToShaderKind[(size_t)info.m_type],
 			info.m_name.c_str(), "main", options);
 
-		if (result.GetCompilationStatus() != shaderc_compilation_status_success) {
+		if (result.GetCompilationStatus() != shaderc_compilation_status_success)
+		{
 			SL_LOG_ERROR("Compile shader to SPIR-V failed");
 			SL_LOG_ERROR(result.GetErrorMessage());
-			return 0;
+			return false;
 		}
 
 		info.m_spirvData = { result.cbegin(), result.cend() };
 	}
 
+	// 3. Compile to glsl
+	{
+		spirv_cross::CompilerGLSL glsl(info.m_spirvData);
+		spirv_cross::ShaderResources resources = glsl.get_shader_resources();
+
+		std::string source = glsl.compile();
+	}
+
+	return true;
+}
+
+uint32_t UploadShader(const sl::ShaderInfo& info)
+{
 	GLuint shaderHandle = glCreateShader(GLShaderType[(size_t)info.m_type]);
 
 	const GLchar *pSource = (const GLchar *)info.m_rowData.data();
@@ -176,7 +192,7 @@ uint32_t CompileShader(sl::ShaderInfo& info)
 	return shaderHandle;
 }
 
-uint32_t CompileProgram(uint32_t vsHandle, uint32_t fsHandle)
+uint32_t UploadProgram(uint32_t vsHandle, uint32_t fsHandle)
 {
 	uint32_t programHandle = glCreateProgram();
 	glAttachShader(programHandle, vsHandle);
@@ -212,7 +228,7 @@ uint32_t CompileProgram(uint32_t vsHandle, uint32_t fsHandle)
 	return programHandle;
 }
 
-uint32_t CompileProgram(uint32_t handle)
+uint32_t UploadProgram(uint32_t handle)
 {
 	uint32_t programHandle = glCreateProgram();
 	glAttachShader(programHandle, handle);
@@ -291,6 +307,15 @@ void ShaderResource::OnImport()
 
 void ShaderResource::OnBuild()
 {
+	SL_LOG_TRACE("Compiling SPIR-V: \"{}\"", m_shaders[1].m_name.c_str());
+	CompileShader(m_shaders[0]);
+
+	if (ShaderProgramType::Standard == m_programType)
+	{
+		SL_LOG_TRACE("Compiling SPIR-V: \"{}\"", m_shaders[1].m_name.c_str());
+		CompileShader(m_shaders[1]);
+	}
+
 	SetStatus(ResourceStatus::Uploading);
 }
 
@@ -302,21 +327,21 @@ void ShaderResource::OnLoad()
 void ShaderResource::OnUpload()
 {
 	SL_LOG_TRACE("Compiling vertex shader: \"{}\"", Path::NameWithoutExtension(m_shaders[0].m_assetPath).c_str());
-	uint32_t shaderHandle = CompileShader(m_shaders[0]);
+	uint32_t shaderHandle = UploadShader(m_shaders[0]);
 
 	uint32_t programHandle = 0;
 	if (ShaderProgramType::Standard == m_programType)
 	{
 		SL_LOG_TRACE("Compiling fragment shader: \"{}\"", Path::NameWithoutExtension(m_shaders[1].m_assetPath).c_str());
-		uint32_t fsHandle = CompileShader(m_shaders[1]);
+		uint32_t fsHandle = UploadShader(m_shaders[1]);
 
 		SL_LOG_TRACE("Linking shader program");
-		programHandle = CompileProgram(shaderHandle, fsHandle);
+		programHandle = UploadProgram(shaderHandle, fsHandle);
 	}
 	else
 	{
 		SL_LOG_TRACE("Linking shader program");
-		programHandle = CompileProgram(shaderHandle);
+		programHandle = UploadProgram(shaderHandle);
 	}
 
 #ifndef SL_FINAL
