@@ -33,8 +33,6 @@ public:
 	uint32_t GetMonitorHeight() const { return m_monitorHeight; }
 
 	void SetVSync(bool VSync);
-	bool &GetIsVSync() { return m_isVSync; }
-	bool GetIsVSync() const { return m_isVSync; }
 
 	void CaptureCursor();
 	void ReleaseCursor();
@@ -55,7 +53,6 @@ private:
 	uint32_t m_height;
 	uint32_t m_monitorWidth;
 	uint32_t m_monitorHeight;
-	bool m_isVSync = true;
 
 	EventCallback m_eventCallback = nullptr;
 };

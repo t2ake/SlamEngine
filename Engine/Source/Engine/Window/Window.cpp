@@ -44,9 +44,10 @@ Window::Window(std::string_view title, uint32_t width, uint32_t height) :
 	SetCallbacks();
 
 #ifdef SL_FINAL
-	m_isVSync = false;
+	glfwSwapInterval(0);
+#else
+	glfwSwapInterval(1);
 #endif
-	glfwSwapInterval(m_isVSync ? 1 : 0);
 }
 
 Window::~Window()
@@ -69,8 +70,7 @@ void Window::EndFrame()
 
 void Window::SetVSync(bool VSync)
 {
-	m_isVSync = VSync;
-	glfwSwapInterval(m_isVSync ? 1 : 0);
+	glfwSwapInterval(VSync ? 1 : 0);
 }
 
 void Window::CaptureCursor()
