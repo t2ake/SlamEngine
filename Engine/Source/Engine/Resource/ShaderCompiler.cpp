@@ -109,11 +109,14 @@ std::string ShaderCompiler::CompileShader(const ShaderInfo &info)
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
 
-#if defined(SL_DEBUG)
+		// TODO: Shader stores uniform location
+		// Shaderc without debug info will lose uniform name infomation,
+		// which make us can not get uniform location by uniform name.
 		options.SetGenerateDebugInfo();
+
+#if defined(SL_DEBUG)
 		options.SetOptimizationLevel(shaderc_optimization_level_zero);
 #else
-		// ERROR: uniforms will be optimized.
 		options.SetOptimizationLevel(shaderc_optimization_level_performance);
 #endif
 
@@ -145,7 +148,13 @@ std::string ShaderCompiler::CompileShader(const ShaderInfo &info)
 		options.version = 450;
 		glsl.set_common_options(options);
 
-		return glsl.compile();
+		std::string source = glsl.compile();
+
+		SL_LOG_DEBUG(source);
+
+		return source;
+
+		// return glsl.compile();
 	}
 
 	return "";
