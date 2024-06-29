@@ -6,16 +6,103 @@
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <fstream>
-#include <vector>
-
 namespace sl
 {
 
-OpenGLShader::OpenGLShader(uint32_t programHandle) :
-	m_programHandle(programHandle)
+namespace
 {
 
+uint32_t UploadShader(const char *pSource, size_t size, ShaderType type)
+{
+	static_assert(std::is_same_v<GLchar, char>);
+	const GLchar *pGLSource = static_cast<const GLchar *>(pSource);
+	const GLint GLsize = (GLint)size;
+
+	GLuint shaderHandle = glCreateShader(GLShaderType[(size_t)type]);
+	glShaderSource(shaderHandle, 1, &pGLSource, &GLsize);
+	glCompileShader(shaderHandle);
+
+#ifndef SL_FINAL
+	GLint isCompiled = 0;
+	glGetShaderiv(shaderHandle, GL_COMPILE_STATUS, &isCompiled);
+	if (GL_FALSE == isCompiled)
+	{
+		GLint maxLength = 0;
+		glGetShaderiv(shaderHandle, GL_INFO_LOG_LENGTH, &maxLength);
+
+		// The maxLength includes the NULL character
+		std::vector<GLchar> infoLog(maxLength);
+		glGetShaderInfoLog(shaderHandle, maxLength, &maxLength, infoLog.data());
+		SL_LOG_ERROR("Shader upload failed: {}", infoLog.data());
+
+		glDeleteShader(shaderHandle);
+
+		return 0;
+	}
+#endif
+
+	return shaderHandle;
+}
+
+uint32_t UploadProgram(uint32_t vsHandle, uint32_t fsHandle = 0)
+{
+	uint32_t programHandle = glCreateProgram();
+	glAttachShader(programHandle, vsHandle);
+	if (0 != fsHandle)
+	{
+		glAttachShader(programHandle, fsHandle);
+	}
+	glLinkProgram(programHandle);
+
+#ifndef SL_FINAL
+	GLint isLinked = 0;
+	glGetProgramiv(programHandle, GL_LINK_STATUS, &isLinked);
+	if (isLinked == GL_FALSE)
+	{
+		GLint maxLength = 0;
+		glGetProgramiv(programHandle, GL_INFO_LOG_LENGTH, &maxLength);
+
+		// The maxLength includes the NULL character
+		std::vector<GLchar> infoLog(maxLength);
+		glGetProgramInfoLog(programHandle, maxLength, &maxLength, infoLog.data());
+		SL_LOG_ERROR("Shader program upload failed: {}", infoLog.data());
+
+		glDeleteProgram(programHandle);
+		glDeleteShader(vsHandle);
+		if (0 != fsHandle)
+		{
+			glDeleteShader(fsHandle);
+		}
+
+		return 0;
+	}
+#endif
+
+	glDetachShader(programHandle, vsHandle);
+	glDeleteShader(vsHandle);
+
+	if (0 != fsHandle)
+	{
+		glDetachShader(programHandle, fsHandle);
+		glDeleteShader(fsHandle);
+	}
+
+	return programHandle;
+}
+
+} // namespace
+
+OpenGLShader::OpenGLShader(std::string_view vsSource, std::string_view fsSource)
+{
+	uint32_t vsHandle = UploadShader(vsSource.data(), vsSource.size(), ShaderType::VertexShader);
+	uint32_t fsHandle = UploadShader(fsSource.data(), fsSource.size(), ShaderType::FragmentShader);
+	m_programHandle = UploadProgram(vsHandle, fsHandle);
+}
+
+OpenGLShader::OpenGLShader(std::string_view shaderSource, ShaderType type)
+{
+	uint32_t shaderHandle = UploadShader(shaderSource.data(), shaderSource.size(), type);
+	m_programHandle = UploadProgram(shaderHandle);
 }
 
 OpenGLShader::~OpenGLShader()

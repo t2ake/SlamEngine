@@ -5,7 +5,7 @@
 namespace sl
 {
 
-// Basically its a combination of glslang, SPIRV-Tools and SPIRV-Cross
+// Basically, its just a combination of glslang, SPIRV-Tools and SPIRV-Cross
 class ShaderCompiler final
 {
 public:

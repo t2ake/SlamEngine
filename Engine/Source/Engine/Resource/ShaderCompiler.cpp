@@ -14,7 +14,7 @@ namespace sl
 namespace
 {
 
-constexpr const char *BackendToDef[nameof::enum_count<GraphicsBackend>()] =
+constexpr const char *BackendToDefinition[nameof::enum_count<GraphicsBackend>()] =
 {
 	"SL_NONE",	    // GraphicsBackend::None
 	"SL_OPENGL",    // GraphicsBackend::OpenGL,
@@ -65,7 +65,7 @@ public:
 private:
 	using ShaderIncluderContainer = std::array<std::string, 2>;
 
-	// To ensure requested data valid before calling ReleaseInclude.
+	// To ensure requested data is valid before calling ReleaseInclude.
 	ShaderIncluderContainer *m_pContainer = nullptr;
 };
 
@@ -88,7 +88,7 @@ std::string ShaderCompiler::CompileShader(const ShaderInfo &info)
 		options.SetIncluder(std::make_unique<ShaderIncluder>());
 
 		// Definition
-		options.AddMacroDefinition(BackendToDef[(size_t)RenderCore::GetBackend()]);
+		options.AddMacroDefinition(BackendToDefinition[(size_t)RenderCore::GetBackend()]);
 
 		shaderc::PreprocessedSourceCompilationResult result = compiler.PreprocessGlsl(
 			info.m_rowData.c_str(), info.m_rowData.size(),
@@ -97,6 +97,7 @@ std::string ShaderCompiler::CompileShader(const ShaderInfo &info)
 		if (result.GetCompilationStatus() != shaderc_compilation_status_success)
 		{
 			SL_LOG_ERROR("Shader preprocess failed: \"{}\"", name);
+			SL_LOG_ERROR(result.GetErrorMessage());
 			return "";
 		}
 
@@ -112,6 +113,7 @@ std::string ShaderCompiler::CompileShader(const ShaderInfo &info)
 		options.SetGenerateDebugInfo();
 		options.SetOptimizationLevel(shaderc_optimization_level_zero);
 #else
+		// ERROR: uniforms will be optimized.
 		options.SetOptimizationLevel(shaderc_optimization_level_performance);
 #endif
 

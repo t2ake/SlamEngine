@@ -10,7 +10,8 @@ namespace sl
 class OpenGLShader : public Shader
 {
 public:
-	OpenGLShader(uint32_t programHandle);
+	OpenGLShader(std::string_view vsSource, std::string_view fsSource);
+	OpenGLShader(std::string_view shaderSource, ShaderType type);
 	virtual ~OpenGLShader() override;
 
 	virtual void Bind() const override;
@@ -38,7 +39,8 @@ public:
 private:
 	int GetUniformLocation(std::string_view name);
 
-	uint32_t m_programHandle;
+	uint32_t m_programHandle = 0;
+
 	std::unordered_map<std::string, int> m_uniformLocationCache;
 };
 

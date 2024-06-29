@@ -3,7 +3,6 @@
 #include "Core/Defines.h"
 
 #include <string>
-#include <vector>
 
 namespace sl
 {

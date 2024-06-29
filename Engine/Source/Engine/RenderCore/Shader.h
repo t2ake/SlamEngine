@@ -18,7 +18,8 @@ namespace sl
 class Shader
 {
 public:
-	static Shader *Creat(uint32_t programHandle);
+	static Shader *Create(std::string_view vsSource, std::string_view fsSource);
+	static Shader *Create(std::string_view shaderSource, ShaderType type);
 
 public:
 	virtual ~Shader() = default;
