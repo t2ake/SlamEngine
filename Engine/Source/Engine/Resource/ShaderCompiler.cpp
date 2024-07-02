@@ -44,8 +44,20 @@ public:
 		m_pContainer = new ShaderIncluderContainer;
 		auto &container = *m_pContainer;
 
-		// Include with "../" is not supported for now.
-		container[0] = Path::FromeAsset("Shader/") + requested_source;
+		// Include path with "../" is not supported for now.
+		if (shaderc_include_type_relative == type)
+		{
+			container[0] = Path::FromeAsset("Shader/") + requested_source;
+		}
+		else if(shaderc_include_type_standard == type)
+		{
+			container[0] = Path::FromeAsset("Shader/Header/") + requested_source;
+		}
+		else
+		{
+			SL_ASSERT(false, "Shaderc unknown include type!");
+		}
+
 		container[1] = FileIO::LoadString(container[0]);
 
 		auto *pResult = new shaderc_include_result;
@@ -64,6 +76,7 @@ public:
 	}
 
 private:
+	// [0] is absolute path of file, [1] is content of file.
 	using ShaderIncluderContainer = std::array<std::string, 2>;
 
 	// To ensure requested data is valid before calling ReleaseInclude.
