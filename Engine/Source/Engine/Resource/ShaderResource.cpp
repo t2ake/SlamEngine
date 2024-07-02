@@ -67,6 +67,14 @@ void ShaderResource::OnImport()
 		m_shaders[1].m_rowData = FileIO::LoadString(m_shaders[1].m_assetPath);
 	}
 
+#ifndef SL_FINAL
+	if (m_shaders[0].m_rowData.empty() || m_shaders[1].m_rowData.empty())
+	{
+		SetStatus(ResourceStatus::Destroying);
+		return;
+	}
+#endif
+
 	SetStatus(ResourceStatus::Building);
 }
 
@@ -82,7 +90,7 @@ void ShaderResource::OnBuild()
 	}
 
 #ifndef SL_FINAL
-	if (m_shaders[0].m_rowData.empty())
+	if (m_shaders[0].m_rowData.empty() || m_shaders[1].m_rowData.empty())
 	{
 		SetStatus(ResourceStatus::Destroying);
 		return;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/Defines.h"
-#include "Core/Timer.h"
+#include "Core/Time.h"
 
 #include <memory>
 #include <string>
@@ -51,6 +51,6 @@ private:
 	bool m_isRunning = true;
 	bool m_isMinimized = false;
 
-	sl::Timer m_timer;
+	sl::Clock m_clock;
 	std::unique_ptr<sl::LayerStack> m_pLayerStack;
 };

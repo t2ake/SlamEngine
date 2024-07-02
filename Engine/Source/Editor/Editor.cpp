@@ -74,7 +74,7 @@ Editor::Editor(EditorInitor initor)
 	m_pLayerStack->PushLayer(std::move(pImGuiLayer));
 	m_pLayerStack->PushLayer(std::move(pSandboxLayer));
 
-	m_timer.Tick();
+	m_clock.Tick();
 }
 
 Editor::~Editor()
@@ -100,14 +100,14 @@ void Editor::Run()
 
 void Editor::BegineFrame()
 {
-	m_timer.Tick();
+	m_clock.Tick();
 
 	m_pLayerStack->BeginFrame();
 }
 
 void Editor::Update()
 {
-	m_pLayerStack->Update(m_timer.GetDeltatIme());
+	m_pLayerStack->Update(m_clock.GetDeltatIme());
 }
 
 void Editor::Render()
