@@ -20,8 +20,8 @@ constexpr const char *BackendToDefinition[nameof::enum_count<GraphicsBackend>()]
 	"SL_NONE",	    // GraphicsBackend::None
 	"SL_OPENGL",    // GraphicsBackend::OpenGL,
 	"SL_VULKAN",    // GraphicsBackend::Vulkan,
-	"SL_DIRECTX11", // GraphicsBackend::DirectX11,
-	"SL_DIRECTX12", // GraphicsBackend::DirectX12,
+	"SL_DIRECTX",   // GraphicsBackend::DirectX11,
+	"SL_DIRECTX",   // GraphicsBackend::DirectX12,
 	"SL_METAL",	    // GraphicsBackend::Metal,
 };
 
@@ -47,16 +47,17 @@ public:
 		// Include path with "../" is not supported for now.
 		if (shaderc_include_type_relative == type)
 		{
-			container[0] = Path::FromeAsset("Shader/") + requested_source;
+			container[0] = Path::FromeAsset("Shader/");
 		}
 		else if(shaderc_include_type_standard == type)
 		{
-			container[0] = Path::FromeAsset("Shader/Header/") + requested_source;
+			container[0] = Path::FromeAsset("Shader/Header/");
 		}
 		else
 		{
 			SL_ASSERT(false, "Shaderc unknown include type!");
 		}
+		container[0] += requested_source;
 
 		container[1] = FileIO::LoadString(container[0]);
 
@@ -76,7 +77,7 @@ public:
 	}
 
 private:
-	// [0] is absolute path of file, [1] is content of file.
+	// [0] is the absolute path of the file, [1] is the content of the file.
 	using ShaderIncluderContainer = std::array<std::string, 2>;
 
 	// To ensure requested data is valid before calling ReleaseInclude.
@@ -137,6 +138,7 @@ std::string ShaderCompiler::CompileShader(const ShaderInfo &info)
 #endif
 
 		// TODO: Start from vulkan glsl in the future.
+		options.SetSourceLanguage(shaderc_source_language_glsl);
 		options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
 
 		shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(
@@ -158,7 +160,7 @@ std::string ShaderCompiler::CompileShader(const ShaderInfo &info)
 		spirv_cross::CompilerGLSL glsl(std::move(spirvData));
 		
 		// TODO: Reflection
-		spirv_cross::ShaderResources resources = glsl.get_shader_resources();
+		// spirv_cross::ShaderResources resources = glsl.get_shader_resources();
 
 		spirv_cross::CompilerGLSL::Options options;
 		options.version = 450;

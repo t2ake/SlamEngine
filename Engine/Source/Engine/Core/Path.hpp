@@ -30,6 +30,12 @@ public:
 		return std::filesystem::path{ path }.stem().generic_string();
 	}
 
+	SL_FORCEINLINE static bool Contain(std::string_view base, std::string_view sub)
+	{
+		auto rel = std::filesystem::relative(sub, base);
+		return !rel.empty() && *(rel.c_str()) != '.';
+	}
+
 	SL_FORCEINLINE static std::string Extension(std::string_view path)
 	{
 		return std::filesystem::path{ path }.extension().generic_string();

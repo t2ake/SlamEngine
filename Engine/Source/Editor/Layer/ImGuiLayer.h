@@ -6,6 +6,8 @@
 
 #include <glm/vec2.hpp>
 
+#include <filesystem>
+
 namespace sl
 {
 
@@ -38,6 +40,7 @@ private:
 	void ShowInfo(float deltaTime);
 	void ShowLog();
 	void ShowEntityList();
+	void ShowAssetBrowser();
 
 	template<class T, class Fun>
 	void DrawComponent(const char *label, Fun uiFunction);
@@ -46,10 +49,10 @@ private:
 	void StartWithText(std::string_view text);
 	void ShowDetails();
 
-	void ShowSceneViewport();
 	void ShowImGuizmoOrientation();
 	void ShowImGuizmoTransform();
 	void MousePick();
+	void ShowSceneViewport();
 
 	bool OnKeyPressed(sl::KeyPressEvent& event);
 
@@ -64,6 +67,9 @@ private:
 
 	// Entity list and many other panels
 	sl::Entity m_selectedEntity;
+
+	// Asset browser
+	std::filesystem::path m_assetBrowserCrtPath;
 
 	// Details
 	float m_maxTextSize = 0.0f;

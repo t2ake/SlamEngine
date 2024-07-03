@@ -9,6 +9,9 @@
 namespace sl
 {
 
+namespace
+{
+
 ShaderType ProgramTypeToShaderType(ShaderProgramType programType)
 {
 	switch (programType)
@@ -26,6 +29,8 @@ ShaderType ProgramTypeToShaderType(ShaderProgramType programType)
 		}
 	}
 }
+
+} // namespace
 
 ShaderResource::ShaderResource(std::string_view vsPath, std::string_view fsPath) :
 	m_programType(ShaderProgramType::Standard)

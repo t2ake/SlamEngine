@@ -1,5 +1,6 @@
 #include "ImGuiLayer.h"
 
+#include "Core//Path.hpp"
 #include "Core/EnumOf.hpp"
 #include "Core/Log.h"
 #include "Event/KeyEvent.h"
@@ -124,6 +125,7 @@ ImGuiLayer::ImGuiLayer()
 {
 	m_dockSpaceFlag |= ImGuiDockNodeFlags_NoUndocking;
 	m_selectedEntity = sl::ECSWorld::GetEditorCameraEntity();
+	m_assetBrowserCrtPath = sl::Path::AssetPath;
 }
 
 ImGuiLayer::~ImGuiLayer()
@@ -165,6 +167,7 @@ void ImGuiLayer::OnUpdate(float deltaTime)
 	ShowInfo(deltaTime);
 	ShowLog();
 	ShowEntityList();
+	ShowAssetBrowser();
 	ShowDetails();
 	ShowSceneViewport();
 }
@@ -259,6 +262,7 @@ void ImGuiLayer::ShowToolOverlay()
 void ImGuiLayer::ShowMenuBar()
 {
 	ImGui::BeginMainMenuBar();
+
 	if (ImGui::BeginMenu("File"))
 	{
 		if (ImGui::MenuItem("New"))
@@ -281,6 +285,7 @@ void ImGuiLayer::ShowMenuBar()
 		}
 		ImGui::EndMenu();
 	}
+
 	if (ImGui::BeginMenu("Setting"))
 	{
 		if (ImGui::MenuItem("No Undocking", "", m_dockSpaceFlag & ImGuiDockNodeFlags_NoUndocking))
@@ -293,6 +298,7 @@ void ImGuiLayer::ShowMenuBar()
 		}
 		ImGui::EndMenu();
 	}
+
 	if (ImGui::BeginMenu("Debug"))
 	{
 		ImGui::MenuItem("ImGui Demo", "", &m_debugImGuiDemo);
@@ -301,6 +307,7 @@ void ImGuiLayer::ShowMenuBar()
 		ImGui::MenuItem("Item Picker", "", &m_debugItemPicker);
 		ImGui::EndMenu();
 	}
+
 	ImGui::EndMainMenuBar();
 }
 
@@ -310,64 +317,59 @@ void ImGuiLayer::ShowInfo(float deltaTime)
 	RightClickFocus();
 
 	// Infos
-	{
-		ImGui::Text("Backend: %s", nameof::nameof_enum(sl::RenderCore::GetBackend()).data());
-		ImGui::Separator();
-	}
+	ImGui::Text("Backend: %s", nameof::nameof_enum(sl::RenderCore::GetBackend()).data());
+	ImGui::Separator();
 
 	// FPS plot
+	static float s_sumTime = 0.0f; // Stores in millisecond.
+	static float s_deltaTimeMultiplier = 10.0f;
+	static ScrollingBuffer s_coastBuffer;
+	static ScrollingBuffer s_fpsBuffer;
+
+	constexpr float History = 1000.0f;
+	constexpr float Delay = 1000.0f;
+
+	ImGui::AlignTextToFramePadding();
+	ImGui::Text("Delta Time Multiplier:");
+	ImGui::SameLine();
+	ImGui::SetNextItemWidth(-1.0f);
+	ImGui::DragFloat("##DeltaTimeMultiplier", &s_deltaTimeMultiplier, 1.0f, 1.0f, 1000.0f);
+
+	s_sumTime += deltaTime;
+	if (s_sumTime > Delay)
 	{
-		// Stores in millisecond.
-		static float s_sumTime = 0.0f;
-		static float s_deltaTimeMultiplier = 10.0f;
-		static ScrollingBuffer s_coastBuffer;
-		static ScrollingBuffer s_fpsBuffer;
+		// Waiting for programme to stabilise.
+		s_coastBuffer.AddPoint(s_sumTime, s_deltaTimeMultiplier * deltaTime);
+		s_fpsBuffer.AddPoint(s_sumTime, 1000.0f / deltaTime);
+	}
 
-		constexpr float History = 1000.0f;
-		constexpr float Delay = 1000.0f;
-
-		ImGui::AlignTextToFramePadding();
-		ImGui::Text("Delta Time Multiplier:");
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(-1.0f);
-		ImGui::DragFloat("##DeltaTimeMultiplier", &s_deltaTimeMultiplier, 1.0f, 1.0f, 1000.0f);
-
-		s_sumTime += deltaTime;
+	constexpr ImPlotFlags PlotFlag = ImPlotFlags_CanvasOnly;
+	constexpr ImPlotAxisFlags AxisFlagX = ImPlotAxisFlags_NoTickLabels;
+	constexpr ImPlotAxisFlags AxisFlagY = ImPlotAxisFlags_AutoFit;
+	if (ImPlot::BeginPlot("Monitor", ImVec2(-1.0f, 150.0f), PlotFlag))
+	{
+		ImPlot::SetupAxes(nullptr, nullptr, AxisFlagX, AxisFlagY);
+		ImPlot::SetupAxisLimits(ImAxis_X1, s_sumTime - History, s_sumTime, ImGuiCond_Always);
+		ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
 		if (s_sumTime > Delay)
 		{
-			// Waiting for programme to stabilise.
-			s_coastBuffer.AddPoint(s_sumTime, s_deltaTimeMultiplier * deltaTime);
-			s_fpsBuffer.AddPoint(s_sumTime, 1000.0f / deltaTime);
-		}
+			ImPlot::PlotShaded("Coast in ms",
+				&s_coastBuffer.Data[0].x,
+				&s_coastBuffer.Data[0].y,
+				s_coastBuffer.Data.size(),
+				0, 0,
+				s_coastBuffer.Offset,
+				2 * sizeof(float));
 
-		constexpr ImPlotFlags PlotFlag = ImPlotFlags_CanvasOnly;
-		constexpr ImPlotAxisFlags AxisFlagX = ImPlotAxisFlags_NoTickLabels;
-		constexpr ImPlotAxisFlags AxisFlagY = ImPlotAxisFlags_AutoFit;
-		if (ImPlot::BeginPlot("Monitor", ImVec2(-1.0f, 150.0f), PlotFlag))
-		{
-			ImPlot::SetupAxes(nullptr, nullptr, AxisFlagX, AxisFlagY);
-			ImPlot::SetupAxisLimits(ImAxis_X1, s_sumTime - History, s_sumTime, ImGuiCond_Always);
-			ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
-			if (s_sumTime > Delay)
-			{
-				ImPlot::PlotShaded("Coast in ms",
-					&s_coastBuffer.Data[0].x,
-					&s_coastBuffer.Data[0].y,
-					s_coastBuffer.Data.size(),
-					0, 0,
-					s_coastBuffer.Offset,
-					2 * sizeof(float));
-
-				ImPlot::PlotLine("FPS",
-					&s_fpsBuffer.Data[0].x,
-					&s_fpsBuffer.Data[0].y,
-					s_fpsBuffer.Data.size(),
-					0,
-					s_fpsBuffer.Offset,
-					2 * sizeof(float));
-			}
-			ImPlot::EndPlot();
+			ImPlot::PlotLine("FPS",
+				&s_fpsBuffer.Data[0].x,
+				&s_fpsBuffer.Data[0].y,
+				s_fpsBuffer.Data.size(),
+				0,
+				s_fpsBuffer.Offset,
+				2 * sizeof(float));
 		}
+		ImPlot::EndPlot();
 	}
 
 	ImGui::End();
@@ -450,6 +452,55 @@ void ImGuiLayer::ShowEntityList()
 	{
 		m_selectedEntity.Reset();
 	}
+
+	ImGui::End();
+}
+
+void ImGuiLayer::ShowAssetBrowser()
+{
+	ImGui::Begin("Asset Browser");
+
+	// Disable the back button if the current path reaches the outermost path.
+	bool backButtonDisabled = !sl::Path::Contain(sl::Path::AssetPath, m_assetBrowserCrtPath.generic_string());
+	if (backButtonDisabled)
+	{
+		ImGui::BeginDisabled();
+	}
+	if (ImGui::Button("<-"))
+	{
+		m_assetBrowserCrtPath = m_assetBrowserCrtPath.parent_path();
+	}
+	if (backButtonDisabled)
+	{
+		ImGui::EndDisabled();
+	}
+
+	ImGui::SameLine();
+	ImGui::Text(m_assetBrowserCrtPath.generic_string().c_str());
+
+	constexpr ImVec2 BsuttonSize{ 64.0f, 64.0f };
+	const float itemSpacingX = ImGui::GetStyle().ItemSpacing.x;
+	const float windowVisibleX = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+	for (const auto &it : std::filesystem::directory_iterator(m_assetBrowserCrtPath))
+	{
+		const auto &path = it.path();
+		if (ImGui::Button(path.filename().generic_string().c_str(), BsuttonSize))
+		{
+			if (it.is_directory())
+			{
+				m_assetBrowserCrtPath = path;
+			}
+		}
+
+		// Manually wrapping buttons.
+		float lastButtonX = ImGui::GetItemRectMax().x;
+		float nextButtonX = lastButtonX + itemSpacingX + BsuttonSize.x;
+		if (nextButtonX < windowVisibleX)
+		{
+			ImGui::SameLine();
+		}
+	}
+	ImGui::NewLine();
 
 	ImGui::End();
 }
@@ -770,70 +821,6 @@ void ImGuiLayer::ShowDetails()
 	ImGui::End();
 }
 
-void ImGuiLayer::ShowSceneViewport()
-{
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
-	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-	ImGui::PopStyleVar();
-	RightClickFocus();
-
-	m_sceneViewportWindowPosX = (uint32_t)ImGui::GetWindowPos().x;
-	m_sceneViewportWindowPosY = (uint32_t)ImGui::GetWindowPos().y;
-
-	// Resize event
-	uint32_t crtSceneViewportSizeX = (uint32_t)ImGui::GetContentRegionAvail().x;
-	uint32_t crtSceneViewportSizeY = (uint32_t)ImGui::GetContentRegionAvail().y;
-	if (crtSceneViewportSizeX != m_sceneViewportSizeX || crtSceneViewportSizeY != m_sceneViewportSizeY)
-	{
-		m_sceneViewportSizeX = crtSceneViewportSizeX;
-		m_sceneViewportSizeY = crtSceneViewportSizeY;
-
-		sl::SceneViewportResizeEvent event{ m_sceneViewportSizeX , m_sceneViewportSizeY };
-		m_eventCallback(event);
-	}
-
-	// Draw main frame buffer color attachment
-	uint32_t handle = sl::RenderCore::GetMainFramebuffer()->GetAttachmentHandle(0);
-	ImGui::Image((void *)(uint64_t)handle, ImGui::GetContentRegionAvail(), ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
-
-	auto& camera= sl::ECSWorld::GetEditorCameraComponent();
-
-	// ImGuizmo
-	ShowImGuizmoOrientation();
-	if (m_imguizmoMode >= 0 && m_selectedEntity)
-	{
-		ShowImGuizmoTransform();
-	}
-
-	if (!ImGui::IsWindowHovered() || camera.IsUsing() ||
-		ImGui::IsMouseDragging(ImGuiMouseButton_Left) ||
-		ImGuizmo::IsUsing())
-	{
-		ImGui::End();
-		return;
-	}
-
-	// Set camera controller mode or mouse pick entity,
-	// which related to mouse position so we cant just call them inside OnEnvent.
-	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-	{
-		camera.m_controllerMode = sl::CameraControllerMode::FPS;
-	}
-	else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-	{
-		if (ImGui::IsKeyDown(ImGuiKey_LeftAlt))
-		{
-			camera.m_controllerMode = sl::CameraControllerMode::Editor;
-		}
-		else
-		{
-			MousePick();
-		}
-	}
-
-	ImGui::End();
-}
-
 void ImGuiLayer::ShowImGuizmoOrientation()
 {
 	constexpr float Length = 100.0f;
@@ -917,6 +904,70 @@ void ImGuiLayer::MousePick()
 		mouseLocalPosX, mouseLocalPosY);
 
 	m_selectedEntity = crtEntity;
+}
+
+void ImGuiLayer::ShowSceneViewport()
+{
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
+	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+	ImGui::PopStyleVar();
+	RightClickFocus();
+
+	m_sceneViewportWindowPosX = (uint32_t)ImGui::GetWindowPos().x;
+	m_sceneViewportWindowPosY = (uint32_t)ImGui::GetWindowPos().y;
+
+	// Resize event
+	uint32_t crtSceneViewportSizeX = (uint32_t)ImGui::GetContentRegionAvail().x;
+	uint32_t crtSceneViewportSizeY = (uint32_t)ImGui::GetContentRegionAvail().y;
+	if (crtSceneViewportSizeX != m_sceneViewportSizeX || crtSceneViewportSizeY != m_sceneViewportSizeY)
+	{
+		m_sceneViewportSizeX = crtSceneViewportSizeX;
+		m_sceneViewportSizeY = crtSceneViewportSizeY;
+
+		sl::SceneViewportResizeEvent event{ m_sceneViewportSizeX , m_sceneViewportSizeY };
+		m_eventCallback(event);
+	}
+
+	// Draw main frame buffer color attachment
+	uint32_t handle = sl::RenderCore::GetMainFramebuffer()->GetAttachmentHandle(0);
+	ImGui::Image((void *)(uint64_t)handle, ImGui::GetContentRegionAvail(), ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
+
+	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
+
+	// ImGuizmo
+	ShowImGuizmoOrientation();
+	if (m_imguizmoMode >= 0 && m_selectedEntity)
+	{
+		ShowImGuizmoTransform();
+	}
+
+	if (!ImGui::IsWindowHovered() || camera.IsUsing() ||
+		ImGui::IsMouseDragging(ImGuiMouseButton_Left) ||
+		ImGuizmo::IsUsing())
+	{
+		ImGui::End();
+		return;
+	}
+
+	// Set camera controller mode or mouse pick entity,
+	// which related to mouse position so we cant just call them inside OnEnvent.
+	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+	{
+		camera.m_controllerMode = sl::CameraControllerMode::FPS;
+	}
+	else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	{
+		if (ImGui::IsKeyDown(ImGuiKey_LeftAlt))
+		{
+			camera.m_controllerMode = sl::CameraControllerMode::Editor;
+		}
+		else
+		{
+			MousePick();
+		}
+	}
+
+	ImGui::End();
 }
 
 bool ImGuiLayer::OnKeyPressed(sl::KeyPressEvent& event)
