@@ -2,6 +2,7 @@
 
 #include "Core/Log.h"
 #include "Core/Path.hpp"
+#include "Core/Time.h"
 #include "RenderCore/Shader.h"
 #include "Resource/FileIO.h"
 #include "Resource/ShaderCompiler.h"
@@ -86,12 +87,18 @@ void ShaderResource::OnImport()
 void ShaderResource::OnBuild()
 {
 	SL_LOG_TRACE("Compiling SPIR-V: \"{}\"", m_shaders[0].m_name.c_str());
+	
+	Timer timer;
 	m_shaders[0].m_rowData = ShaderCompiler::CompileShader(m_shaders[0]);
+	SL_LOG_TRACE("  Done in {} ms", timer.GetDuration());
 
 	if (ShaderProgramType::Standard == m_programType)
 	{
 		SL_LOG_TRACE("Compiling SPIR-V: \"{}\"", m_shaders[1].m_name.c_str());
+
+		timer.Reset();
 		m_shaders[1].m_rowData = ShaderCompiler::CompileShader(m_shaders[1]);
+		SL_LOG_TRACE("  Done in {} ms", timer.GetDuration());
 	}
 
 #ifndef SL_FINAL

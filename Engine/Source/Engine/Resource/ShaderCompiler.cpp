@@ -2,7 +2,6 @@
 
 #include "Core/EnumOf.hpp"
 #include "Core/Path.hpp"
-#include "Core/Time.h"
 #include "RenderCore/RenderCore.h"
 #include "Resource/FileIO.h"
 
@@ -88,8 +87,6 @@ private:
 
 std::string ShaderCompiler::CompileShader(const ShaderInfo &info)
 {
-	Timer timer;
-
 	const char *name = info.m_name.c_str();
 	shaderc_shader_kind shaderKind = ShaderTypeToShaderKind[(size_t)info.m_type];
 	
@@ -167,7 +164,7 @@ std::string ShaderCompiler::CompileShader(const ShaderInfo &info)
 		glsl.set_common_options(options);
 
 		std::string source = glsl.compile();
-		SL_LOG_INFO("Shader source:\n{}\nCoast in: {} ms\n", source.c_str(), timer.GetDuration());
+		// SL_LOG_INFO("Shader source:\n{}", source.c_str());
 
 		return source;
 	}
