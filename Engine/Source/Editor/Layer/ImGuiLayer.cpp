@@ -461,7 +461,8 @@ void ImGuiLayer::ShowAssetBrowser()
 	ImGui::Begin("Asset Browser");
 
 	// Disable the back button if the current path reaches the outermost path.
-	bool backButtonDisabled = !sl::Path::Contain(sl::Path::AssetPath, m_assetBrowserCrtPath.generic_string());
+	std::string crtPath = m_assetBrowserCrtPath.generic_string();
+	bool backButtonDisabled = !sl::Path::Contain(sl::Path::AssetPath, crtPath);
 	if (backButtonDisabled)
 	{
 		ImGui::BeginDisabled();
@@ -476,32 +477,40 @@ void ImGuiLayer::ShowAssetBrowser()
 	}
 
 	ImGui::SameLine();
-	ImGui::Text(m_assetBrowserCrtPath.generic_string().c_str());
+	ImGui::Text(crtPath.c_str());
+	ImGui::Separator();
 
-	constexpr ImVec2 BsuttonSize{ 64.0f, 64.0f };
-	const float itemSpacingX = ImGui::GetStyle().ItemSpacing.x;
-	const float windowVisibleX = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+	constexpr ImVec2 ButtonSize{ 100.0f, 100.0f };
+	float columnSize = ButtonSize.x + ImGui::GetStyle().ItemSpacing.x;
+	uint32_t columnCount = uint32_t(ImGui::GetContentRegionAvail().x / columnSize);
+	columnCount = std::max(1U, columnCount);
+	ImGui::Columns(columnCount, "Asset Browser Colums", false);
+
+	uint32_t columnIndex = 0;
 	for (const auto &it : std::filesystem::directory_iterator(m_assetBrowserCrtPath))
 	{
-		const auto &path = it.path();
-		if (ImGui::Button(path.filename().generic_string().c_str(), BsuttonSize))
+		columnIndex = columnIndex >= columnCount ? 0 : columnIndex;
+		ImGui::SetColumnWidth(columnIndex++, columnSize);
+
+		std::string fileName = it.path().filename().generic_string();
+		ImGui::PushID(fileName.c_str());
+
+		ImGui::Button(fileName.c_str(), ButtonSize);
+		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 		{
 			if (it.is_directory())
 			{
-				m_assetBrowserCrtPath = path;
+				m_assetBrowserCrtPath = it.path();
 			}
 		}
 
-		// Manually wrapping buttons.
-		float lastButtonX = ImGui::GetItemRectMax().x;
-		float nextButtonX = lastButtonX + itemSpacingX + BsuttonSize.x;
-		if (nextButtonX < windowVisibleX)
-		{
-			ImGui::SameLine();
-		}
-	}
-	ImGui::NewLine();
+		ImGui::TextWrapped(fileName.c_str());
 
+		ImGui::PopID();
+		ImGui::NextColumn();
+	}
+
+	ImGui::Columns(1);
 	ImGui::End();
 }
 
