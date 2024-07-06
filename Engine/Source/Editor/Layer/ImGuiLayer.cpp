@@ -9,6 +9,7 @@
 #include "ImGui/ImGuiContext.h"
 #include "RenderCore/RenderCore.h"
 #include "Resource/Font.h"
+#include "Resource/ResourceManager.h"
 #include "Scene/SceneSerializer.h"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -126,6 +127,16 @@ ImGuiLayer::ImGuiLayer()
 	m_dockSpaceFlag |= ImGuiDockNodeFlags_NoUndocking;
 	m_selectedEntity = sl::ECSWorld::GetEditorCameraEntity();
 	m_assetBrowserCrtPath = sl::Path::AssetPath;
+	
+	auto pFileIconTextureResource = std::make_unique<sl::TextureResource>(
+		sl::Path::FromeAsset("Texture/FileIcon.png"), SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR);
+	sl::ResourceManager::AddTextureResource("FileIcon", std::move(pFileIconTextureResource));
+	m_fileIconName = "FileIcon";
+
+	auto pFolderIconTextureResource = std::make_unique<sl::TextureResource>(
+		sl::Path::FromeAsset("Texture/FolderIcon.png"), SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR);
+	sl::ResourceManager::AddTextureResource("FolderIcon", std::move(pFolderIconTextureResource));
+	m_folderIconName = "FolderIcon";
 }
 
 ImGuiLayer::~ImGuiLayer()
@@ -496,10 +507,27 @@ void ImGuiLayer::ShowAssetBrowser()
 		std::string fileName = it.path().filename().generic_string();
 		ImGui::PushID(fileName.c_str());
 
-		ImGui::Button(fileName.c_str(), ButtonSize);
+		const bool isDirectory = it.is_directory();
+		if (isDirectory)
+		{
+			if (auto *pTextureResource = sl::ResourceManager::GetTextureResource(m_folderIconName); pTextureResource->IsReady())
+			{
+				ImGui::ImageButton(fileName.c_str(), (ImTextureID)(uint64_t)pTextureResource->GetTexture()->GetHandle(),
+					ButtonSize, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
+			}
+		}
+		else // Is file
+		{
+			if (auto *pTextureResource = sl::ResourceManager::GetTextureResource(m_fileIconName); pTextureResource->IsReady())
+			{
+				ImGui::ImageButton(fileName.c_str(), (ImTextureID)(uint64_t)pTextureResource->GetTexture()->GetHandle(),
+					ButtonSize, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
+			}
+		}
+
 		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 		{
-			if (it.is_directory())
+			if (isDirectory)
 			{
 				m_assetBrowserCrtPath = it.path();
 			}

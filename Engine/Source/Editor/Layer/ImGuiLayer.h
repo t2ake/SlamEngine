@@ -70,6 +70,8 @@ private:
 
 	// Asset browser
 	std::filesystem::path m_assetBrowserCrtPath;
+	std::string m_fileIconName;
+	std::string m_folderIconName;
 
 	// Details
 	float m_maxTextSize = 0.0f;
