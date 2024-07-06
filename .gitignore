@@ -5,6 +5,7 @@
 
 # The folder name that most people use when saving build files
 build
+
 # Compiled engine binary asset files
 /Engine/Binary
 # Log
