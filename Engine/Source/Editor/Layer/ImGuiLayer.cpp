@@ -489,6 +489,7 @@ void ImGuiLayer::ShowAssetBrowser()
 	uint32_t columnIndex = 0;
 	for (const auto &it : std::filesystem::directory_iterator(m_assetBrowserCrtPath))
 	{
+		// WARNING: Will cause an error if we dont have an existing imgui.ini file.
 		columnIndex = columnIndex >= columnCount ? 0 : columnIndex;
 		ImGui::SetColumnWidth(columnIndex++, columnSize);
 
@@ -843,6 +844,11 @@ void ImGuiLayer::ShowImGuizmoOrientation()
 
 void ImGuiLayer::ShowImGuizmoTransform()
 {
+	if (sl::ECSWorld::GetEditorCameraEntity() == m_selectedEntity)
+	{
+		return;
+	}
+
 	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
 	if (camera.IsUsing())
 	{

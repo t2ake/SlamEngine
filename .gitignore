@@ -1,11 +1,13 @@
+# Visual Studio
 .vs
 *.sln
-*.vcxproj
-*.filters
-*.user
+*.vcxproj*
 
+# The folder name that most people use when saving build files
 build
-
-/Engine/bin/*
-/Engine/int/*
-!/Engine/int/imgui.ini
+# Compiled engine binary asset files
+/Engine/Binary
+# Log
+/Engine/Log
+# The working directory
+/Engine/VSProject

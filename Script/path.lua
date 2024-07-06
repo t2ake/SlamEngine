@@ -2,8 +2,8 @@ CurrentWorkingDirectory = os.getcwd()
 RootPath = string.sub(CurrentWorkingDirectory, 0, string.len(CurrentWorkingDirectory) - string.len("Script") - 1)
 
 SourcePath = path.join(RootPath, "Engine/Source")
-BinaryPath = path.join(RootPath, "Engine/bin")
-IntermediatePath = path.join(RootPath, "Engine/int")
+BinaryPath = path.join(RootPath, "Engine/Binary/bin")
+IntermediatePath = path.join(RootPath, "Engine/Binary/obj")
 
 EnginePath = path.join(SourcePath, "Engine")
 EditorPath = path.join(SourcePath, "Editor")

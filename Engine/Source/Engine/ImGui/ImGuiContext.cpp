@@ -29,6 +29,9 @@ void ImGuiContext::Init(void *pNativeWindow)
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	io.ConfigViewportsNoTaskBarIcon = true;
 
+	m_iniFilePath = Path::FromeRoot("Engine/Config/imgui.ini");
+	io.IniFilename = m_iniFilePath.c_str();
+
 	// 3. Load font
 	// ImFont *pRegularFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Roboto/Roboto-Regular.ttf").c_str(), 18.0f);
 	// ImFont *pBoldFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Roboto/Roboto-Bold.ttf").c_str(), 18.0f);

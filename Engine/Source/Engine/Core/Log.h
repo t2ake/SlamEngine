@@ -26,7 +26,6 @@ public:
 
 private:
 	inline static std::unique_ptr<spdlog::logger> s_pEngineLogger;
-	inline static std::unique_ptr<spdlog::logger> s_pEditorLogger;
 };
 
 } // namespace sl

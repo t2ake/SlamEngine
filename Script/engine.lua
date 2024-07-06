@@ -6,7 +6,7 @@ project("Slam")
 	cppdialect("C++20")
 	
 	-- Project, binary and intermediate file paths
-	location(IntermediatePath)
+	location(path.join(RootPath, "Engine/VSProject"))
 	targetdir(path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"))
 	objdir(path.join(IntermediatePath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"))
 	

@@ -1,5 +1,6 @@
 #ifndef SL_FINAL
 
+#include "Core/Path.hpp"
 #include "Log.h"
 
 #include <spdlog/sinks/basic_file_sink.h>
@@ -15,16 +16,13 @@ void Log::Init()
 	pConsoleSink->set_pattern("%^[%T] %n: %v%$");
 
 	// Output to file.
-	auto pFileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("Slam.log", true);
+	auto pFileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(Path::FromeRoot("Engine/Log/Slam.log"), true);
 	pFileSink->set_pattern("[%T] [%l] %n: %v");
 
 	std::vector<spdlog::sink_ptr> sinks{ pConsoleSink  , pFileSink };
 
 	s_pEngineLogger = std::make_unique<spdlog::logger>("Engine", sinks.begin(), sinks.end());
 	s_pEngineLogger->set_level(spdlog::level::trace);
-
-	s_pEditorLogger = std::make_unique<spdlog::logger>("Editor", sinks.begin(), sinks.end());
-	s_pEditorLogger->set_level(spdlog::level::trace);
 }
 
 } // namespace sl

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace sl
 {
 
@@ -18,6 +20,8 @@ public:
 private:
 	static void SetColor();
 	static void SetStyle();
+
+	inline static std::string m_iniFilePath;
 };
 
 } // namespace sl
