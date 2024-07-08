@@ -58,7 +58,7 @@ public:
 		}
 		container[0] += requested_source;
 
-		container[1] = FileIO::LoadString(container[0]);
+		container[1] = FileIO::ReadString(container[0]);
 
 		auto *pResult = new shaderc_include_result;
 		pResult->source_name = container[0].c_str();
@@ -85,13 +85,11 @@ private:
 
 } // namespace
 
-std::string ShaderCompiler::CompileShader(const ShaderInfo &info)
+std::vector<uint32_t> ShaderCompiler::SourceToSpirv(const ShaderInfo &info)
 {
 	const char *name = info.m_name.c_str();
 	shaderc_shader_kind shaderKind = ShaderTypeToShaderKind[(size_t)info.m_type];
-	
-	std::string shaderSource;
-	std::vector<uint32_t> spirvData;
+	std::string preprocessedShaderSource;
 
 	// 1. Preprocess
 	{
@@ -105,17 +103,17 @@ std::string ShaderCompiler::CompileShader(const ShaderInfo &info)
 		options.AddMacroDefinition(BackendToDefinition[(size_t)RenderCore::GetBackend()]);
 
 		shaderc::PreprocessedSourceCompilationResult result = compiler.PreprocessGlsl(
-			info.m_rowData.c_str(), info.m_rowData.size(),
+			info.m_source.c_str(), info.m_source.size(),
 			shaderKind, name, options);
 
 		if (result.GetCompilationStatus() != shaderc_compilation_status_success)
 		{
 			SL_LOG_ERROR("Shader preprocess failed: \"{}\"", name);
 			SL_LOG_ERROR(result.GetErrorMessage());
-			return "";
+			return {};
 		}
 
-		shaderSource = { result.cbegin(), result.cend() };
+		preprocessedShaderSource = { result.cbegin(), result.cend() };
 	}
 
 	// 2. Compile to SPIR-V
@@ -139,37 +137,37 @@ std::string ShaderCompiler::CompileShader(const ShaderInfo &info)
 		options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
 
 		shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(
-			shaderSource.c_str(), shaderSource.size(),
+			preprocessedShaderSource.c_str(), preprocessedShaderSource.size(),
 			shaderKind, name, "main", options);
 
 		if (result.GetCompilationStatus() != shaderc_compilation_status_success)
 		{
 			SL_LOG_ERROR("Compile shader to SPIR-V failed: \"{}\"", name);
 			SL_LOG_ERROR(result.GetErrorMessage());
-			return "";
+			return {};
 		}
 
-		spirvData = { result.cbegin(), result.cend() };
+		return { result.cbegin(), result.cend() };
 	}
 
-	// 3. Compile to shader source
-	{
-		spirv_cross::CompilerGLSL glsl(std::move(spirvData));
-		
-		// TODO: Reflection
-		// spirv_cross::ShaderResources resources = glsl.get_shader_resources();
+	return {};
+}
 
-		spirv_cross::CompilerGLSL::Options options;
-		options.version = 450;
-		glsl.set_common_options(options);
+std::string ShaderCompiler::SpirvToSource(std::vector<uint32_t> spirv)
+{
+	spirv_cross::CompilerGLSL::Options options;
+	options.version = 450;
 
-		std::string source = glsl.compile();
-		// SL_LOG_INFO("Shader source:\n{}", source.c_str());
+	spirv_cross::CompilerGLSL glsl(std::move(spirv));
+	glsl.set_common_options(options);
 
-		return source;
-	}
+	return glsl.compile();
+}
 
-	return "";
+void ShaderCompiler::ReflectSpirv(const std::vector<uint32_t> &spirv)
+{
+	spirv_cross::CompilerGLSL glsl(spirv);
+	spirv_cross::ShaderResources resources = glsl.get_shader_resources();
 }
 
 } // namespace sl

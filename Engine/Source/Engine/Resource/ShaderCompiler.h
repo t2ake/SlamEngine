@@ -2,6 +2,8 @@
 
 #include "Resource/ShaderInfo.h"
 
+#include <vector>
+
 namespace sl
 {
 
@@ -10,7 +12,10 @@ class ShaderCompiler final
 {
 public:
 	ShaderCompiler() = delete;
-	static std::string CompileShader(const ShaderInfo &info);
+	
+	static std::vector<uint32_t> SourceToSpirv(const ShaderInfo &info);
+	static std::string SpirvToSource(std::vector<uint32_t> spirv);
+	static void ReflectSpirv(const std::vector<uint32_t> &spirv);
 };
 
 } // namespace sl

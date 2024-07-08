@@ -11,8 +11,11 @@ struct ShaderInfo
 {
 	ShaderType m_type;
 	std::string m_name;
+
 	std::string m_assetPath;
-	std::string m_rowData;
+	std::string m_binaryPath;
+
+	std::string m_source;
 };
 
 } // namespace sl
