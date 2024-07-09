@@ -73,12 +73,12 @@ void Window::SetVSync(bool VSync)
 	glfwSwapInterval(VSync ? 1 : 0);
 }
 
-void Window::CaptureCursor()
+void Window::CursorModeDisabled()
 {
 	glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
-void Window::ReleaseCursor()
+void Window::CursorModeNormal()
 {
 	glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }

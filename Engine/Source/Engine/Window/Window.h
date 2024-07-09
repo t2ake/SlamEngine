@@ -34,8 +34,8 @@ public:
 
 	void SetVSync(bool VSync);
 
-	void CaptureCursor();
-	void ReleaseCursor();
+	void CursorModeDisabled();
+	void CursorModeNormal();
 	void SetCursorPos(float x, float y);
 	void SetGlobalCursorPos(float x, float y);
 

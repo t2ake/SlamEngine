@@ -30,7 +30,7 @@ public:
 		SL_ASSERT(size % sizeof(T) == 0, "Please ensure that the file size is an integer multiple of sizeof(T) by yourself.");
 
 		in.seekg(0, std::ios::beg);
-		in.read((char *)fileData.data(), size);
+		in.read(reinterpret_cast<char *>(fileData.data()), size);
 		in.close();
 
 		return fileData;

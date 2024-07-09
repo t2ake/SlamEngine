@@ -114,7 +114,8 @@ void ShaderResource::OnBuild()
 	
 	Timer timer;
 	auto spirvData = ShaderCompiler::SourceToSpirv(m_shaders[0]);
-	FileIO::WriteBinary(m_shaders[0].m_binaryPath, (char *)spirvData.data(), spirvData.size() * sizeof(uint32_t));
+	FileIO::WriteBinary(m_shaders[0].m_binaryPath,
+		reinterpret_cast<char *>(spirvData.data()), spirvData.size() * sizeof(uint32_t));
 	m_shaders[0].m_source = ShaderCompiler::SpirvToSource(std::move(spirvData));
 	SL_LOG_TRACE("  Done in {} ms", timer.GetDuration());
 
@@ -124,7 +125,8 @@ void ShaderResource::OnBuild()
 
 		timer.Reset();
 		auto fragSpirvData = ShaderCompiler::SourceToSpirv(m_shaders[1]);
-		FileIO::WriteBinary(m_shaders[1].m_binaryPath, (char *)fragSpirvData.data(), fragSpirvData.size() * sizeof(uint32_t));
+		FileIO::WriteBinary(m_shaders[1].m_binaryPath,
+			reinterpret_cast<char *>(fragSpirvData.data()), fragSpirvData.size() * sizeof(uint32_t));
 		m_shaders[1].m_source = ShaderCompiler::SpirvToSource(std::move(fragSpirvData));
 		SL_LOG_TRACE("  Done in {} ms", timer.GetDuration());
 	}

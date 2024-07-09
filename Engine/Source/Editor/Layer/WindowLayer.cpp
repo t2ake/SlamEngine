@@ -35,8 +35,31 @@ void WindowLayer::BeginFrame()
 
 void WindowLayer::OnUpdate(float deltaTime)
 {
-	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
+	static bool s_isNormal = true;
+	if (sl::ECSWorld::GetEditorCameraComponent().IsUsing() || (ImGui::IsMouseDragging(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing()))
+	{
+		if (s_isNormal)
+		{
+			m_pWindow->CursorModeDisabled();
+			s_isNormal = false;
+		}
+	}
+	else
+	{
+		if (!s_isNormal)
+		{
+			m_pWindow->CursorModeNormal();
+			s_isNormal = true;
+		}
+	}
 
+	// TODO: Try SDL
+	// https://github.com/glfw/glfw/issues/1306
+	// https://github.com/glfw/glfw/issues/1523
+	// https://github.com/glfw/glfw/issues/1790
+
+#if 0
+	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
 	if ((!camera.IsUsing() && !ImGui::IsMouseDragging(ImGuiMouseButton_Left)) || ImGuizmo::IsUsing())
 	{
 		return;
@@ -77,6 +100,7 @@ void WindowLayer::OnUpdate(float deltaTime)
 		ImGui::GetIO().AddMousePosEvent(-FLT_MAX, -FLT_MAX);
 		camera.m_mouseLastPos = sl::Input::GetMousePos();
 	}
+#endif
 }
 
 void WindowLayer::OnRender()
