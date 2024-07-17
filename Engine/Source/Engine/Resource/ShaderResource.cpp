@@ -42,13 +42,21 @@ ShaderResource::ShaderResource(std::string_view vsPath, std::string_view fsPath)
 	m_shaders[0].m_name = Path::NameWithExtension(vsPath);
 	m_shaders[0].m_assetPath = vsPath;
 	m_shaders[0].m_binaryPath = (binaryCatchPath / m_shaders[0].m_name).generic_string();
+#if defined(SL_DEBUG)
+	m_shaders[0].m_binaryPath += ".dbin";
+#else
 	m_shaders[0].m_binaryPath += ".bin";
+#endif
 
 	m_shaders[1].m_type = ShaderType::FragmentShader;
 	m_shaders[1].m_name = Path::NameWithExtension(fsPath);
 	m_shaders[1].m_assetPath = fsPath;
 	m_shaders[1].m_binaryPath = (binaryCatchPath / m_shaders[1].m_name).generic_string();
+#if defined(SL_DEBUG)
+	m_shaders[1].m_binaryPath += ".dbin";
+#else
 	m_shaders[1].m_binaryPath += ".bin";
+#endif
 
 	if (Path::Exists(m_shaders[0].m_binaryPath) && Path::Exists(m_shaders[1].m_binaryPath))
 	{
@@ -69,7 +77,11 @@ ShaderResource::ShaderResource(std::string_view path, ShaderProgramType type) :
 	m_shaders[0].m_name = Path::NameWithExtension(path);
 	m_shaders[0].m_assetPath = path;
 	m_shaders[0].m_binaryPath = (binaryCatchPath / m_shaders[0].m_name).generic_string();
+#if defined(SL_DEBUG)
+	m_shaders[0].m_binaryPath += ".dbin";
+#else
 	m_shaders[0].m_binaryPath += ".bin";
+#endif
 
 	if (Path::Exists(m_shaders[0].m_binaryPath))
 	{
