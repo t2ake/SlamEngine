@@ -30,7 +30,7 @@ set "GLFW_PATH=%THIRD_PARTY_PATH%\glfw"
 echo [ glfw ] path: %GLFW_PATH%
 cd %GLFW_PATH%
 
-cmake -B build -DCMAKE_CONFIGURATION_TYPES="Debug;Release" -DUSE_MSVC_RUNTIME_LIBRARY_DLL=OFF
+cmake -B build -DUSE_MSVC_RUNTIME_LIBRARY_DLL=OFF
 cmake --build build --target glfw --config Debug
 cmake --build build --target glfw --config Release
 echo.
@@ -40,7 +40,7 @@ set "YAMLCPP_PATH=%THIRD_PARTY_PATH%\yaml-cpp"
 echo [ yaml-cpp ] path: %YAMLCPP_PATH%
 cd %YAMLCPP_PATH%
 
-cmake -B build -DCMAKE_CONFIGURATION_TYPES="Debug;Release" -DYAML_MSVC_SHARED_RT=OFF
+cmake -B build -DYAML_MSVC_SHARED_RT=OFF
 cmake --build build --target yaml-cpp --config Debug
 cmake --build build --target yaml-cpp --config Release
 echo.
@@ -50,7 +50,7 @@ set "SHADERC_PATH=%THIRD_PARTY_PATH%\shaderc"
 echo [ shaderc ] path: %SHADERC_PATH%
 cd %SHADERC_PATH%
 
-cmake -B build -DCMAKE_CONFIGURATION_TYPES="Debug;Release" -DSHADERC_SKIP_TESTS=ON
+cmake -B build
 cmake --build build --target shaderc_combined --config Debug
 cmake --build build --target shaderc_combined --config Release
 echo.
@@ -60,9 +60,17 @@ set "SPIRVCROSS_PATH=%THIRD_PARTY_PATH%\spirv-cross"
 echo [ spirv-cross ] path: %SPIRVCROSS_PATH%
 cd %SPIRVCROSS_PATH%
 
-cmake -B build -DCMAKE_CONFIGURATION_TYPES="Debug;Release"
-cmake --build build --config Debug
-cmake --build build --config Release
+cmake -B build
+cmake --build build --target spirv-cross-core --config Debug
+cmake --build build --target spirv-cross-core --config Release
+
+cmake --build build --target spirv-cross-glsl --config Debug
+cmake --build build --target spirv-cross-glsl --config Release
+:: cmake --build build --target spirv-cross-hlsl --config Debug
+:: cmake --build build --target spirv-cross-hlsl --config Release
+:: cmake --build build --target spirv-cross-msl --config Debug
+:: cmake --build build --target spirv-cross-msl --config Release
+
 echo.
 
 pause
