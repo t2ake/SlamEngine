@@ -27,3 +27,5 @@ imguizmo v1.84 WIP
 yaml-cpp v0.8.0
 
 shaderc v2024.2
+
+spirv-cross vulkan-sdk-1.3.283.0
