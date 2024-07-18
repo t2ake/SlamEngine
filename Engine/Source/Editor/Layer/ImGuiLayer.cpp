@@ -7,6 +7,7 @@
 #include "Event/SceneViewportEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
+#include "Panel/ScrollingBuffer.h"
 #include "RenderCore/RenderCore.h"
 #include "Resource/Font.h"
 #include "Resource/ResourceManager.h"
@@ -38,41 +39,6 @@ constexpr ImGuiTreeNodeFlags DefaultTreeFlags =
 	DefaultSubTreeFlags |
 	ImGuiTreeNodeFlags_Framed |
 	ImGuiTreeNodeFlags_AllowOverlap;
-
-// From ImPlot
-struct ScrollingBuffer
-{
-	ScrollingBuffer(int max_size = 1024)
-	{
-		MaxSize = max_size;
-		Offset = 0;
-		Data.reserve(MaxSize);
-	}
-	void AddPoint(float x, float y)
-	{
-		if (Data.size() < MaxSize)
-		{
-			Data.push_back(ImVec2(x, y));
-		}
-		else
-		{
-			Data[Offset] = ImVec2(x, y);
-			Offset = (Offset + 1) % MaxSize;
-		}
-	}
-	void Erase()
-	{
-		if (Data.size() > 0)
-		{
-			Data.shrink(0);
-			Offset = 0;
-		}
-	}
-
-	int MaxSize;
-	int Offset;
-	ImVector<ImVec2> Data;
-};
 
 SL_FORCEINLINE float GetTitleBarSize()
 {
@@ -349,7 +315,7 @@ void ImGuiLayer::ShowInfo(float deltaTime)
 	s_sumTime += deltaTime;
 	if (s_sumTime > Delay)
 	{
-		// Waiting for programme to stabilise.
+		// Waiting for programme to be stable.
 		s_coastBuffer.AddPoint(s_sumTime, s_deltaTimeMultiplier * deltaTime);
 		s_fpsBuffer.AddPoint(s_sumTime, 1000.0f / deltaTime);
 	}
@@ -365,19 +331,19 @@ void ImGuiLayer::ShowInfo(float deltaTime)
 		if (s_sumTime > Delay)
 		{
 			ImPlot::PlotShaded("Coast in ms",
-				&s_coastBuffer.Data[0].x,
-				&s_coastBuffer.Data[0].y,
-				s_coastBuffer.Data.size(),
+				&s_coastBuffer.m_datas[0].x,
+				&s_coastBuffer.m_datas[0].y,
+				s_coastBuffer.m_datas.size(),
 				0, 0,
-				s_coastBuffer.Offset,
+				s_coastBuffer.m_offset,
 				2 * sizeof(float));
 
 			ImPlot::PlotLine("FPS",
-				&s_fpsBuffer.Data[0].x,
-				&s_fpsBuffer.Data[0].y,
-				s_fpsBuffer.Data.size(),
+				&s_fpsBuffer.m_datas[0].x,
+				&s_fpsBuffer.m_datas[0].y,
+				s_fpsBuffer.m_datas.size(),
 				0,
-				s_fpsBuffer.Offset,
+				s_fpsBuffer.m_offset,
 				2 * sizeof(float));
 		}
 		ImPlot::EndPlot();
@@ -391,8 +357,81 @@ void ImGuiLayer::ShowLog()
 	ImGui::Begin("Log");
 	RightClickFocus();
 
-	ImGui::Text("TODO");
+	static ImGuiTextBuffer s_buffer;
+	static ImGuiTextFilter s_filter;
+	static ImVector<size_t> s_lineOffsets; // Stores the index of the first char of each line.
 
+	// Test
+	if (ImGui::Button("Add some texts"))
+	{
+		s_buffer.appendf("a\n");
+		s_lineOffsets.push_back(s_buffer.size());
+		s_buffer.appendf("bb\n");
+		s_lineOffsets.push_back(s_buffer.size());
+	}
+	 
+	bool clear = ImGui::Button("Clear");
+	ImGui::SameLine();
+	bool copy = ImGui::Button("Copy");
+	ImGui::SameLine();
+	s_filter.Draw("Filter", -100.0f);
+
+	ImGui::Separator();
+
+	if (ImGui::BeginChild("ScrollingLog", ImVec2(0, 0), ImGuiChildFlags_None, ImGuiWindowFlags_HorizontalScrollbar))
+	{
+		if (clear)
+		{
+			s_buffer.clear();
+			s_lineOffsets.clear();
+			s_lineOffsets.push_back(0);
+		}
+		if (copy)
+		{
+			ImGui::LogToClipboard();
+		}
+
+		const char *pBegin = s_buffer.begin();
+		const char *pEnd = s_buffer.end();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+		if (s_filter.IsActive())
+		{
+			for (int i = 0; i < s_lineOffsets.Size; ++i)
+			{
+				const char *pLineBegin = pBegin + s_lineOffsets[i];
+				const char *pLineEnd = (i + 1 < s_lineOffsets.Size) ? (pBegin + s_lineOffsets[i + 1] - 1) : pEnd;
+				if (s_filter.PassFilter(pLineBegin, pLineEnd))
+				{
+					ImGui::TextUnformatted(pLineBegin, pLineEnd);
+				}
+			}
+		}
+		else // Without filter
+		{
+			ImGuiListClipper clipper;
+			clipper.Begin(s_lineOffsets.Size);
+			while (clipper.Step())
+			{
+				for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
+				{
+					const char *pLineBegin = pBegin + s_lineOffsets[i];
+					const char *pLineEnd = (i + 1 < s_lineOffsets.Size) ? (pBegin + s_lineOffsets[i + 1] - 1) : pEnd;
+					ImGui::TextUnformatted(pLineBegin, pLineEnd);
+				}
+			}
+			clipper.End();
+		}
+		ImGui::PopStyleVar();
+
+		// Auto scrolling
+		if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+		{
+			ImGui::SetScrollHereY(1.0f);
+		}
+	}
+	
+	ImGui::EndChild();
 	ImGui::End();
 }
 
@@ -665,7 +704,7 @@ void ImGuiLayer::ShowDetails()
 		std::string &name = pComponent->m_name;
 		constexpr size_t BufferSize = 256;
 		SL_ASSERT(BufferSize > name.size(),
-			"ImGui ensure that InputText() returns a null-terminated character array, "
+			"ImGui ensure that InputText() returns a null-terminated character array,"
 			"it also means that character buffer[BufferSize - 1] will be discard.");
 
 		char buffer[BufferSize] = { 0 };

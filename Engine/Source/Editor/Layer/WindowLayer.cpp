@@ -35,6 +35,12 @@ void WindowLayer::BeginFrame()
 
 void WindowLayer::OnUpdate(float deltaTime)
 {
+	// TODO: Try SDL
+	// https://github.com/glfw/glfw/issues/1306
+	// https://github.com/glfw/glfw/issues/1523
+	// https://github.com/glfw/glfw/issues/1790
+
+#if 0
 	static bool s_isNormal = true;
 	if (sl::ECSWorld::GetEditorCameraComponent().IsUsing() || (ImGui::IsMouseDragging(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing()))
 	{
@@ -52,13 +58,7 @@ void WindowLayer::OnUpdate(float deltaTime)
 			s_isNormal = true;
 		}
 	}
-
-	// TODO: Try SDL
-	// https://github.com/glfw/glfw/issues/1306
-	// https://github.com/glfw/glfw/issues/1523
-	// https://github.com/glfw/glfw/issues/1790
-
-#if 0
+#else
 	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
 	if ((!camera.IsUsing() && !ImGui::IsMouseDragging(ImGuiMouseButton_Left)) || ImGuizmo::IsUsing())
 	{
