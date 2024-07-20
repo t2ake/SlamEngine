@@ -46,28 +46,6 @@ struct LogInfo
 namespace sl
 {
 
-enum class LogLevel : uint8_t
-{
-	Trace    = 1 << 0,
-	Debug    = 1 << 1,
-	Info     = 1 << 2,
-	Warn     = 1 << 3,
-	Error    = 1 << 4,
-	Critical = 1 << 5,
-};
-
-struct LogInfo
-{
-	LogInfo(LogLevel level, std::string_view text) :
-		m_level(level), m_text(text)
-	{
-
-	}
-
-	LogLevel m_level;
-	std::string m_text;
-};
-
 class Log final
 {
 public:
