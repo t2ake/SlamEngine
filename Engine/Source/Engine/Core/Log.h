@@ -2,6 +2,37 @@
 
 #include "Core/Core.h"
 
+#include <cstdint>
+#include <string>
+#include <vector>
+
+namespace sl
+{
+
+enum class LogLevel : uint8_t
+{
+	Trace = 1 << 0,
+	Debug = 1 << 1,
+	Info = 1 << 2,
+	Warn = 1 << 3,
+	Error = 1 << 4,
+	Critical = 1 << 5,
+};
+
+struct LogInfo
+{
+	LogInfo(LogLevel level, std::string_view text) :
+		m_level(level), m_text(text)
+	{
+
+	}
+
+	LogLevel m_level;
+	std::string m_text;
+};
+
+} // namespace sl
+
 #ifndef SL_FINAL
 
 #include <glm/vec2.hpp>
@@ -15,17 +46,40 @@
 namespace sl
 {
 
+enum class LogLevel : uint8_t
+{
+	Trace    = 1 << 0,
+	Debug    = 1 << 1,
+	Info     = 1 << 2,
+	Warn     = 1 << 3,
+	Error    = 1 << 4,
+	Critical = 1 << 5,
+};
+
+struct LogInfo
+{
+	LogInfo(LogLevel level, std::string_view text) :
+		m_level(level), m_text(text)
+	{
+
+	}
+
+	LogLevel m_level;
+	std::string m_text;
+};
+
 class Log final
 {
 public:
 	Log() = delete;
 
 	static void Init();
-
-	static spdlog::logger *GetEngineLogger() { return s_pEngineLogger.get(); }
+	static spdlog::logger *GetEngineLogger() { return m_pEngineLogger.get(); }
+	static std::vector<LogInfo> &GetLogInfos() { return m_logInfos; }
 
 private:
-	inline static std::unique_ptr<spdlog::logger> s_pEngineLogger;
+	inline static std::unique_ptr<spdlog::logger> m_pEngineLogger;
+	inline static std::vector<LogInfo> m_logInfos;
 };
 
 } // namespace sl
@@ -95,6 +149,9 @@ class Log final
 {
 public:
 	static void Init() {}
+	static std::vector<LogInfo> &GetLogInfos() { return m_logInfos; }
+private:
+	inline static std::vector<LogInfo> m_logInfos;
 };
 }
 

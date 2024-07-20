@@ -354,70 +354,156 @@ void ImGuiLayer::ShowInfo(float deltaTime)
 
 void ImGuiLayer::ShowLog()
 {
+	constexpr uint8_t FullLevelFilter = 0x3f; // 0011 1111
+	static uint8_t s_levelFilter = FullLevelFilter;
+	static ImGuiTextFilter s_textFilter;
+
+	constexpr ImVec4 TraceColor    { 1.0f, 1.0f, 1.0f, 1.0f };
+	constexpr ImVec4 DebugColor    { 0.0f, 0.0f, 1.0f, 1.0f };
+	constexpr ImVec4 InfoColor     { 0.0f, 1.0f, 0.0f, 1.0f };
+	constexpr ImVec4 WarnColor     { 1.0f, 1.0f, 0.0f, 1.0f };
+	constexpr ImVec4 ErrorColor    { 1.0f, 0.0f, 0.0f, 1.0f };
+	constexpr ImVec4 CriticalColor { 1.0f, 0.0f, 1.0f, 1.0f };
+
+	auto LogLevelToColor = [](sl::LogLevel level)
+	{
+		switch (level)
+		{
+			case sl::LogLevel::Trace:
+			{
+				return TraceColor;
+			}
+			case sl::LogLevel::Debug:
+			{
+				return DebugColor;
+			}
+			case sl::LogLevel::Info:
+			{
+				return InfoColor;
+			}
+			case sl::LogLevel::Warn:
+			{
+				return WarnColor;
+			}
+			case sl::LogLevel::Error:
+			{
+				return ErrorColor;
+			}
+			case sl::LogLevel::Critical:
+			{
+				return CriticalColor;
+			}
+			default:
+			{
+				return TraceColor;
+			}
+		}
+	};
+
+	auto LevelToIcon = [](sl::LogLevel level)
+	{
+		switch (level)
+		{
+			case sl::LogLevel::Trace:
+			{
+				return "T";
+			}
+			case sl::LogLevel::Debug:
+			{
+				return "D";
+			}
+			case sl::LogLevel::Info:
+			{
+				return "I";
+			}
+			case sl::LogLevel::Warn:
+			{
+				return "W";
+			}
+			case sl::LogLevel::Error:
+			{
+				return "E";
+			}
+			case sl::LogLevel::Critical:
+			{
+				return "C";
+			}
+			default:
+			{
+				return "?";
+			}
+		}
+	};
+
+	auto LevelButton = [&](sl::LogLevel level)
+	{
+		ImGui::SameLine();
+		ImGui::PushStyleColor(ImGuiCol_Text, LogLevelToColor(level));
+		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, (s_levelFilter & (uint8_t)level) ? 1.0f : 0.5f);
+		if (ImGui::Button(LevelToIcon(level)))
+		{
+			s_levelFilter ^= (uint8_t)level;
+		}
+		ImGui::PopStyleColor();
+		ImGui::PopStyleVar();
+	};
+
 	ImGui::Begin("Log");
 	RightClickFocus();
-
-	static ImGuiTextBuffer s_buffer;
-	static ImGuiTextFilter s_filter;
-	static ImVector<size_t> s_lineOffsets; // Stores the index of the first char of each line.
-
-	// Test
-	if (ImGui::Button("Add some texts"))
-	{
-		s_buffer.appendf("a\n");
-		s_lineOffsets.push_back(s_buffer.size());
-		s_buffer.appendf("bb\n");
-		s_lineOffsets.push_back(s_buffer.size());
-	}
 	 
-	bool clear = ImGui::Button("Clear");
+	if (ImGui::Button("Clear"))
+	{
+		sl::Log::GetLogInfos().clear();
+	}
+
 	ImGui::SameLine();
-	bool copy = ImGui::Button("Copy");
+	if (ImGui::Button("Copy"))
+	{
+		ImGui::LogToClipboard();
+	}
+
+	LevelButton(sl::LogLevel::Trace);
+	LevelButton(sl::LogLevel::Debug);
+	LevelButton(sl::LogLevel::Info);
+	LevelButton(sl::LogLevel::Warn);
+	LevelButton(sl::LogLevel::Error);
+	LevelButton(sl::LogLevel::Critical);
+
 	ImGui::SameLine();
-	s_filter.Draw("Filter", -100.0f);
+	s_textFilter.Draw("##TextFilter", -ImGui::GetStyle().ScrollbarSize);
 
 	ImGui::Separator();
 
-	if (ImGui::BeginChild("ScrollingLog", ImVec2(0, 0), ImGuiChildFlags_None, ImGuiWindowFlags_HorizontalScrollbar))
+	auto &logInfos = sl::Log::GetLogInfos();
+	if (ImGui::BeginChild("ScrollingLog", ImVec2(0, 0), ImGuiChildFlags_FrameStyle, ImGuiWindowFlags_HorizontalScrollbar))
 	{
-		if (clear)
-		{
-			s_buffer.clear();
-			s_lineOffsets.clear();
-			s_lineOffsets.push_back(0);
-		}
-		if (copy)
-		{
-			ImGui::LogToClipboard();
-		}
-
-		const char *pBegin = s_buffer.begin();
-		const char *pEnd = s_buffer.end();
-
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-		if (s_filter.IsActive())
+		if (s_levelFilter < FullLevelFilter || s_textFilter.IsActive())
 		{
-			for (int i = 0; i < s_lineOffsets.Size; ++i)
+			for (size_t i = 0; i < logInfos.size(); ++i)
 			{
-				const char *pLineBegin = pBegin + s_lineOffsets[i];
-				const char *pLineEnd = (i + 1 < s_lineOffsets.Size) ? (pBegin + s_lineOffsets[i + 1] - 1) : pEnd;
-				if (s_filter.PassFilter(pLineBegin, pLineEnd))
+				const auto &info = logInfos[i];
+
+				if ((s_levelFilter & (uint8_t)info.m_level) && s_textFilter.PassFilter(info.m_text.data()))
 				{
-					ImGui::TextUnformatted(pLineBegin, pLineEnd);
+					ImGui::PushStyleColor(ImGuiCol_Text, LogLevelToColor(info.m_level));
+					ImGui::TextUnformatted(info.m_text.data());
+					ImGui::PopStyleColor();
 				}
 			}
 		}
-		else // Without filter
+		else // Without any filter
 		{
 			ImGuiListClipper clipper;
-			clipper.Begin(s_lineOffsets.Size);
+			clipper.Begin((int)logInfos.size());
 			while (clipper.Step())
 			{
-				for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
+				for (size_t i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
 				{
-					const char *pLineBegin = pBegin + s_lineOffsets[i];
-					const char *pLineEnd = (i + 1 < s_lineOffsets.Size) ? (pBegin + s_lineOffsets[i + 1] - 1) : pEnd;
-					ImGui::TextUnformatted(pLineBegin, pLineEnd);
+					const auto &info = logInfos[i];
+					ImGui::PushStyleColor(ImGuiCol_Text, LogLevelToColor(info.m_level));
+					ImGui::TextUnformatted(info.m_text.data());
+					ImGui::PopStyleColor();
 				}
 			}
 			clipper.End();
@@ -508,6 +594,14 @@ void ImGuiLayer::ShowEntityList()
 
 void ImGuiLayer::ShowAssetBrowser()
 {
+	// ImGui::SetColumnWidth() just unhappy with the first frame, don't know why.
+	static uint8_t count = 0;
+	if (count < 1)
+	{
+		++count;
+		return;
+	}
+
 	ImGui::Begin("Asset Browser");
 
 	// Disable the back button if the current path reaches the outermost path.
@@ -539,7 +633,6 @@ void ImGuiLayer::ShowAssetBrowser()
 	uint32_t columnIndex = 0;
 	for (const auto &it : std::filesystem::directory_iterator(m_assetBrowserCrtPath))
 	{
-		// WARNING: Will cause an error if we dont have an existing imgui.ini file.
 		columnIndex = columnIndex >= columnCount ? 0 : columnIndex;
 		ImGui::SetColumnWidth(columnIndex++, columnSize);
 
