@@ -18,9 +18,11 @@ Window::Window(std::string_view title, uint32_t width, uint32_t height) :
 {
 	SL_LOG_INFO("Create window \"{}\" ({}, {})", m_title, m_width, m_height);
 
+	// Init GLFW
 	bool success = glfwInit();
 	SL_ASSERT(success, "GLFW initialization failed!");
 
+	// Window hints by graphics backend
 	if (GraphicsBackend::OpenGL == RenderCore::GetBackend())
 	{
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -32,22 +34,25 @@ Window::Window(std::string_view title, uint32_t width, uint32_t height) :
 		SL_ASSERT(false, "Slam only support OpenGL for now!");
 	}
 
+	// Creat window
 	m_pNativeWindow = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
 	SL_ASSERT(m_pNativeWindow, "GLFW creating window failed!");
 	m_pRenderContext.reset(RenderContext::Create(m_pNativeWindow));
 
+	// Other settings
 	const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	m_monitorWidth = mode->width;
 	m_monitorHeight = mode->height;
-
-	glfwSetWindowUserPointer(static_cast<GLFWwindow *>(m_pNativeWindow), this);
-	SetCallbacks();
-
+	glfwMaximizeWindow(static_cast<GLFWwindow *>(m_pNativeWindow));
 #ifdef SL_FINAL
 	glfwSwapInterval(0);
 #else
 	glfwSwapInterval(1);
 #endif
+
+	// Callbacks
+	glfwSetWindowUserPointer(static_cast<GLFWwindow *>(m_pNativeWindow), this);
+	SetCallbacks();
 }
 
 Window::~Window()
