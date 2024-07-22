@@ -14,7 +14,6 @@
 namespace sl
 {
 
-// TODO: Shader should hold a mapping from Texture to slot.
 class Shader
 {
 public:
@@ -27,24 +26,24 @@ public:
 	virtual void Bind() const = 0;
 	virtual void Unbind() const = 0;
 
-	virtual void UploadUniform(std::string_view name, int value) = 0;
-	virtual void UploadUniform(std::string_view name, const glm::ivec2 &value) = 0;
-	virtual void UploadUniform(std::string_view name, const glm::ivec3 &value) = 0;
-	virtual void UploadUniform(std::string_view name, const glm::ivec4 &value) = 0;
+	virtual void UploadUniform(int location, int value) = 0;
+	virtual void UploadUniform(int location, const glm::ivec2 &value) = 0;
+	virtual void UploadUniform(int location, const glm::ivec3 &value) = 0;
+	virtual void UploadUniform(int location, const glm::ivec4 &value) = 0;
 
-	virtual void UploadUniform(std::string_view name, unsigned int value) = 0;
-	virtual void UploadUniform(std::string_view name, const glm::uvec2 &value) = 0;
-	virtual void UploadUniform(std::string_view name, const glm::uvec3 &value) = 0;
-	virtual void UploadUniform(std::string_view name, const glm::uvec4 &value) = 0;
+	virtual void UploadUniform(int location, unsigned int value) = 0;
+	virtual void UploadUniform(int location, const glm::uvec2 &value) = 0;
+	virtual void UploadUniform(int location, const glm::uvec3 &value) = 0;
+	virtual void UploadUniform(int location, const glm::uvec4 &value) = 0;
 
-	virtual void UploadUniform(std::string_view name, float value) = 0;
-	virtual void UploadUniform(std::string_view name, const glm::vec2 &value) = 0;
-	virtual void UploadUniform(std::string_view name, const glm::vec3 &value) = 0;
-	virtual void UploadUniform(std::string_view name, const glm::vec4 &value) = 0;
+	virtual void UploadUniform(int location, float value) = 0;
+	virtual void UploadUniform(int location, const glm::vec2 &value) = 0;
+	virtual void UploadUniform(int location, const glm::vec3 &value) = 0;
+	virtual void UploadUniform(int location, const glm::vec4 &value) = 0;
 
-	virtual void UploadUniform(std::string_view name, const glm::mat2 &value) = 0;
-	virtual void UploadUniform(std::string_view name, const glm::mat3 &value) = 0;
-	virtual void UploadUniform(std::string_view name, const glm::mat4 &value) = 0;
+	virtual void UploadUniform(int location, const glm::mat2 &value) = 0;
+	virtual void UploadUniform(int location, const glm::mat3 &value) = 0;
+	virtual void UploadUniform(int location, const glm::mat4 &value) = 0;
 };
 
 } // namespace sl

@@ -75,7 +75,7 @@ void RendererLayer::BasePass()
 
 		auto* pShader = pShaderResource->GetShaderProgram();
 		pShader->Bind();
-		pShader->UploadUniform("u_model", transform.GetTransform());
+		pShader->UploadUniform(0, transform.GetTransform());
 
 		pTextureResource->GetTexture()->Bind(0);
 
@@ -115,8 +115,8 @@ void RendererLayer::EntityIDPass()
 
 		auto* pShader = pShaderResource->GetShaderProgram();
 		pShader->Bind();
-		pShader->UploadUniform("u_model", transform.GetTransform());
-		pShader->UploadUniform("u_entityID", (int)entity);
+		pShader->UploadUniform(0, transform.GetTransform());
+		pShader->UploadUniform(1, (int)entity);
 
 		sl::RenderCore::Submit(pMeshResource->GetVertexArray(), pShader);
 	}

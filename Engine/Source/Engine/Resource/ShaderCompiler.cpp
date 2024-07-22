@@ -121,12 +121,8 @@ std::vector<uint32_t> ShaderCompiler::SourceToSpirv(const ShaderInfo &info)
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
 
-		// TODO: Shader stores uniform location
-		// Shaderc without debug info will lose uniform name infomation,
-		// which makes us can not get uniform location by uniform name.
+#if defined(SL_DEBUG)
 		options.SetGenerateDebugInfo();
-
-#if !defined(SL_FINAL)
 		options.SetOptimizationLevel(shaderc_optimization_level_zero);
 #else
 		options.SetOptimizationLevel(shaderc_optimization_level_performance);
