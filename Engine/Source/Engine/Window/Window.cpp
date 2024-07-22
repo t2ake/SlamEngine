@@ -44,7 +44,7 @@ Window::Window(std::string_view title, uint32_t width, uint32_t height) :
 	m_monitorWidth = mode->width;
 	m_monitorHeight = mode->height;
 	glfwMaximizeWindow(static_cast<GLFWwindow *>(m_pNativeWindow));
-#ifdef SL_FINAL
+#if defined(SL_FINAL)
 	glfwSwapInterval(0);
 #else
 	glfwSwapInterval(1);

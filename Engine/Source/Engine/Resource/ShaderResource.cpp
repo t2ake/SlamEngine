@@ -109,13 +109,11 @@ void ShaderResource::OnImport()
 		m_shaders[1].m_source = FileIO::ReadString(m_shaders[1].m_assetPath);
 	}
 
-#ifndef SL_FINAL
 	if (m_shaders[0].m_source.empty() || m_shaders[1].m_source.empty())
 	{
 		SetStatus(ResourceStatus::Destroying);
 		return;
 	}
-#endif
 
 	SetStatus(ResourceStatus::Building);
 }
@@ -143,13 +141,11 @@ void ShaderResource::OnBuild()
 		SL_LOG_TRACE("  Done in {} ms", timer.GetDuration());
 	}
 
-#ifndef SL_FINAL
 	if (m_shaders[0].m_source.empty() || m_shaders[1].m_source.empty())
 	{
 		SetStatus(ResourceStatus::Destroying);
 		return;
 	}
-#endif
 
 	SetStatus(ResourceStatus::Uploading);
 }

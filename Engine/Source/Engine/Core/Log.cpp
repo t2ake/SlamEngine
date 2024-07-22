@@ -1,4 +1,4 @@
-#ifndef SL_FINAL
+#if !defined(SL_FINAL)
 
 #include "Core/Path.hpp"
 #include "Log.h"

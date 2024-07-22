@@ -22,7 +22,7 @@ uint32_t UploadShader(const char *pSource, size_t size, ShaderType type)
 	glShaderSource(shaderHandle, 1, &pGLSource, &GLsize);
 	glCompileShader(shaderHandle);
 
-#ifndef SL_FINAL
+#if !defined(SL_FINAL)
 	GLint isCompiled = 0;
 	glGetShaderiv(shaderHandle, GL_COMPILE_STATUS, &isCompiled);
 	if (GL_FALSE == isCompiled)
@@ -54,7 +54,7 @@ uint32_t UploadProgram(uint32_t vsHandle, uint32_t fsHandle = 0)
 	}
 	glLinkProgram(programHandle);
 
-#ifndef SL_FINAL
+#if !defined(SL_FINAL)
 	GLint isLinked = 0;
 	glGetProgramiv(programHandle, GL_LINK_STATUS, &isLinked);
 	if (isLinked == GL_FALSE)

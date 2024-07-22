@@ -33,7 +33,7 @@ struct LogInfo
 
 } // namespace sl
 
-#ifndef SL_FINAL
+#if !defined(SL_FINAL)
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -135,7 +135,7 @@ private:
 
 #endif
 
-#ifndef SL_FINAL
+#if !defined(SL_FINAL)
 	#define SL_LOG_TRACE(...) ::sl::Log::GetEngineLogger()->trace(__VA_ARGS__)
 	#define SL_LOG_DEBUG(...) ::sl::Log::GetEngineLogger()->debug(__VA_ARGS__)
 	#define SL_LOG_INFO(...)  ::sl::Log::GetEngineLogger()->info(__VA_ARGS__)

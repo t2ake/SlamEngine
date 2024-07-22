@@ -11,17 +11,6 @@ project("Editor")
 	targetdir(path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"))
 	objdir(path.join(IntermediatePath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"))
 	
-	-- Definitions
-	filter { "configurations:Debug" }
-		defines { "SL_DEBUG" }
-	filter { "configurations:Release" }
-		defines { "SL_RELEASE" }
-	filter { "configurations:Final" }
-		defines { "SL_FINAL" }
-	filter { "system:Windows" }
-		defines { "SL_WINDOWS" }
-	filter {}
-	
 	defines
 	{
 		"SL_ROOT_PATH=\""..RootPath.."\"",

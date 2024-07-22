@@ -126,7 +126,7 @@ std::vector<uint32_t> ShaderCompiler::SourceToSpirv(const ShaderInfo &info)
 		// which makes us can not get uniform location by uniform name.
 		options.SetGenerateDebugInfo();
 
-#if defined(SL_DEBUG)
+#if !defined(SL_FINAL)
 		options.SetOptimizationLevel(shaderc_optimization_level_zero);
 #else
 		options.SetOptimizationLevel(shaderc_optimization_level_performance);
