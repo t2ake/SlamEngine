@@ -605,7 +605,7 @@ void ImGuiLayer::ShowAssetBrowser()
 
 	// Disable the back button if the current path reaches the outermost path.
 	std::string crtPath = m_assetBrowserCrtPath.generic_string();
-	bool backButtonDisabled = !sl::Path::Contain(sl::Path::AssetPath, crtPath);
+	const bool backButtonDisabled = !sl::Path::Contain(sl::Path::AssetPath, crtPath);
 	if (backButtonDisabled)
 	{
 		ImGui::BeginDisabled();
@@ -1181,7 +1181,7 @@ bool ImGuiLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
 		{
 			camera.m_controllerMode = sl::CameraControllerMode::Editor;
 		}
-		else
+		else if (!ImGuizmo::IsOver())
 		{
 			MousePick();
 		}
