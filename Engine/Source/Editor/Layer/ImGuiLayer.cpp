@@ -4,6 +4,7 @@
 #include "Core/EnumOf.hpp"
 #include "Core/Log.h"
 #include "Event/KeyEvent.h"
+#include "Event/MouseEvent.h"
 #include "Event/SceneViewportEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
@@ -12,6 +13,7 @@
 #include "Resource/Font.h"
 #include "Resource/ResourceManager.h"
 #include "Scene/SceneSerializer.h"
+#include "Window/Input.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui/imgui.h>
@@ -124,6 +126,7 @@ void ImGuiLayer::OnEvent(sl::Event &event)
 {
 	sl::EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<sl::KeyPressEvent>(BIND_EVENT_CALLBACK(ImGuiLayer::OnKeyPressed));
+	dispatcher.Dispatch<sl::MouseButtonPressEvent>(BIND_EVENT_CALLBACK(ImGuiLayer::OnMouseButtonPress));
 }
 
 void ImGuiLayer::BeginFrame()
@@ -840,6 +843,7 @@ void ImGuiLayer::ShowDetails()
 
 		if (cameraMayBeDirty)
 		{
+			// If we select camera entitiy.
 			if (auto *pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>(); pCamera)
 			{
 				pCamera->m_isDirty = true; 
@@ -1051,36 +1055,6 @@ void ImGuiLayer::ShowImGuizmoTransform()
 	}
 }
 
-void ImGuiLayer::MousePick()
-{
-	// Origin is on the upper left of scene viewport.
-	uint32_t mouseLocalPosX = (uint32_t)ImGui::GetMousePos().x - m_sceneViewportWindowPosX;
-	uint32_t mouseLocalPosY = (uint32_t)ImGui::GetMousePos().y - (m_sceneViewportWindowPosY + (uint32_t)GetTitleBarSize());
-	SL_ASSERT(mouseLocalPosX >= 0 && mouseLocalPosY >= 0 &&
-		mouseLocalPosX < m_sceneViewportSizeX && mouseLocalPosY < m_sceneViewportSizeY);
-
-	auto *pEntityIDFB = sl::RenderCore::GetEntityIDFramebuffer();
-	int entityID = pEntityIDFB->ReadPixel(0, mouseLocalPosX, mouseLocalPosY);
-
-	if (entityID < 0)
-	{
-		m_selectedEntity.Reset();
-		return;
-	}
-
-	sl::Entity crtEntity{ (uint32_t)entityID };
-	if (crtEntity == m_selectedEntity)
-	{
-		return;
-	}
-
-	SL_LOG_TRACE("Select enttiy Name: \"{}\", ID: {}, Mouse position: ({}, {})",
-		crtEntity.GetComponent<sl::TagComponent>().m_name.c_str(), entityID,
-		mouseLocalPosX, mouseLocalPosY);
-
-	m_selectedEntity = crtEntity;
-}
-
 void ImGuiLayer::ShowSceneViewport()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
@@ -1120,29 +1094,46 @@ void ImGuiLayer::ShowSceneViewport()
 		ImGui::IsMouseDragging(ImGuiMouseButton_Left) ||
 		ImGuizmo::IsUsing())
 	{
-		ImGui::End();
-		return;
-	}
+		m_isMouseFreeInSceneView = false;
 
-	// Set camera controller mode or mouse pick entity,
-	// which related to mouse position so we cant just call them inside OnEnvent.
-	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-	{
-		camera.m_controllerMode = sl::CameraControllerMode::FPS;
 	}
-	else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	else
 	{
-		if (ImGui::IsKeyDown(ImGuiKey_LeftAlt))
-		{
-			camera.m_controllerMode = sl::CameraControllerMode::Editor;
-		}
-		else
-		{
-			MousePick();
-		}
+		m_isMouseFreeInSceneView = true;
 	}
 
 	ImGui::End();
+}
+
+void ImGuiLayer::MousePick()
+{
+	// Origin is on the upper left of scene viewport.
+	uint32_t mouseLocalPosX = (uint32_t)ImGui::GetMousePos().x - m_sceneViewportWindowPosX;
+	uint32_t mouseLocalPosY = (uint32_t)ImGui::GetMousePos().y - (m_sceneViewportWindowPosY + (uint32_t)GetTitleBarSize());
+	SL_ASSERT(mouseLocalPosX >= 0 && mouseLocalPosY >= 0 &&
+		mouseLocalPosX < m_sceneViewportSizeX && mouseLocalPosY < m_sceneViewportSizeY);
+
+	auto *pEntityIDFB = sl::RenderCore::GetEntityIDFramebuffer();
+	int entityID = pEntityIDFB->ReadPixel(0, mouseLocalPosX, mouseLocalPosY);
+
+	// We clear the Entity ID buffer by -1 every frame in RendererLayer.
+	if (entityID < 0)
+	{
+		m_selectedEntity.Reset();
+		return;
+	}
+
+	sl::Entity crtEntity{ (uint32_t)entityID };
+	if (crtEntity == m_selectedEntity)
+	{
+		return;
+	}
+
+	SL_LOG_TRACE("Select enttiy Name: \"{}\", ID: {}, Mouse position: ({}, {})",
+		crtEntity.GetComponent<sl::TagComponent>().m_name.c_str(), entityID,
+		mouseLocalPosX, mouseLocalPosY);
+
+	m_selectedEntity = crtEntity;
 }
 
 bool ImGuiLayer::OnKeyPressed(sl::KeyPressEvent& event)
@@ -1179,6 +1170,33 @@ bool ImGuiLayer::OnKeyPressed(sl::KeyPressEvent& event)
 		{
 			break;
 		}
+	}
+
+	return false;
+}
+
+bool ImGuiLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
+{
+	if (!m_isMouseFreeInSceneView)
+	{
+		return false;
+	}
+
+	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
+	if (SL_MOUSE_BUTTON_LEFT == event.GetButton())
+	{
+		if (sl::Input::IsKeyPressed(SL_KEY_LEFT_ALT))
+		{
+			camera.m_controllerMode = sl::CameraControllerMode::Editor;
+		}
+		else
+		{
+			MousePick();
+		}
+	}
+	else if (SL_MOUSE_BUTTON_RIGHT == event.GetButton())
+	{
+		camera.m_controllerMode = sl::CameraControllerMode::FPS;
 	}
 
 	return false;

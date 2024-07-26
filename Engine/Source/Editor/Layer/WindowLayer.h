@@ -9,6 +9,8 @@ namespace sl
 {
 
 class Window;
+class MouseButtonPressEvent;
+class MouseButtonReleaseEvent;
 
 }
 
@@ -29,10 +31,9 @@ public:
 	void SetWindow(sl::Window *pWindow) { m_pWindow.reset(pWindow); }
 	sl::Window *GetWindow() const { return m_pWindow.get(); }
 
-	void SetEventCallback(sl::EventCallback fun) { m_eventCallback = std::move(fun); }
-
 private:
-	std::unique_ptr<sl::Window> m_pWindow;
+	bool OnMouseButtonPress(sl::MouseButtonPressEvent &event);
+	bool OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event);
 
-	sl::EventCallback m_eventCallback;
+	std::unique_ptr<sl::Window> m_pWindow;
 };

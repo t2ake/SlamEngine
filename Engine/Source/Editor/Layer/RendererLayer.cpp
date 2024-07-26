@@ -131,4 +131,3 @@ bool RendererLayer::OnSceneViewportResize(sl::SceneViewportResizeEvent &event)
 
 	return true;
 }
-

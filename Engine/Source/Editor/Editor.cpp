@@ -56,7 +56,6 @@ Editor::Editor(EditorInitor initor)
 	auto pSandboxLayer = std::make_unique<SandboxLayer>();
 
 	pWindowLayer->SetWindow(pWindow);
-	pWindowLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
 	pRendererLayer->SetUniformBuffer(sl::UniformBuffer::Create(0, sl::UniformBufferLayout
 	{

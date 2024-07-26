@@ -12,6 +12,7 @@ namespace sl
 {
 
 class KeyPressEvent;
+class MouseButtonPressEvent;
 
 }
 
@@ -51,11 +52,12 @@ private:
 
 	void ShowImGuizmoOrientation();
 	void ShowImGuizmoTransform();
-	void MousePick();
 	void ShowSceneViewport();
+	void MousePick();
 
 	bool OnKeyPressed(sl::KeyPressEvent& event);
-
+	bool OnMouseButtonPress(sl::MouseButtonPressEvent &event);
+	
 	// Dock space
 	int m_dockSpaceFlag = 0; // ImGuiDockNodeFlags m_dockSpaceFlag = ImGuiDockNodeFlags_None
 	
@@ -81,6 +83,7 @@ private:
 	uint32_t m_sceneViewportWindowPosY = 0;
 	uint32_t m_sceneViewportSizeX = 0;
 	uint32_t m_sceneViewportSizeY = 0;
+	bool m_isMouseFreeInSceneView = true;
 
 	// ImGuizmo
 	int m_imguizmoMode = 7; // ImGuizmo::OPERATION m_imguizmoMode = ImGuizmo::OPERATION::TRANSLATE

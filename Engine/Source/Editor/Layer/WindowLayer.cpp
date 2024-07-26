@@ -25,7 +25,9 @@ void WindowLayer::OnDetach()
 
 void WindowLayer::OnEvent(sl::Event &event)
 {
-
+	sl::EventDispatcher dispatcher(event);
+	dispatcher.Dispatch<sl::MouseButtonPressEvent>(BIND_EVENT_CALLBACK(WindowLayer::OnMouseButtonPress));
+	dispatcher.Dispatch<sl::MouseButtonReleaseEvent>(BIND_EVENT_CALLBACK(WindowLayer::OnMouseButtonRelease));
 }
 
 void WindowLayer::BeginFrame()
@@ -35,72 +37,7 @@ void WindowLayer::BeginFrame()
 
 void WindowLayer::OnUpdate(float deltaTime)
 {
-	// TODO: Try SDL
-	// https://github.com/glfw/glfw/issues/1306
-	// https://github.com/glfw/glfw/issues/1523
-	// https://github.com/glfw/glfw/issues/1790
 
-#if 0
-	static bool s_isNormal = true;
-	if (sl::ECSWorld::GetEditorCameraComponent().IsUsing() || (ImGui::IsMouseDragging(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing()))
-	{
-		if (s_isNormal)
-		{
-			m_pWindow->CursorModeDisabled();
-			s_isNormal = false;
-		}
-	}
-	else
-	{
-		if (!s_isNormal)
-		{
-			m_pWindow->CursorModeNormal();
-			s_isNormal = true;
-		}
-	}
-#else
-	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
-	if ((!camera.IsUsing() && !ImGui::IsMouseDragging(ImGuiMouseButton_Left)) || ImGuizmo::IsUsing())
-	{
-		return;
-	}
-
-	float newPosX = -1.0f;
-	float newPosY = -1.0f;
-	const float monitorWidth = (float)m_pWindow->GetMonitorWidth();
-	const float monitorHeight = (float)m_pWindow->GetMonitorHeight();
-	const glm::vec2 globalMousePos = sl::Input::GetGlobalMousePos();
-
-	if (globalMousePos.x <= 0)
-	{
-		newPosX = monitorWidth - 2.0f;
-		newPosY = globalMousePos.y;
-	}
-	if (globalMousePos.x >= monitorWidth - 1.0f)
-	{
-		newPosX = 1.0f;
-		newPosY = globalMousePos.y;
-	}
-	if (globalMousePos.y <= 0)
-	{
-		newPosX = globalMousePos.x;
-		newPosY = monitorHeight - 2.0f;
-	}
-	if (globalMousePos.y >= monitorHeight - 1.0f)
-	{
-		newPosX = globalMousePos.x;
-		newPosY = 1.0f;
-	}
-
-	if (newPosX > 0.0f && newPosY > 0.0f)
-	{
-		m_pWindow->SetGlobalCursorPos(newPosX, newPosY);
-
-		// To avoid a huge delta mouse position for system which cache the real mouse position.
-		ImGui::GetIO().AddMousePosEvent(-FLT_MAX, -FLT_MAX);
-		camera.m_mouseLastPos = sl::Input::GetMousePos();
-	}
-#endif
 }
 
 void WindowLayer::OnRender()
@@ -111,4 +48,26 @@ void WindowLayer::OnRender()
 void WindowLayer::EndFrame()
 {
 	m_pWindow->EndFrame();
+}
+
+bool WindowLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
+{
+	// TODO: Disable mouse when using ui draging widget.
+
+	if (SL_MOUSE_BUTTON_RIGHT == event.GetButton() && sl::ECSWorld::GetEditorCameraComponent().IsUsing())
+	{
+		m_pWindow->CursorModeDisabled();
+	}
+
+	return false;
+}
+
+bool WindowLayer::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event)
+{
+	if (SL_MOUSE_BUTTON_RIGHT == event.GetButton() && !sl::ECSWorld::GetEditorCameraComponent().IsUsing())
+	{
+		m_pWindow->CursorModeNormal();
+	}
+
+	return false;
 }
