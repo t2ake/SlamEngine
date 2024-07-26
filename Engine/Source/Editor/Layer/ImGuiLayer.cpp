@@ -44,6 +44,7 @@ constexpr ImGuiTreeNodeFlags DefaultTreeFlags =
 
 SL_FORCEINLINE float GetTitleBarSize()
 {
+	// Can't change in runtime.
 	static float s_size = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
 	return s_size;
 }
@@ -187,7 +188,7 @@ void ImGuiLayer::ShowToolOverlay()
 	constexpr float ToolOverlayOffset = 10.0f;
 	ImGui::SetNextWindowPos(ImVec2{
 		(float)m_sceneViewportWindowPosX + ToolOverlayOffset,
-		(float)m_sceneViewportWindowPosY + ToolOverlayOffset + GetTitleBarSize()});
+		(float)m_sceneViewportWindowPosY + ToolOverlayOffset + GetTitleBarSize() });
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
 	ImGui::Begin("Tools", nullptr, OverlayButtonFlags);
@@ -195,7 +196,7 @@ void ImGuiLayer::ShowToolOverlay()
 
 	constexpr std::array<int, 4> Operations =
 	{
-		-1,
+		-1, // Don't use ImGuizmo tramsform.
 		ImGuizmo::OPERATION::TRANSLATE,
 		ImGuizmo::OPERATION::ROTATE,
 		ImGuizmo::OPERATION::SCALE,
@@ -357,7 +358,8 @@ void ImGuiLayer::ShowInfo(float deltaTime)
 
 void ImGuiLayer::ShowLog()
 {
-	constexpr uint8_t FullLevelFilter = 0x3f; // 0011 1111
+	// 0011 1111, which means not filtering anything.
+	constexpr uint8_t FullLevelFilter = 0x3f;
 	static uint8_t s_levelFilter = FullLevelFilter;
 	static ImGuiTextFilter s_textFilter;
 
@@ -398,7 +400,7 @@ void ImGuiLayer::ShowLog()
 			}
 			default:
 			{
-				return TraceColor;
+				return ImVec4{ 0.0f, 0.0f, 0.0f, 1.0f };
 			}
 		}
 	};
@@ -438,6 +440,7 @@ void ImGuiLayer::ShowLog()
 		}
 	};
 
+	// Show log level filter button.
 	auto LevelButton = [&](sl::LogLevel level)
 	{
 		ImGui::SameLine();
@@ -481,12 +484,13 @@ void ImGuiLayer::ShowLog()
 	if (ImGui::BeginChild("ScrollingLog", ImVec2(0, 0), ImGuiChildFlags_FrameStyle, ImGuiWindowFlags_HorizontalScrollbar))
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+
+		// If any filter is active.
 		if (s_levelFilter < FullLevelFilter || s_textFilter.IsActive())
 		{
 			for (size_t i = 0; i < logInfos.size(); ++i)
 			{
 				const auto &info = logInfos[i];
-
 				if ((s_levelFilter & (uint8_t)info.m_level) && s_textFilter.PassFilter(info.m_text.data()))
 				{
 					ImGui::PushStyleColor(ImGuiCol_Text, LogLevelToColor(info.m_level));
@@ -597,14 +601,6 @@ void ImGuiLayer::ShowEntityList()
 
 void ImGuiLayer::ShowAssetBrowser()
 {
-	// ImGui::SetColumnWidth() just unhappy with the first frame, don't know why.
-	static uint8_t count = 0;
-	if (count < 1)
-	{
-		++count;
-		return;
-	}
-
 	ImGui::Begin("Asset Browser");
 
 	// Disable the back button if the current path reaches the outermost path.
@@ -630,8 +626,15 @@ void ImGuiLayer::ShowAssetBrowser()
 	constexpr ImVec2 ButtonSize{ 100.0f, 100.0f };
 	float columnSize = ButtonSize.x + ImGui::GetStyle().ItemSpacing.x;
 	uint32_t columnCount = uint32_t(ImGui::GetContentRegionAvail().x / columnSize);
-	columnCount = std::max(1U, columnCount);
-	ImGui::Columns(columnCount, "Asset Browser Colums", false);
+
+	if (columnCount == 0)
+	{
+		ImGui::End();
+		return;
+	}
+
+	SL_ASSERT(columnCount > 0);
+	ImGui::Columns(columnCount, "AssetBrowserColums", false);
 
 	uint32_t columnIndex = 0;
 	for (const auto &it : std::filesystem::directory_iterator(m_assetBrowserCrtPath))
@@ -643,32 +646,22 @@ void ImGuiLayer::ShowAssetBrowser()
 		ImGui::PushID(fileName.c_str());
 
 		const bool isDirectory = it.is_directory();
-		if (isDirectory)
-		{
-			if (auto *pTextureResource = sl::ResourceManager::GetTextureResource(m_folderIconName); pTextureResource->IsReady())
-			{
-				ImGui::ImageButton(fileName.c_str(), (ImTextureID)(uint64_t)pTextureResource->GetTexture()->GetHandle(),
-					ButtonSize, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
-			}
-		}
-		else // Is file
-		{
-			if (auto *pTextureResource = sl::ResourceManager::GetTextureResource(m_fileIconName); pTextureResource->IsReady())
-			{
-				ImGui::ImageButton(fileName.c_str(), (ImTextureID)(uint64_t)pTextureResource->GetTexture()->GetHandle(),
-					ButtonSize, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
-			}
-		}
+		auto *pTextureResource = isDirectory ?
+			sl::ResourceManager::GetTextureResource(m_folderIconName) :
+			sl::ResourceManager::GetTextureResource(m_fileIconName);
 
-		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+		if (pTextureResource->IsReady())
 		{
-			if (isDirectory)
+			ImGui::ImageButton(fileName.c_str(), (ImTextureID)(uint64_t)pTextureResource->GetTexture()->GetHandle(),
+				ButtonSize, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
+			
+			if (isDirectory && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			{
 				m_assetBrowserCrtPath = it.path();
 			}
-		}
 
-		ImGui::TextWrapped(fileName.c_str());
+			ImGui::TextWrapped(fileName.c_str());
+		}
 
 		ImGui::PopID();
 		ImGui::NextColumn();
@@ -695,7 +688,7 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 		if (AlignButton(" : ", 1.0f, ImGui::GetStyle().WindowPadding.x / 2.0f))
 		{
-			// Don't know why WindowPadding.x / 2 works perfect here.
+			// WHY: Don't know why (WindowPadding.x / 2) works perfect here.
 			ImGui::OpenPopup("ComponentPopup");
 		}
 		ImGui::PopStyleColor();
@@ -746,9 +739,9 @@ void ImGuiLayer::StartWithText(std::string_view text)
 	static sl::Entity s_crtEntity;
 	if (s_crtEntity != m_selectedEntity)
 	{
-		// ImGui::CalcTextSize("Position").x == 56.0f
 		// ImGui::CalcTextSize("Rotation").x == 56.0f
-		// Just a little trick to avoid Tag Component flickering when it is rendered the first time,
+		// ImGui::CalcTextSize("Position").x == 56.0f
+		// Just a little trick to avoid Tag Component flickering when it's rendered the first time,
 		// as we known every entity must hold both Tag and Transform component.
 		m_maxTextSize = 56.0f;
 		s_crtEntity = m_selectedEntity;
@@ -961,16 +954,16 @@ void ImGuiLayer::ShowDetails()
 	DrawComponent<sl::RenderingComponent>("Rendering", [this](sl::RenderingComponent *pComponent)
 	{
 		StartWithText("Base Shader");
-		ImGui::Text(pComponent->m_optBaseShaderResourceName ? pComponent->m_optBaseShaderResourceName->c_str() : "");
+		ImGui::Text(pComponent->m_optBaseShaderResourceName->c_str());
 
 		StartWithText("ID Shader");
-		ImGui::Text(pComponent->m_optIDShaderResourceName ? pComponent->m_optIDShaderResourceName->c_str() : "");
+		ImGui::Text(pComponent->m_optIDShaderResourceName->c_str());
 
 		StartWithText("Texture");
-		ImGui::Text(pComponent->m_optTextureResourceName ? pComponent->m_optTextureResourceName->c_str() : "");
+		ImGui::Text(pComponent->m_optTextureResourceName->c_str());
 
 		StartWithText("Mesh");
-		ImGui::Text(pComponent->m_optMeshResourceName ? pComponent->m_optMeshResourceName->c_str() : "");
+		ImGui::Text(pComponent->m_optMeshResourceName->c_str());
 	});
 
 	// Draw Cornerstone component
@@ -997,6 +990,7 @@ void ImGuiLayer::ShowDetails()
 
 void ImGuiLayer::ShowImGuizmoOrientation()
 {
+	// Display a cube on the upper right corner.
 	constexpr float Length = 100.0f;
 	ImVec2 pos = ImVec2{
 		(float)m_sceneViewportWindowPosX + (float)m_sceneViewportSizeX - Length,
@@ -1013,15 +1007,9 @@ void ImGuiLayer::ShowImGuizmoTransform()
 		return;
 	}
 
+	// Disable ImGuizmo when camera is using.
 	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
-	if (camera.IsUsing())
-	{
-		ImGuizmo::Enable(false);
-	}
-	else
-	{
-		ImGuizmo::Enable(true);
-	}
+	ImGuizmo::Enable(!camera.IsUsing());
 
 	ImGuizmo::SetDrawlist();
 	ImGuizmo::SetOrthographic(sl::ProjectionType::Orthographic == camera.m_projectionType ? true : false);
@@ -1045,6 +1033,7 @@ void ImGuiLayer::ShowImGuizmoTransform()
 
 	if(ImGuizmo::IsUsing())
 	{
+		// Decompose transform mat to position, rotation and scale.
 		glm::vec3 newPosition, newRotation, newScale;
 		ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(manipulatedTransform),
 			glm::value_ptr(newPosition), glm::value_ptr(newRotation), glm::value_ptr(newScale));
@@ -1081,8 +1070,6 @@ void ImGuiLayer::ShowSceneViewport()
 	uint32_t handle = sl::RenderCore::GetMainFramebuffer()->GetAttachmentHandle(0);
 	ImGui::Image((void *)(uint64_t)handle, ImGui::GetContentRegionAvail(), ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 
-	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
-
 	// ImGuizmo
 	ShowImGuizmoOrientation();
 	if (m_imguizmoMode >= 0 && m_selectedEntity)
@@ -1090,9 +1077,10 @@ void ImGuiLayer::ShowSceneViewport()
 		ShowImGuizmoTransform();
 	}
 
-	if (!ImGui::IsWindowHovered() || camera.IsUsing() ||
+	if (sl::ECSWorld::GetEditorCameraComponent().IsUsing() ||
+		!ImGui::IsWindowHovered() || ImGuizmo::IsUsing() ||
 		ImGui::IsMouseDragging(ImGuiMouseButton_Left) ||
-		ImGuizmo::IsUsing())
+		ImGui::IsMouseDragging(ImGuiMouseButton_Right))
 	{
 		m_isMouseFreeInSceneView = false;
 
