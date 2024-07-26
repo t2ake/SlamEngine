@@ -627,12 +627,12 @@ void ImGuiLayer::ShowAssetBrowser()
 	float columnSize = ButtonSize.x + ImGui::GetStyle().ItemSpacing.x;
 	uint32_t columnCount = uint32_t(ImGui::GetContentRegionAvail().x / columnSize);
 
-	if (columnCount == 0)
+	if (0 == columnCount)
 	{
 		ImGui::End();
 		return;
 	}
-
+	
 	SL_ASSERT(columnCount > 0);
 	ImGui::Columns(columnCount, "AssetBrowserColums", false);
 
@@ -640,7 +640,11 @@ void ImGuiLayer::ShowAssetBrowser()
 	for (const auto &it : std::filesystem::directory_iterator(m_assetBrowserCrtPath))
 	{
 		columnIndex = columnIndex >= columnCount ? 0 : columnIndex;
-		ImGui::SetColumnWidth(columnIndex++, columnSize);
+		if (columnCount > 1)
+		{
+			// WHY: ImGui::SetColumnWidth just unhappy with displaying only one column.
+			ImGui::SetColumnWidth(columnIndex++, columnSize);
+		}
 
 		std::string fileName = it.path().filename().generic_string();
 		ImGui::PushID(fileName.c_str());
@@ -1117,8 +1121,8 @@ void ImGuiLayer::MousePick()
 		return;
 	}
 
-	SL_LOG_TRACE("Select enttiy Name: \"{}\", ID: {}, Mouse position: ({}, {})",
-		crtEntity.GetComponent<sl::TagComponent>().m_name.c_str(), entityID,
+	SL_LOG_TRACE("Select enttiy ID: {}, Name: \"{}\", Mouse position: ({}, {})",
+		entityID, crtEntity.GetComponent<sl::TagComponent>().m_name.c_str(),
 		mouseLocalPosX, mouseLocalPosY);
 
 	m_selectedEntity = crtEntity;
