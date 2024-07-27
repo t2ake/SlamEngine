@@ -10,7 +10,7 @@ class OpenGLFrameBuffer : public FrameBuffer
 {
 public:
 	OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool destroy = false);
-	~OpenGLFrameBuffer();
+	virtual ~OpenGLFrameBuffer() override;
 
 	virtual void Bind() const override;
 	virtual void Unbind() const override;

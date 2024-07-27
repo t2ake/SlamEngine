@@ -12,7 +12,7 @@ void RenderCore::SetBackend(GraphicsBackend backend)
 
 void RenderCore::Init()
 {
-	m_pRenderAPI = RenderAPI::Create();
+	m_pRenderAPI.reset(RenderAPI::Create());
 	m_info = m_pRenderAPI->GetBackendInfo();
 
 	SL_LOG_TRACE("  Max texture size: {}", m_info.m_maxTextureSize);
@@ -21,6 +21,29 @@ void RenderCore::Init()
 	SL_LOG_TRACE("  Max vertex uniform component count: {}", m_info.m_maxVertexUniformComponentCount);
 	SL_LOG_TRACE("  Max fragment uniform component count: {}", m_info.m_maxFragmentUniformComponentCount);
 	SL_LOG_TRACE("  Max uniform location: {}", m_info.m_maxUniformLocation);
+}
+
+void RenderCore::SetUniformBuffer(uint32_t bindingPoint, UniformBuffer *pUniformBuffer)
+{
+	if (auto it = m_UniformBuffers.find(bindingPoint); m_UniformBuffers.end() != it)
+	{
+		SL_LOG_ERROR("Uniform buffer binding point already exists!");
+		return;
+	}
+
+	m_UniformBuffers[bindingPoint].reset(pUniformBuffer);
+}
+
+UniformBuffer *RenderCore::GetUniformBuffer(uint32_t bindingPoint)
+{
+	auto it = m_UniformBuffers.find(bindingPoint);
+	if (m_UniformBuffers.end() == it)
+	{
+		SL_LOG_ERROR("Uniform buffer binding point does not exist!");
+		return nullptr;
+	}
+
+	return it->second.get();
 }
 
 void RenderCore::SetDefaultState()

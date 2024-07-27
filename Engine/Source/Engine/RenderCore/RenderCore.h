@@ -8,6 +8,8 @@
 #include "RenderCore/UniformBuffer.h"
 #include "RenderCore/VertexArray.h"
 
+#include <memory>
+
 namespace sl
 {
 
@@ -30,11 +32,14 @@ public:
 	static uint32_t GetMaxFramebufferSize() { return m_info.m_maxFramebufferSize; }
 	static uint32_t GetMaxFramebufferColorAttachmentCount() { return m_info.m_maxFramebufferColorAttachmentCount; }
 
-	static void SetMainFramebuffer(FrameBuffer *pBuffer) { m_pMainFrameBuffer = pBuffer; }
-	static FrameBuffer *GetMainFramebuffer() { return m_pMainFrameBuffer; }
+	static void SetMainFramebuffer(FrameBuffer *pBuffer) { m_pMainFrameBuffer.reset(pBuffer); }
+	static FrameBuffer *GetMainFramebuffer() { return m_pMainFrameBuffer.get(); }
 
-	static void SetEntityIDFramebuffer(FrameBuffer *pBuffer) { m_pEntityIDFrameBuffer = pBuffer; }
-	static FrameBuffer *GetEntityIDFramebuffer() { return m_pEntityIDFrameBuffer; }
+	static void SetEntityIDFramebuffer(FrameBuffer *pBuffer) { m_pEntityIDFrameBuffer.reset(pBuffer); }
+	static FrameBuffer *GetEntityIDFramebuffer() { return m_pEntityIDFrameBuffer.get(); }
+
+	static void SetUniformBuffer(uint32_t bindingPoint, UniformBuffer *pUniformBuffer);
+	static UniformBuffer *GetUniformBuffer(uint32_t bindingPoint);
 
 	static void SetDefaultState();
 
@@ -51,10 +56,11 @@ public:
 private:
 	inline static GraphicsBackend m_backend = GraphicsBackend::None;
 	inline static BackendInfo m_info = {};
-	inline static RenderAPI *m_pRenderAPI = nullptr;
-
-	inline static FrameBuffer *m_pMainFrameBuffer = nullptr;
-	inline static FrameBuffer *m_pEntityIDFrameBuffer = nullptr;
+	
+	inline static std::unique_ptr<RenderAPI> m_pRenderAPI;
+	inline static std::unique_ptr<FrameBuffer> m_pMainFrameBuffer;
+	inline static std::unique_ptr<FrameBuffer> m_pEntityIDFrameBuffer;
+	inline static std::map<uint32_t, std::unique_ptr<UniformBuffer>> m_UniformBuffers;
 };
 
 } // namespace sl

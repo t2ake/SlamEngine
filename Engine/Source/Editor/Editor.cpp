@@ -42,6 +42,12 @@ Editor::Editor(EditorInitor initor)
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
 	}));
 
+	sl::RenderCore::SetUniformBuffer(0, sl::UniformBuffer::Create(0, sl::UniformBufferLayout
+	{
+		{ "u_viewProjection", sl::AttribType::mat4f },
+		{ "u_cameraPos", sl::AttribType::vec4f },
+	}));
+		
 	sl::Entity mainCameraEntity = sl::ECSWorld::CreateEntity("Editor Camera");
 	mainCameraEntity.AddComponent<sl::CameraComponent>();
 	mainCameraEntity.AddComponent<sl::CornerstoneComponent>("Currently we only support that only one camera in the scene.");
@@ -52,12 +58,6 @@ Editor::Editor(EditorInitor initor)
 	auto pCameraControllerLayer = std::make_unique<CameraControllerLayer>();
 	auto pImGuiLayer = std::make_unique<ImGuiLayer>();
 	auto pSandboxLayer = std::make_unique<SandboxLayer>();
-
-	pRendererLayer->SetUniformBuffer(sl::UniformBuffer::Create(0, sl::UniformBufferLayout
-	{
-		{ "u_viewProjection", sl::AttribType::mat4f },
-		{ "u_cameraPos", sl::AttribType::vec4f },
-	}));
 
 	pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
@@ -74,6 +74,7 @@ Editor::Editor(EditorInitor initor)
 Editor::~Editor()
 {
 	sl::ImGuiContext::Shutdown();
+	sl::Window::GetInstance().Terminate();
 }
 
 void Editor::Run()

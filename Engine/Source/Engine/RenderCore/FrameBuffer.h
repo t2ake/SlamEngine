@@ -14,6 +14,8 @@ public:
 	static FrameBuffer *Create(std::vector<Texture2D *> textures, bool destroy = false);
 
 public:
+	virtual ~FrameBuffer() = default;
+
 	virtual void Bind() const = 0;
 	virtual void Unbind() const = 0;
 

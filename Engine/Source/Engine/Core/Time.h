@@ -15,7 +15,7 @@ public:
 	void Tick();
 
 	// Returns in milliseconds.
-	SL_FORCEINLINE float GetDeltatIme() const { return m_deltaTime; }
+	float GetDeltatIme() const { return m_deltaTime; }
 
 private:
 	std::chrono::steady_clock::time_point m_lastTimePoint;
