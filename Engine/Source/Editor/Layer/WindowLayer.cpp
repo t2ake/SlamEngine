@@ -5,9 +5,6 @@
 #include "Window/Input.h"
 #include "Window/Window.h"
 
-#include <imgui.h>
-#include <imguizmo/ImGuizmo.h>
-
 WindowLayer::~WindowLayer()
 {
 	

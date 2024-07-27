@@ -32,7 +32,6 @@ private:
 
 	bool OnMouseScroll(sl::MouseScrollEvent &event);
 	bool OnSceneViewportResize(sl::SceneViewportResizeEvent &event);
-	bool OnMouseButtonPress(sl::MouseButtonPressEvent &event);
 	bool OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event);
 	bool OnKeyRelease(sl::KeyReleaseEvent &event);
 

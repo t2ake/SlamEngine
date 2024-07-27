@@ -9,17 +9,6 @@
 #include <algorithm>
 #include <array>
 
-namespace
-{
-
-static constexpr std::array<uint32_t, 6> CamraMoveKey =
-{
-	SL_KEY_W, SL_KEY_A, SL_KEY_S, SL_KEY_D,
-	SL_KEY_Q, SL_KEY_E,
-};
-
-}
-
 void CameraControllerLayer::OnAttach()
 {
 
@@ -34,7 +23,6 @@ void CameraControllerLayer::OnEvent(sl::Event &event)
 	sl::EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<sl::MouseScrollEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnMouseScroll));
 	dispatcher.Dispatch<sl::SceneViewportResizeEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnSceneViewportResize));
-	dispatcher.Dispatch<sl::MouseButtonPressEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnMouseButtonPress));
 	dispatcher.Dispatch<sl::MouseButtonReleaseEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnMouseButtonRelease));
 }
 
@@ -98,7 +86,11 @@ void CameraControllerLayer::UpdateFPSMode(float deltaTime)
 		camera.m_isDirty = true;
 	}
 
-	static_assert(8 >= CamraMoveKey.size());
+	constexpr std::array<uint32_t, 6> CamraMoveKey =
+	{
+		SL_KEY_W, SL_KEY_A, SL_KEY_S, SL_KEY_D, SL_KEY_Q, SL_KEY_E,
+	};
+
 	uint8_t moveKeyMask = 0x00;
 	for (size_t i = 0; i < CamraMoveKey.size(); ++i)
 	{
@@ -197,25 +189,12 @@ bool CameraControllerLayer::OnSceneViewportResize(sl::SceneViewportResizeEvent &
 	return false;
 }
 
-bool CameraControllerLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
-{
-	auto &mode = sl::ECSWorld::GetEditorCameraComponent().m_controllerMode;
-
-	if (sl::CameraControllerMode::FPS == mode && SL_MOUSE_BUTTON_1 == event.GetButton() ||
-		sl::CameraControllerMode::Editor == mode && SL_MOUSE_BUTTON_2 == event.GetButton())
-	{
-		mode = sl::CameraControllerMode::None;
-	}
-
-	return false;
-}
-
 bool CameraControllerLayer::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event)
 {
 	auto &mode = sl::ECSWorld::GetEditorCameraComponent().m_controllerMode;
 
-	if ((sl::CameraControllerMode::FPS == mode && SL_MOUSE_BUTTON_2 == event.GetButton()) ||
-		(sl::CameraControllerMode::Editor == mode && SL_MOUSE_BUTTON_1 == event.GetButton()))
+	if ((sl::CameraControllerMode::FPS == mode && SL_MOUSE_BUTTON_RIGHT == event.GetButton()) ||
+		(sl::CameraControllerMode::Editor == mode && SL_MOUSE_BUTTON_LEFT == event.GetButton()))
 	{
 		mode = sl::CameraControllerMode::None;
 	}
