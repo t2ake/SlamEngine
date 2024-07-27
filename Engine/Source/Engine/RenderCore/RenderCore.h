@@ -15,6 +15,11 @@ class RenderCore final
 {
 public:
 	RenderCore() = delete;
+	RenderCore(const RenderCore &) = delete;
+	RenderCore &operator=(const RenderCore &) = delete;
+	RenderCore(RenderCore &&) = delete;
+	RenderCore &operator=(RenderCore &&) = delete;
+	~RenderCore() = default;
 
 	static void SetBackend(GraphicsBackend backend);
 	static GraphicsBackend GetBackend() { return m_backend; }

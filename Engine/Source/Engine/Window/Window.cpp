@@ -145,13 +145,23 @@ void SetCallbacks(GLFWwindow *pNativeWindow)
 
 } // namespace
 
-Window::Window(std::string_view title, uint32_t width, uint32_t height)
+Window::Window()
+{
+
+}
+
+Window::~Window()
+{
+
+}
+
+void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 {
 	SL_LOG_INFO("Create window \"{}\" ({}, {})", title, width, height);
 
-	// Init GLFW
-	bool success = glfwInit();
-	SL_ASSERT(success, "GLFW initialization failed!");
+// Init GLFW
+	bool initSuccess = glfwInit();
+	SL_ASSERT(initSuccess, "GLFW initialization failed!");
 
 	// Window hints by graphics backend
 	if (GraphicsBackend::OpenGL == RenderCore::GetBackend())
@@ -183,7 +193,7 @@ Window::Window(std::string_view title, uint32_t width, uint32_t height)
 	SetCallbacks(static_cast<GLFWwindow *>(m_pNativeWindow));
 }
 
-Window::~Window()
+void Window::Terminate()
 {
 	glfwDestroyWindow(static_cast<GLFWwindow *>(m_pNativeWindow));
 	glfwTerminate();

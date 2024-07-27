@@ -1,7 +1,6 @@
 #include "Editor.h"
 
 #include "Core/Log.h"
-#include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
 #include "LayerStack/LayerStack.h"
@@ -15,18 +14,18 @@
 #include "Layer/RendererLayer.h"
 #include "Layer/ResourceManagerLayer.h"
 #include "Layer/SandboxLayer.h"
-#include "Layer/WindowLayer.h"
 
 Editor::Editor(EditorInitor initor)
 {
 	sl::Log::Init();
-
+	
 	sl::RenderCore::SetBackend(initor.m_backend);
-	sl::Window *pWindow = new sl::Window(initor.title, initor.m_width, initor.m_height);
-	pWindow->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
-	sl::Input::Init(pWindow->GetNativeWindow());
-	sl::ImGuiContext::Init(pWindow->GetNativeWindow());
+	auto &window = sl::Window::GetInstance();
+	window.Init(initor.title, initor.m_width, initor.m_height);
+	window.SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
+	sl::Input::Init(window.GetNativeWindow());
+	sl::ImGuiContext::Init(window.GetNativeWindow());
 
 	sl::RenderCore::Init();
 	sl::RenderCore::SetDefaultState();
@@ -43,19 +42,16 @@ Editor::Editor(EditorInitor initor)
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
 	}));
 
-	auto mainCameraEntity = sl::ECSWorld::CreateEntity("Editor Camera");
+	sl::Entity mainCameraEntity = sl::ECSWorld::CreateEntity("Editor Camera");
 	mainCameraEntity.AddComponent<sl::CameraComponent>();
 	mainCameraEntity.AddComponent<sl::CornerstoneComponent>("Currently we only support that only one camera in the scene.");
 	sl::ECSWorld::SetEditorCameraEntity(mainCameraEntity);
 
-	auto pWindowLayer = std::make_unique<WindowLayer>();
 	auto pRendererLayer = std::make_unique<RendererLayer>();
 	auto pResourceManagerLayer = std::make_unique<ResourceManagerLayer>();
 	auto pCameraControllerLayer = std::make_unique<CameraControllerLayer>();
 	auto pImGuiLayer = std::make_unique<ImGuiLayer>();
 	auto pSandboxLayer = std::make_unique<SandboxLayer>();
-
-	pWindowLayer->SetWindow(pWindow);
 
 	pRendererLayer->SetUniformBuffer(sl::UniformBuffer::Create(0, sl::UniformBufferLayout
 	{
@@ -66,7 +62,6 @@ Editor::Editor(EditorInitor initor)
 	pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
 	m_pLayerStack = std::make_unique<sl::LayerStack>();
-	m_pLayerStack->PushLayer(std::move(pWindowLayer));
 	m_pLayerStack->PushLayer(std::move(pRendererLayer));
 	m_pLayerStack->PushLayer(std::move(pResourceManagerLayer));
 	m_pLayerStack->PushLayer(std::move(pCameraControllerLayer));
@@ -117,6 +112,8 @@ void Editor::Render()
 void Editor::EndFrame()
 {
 	m_pLayerStack->EndFrame();
+
+	sl::Window::GetInstance().EndFrame();
 }
 
 void Editor::OnEvent(sl::Event &event)
@@ -156,5 +153,5 @@ bool Editor::OnWindowResize(sl::WindowResizeEvent &event)
 		m_isMinimized = false;
 	}
 
-	return true;
+	return false;
 }

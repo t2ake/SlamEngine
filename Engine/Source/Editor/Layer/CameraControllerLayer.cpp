@@ -5,6 +5,7 @@
 #include "Event/SceneViewportEvent.h"
 #include "Scene/ECSWorld.h"
 #include "Window/Input.h"
+#include "Window/Window.h"
 
 #include <algorithm>
 #include <array>
@@ -23,6 +24,7 @@ void CameraControllerLayer::OnEvent(sl::Event &event)
 	sl::EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<sl::MouseScrollEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnMouseScroll));
 	dispatcher.Dispatch<sl::SceneViewportResizeEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnSceneViewportResize));
+	dispatcher.Dispatch<sl::MouseButtonPressEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnMouseButtonPress));
 	dispatcher.Dispatch<sl::MouseButtonReleaseEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnMouseButtonRelease));
 }
 
@@ -189,6 +191,18 @@ bool CameraControllerLayer::OnSceneViewportResize(sl::SceneViewportResizeEvent &
 	return false;
 }
 
+bool CameraControllerLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
+{
+	auto &mode = sl::ECSWorld::GetEditorCameraComponent().m_controllerMode;
+
+	if (sl::CameraControllerMode::FPS == mode || sl::CameraControllerMode::Editor == mode)
+	{
+		sl::Window::GetInstance().CursorModeDisabled();
+	}
+
+	return false;
+}
+
 bool CameraControllerLayer::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event)
 {
 	auto &mode = sl::ECSWorld::GetEditorCameraComponent().m_controllerMode;
@@ -197,6 +211,7 @@ bool CameraControllerLayer::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &ev
 		(sl::CameraControllerMode::Editor == mode && SL_MOUSE_BUTTON_LEFT == event.GetButton()))
 	{
 		mode = sl::CameraControllerMode::None;
+		sl::Window::GetInstance().CursorModeNormal();
 	}
 
 	return false;

@@ -12,9 +12,22 @@ class RenderContext;
 class Window final
 {
 public:
-	Window() = delete;
-	Window(std::string_view title, uint32_t width, uint32_t height);
+	static Window &GetInstance()
+	{
+		static Window s_instance;
+		return s_instance;
+	}
+
+public:
+	Window();
+	Window(const Window &) = delete;
+	Window &operator=(const Window &) = delete;
+	Window(Window &&) = delete;
+	Window &operator=(Window &&) = delete;
 	~Window();
+
+	void Init(std::string_view title, uint32_t width, uint32_t height);
+	void Terminate();
 
 	void BegineFrame();
 	void EndFrame();

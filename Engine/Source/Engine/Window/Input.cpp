@@ -7,22 +7,24 @@
 namespace sl
 {
 
+using WindowTypePtr = GLFWwindow *;
+
 bool Input::IsKeyPressed(int key)
 {
-	auto state = glfwGetKey(static_cast<GLFWwindow *>(m_pWindow), key);
+	auto state = glfwGetKey(static_cast<WindowTypePtr>(m_pWindow), key);
 	return GLFW_PRESS == state;
 }
 
 bool Input::IsMouseButtonPressed(int button)
 {
-	auto state = glfwGetMouseButton(static_cast<GLFWwindow *>(m_pWindow), button);
+	auto state = glfwGetMouseButton(static_cast<WindowTypePtr>(m_pWindow), button);
 	return GLFW_PRESS == state;
 }
 
 glm::vec2 Input::GetMousePos()
 {
 	double posX, posY;
-	glfwGetCursorPos(static_cast<GLFWwindow *>(m_pWindow), &posX, &posY);
+	glfwGetCursorPos(static_cast<WindowTypePtr>(m_pWindow), &posX, &posY);
 	return glm::vec2{ float(posX), float(posY)};
 }
 
@@ -30,8 +32,8 @@ glm::vec2 Input::GetGlobalMousePos()
 {
 	int windowPosX, windowPosY;
 	double cursorPosX, cursorPosY;
-	glfwGetWindowPos(static_cast<GLFWwindow *>(m_pWindow), &windowPosX, &windowPosY);
-	glfwGetCursorPos(static_cast<GLFWwindow *>(m_pWindow), &cursorPosX, &cursorPosY);
+	glfwGetWindowPos(static_cast<WindowTypePtr>(m_pWindow), &windowPosX, &windowPosY);
+	glfwGetCursorPos(static_cast<WindowTypePtr>(m_pWindow), &cursorPosX, &cursorPosY);
 
 	return glm::vec2{ (float)windowPosX + (float)cursorPosX, (float)windowPosY + (float)cursorPosY };
 }
