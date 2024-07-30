@@ -958,16 +958,16 @@ void ImGuiLayer::ShowDetails()
 	DrawComponent<sl::RenderingComponent>("Rendering", [this](sl::RenderingComponent *pComponent)
 	{
 		StartWithText("Base Shader");
-		ImGui::Text(pComponent->m_optBaseShaderResourceName->c_str());
+		ImGui::Text(pComponent->m_optBaseShaderResourceName ? pComponent->m_optBaseShaderResourceName->c_str() : "");
 
 		StartWithText("ID Shader");
-		ImGui::Text(pComponent->m_optIDShaderResourceName->c_str());
+		ImGui::Text(pComponent->m_optIDShaderResourceName ? pComponent->m_optIDShaderResourceName->c_str() : "");
 
 		StartWithText("Texture");
-		ImGui::Text(pComponent->m_optTextureResourceName->c_str());
+		ImGui::Text(pComponent->m_optTextureResourceName ? pComponent->m_optTextureResourceName->c_str() : "");
 
 		StartWithText("Mesh");
-		ImGui::Text(pComponent->m_optMeshResourceName->c_str());
+		ImGui::Text(pComponent->m_optMeshResourceName ? pComponent->m_optMeshResourceName->c_str() : "");
 	});
 
 	// Draw Cornerstone component
@@ -1121,7 +1121,7 @@ void ImGuiLayer::MousePick()
 		return;
 	}
 
-	SL_LOG_TRACE("Select enttiy ID: {}, Name: \"{}\", Mouse position: ({}, {})",
+	SL_LOG_TRACE("Select entity, ID: {}, Name: \"{}\", Mouse position: ({}, {})",
 		entityID, crtEntity.GetComponent<sl::TagComponent>().m_name.c_str(),
 		mouseLocalPosX, mouseLocalPosY);
 

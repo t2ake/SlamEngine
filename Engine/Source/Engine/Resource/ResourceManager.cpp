@@ -59,38 +59,34 @@ static void ResourceManager::AddResource(std::string_view name, std::unique_ptr<
 {
 	if constexpr (std::is_same_v<T, ShaderResource>)
 	{
-		if (const auto& it = m_pShaderResources.find(name.data()); m_pShaderResources.end() != it)
+		if (auto it = m_pShaderResources.find(name.data()); m_pShaderResources.end() == it)
 		{
-			SL_LOG_WARN("Resource \"{}\" already exists!", name.data());
+			m_pShaderResources[name.data()] = std::move(pResource);
 			return;
 		}
-
-		m_pShaderResources[name.data()] = std::move(pResource);
 	}
 	else if constexpr (std::is_same_v<T, TextureResource>)
 	{
-		if (const auto& it = m_pTextureResources.find(name.data()); m_pTextureResources.end() != it)
+		if (auto it = m_pTextureResources.find(name.data()); m_pTextureResources.end() == it)
 		{
-			SL_LOG_WARN("Resource \"{}\" already exists!", name.data());
+			m_pTextureResources[name.data()] = std::move(pResource);
 			return;
 		}
-
-		m_pTextureResources[name.data()] = std::move(pResource);
 	}
 	else if constexpr (std::is_same_v<T, MeshResource>)
 	{
-		if (const auto& it = m_pMeshResources.find(name.data()); m_pMeshResources.end() != it)
+		if (auto it = m_pMeshResources.find(name.data()); m_pMeshResources.end() == it)
 		{
-			SL_LOG_WARN("Resource \"{}\" already exists!", name.data());
+			m_pMeshResources[name.data()] = std::move(pResource);
 			return;
 		}
-
-		m_pMeshResources[name.data()] = std::move(pResource);
 	}
 	else
 	{
-		SL_ASSERT(false);
+		SL_ASSERT(false, "Unknown resource type!");
 	}
+
+	SL_LOG_WARN("Resource \"{}\" already exists!", name.data());
 }
 
 template<class T>
@@ -98,30 +94,31 @@ static T* ResourceManager::GetResource(std::string_view name)
 {
 	if constexpr (std::is_same_v<T, ShaderResource>)
 	{
-		if (const auto& it = m_pShaderResources.find(name.data()); m_pShaderResources.end() != it)
+		if (auto it = m_pShaderResources.find(name.data()); m_pShaderResources.end() != it)
 		{
 			return it->second.get();
 		}
 	}
 	else if constexpr (std::is_same_v<T, TextureResource>)
 	{
-		if (const auto& it = m_pTextureResources.find(name.data()); m_pTextureResources.end() != it)
+		if (auto it = m_pTextureResources.find(name.data()); m_pTextureResources.end() != it)
 		{
 			return it->second.get();
 		}
 	}
 	else if constexpr (std::is_same_v<T, MeshResource>)
 	{
-		if (const auto& it = m_pMeshResources.find(name.data()); m_pMeshResources.end() != it)
+		if (auto it = m_pMeshResources.find(name.data()); m_pMeshResources.end() != it)
 		{
 			return it->second.get();
 		}
 	}
 	else
 	{
-		SL_ASSERT(false);
+		SL_ASSERT(false, "Unknown resource type!");
 	}
 
+	SL_LOG_WARN("Resource \"{}\" does not exist!", name.data());
 	return nullptr;
 }
 
