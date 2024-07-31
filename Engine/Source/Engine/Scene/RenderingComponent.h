@@ -10,11 +10,6 @@ class Shader;
 
 struct RenderingComponent final
 {
-	void Reset()
-	{
-
-	}
-
 	std::optional<std::string> m_optBaseShaderResourceName;
 	std::optional<std::string> m_optIDShaderResourceName;
 	std::optional<std::string> m_optTextureResourceName;

@@ -89,7 +89,7 @@ void RendererLayer::BasePass()
 void RendererLayer::EntityIDPass()
 {
 	sl::RenderCore::GetEntityIDFramebuffer()->Bind();
-	int entityIDClearData = -1;
+	constexpr int entityIDClearData = -1;
 	sl::RenderCore::GetEntityIDFramebuffer()->Clear(0, &entityIDClearData);
 	sl::RenderCore::ClearDepth(1.0f);
 

@@ -678,31 +678,40 @@ void ImGuiLayer::ShowAssetBrowser()
 template<class T, class Fun>
 void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 {
-	if (T *pComponent = m_selectedEntity.TryGetComponent<T>(); pComponent)
+	T *pComponent = m_selectedEntity.TryGetComponent<T>();
+	if (!pComponent)
 	{
-		ImGui::PushID(nameof::nameof_type<T>().data());
+		return;
+	}
 
-		// Draw tree node
-		ImGui::PushFont(sl::Font::GetBold());
-		bool componentTreeOpen = ImGui::TreeNodeEx(label, DefaultTreeFlags, label);
-		ImGui::PopFont();
+	ImGui::PushID(nameof::nameof_type<T>().data());
 
-		// Draw component menu button
-		ImGui::SameLine();
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-		if (AlignButton(" : ", 1.0f, ImGui::GetStyle().WindowPadding.x / 2.0f))
-		{
-			// WHY: Don't know why (WindowPadding.x / 2) works perfect here.
-			ImGui::OpenPopup("ComponentPopup");
-		}
-		ImGui::PopStyleColor();
+	// Draw tree node
+	ImGui::PushFont(sl::Font::GetBold());
+	bool componentTreeOpen = ImGui::TreeNodeEx(label, DefaultTreeFlags, label);
+	ImGui::PopFont();
 
-		bool removeComponent = false;
-		if (ImGui::BeginPopup("ComponentPopup"))
+	// Draw component menu button
+	ImGui::SameLine();
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+	if (AlignButton(" : ", 1.0f, ImGui::GetStyle().WindowPadding.x / 2.0f))
+	{
+		// WHY: Don't know why (WindowPadding.x / 2) just works perfect here.
+		ImGui::OpenPopup("ComponentPopup");
+	}
+	ImGui::PopStyleColor();
+
+	bool removeComponent = false;
+	if (ImGui::BeginPopup("ComponentPopup"))
+	{
+		// C++ 20 "requires" allows us to avoid forcing all composnets to implement a Reset() function.
+		if constexpr (requires{ pComponent->Reset(); })
 		{
 			if (ImGui::MenuItem("Reset Component"))
 			{
 				pComponent->Reset();
+
+				// The camera entity will be affected by TransformComponent.
 				if constexpr (std::is_same_v<T, sl::TransformComponent>)
 				{
 					if (auto pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>(); pCamera)
@@ -711,31 +720,34 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 					}
 				}
 			}
-			if constexpr (!std::is_same_v<T, sl::TagComponent> && !std::is_same_v<T, sl::TransformComponent>)
+		}
+
+		// We don't allow to remove TagComponent and TransformComponent.
+		if constexpr (!std::is_same_v<T, sl::TagComponent> && !std::is_same_v<T, sl::TransformComponent>)
+		{
+			if (ImGui::MenuItem("Remove Component"))
 			{
-				if (ImGui::MenuItem("Remove Component"))
-				{
-					removeComponent = true;
-				}
+				removeComponent = true;
 			}
-			ImGui::EndPopup();
 		}
 
-		// Draw component specific items
-		if (componentTreeOpen)
-		{
-			uiFunction(pComponent);
-		}
-
-		if (removeComponent)
-		{
-			m_selectedEntity.RemoveComponent<T>();
-			m_maxTextSize = 56.0f;
-		}
-
-		ImGui::Separator();
-		ImGui::PopID();
+		ImGui::EndPopup();
 	}
+
+	// Draw component specific items
+	if (componentTreeOpen)
+	{
+		uiFunction(pComponent);
+	}
+
+	if (removeComponent)
+	{
+		m_selectedEntity.RemoveComponent<T>();
+		m_maxTextSize = 56.0f;
+	}
+
+	ImGui::Separator();
+	ImGui::PopID();
 }
 
 void ImGuiLayer::StartWithText(std::string_view text)
