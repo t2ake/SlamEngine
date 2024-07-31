@@ -31,6 +31,7 @@ private:
 	virtual void DestroyCPUData() override;
 
 	ShaderProgramType m_programType;
+	// TODO: Using template class to avoid ShaderInfo storage redundancy in non-standard shader situations.
 	ShaderInfo m_shaders[2];
 
 	std::unique_ptr<Shader> m_pShaderProgram;

@@ -144,7 +144,7 @@ bool Editor::OnWindowClose(sl::WindowCloseEvent &event)
 
 bool Editor::OnWindowResize(sl::WindowResizeEvent &event)
 {
-	if (0 == event.GetWidth() || 0 == event.GetHeight())
+	if (event.GetWidth() == 0 || event.GetHeight() == 0)
 	{
 		SL_LOG_TRACE("Window minimise");
 		m_isMinimized = true;

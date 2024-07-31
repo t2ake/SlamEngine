@@ -59,7 +59,7 @@ static void ResourceManager::AddResource(std::string_view name, std::unique_ptr<
 {
 	if constexpr (std::is_same_v<T, ShaderResource>)
 	{
-		if (auto it = m_pShaderResources.find(name.data()); m_pShaderResources.end() == it)
+		if (auto it = m_pShaderResources.find(name.data()); it == m_pShaderResources.end())
 		{
 			m_pShaderResources[name.data()] = std::move(pResource);
 			return;
@@ -67,7 +67,7 @@ static void ResourceManager::AddResource(std::string_view name, std::unique_ptr<
 	}
 	else if constexpr (std::is_same_v<T, TextureResource>)
 	{
-		if (auto it = m_pTextureResources.find(name.data()); m_pTextureResources.end() == it)
+		if (auto it = m_pTextureResources.find(name.data()); it == m_pTextureResources.end())
 		{
 			m_pTextureResources[name.data()] = std::move(pResource);
 			return;
@@ -75,7 +75,7 @@ static void ResourceManager::AddResource(std::string_view name, std::unique_ptr<
 	}
 	else if constexpr (std::is_same_v<T, MeshResource>)
 	{
-		if (auto it = m_pMeshResources.find(name.data()); m_pMeshResources.end() == it)
+		if (auto it = m_pMeshResources.find(name.data()); it == m_pMeshResources.end())
 		{
 			m_pMeshResources[name.data()] = std::move(pResource);
 			return;
@@ -94,21 +94,21 @@ static T* ResourceManager::GetResource(std::string_view name)
 {
 	if constexpr (std::is_same_v<T, ShaderResource>)
 	{
-		if (auto it = m_pShaderResources.find(name.data()); m_pShaderResources.end() != it)
+		if (auto it = m_pShaderResources.find(name.data()); it != m_pShaderResources.end())
 		{
 			return it->second.get();
 		}
 	}
 	else if constexpr (std::is_same_v<T, TextureResource>)
 	{
-		if (auto it = m_pTextureResources.find(name.data()); m_pTextureResources.end() != it)
+		if (auto it = m_pTextureResources.find(name.data()); it != m_pTextureResources.end())
 		{
 			return it->second.get();
 		}
 	}
 	else if constexpr (std::is_same_v<T, MeshResource>)
 	{
-		if (auto it = m_pMeshResources.find(name.data()); m_pMeshResources.end() != it)
+		if (auto it = m_pMeshResources.find(name.data()); it != m_pMeshResources.end())
 		{
 			return it->second.get();
 		}

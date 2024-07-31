@@ -25,7 +25,7 @@ uint32_t UploadShader(const char *pSource, size_t size, ShaderType type)
 #if !defined(SL_FINAL)
 	GLint isCompiled = 0;
 	glGetShaderiv(shaderHandle, GL_COMPILE_STATUS, &isCompiled);
-	if (GL_FALSE == isCompiled)
+	if (isCompiled == GL_FALSE)
 	{
 		GLint maxLength = 0;
 		glGetShaderiv(shaderHandle, GL_INFO_LOG_LENGTH, &maxLength);
@@ -48,7 +48,7 @@ uint32_t UploadProgram(uint32_t vsHandle, uint32_t fsHandle = 0)
 {
 	uint32_t programHandle = glCreateProgram();
 	glAttachShader(programHandle, vsHandle);
-	if (0 != fsHandle)
+	if (fsHandle != 0)
 	{
 		glAttachShader(programHandle, fsHandle);
 	}
@@ -69,7 +69,7 @@ uint32_t UploadProgram(uint32_t vsHandle, uint32_t fsHandle = 0)
 
 		glDeleteProgram(programHandle);
 		glDeleteShader(vsHandle);
-		if (0 != fsHandle)
+		if (fsHandle != 0)
 		{
 			glDeleteShader(fsHandle);
 		}
@@ -81,7 +81,7 @@ uint32_t UploadProgram(uint32_t vsHandle, uint32_t fsHandle = 0)
 	glDetachShader(programHandle, vsHandle);
 	glDeleteShader(vsHandle);
 
-	if (0 != fsHandle)
+	if (fsHandle != 0)
 	{
 		glDetachShader(programHandle, fsHandle);
 		glDeleteShader(fsHandle);

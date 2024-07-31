@@ -12,13 +12,13 @@ using WindowTypePtr = GLFWwindow *;
 bool Input::IsKeyPressed(int key)
 {
 	auto state = glfwGetKey(static_cast<WindowTypePtr>(m_pWindow), key);
-	return GLFW_PRESS == state;
+	return state == GLFW_PRESS;
 }
 
 bool Input::IsMouseButtonPressed(int button)
 {
 	auto state = glfwGetMouseButton(static_cast<WindowTypePtr>(m_pWindow), button);
-	return GLFW_PRESS == state;
+	return state == GLFW_PRESS;
 }
 
 glm::vec2 Input::GetMousePos()

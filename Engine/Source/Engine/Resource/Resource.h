@@ -33,7 +33,7 @@ public:
 
 	void SetStatus(ResourceStatus status) { m_status = status; }
 	ResourceStatus GetStatus() { return m_status; }
-	bool IsReady() { return ResourceStatus::Ready == m_status; }
+	bool IsReady() { return m_status == ResourceStatus::Ready; }
 
 	void Update();
 

@@ -104,17 +104,17 @@ public:
 		return ECSWorld::m_registry.remove<T>(m_handle);
 	}
 
-	operator bool() const { return entt::null != m_handle; }
+	operator bool() const { return m_handle != entt::null; }
 	operator uint32_t() const{ return (uint32_t)m_handle; }
 	operator entt::entity() const { return m_handle; }
 
-	bool operator==(const uint32_t other) const { return other == (uint32_t)m_handle; }
+	bool operator==(const uint32_t other) const { return (uint32_t)m_handle == other; }
 	bool operator!=(const uint32_t other) const { return !(operator==(other)); }
 
-	bool operator==(const Entity &other) const { return other.m_handle == m_handle; }
+	bool operator==(const Entity &other) const { return m_handle == other.m_handle; }
 	bool operator!=(const Entity &other) const { return !(operator==(other)); }
 
-	bool operator==(const entt::entity &other) const { return other == m_handle; }
+	bool operator==(const entt::entity &other) const { return m_handle == other; }
 	bool operator!=(const entt::entity &other) const { return !(operator==(other)); }
 
 private:

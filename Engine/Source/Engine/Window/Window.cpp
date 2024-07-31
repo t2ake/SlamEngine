@@ -112,12 +112,12 @@ void SetCallbacks(GLFWwindow *pNativeWindow)
 	glfwSetWindowFocusCallback(pNativeWindow, [](GLFWwindow *window, int focused)
 	{
 		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
-		if (GLFW_TRUE == focused)
+		if (focused == GLFW_TRUE)
 		{
 			WindowGetFocusEvent event;
 			pWindow->DespatchEvent(event);
 		}
-		if (GLFW_FALSE == focused)
+		if (focused == GLFW_FALSE)
 		{
 			WindowLostFocusEvent event;
 			pWindow->DespatchEvent(event);
@@ -164,7 +164,7 @@ void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 	SL_ASSERT(initSuccess, "GLFW initialization failed!");
 
 	// Window hints by graphics backend
-	if (GraphicsBackend::OpenGL == RenderCore::GetBackend())
+	if (RenderCore::GetBackend() == GraphicsBackend::OpenGL)
 	{
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);

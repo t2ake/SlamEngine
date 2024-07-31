@@ -36,18 +36,18 @@ void CameraControllerLayer::OnUpdate(float deltaTime)
 {
 	const auto &mode = sl::ECSWorld::GetEditorCameraComponent().m_controllerMode;
 
-	if (sl::CameraControllerMode::None == mode)
+	if (mode == sl::CameraControllerMode::None)
 	{
 		m_isRotating = false;
 		m_isMoving = false;
 		return;
 	}
 
-	if (sl::CameraControllerMode::FPS == mode)
+	if (mode == sl::CameraControllerMode::FPS)
 	{
 		UpdateFPSMode(deltaTime);
 	}
-	else if (sl::CameraControllerMode::Editor == mode)
+	else if (mode == sl::CameraControllerMode::Editor)
 	{
 		UpdateEditorMode(deltaTime);
 	}
@@ -167,7 +167,7 @@ void CameraControllerLayer::UpdateEditorMode(float deltaTime)
 bool CameraControllerLayer::OnMouseScroll(sl::MouseScrollEvent &event)
 {
 	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
-	if (sl::CameraControllerMode::None == camera.m_controllerMode)
+	if (camera.m_controllerMode == sl::CameraControllerMode::None)
 	{
 		return false;
 	}
@@ -193,9 +193,9 @@ bool CameraControllerLayer::OnSceneViewportResize(sl::SceneViewportResizeEvent &
 
 bool CameraControllerLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
 {
-	auto &mode = sl::ECSWorld::GetEditorCameraComponent().m_controllerMode;
+	const auto &mode = sl::ECSWorld::GetEditorCameraComponent().m_controllerMode;
 
-	if (sl::CameraControllerMode::FPS == mode || sl::CameraControllerMode::Editor == mode)
+	if (mode == sl::CameraControllerMode::FPS || mode == sl::CameraControllerMode::Editor)
 	{
 		sl::Window::GetInstance().CursorModeDisabled();
 	}
@@ -207,8 +207,8 @@ bool CameraControllerLayer::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &ev
 {
 	auto &mode = sl::ECSWorld::GetEditorCameraComponent().m_controllerMode;
 
-	if ((sl::CameraControllerMode::FPS == mode && SL_MOUSE_BUTTON_RIGHT == event.GetButton()) ||
-		(sl::CameraControllerMode::Editor == mode && SL_MOUSE_BUTTON_LEFT == event.GetButton()))
+	if ((mode == sl::CameraControllerMode::FPS && event.GetButton() == SL_MOUSE_BUTTON_RIGHT) ||
+		(mode == sl::CameraControllerMode::Editor&& event.GetButton() == SL_MOUSE_BUTTON_LEFT))
 	{
 		mode = sl::CameraControllerMode::None;
 		sl::Window::GetInstance().CursorModeNormal();
@@ -221,7 +221,7 @@ bool CameraControllerLayer::OnKeyRelease(sl::KeyReleaseEvent &event)
 {
 	auto &mode = sl::ECSWorld::GetEditorCameraComponent().m_controllerMode;
 
-	if (sl::CameraControllerMode::Editor == mode && SL_KEY_LEFT_ALT == event.GetKey())
+	if (mode == sl::CameraControllerMode::Editor && event.GetKey() == SL_KEY_LEFT_ALT)
 	{
 		mode = sl::CameraControllerMode::None;
 	}

@@ -25,7 +25,7 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool des
 		AttachmentType type = GetAttachmentType(pTexture->GetFormat());
 		GLenum attachmentPoint = GLAttachmentPoint[(size_t)type];
 
-		if (AttachmentType::Color == type)
+		if (type == AttachmentType::Color)
 		{
 			attachmentPoint += colorAttachmentIndex++;
 
@@ -86,7 +86,7 @@ void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 		return;
 	}
 
-	if (width == m_width && height == m_height)
+	if (m_width == width && m_height == height)
 	{
 		return;
 	}

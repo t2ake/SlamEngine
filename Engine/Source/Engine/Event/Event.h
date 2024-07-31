@@ -58,9 +58,10 @@ public:
 	bool Dispatch(std::function<bool(T &)> func)
 	{
 		static_assert(std::is_base_of_v<Event, T>);
+		static_assert(requires{ T::GetStaticEventType(); });
 
 		// Call func if type of m_event is T.
-		if (T::GetStaticEventType() == m_event.GetEventType())
+		if (m_event.GetEventType() == T::GetStaticEventType())
 		{
 			m_event.IsHandled() |= func(static_cast<T &>(m_event));
 			return true;

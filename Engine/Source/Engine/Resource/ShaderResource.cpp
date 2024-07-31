@@ -103,7 +103,7 @@ void ShaderResource::OnImport()
 	SL_LOG_TRACE("Loading shader: \"{}\"", m_shaders[0].m_assetPath.c_str());
 	m_shaders[0].m_source = FileIO::ReadString(m_shaders[0].m_assetPath);
 
-	if (ShaderProgramType::Standard == m_programType)
+	if (m_programType == ShaderProgramType::Standard)
 	{
 		SL_LOG_TRACE("Loading shader: \"{}\"", m_shaders[1].m_assetPath.c_str());
 		m_shaders[1].m_source = FileIO::ReadString(m_shaders[1].m_assetPath);
@@ -129,7 +129,7 @@ void ShaderResource::OnBuild()
 	m_shaders[0].m_source = ShaderCompiler::SpirvToSource(std::move(spirvData));
 	SL_LOG_TRACE("  Done in {} ms", timer.GetDuration());
 
-	if (ShaderProgramType::Standard == m_programType)
+	if (m_programType == ShaderProgramType::Standard)
 	{
 		SL_LOG_TRACE("Compiling SPIR-V: \"{}\"", m_shaders[1].m_name.c_str());
 
@@ -156,7 +156,7 @@ void ShaderResource::OnLoad()
 	auto spirvBinary = FileIO::ReadBinary<uint32_t>(m_shaders[0].m_binaryPath);
 	m_shaders[0].m_source = ShaderCompiler::SpirvToSource(std::move(spirvBinary));
 
-	if (ShaderProgramType::Standard == m_programType)
+	if (m_programType == ShaderProgramType::Standard)
 	{
 		SL_LOG_TRACE("Loading SPIR-V cache: \"{}\"", m_shaders[1].m_binaryPath.c_str());
 		auto fragSpirvBinary = FileIO::ReadBinary<uint32_t>(m_shaders[1].m_binaryPath);
@@ -168,7 +168,7 @@ void ShaderResource::OnLoad()
 
 void ShaderResource::OnUpload()
 {
-	if (ShaderProgramType::Standard == m_programType)
+	if (m_programType == ShaderProgramType::Standard)
 	{
 		SL_LOG_TRACE("Uploading shader program: \"{}\"", Path::NameWithoutExtension(m_shaders[0].m_name));
 		m_pShaderProgram.reset(Shader::Create(m_shaders[0].m_source, m_shaders[1].m_source));
@@ -208,7 +208,7 @@ void ShaderResource::DestroyCPUData()
 	m_shaders[0].m_source.clear();
 	std::string().swap(m_shaders[0].m_source);
 
-	if (ShaderProgramType::Standard == m_programType)
+	if (m_programType == ShaderProgramType::Standard)
 	{
 		m_shaders[1].m_source.clear();
 		std::string().swap(m_shaders[1].m_source);

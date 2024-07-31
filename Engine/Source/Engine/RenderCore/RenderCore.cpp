@@ -37,7 +37,7 @@ void RenderCore::SetUniformBuffer(uint32_t bindingPoint, UniformBuffer *pUniform
 UniformBuffer *RenderCore::GetUniformBuffer(uint32_t bindingPoint)
 {
 	auto it = m_UniformBuffers.find(bindingPoint);
-	if (m_UniformBuffers.end() == it)
+	if (it == m_UniformBuffers.end())
 	{
 		SL_LOG_ERROR("Uniform buffer binding point does not exist!");
 		return nullptr;
@@ -75,7 +75,7 @@ void RenderCore::ClearStencil(int  stencil)
 
 void RenderCore::Culling(CullingMode mode)
 {
-	if (CullingMode::FrontNitherBack == mode)
+	if (mode == CullingMode::FrontNitherBack)
 	{
 		m_pRenderAPI->DisableCullFace();
 		return;

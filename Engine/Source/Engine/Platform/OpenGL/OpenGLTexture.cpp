@@ -34,7 +34,7 @@ void OpenGLTexture2D::Resize(uint32_t width, uint32_t height, const void *pData)
 		return;
 	}
 
-	if (width == m_width && height == m_height)
+	if (m_width == width && m_height == height)
 	{
 		return;
 	}

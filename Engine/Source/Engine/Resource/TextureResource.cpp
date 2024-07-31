@@ -74,19 +74,19 @@ void TextureResource::OnLoad()
 void TextureResource::OnUpload()
 {
 	sl::TextureFormat format = sl::TextureFormat::RGB8;
-	if (3 == m_channels && !m_isHDR)
+	if (m_channels == 3 && !m_isHDR)
 	{
 		format = sl::TextureFormat::RGB8;
 	}
-	else if (3 == m_channels && m_isHDR)
+	else if (m_channels == 3 && m_isHDR)
 	{
 		format = sl::TextureFormat::RGB32F;
 	}
-	else if (4 == m_channels && !m_isHDR)
+	else if (m_channels == 4 && !m_isHDR)
 	{
 		format = sl::TextureFormat::RGBA8;
 	}
-	else if (4 == m_channels && m_isHDR)
+	else if (m_channels == 4 && m_isHDR)
 	{
 		format = sl::TextureFormat::RGBA32F;
 	}

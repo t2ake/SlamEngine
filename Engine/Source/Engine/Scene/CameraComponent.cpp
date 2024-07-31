@@ -75,7 +75,7 @@ void CameraComponent::Recalculate()
 	m_upDir = glm::normalize(glm::cross(m_rightDir, m_frontDir));
 
 	m_viewMat = glm::lookAt(position, position + m_frontDir, m_upDir);
-	if (ProjectionType::Perspective == m_projectionType)
+	if (m_projectionType == ProjectionType::Perspective)
 	{
 		m_projectionMat = glm::perspective(m_fov * m_fovMultiplier, m_aspect, m_nearPlane, m_farPlane);
 	}

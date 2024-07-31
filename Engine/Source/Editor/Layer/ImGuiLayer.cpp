@@ -185,6 +185,7 @@ void ImGuiLayer::ShowDebugPanel()
 
 void ImGuiLayer::ShowToolOverlay()
 {
+	// Display on the upper left corner.
 	constexpr float ToolOverlayOffset = 10.0f;
 	ImGui::SetNextWindowPos(ImVec2{
 		(float)m_sceneViewportWindowPosX + ToolOverlayOffset,
@@ -209,33 +210,19 @@ void ImGuiLayer::ShowToolOverlay()
 	auto SelectableButton = [this](size_t index)
 	{
 		const int op = Operations[index];
-		bool selected = false;
 
-		if (m_imguizmoMode == op)
-		{
-			selected = true;
-		}
-
-		if (selected)
-		{
-			ImGui::PopStyleVar();
-		}
+		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, m_imguizmoMode == op ? 1.0f : 0.5f);
 		if (ImGui::Button(Icons[index], ImVec2{ 32.0f, 32.0f }))
 		{
 			m_imguizmoMode = op;
 		}
-		if (selected)
-		{
-			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
-		}
+		ImGui::PopStyleVar();
 	};
 
-	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
 	for (size_t i = 0; i < 4; ++i)
 	{
 		SelectableButton(i);
 	}
-	ImGui::PopStyleVar();
 
 	ImGui::End();
 }
@@ -627,7 +614,7 @@ void ImGuiLayer::ShowAssetBrowser()
 	float columnSize = ButtonSize.x + ImGui::GetStyle().ItemSpacing.x;
 	uint32_t columnCount = uint32_t(ImGui::GetContentRegionAvail().x / columnSize);
 
-	if (0 == columnCount)
+	if (columnCount < 1)
 	{
 		ImGui::End();
 		return;
@@ -1018,7 +1005,7 @@ void ImGuiLayer::ShowImGuizmoOrientation()
 
 void ImGuiLayer::ShowImGuizmoTransform()
 {
-	if (sl::ECSWorld::GetEditorCameraEntity() == m_selectedEntity)
+	if (m_selectedEntity == sl::ECSWorld::GetEditorCameraEntity())
 	{
 		return;
 	}
@@ -1028,7 +1015,7 @@ void ImGuiLayer::ShowImGuizmoTransform()
 	ImGuizmo::Enable(!camera.IsUsing());
 
 	ImGuizmo::SetDrawlist();
-	ImGuizmo::SetOrthographic(sl::ProjectionType::Orthographic == camera.m_projectionType ? true : false);
+	ImGuizmo::SetOrthographic(camera.m_projectionType == sl::ProjectionType::Orthographic ? true : false);
 	ImGuizmo::AllowAxisFlip(false);
 	ImGuizmo::SetRect((float)m_sceneViewportWindowPosX, (float)m_sceneViewportWindowPosY + GetTitleBarSize(),
 		(float)m_sceneViewportSizeX, (float)m_sceneViewportSizeY);
@@ -1040,7 +1027,7 @@ void ImGuiLayer::ShowImGuizmoTransform()
 	glm::mat4 manipulatedTransform = transform.GetTransform();
 
 	bool useSnap = ImGui::IsKeyDown(ImGuiKey_LeftCtrl);
-	float snap = (ImGuizmo::OPERATION::ROTATE == m_imguizmoMode ? 45.0f : 0.5f);
+	float snap = (m_imguizmoMode == ImGuizmo::OPERATION::ROTATE ? 45.0f : 0.5f);
 	float snaps[] = { snap, snap, snap };
 
 	ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection),
@@ -1073,7 +1060,7 @@ void ImGuiLayer::ShowSceneViewport()
 	// Resize event
 	uint32_t crtSceneViewportSizeX = (uint32_t)ImGui::GetContentRegionAvail().x;
 	uint32_t crtSceneViewportSizeY = (uint32_t)ImGui::GetContentRegionAvail().y;
-	if (crtSceneViewportSizeX != m_sceneViewportSizeX || crtSceneViewportSizeY != m_sceneViewportSizeY)
+	if (m_sceneViewportSizeX != crtSceneViewportSizeX || m_sceneViewportSizeY != crtSceneViewportSizeY)
 	{
 		m_sceneViewportSizeX = crtSceneViewportSizeX;
 		m_sceneViewportSizeY = crtSceneViewportSizeY;
@@ -1128,7 +1115,7 @@ void ImGuiLayer::MousePick()
 	}
 
 	sl::Entity crtEntity{ (uint32_t)entityID };
-	if (crtEntity == m_selectedEntity)
+	if (m_selectedEntity == crtEntity)
 	{
 		return;
 	}
@@ -1187,7 +1174,7 @@ bool ImGuiLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
 	}
 
 	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
-	if (SL_MOUSE_BUTTON_LEFT == event.GetButton())
+	if (event.GetButton() == SL_MOUSE_BUTTON_LEFT)
 	{
 		if (sl::Input::IsKeyPressed(SL_KEY_LEFT_ALT))
 		{
@@ -1198,7 +1185,7 @@ bool ImGuiLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
 			MousePick();
 		}
 	}
-	else if (SL_MOUSE_BUTTON_RIGHT == event.GetButton())
+	else if (event.GetButton() == SL_MOUSE_BUTTON_RIGHT)
 	{
 		camera.m_controllerMode = sl::CameraControllerMode::FPS;
 	}

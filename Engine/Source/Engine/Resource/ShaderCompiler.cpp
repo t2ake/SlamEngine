@@ -44,11 +44,11 @@ public:
 		auto &container = *m_pContainer;
 
 		// Include path with "../" is not supported for now.
-		if (shaderc_include_type_relative == type)
+		if (type == shaderc_include_type_relative)
 		{
 			container[0] = Path::FromeAsset("Shader/");
 		}
-		else if(shaderc_include_type_standard == type)
+		else if(type == shaderc_include_type_standard)
 		{
 			container[0] = Path::FromeAsset("Shader/Header/");
 		}
