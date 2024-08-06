@@ -32,7 +32,7 @@ public:
 	virtual	~Resource() = default;
 
 	void SetStatus(ResourceStatus status) { m_status = status; }
-	ResourceStatus GetStatus() { return m_status; }
+	ResourceStatus GetStatus() const { return m_status; }
 	bool IsReady() { return m_status == ResourceStatus::Ready; }
 
 	void Update();
