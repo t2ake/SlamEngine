@@ -3,7 +3,7 @@
 #include "Core/Log.h"
 #include "Core/Path.hpp"
 #include "RenderCore/Texture.h"
-#include "Resource/FileIO.h"
+#include "Resource/FileIO.hpp"
 
 #include <stb/stb_image.h>
 

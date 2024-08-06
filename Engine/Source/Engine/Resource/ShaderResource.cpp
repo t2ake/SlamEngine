@@ -4,7 +4,7 @@
 #include "Core/Path.hpp"
 #include "Core/Time.h"
 #include "RenderCore/Shader.h"
-#include "Resource/FileIO.h"
+#include "Resource/FileIO.hpp"
 #include "Resource/ShaderCompiler.h"
 
 namespace sl

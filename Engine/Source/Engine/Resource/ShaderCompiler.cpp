@@ -3,7 +3,7 @@
 #include "Core/EnumOf.hpp"
 #include "Core/Path.hpp"
 #include "RenderCore/RenderCore.h"
-#include "Resource/FileIO.h"
+#include "Resource/FileIO.hpp"
 
 #include <shaderc/shaderc.hpp>
 #include <spirv_glsl.hpp>
