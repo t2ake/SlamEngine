@@ -17,6 +17,13 @@ class ECSWorld final
 	friend class Entity;
 
 public:
+	ECSWorld() = delete;
+	ECSWorld(const ECSWorld &) = delete;
+	ECSWorld &operator=(const ECSWorld &) = delete;
+	ECSWorld(ECSWorld &&) = delete;
+	ECSWorld &operator=(ECSWorld &&) = delete;
+	~ECSWorld() = delete;
+
 	static entt::registry &GetRegistry() { return m_registry; }
 
 	static Entity CreateEntity(std::string name = "Empty Entity");

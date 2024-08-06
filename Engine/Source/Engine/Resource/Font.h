@@ -8,6 +8,13 @@ namespace sl
 class Font final
 {
 public:
+	Font() = delete;
+	Font(const Font &) = delete;
+	Font &operator=(const Font &) = delete;
+	Font(Font &&) = delete;
+	Font &operator=(Font &&) = delete;
+	~Font() = delete;
+
 	static void SetRegular(ImFont *pFont) { pRegular = pFont; }
 	static ImFont *GetRegular() { return pRegular; }
 

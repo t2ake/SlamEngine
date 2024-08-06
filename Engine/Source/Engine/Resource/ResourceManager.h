@@ -13,7 +13,12 @@ class ResourceManager final
 {
 public:
 	ResourceManager() = delete;
-
+	ResourceManager(const ResourceManager &) = delete;
+	ResourceManager &operator=(const ResourceManager &) = delete;
+	ResourceManager(ResourceManager &&) = delete;
+	ResourceManager &operator=(ResourceManager &&) = delete;
+	~ResourceManager() = delete;
+	
 	static void Update();
 
 	static void AddShaderResource(std::string_view name, std::unique_ptr<ShaderResource> pResource);

@@ -21,7 +21,7 @@ public:
 	RenderCore &operator=(const RenderCore &) = delete;
 	RenderCore(RenderCore &&) = delete;
 	RenderCore &operator=(RenderCore &&) = delete;
-	~RenderCore() = default;
+	~RenderCore() = delete;
 
 	static void SetBackend(GraphicsBackend backend);
 	static GraphicsBackend GetBackend() { return m_backend; }

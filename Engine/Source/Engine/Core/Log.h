@@ -50,6 +50,11 @@ class Log final
 {
 public:
 	Log() = delete;
+	Log(const Log &) = delete;
+	Log &operator=(const Log &) = delete;
+	Log(Log &&) = delete;
+	Log &operator=(Log &&) = delete;
+	~Log() = delete;
 
 	static void Init();
 	static spdlog::logger *GetEngineLogger() { return m_pEngineLogger.get(); }

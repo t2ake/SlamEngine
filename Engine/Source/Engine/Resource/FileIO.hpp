@@ -12,6 +12,13 @@ namespace sl
 class FileIO final
 {
 public:
+	FileIO() = delete;
+	FileIO(const FileIO &) = delete;
+	FileIO &operator=(const FileIO &) = delete;
+	FileIO(FileIO &&) = delete;
+	FileIO &operator=(FileIO &&) = delete;
+	~FileIO() = delete;
+
 	template<class T=std::byte>
 	static std::vector<T> ReadBinary(std::string_view filePath)
 	{
