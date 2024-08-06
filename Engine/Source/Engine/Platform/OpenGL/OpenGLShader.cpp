@@ -22,7 +22,6 @@ uint32_t UploadShader(const char *pSource, size_t size, ShaderType type)
 	glShaderSource(shaderHandle, 1, &pGLSource, &GLsize);
 	glCompileShader(shaderHandle);
 
-#if !defined(SL_FINAL)
 	GLint isCompiled = 0;
 	glGetShaderiv(shaderHandle, GL_COMPILE_STATUS, &isCompiled);
 	if (isCompiled == GL_FALSE)
@@ -39,7 +38,6 @@ uint32_t UploadShader(const char *pSource, size_t size, ShaderType type)
 
 		return 0;
 	}
-#endif
 
 	return shaderHandle;
 }
@@ -54,7 +52,15 @@ uint32_t UploadProgram(uint32_t vsHandle, uint32_t fsHandle = 0)
 	}
 	glLinkProgram(programHandle);
 
-#if !defined(SL_FINAL)
+	// Delete shaders.
+	glDetachShader(programHandle, vsHandle);
+	glDeleteShader(vsHandle);
+	if (fsHandle != 0)
+	{
+		glDetachShader(programHandle, fsHandle);
+		glDeleteShader(fsHandle);
+	}
+
 	GLint isLinked = 0;
 	glGetProgramiv(programHandle, GL_LINK_STATUS, &isLinked);
 	if (isLinked == GL_FALSE)
@@ -67,24 +73,7 @@ uint32_t UploadProgram(uint32_t vsHandle, uint32_t fsHandle = 0)
 		glGetProgramInfoLog(programHandle, maxLength, &maxLength, infoLog.data());
 		SL_LOG_ERROR("Shader program upload failed: {}", infoLog.data());
 
-		glDeleteProgram(programHandle);
-		glDeleteShader(vsHandle);
-		if (fsHandle != 0)
-		{
-			glDeleteShader(fsHandle);
-		}
-
 		return 0;
-	}
-#endif
-
-	glDetachShader(programHandle, vsHandle);
-	glDeleteShader(vsHandle);
-
-	if (fsHandle != 0)
-	{
-		glDetachShader(programHandle, fsHandle);
-		glDeleteShader(fsHandle);
 	}
 
 	return programHandle;

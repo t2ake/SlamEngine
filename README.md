@@ -2,6 +2,20 @@
 
 [![MSBuild](https://github.com/Hinageshi01/SlamEngine/actions/workflows/msbuild.yml/badge.svg?branch=main)](https://github.com/Hinageshi01/SlamEngine/actions/workflows/msbuild.yml)
 
+# Config difference
+||Debug|Release|Final|
+|:-|:-:|:-:|:-:|
+|Optimization|Off|On|On|
+|Symbol|On|On|Off|
+|Defination|`SL_DEBUG`|`SL_RELEASE`|`SL_FINAL`|
+|Log|On|On|Off|
+|Assertion|On|On|Off|
+|Error check|On|On|Part|
+|Force inline|Off|Off|On|
+|Shader optimization|Off|On|On|
+|Shader debug info|On|Off|Off|
+
+# Third party
 premake5 v5.0.0-beta2
 
 spdlog v1.13.0
