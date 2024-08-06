@@ -31,32 +31,33 @@ ShaderType ProgramTypeToShaderType(ShaderProgramType programType)
 	}
 }
 
+std::string GetShaderBinaryCachePath(std::string_view name)
+{
+	std::string path = Path::FromeRoot("Engine/Binary/");
+	path += name;
+	path.replace(path.find_last_of("."), 1, "_");
+#if defined(SL_DEBUG)
+	path += "d";
+#endif
+	path += ".bin";
+	
+	return path;
+}
+
 } // namespace
 
 ShaderResource::ShaderResource(std::string_view vsPath, std::string_view fsPath) :
 	m_programType(ShaderProgramType::Standard)
 {
-	std::filesystem::path binaryCatchPath = Path::FromeRoot("Engine/Binary");
-
 	m_shaders[0].m_type = ShaderType::VertexShader;
 	m_shaders[0].m_name = Path::NameWithExtension(vsPath);
 	m_shaders[0].m_assetPath = vsPath;
-	m_shaders[0].m_binaryPath = (binaryCatchPath / m_shaders[0].m_name).generic_string();
-#if defined(SL_DEBUG)
-	m_shaders[0].m_binaryPath += ".dbin";
-#else
-	m_shaders[0].m_binaryPath += ".bin";
-#endif
+	m_shaders[0].m_binaryPath = GetShaderBinaryCachePath(m_shaders[0].m_name);
 
 	m_shaders[1].m_type = ShaderType::FragmentShader;
 	m_shaders[1].m_name = Path::NameWithExtension(fsPath);
 	m_shaders[1].m_assetPath = fsPath;
-	m_shaders[1].m_binaryPath = (binaryCatchPath / m_shaders[1].m_name).generic_string();
-#if defined(SL_DEBUG)
-	m_shaders[1].m_binaryPath += ".dbin";
-#else
-	m_shaders[1].m_binaryPath += ".bin";
-#endif
+	m_shaders[1].m_binaryPath = GetShaderBinaryCachePath(m_shaders[1].m_name);
 
 	if (Path::Exists(m_shaders[0].m_binaryPath) && Path::Exists(m_shaders[1].m_binaryPath))
 	{
@@ -76,12 +77,7 @@ ShaderResource::ShaderResource(std::string_view path, ShaderProgramType type) :
 	m_shaders[0].m_type = ProgramTypeToShaderType(m_programType);
 	m_shaders[0].m_name = Path::NameWithExtension(path);
 	m_shaders[0].m_assetPath = path;
-	m_shaders[0].m_binaryPath = (binaryCatchPath / m_shaders[0].m_name).generic_string();
-#if defined(SL_DEBUG)
-	m_shaders[0].m_binaryPath += ".dbin";
-#else
-	m_shaders[0].m_binaryPath += ".bin";
-#endif
+	m_shaders[0].m_binaryPath = GetShaderBinaryCachePath(m_shaders[0].m_name);
 
 	if (Path::Exists(m_shaders[0].m_binaryPath))
 	{
@@ -109,8 +105,10 @@ void ShaderResource::OnImport()
 		m_shaders[1].m_source = FileIO::ReadString(m_shaders[1].m_assetPath);
 	}
 
-	if (m_shaders[0].m_source.empty() || m_shaders[1].m_source.empty())
+	if (m_shaders[0].m_source.empty() ||
+		(m_programType == ShaderProgramType::Standard && m_shaders[1].m_source.empty()))
 	{
+		SL_LOG_ERROR("Failed to importing shader!");
 		SetStatus(ResourceStatus::Destroying);
 		return;
 	}
@@ -141,8 +139,10 @@ void ShaderResource::OnBuild()
 		SL_LOG_TRACE("  Done in {} ms", timer.GetDuration());
 	}
 
-	if (m_shaders[0].m_source.empty() || m_shaders[1].m_source.empty())
+	if (m_shaders[0].m_source.empty() ||
+		(m_programType == ShaderProgramType::Standard && m_shaders[1].m_source.empty()))
 	{
+		SL_LOG_ERROR("Failed to building shader!");
 		SetStatus(ResourceStatus::Destroying);
 		return;
 	}
@@ -163,6 +163,14 @@ void ShaderResource::OnLoad()
 		m_shaders[1].m_source = ShaderCompiler::SpirvToSource(std::move(fragSpirvBinary));
 	}
 
+	if (m_shaders[0].m_source.empty() ||
+		(m_programType == ShaderProgramType::Standard && m_shaders[1].m_source.empty()))
+	{
+		SL_LOG_ERROR("Failed to load shader binary cache!");
+		SetStatus(ResourceStatus::Destroying);
+		return;
+	}
+
 	SetStatus(ResourceStatus::Uploading);
 }
 
@@ -177,6 +185,13 @@ void ShaderResource::OnUpload()
 	{
 		SL_LOG_TRACE("Uploading shader program: \"{}\"", Path::NameWithoutExtension(m_shaders[0].m_name));
 		m_pShaderProgram.reset(Shader::Create(m_shaders[0].m_source, m_shaders[0].m_type));
+	}
+
+	if (!m_pShaderProgram)
+	{
+		SL_LOG_ERROR("Failed to create shader GPU handle!");
+		SetStatus(ResourceStatus::Destroying);
+		return;
 	}
 
 	SetStatus(ResourceStatus::Ready);

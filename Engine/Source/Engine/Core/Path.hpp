@@ -11,6 +11,10 @@ class Path final
 {
 public:
 	Path() = delete;
+	Path(const Path &) = delete;
+	Path &operator=(const Path &) = delete;
+	Path(Path &&) = delete;
+	Path &operator=(Path &&) = delete;
 
 	static constexpr const char *RootPath{ SL_ROOT_PATH };
 	static constexpr const char *AssetPath{ SL_ASSET_PATH };

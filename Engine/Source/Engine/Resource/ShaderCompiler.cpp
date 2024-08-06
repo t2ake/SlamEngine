@@ -40,47 +40,42 @@ public:
 		const char *requesting_source,
 		size_t include_depth) override
 	{
-		m_pContainer = new ShaderIncluderContainer;
-		auto &container = *m_pContainer;
-
-		// Include path with "../" is not supported for now.
+		std::filesystem::path path;
 		if (type == shaderc_include_type_relative)
 		{
-			container[0] = Path::FromeAsset("Shader/");
+			path = Path::FromeAsset("Shader");
 		}
 		else if(type == shaderc_include_type_standard)
 		{
-			container[0] = Path::FromeAsset("Shader/Header/");
+			path = Path::FromeAsset("Shader/Header");
 		}
 		else
 		{
 			SL_ASSERT(false, "Shaderc unknown include type!");
 		}
-		container[0] += requested_source;
 
-		container[1] = FileIO::ReadString(container[0]);
+		path /= requested_source;
+		m_pathContainer = path.generic_string();
+		m_contentContainer = FileIO::ReadString(m_pathContainer);
 
 		auto *pResult = new shaderc_include_result;
-		pResult->source_name = container[0].c_str();
-		pResult->source_name_length = container[0].size();
-		pResult->content = container[1].c_str();
-		pResult->content_length = container[1].size();
+		pResult->source_name = m_pathContainer.c_str();
+		pResult->source_name_length = m_pathContainer.size();
+		pResult->content = m_contentContainer.c_str();
+		pResult->content_length = m_contentContainer.size();
 
 		return pResult;
 	}
 
 	virtual void ReleaseInclude(shaderc_include_result *pResult) override
 	{
-		delete m_pContainer;
 		delete pResult;
 	}
 
 private:
-	// [0] is the absolute path of the file, [1] is the content of the file.
-	using ShaderIncluderContainer = std::array<std::string, 2>;
-
 	// To ensure requested data is valid before calling ReleaseInclude.
-	ShaderIncluderContainer *m_pContainer = nullptr;
+	std::string m_pathContainer;
+	std::string m_contentContainer;
 };
 
 } // namespace
