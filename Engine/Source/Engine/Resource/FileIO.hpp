@@ -27,7 +27,7 @@ public:
 		std::ifstream in(filePath.data(), std::ios::in | std::ios::binary);
 		if (!in)
 		{
-			SL_LOG_ERROR("Can not open file: \"{}\"", filePath.data());
+			SL_LOG_ERROR("Failed to open file: \"{}\"", filePath.data());
 			return fileData;
 		}
 
@@ -50,7 +50,7 @@ public:
 		std::ifstream in(filePath.data(), std::ios::in | std::ios::binary);
 		if (!in)
 		{
-			SL_LOG_ERROR("Can not open file: \"{}\"", filePath.data());
+			SL_LOG_ERROR("Failed to open file: \"{}\"", filePath.data());
 			return fileData;
 		}
 
@@ -71,7 +71,7 @@ public:
 		std::ofstream out(path.data(), std::ios::out | std::ios::binary | std::ios::trunc);
 		if (!out)
 		{
-			SL_LOG_ERROR("Can not open file: \"{}\"", path.data());
+			SL_LOG_ERROR("Failed to open file: \"{}\"", path.data());
 			return;
 		}
 

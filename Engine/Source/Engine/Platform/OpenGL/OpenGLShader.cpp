@@ -32,7 +32,8 @@ uint32_t UploadShader(const char *pSource, size_t size, ShaderType type)
 		// The maxLength includes the NULL character
 		std::vector<GLchar> infoLog(maxLength);
 		glGetShaderInfoLog(shaderHandle, maxLength, &maxLength, infoLog.data());
-		SL_LOG_ERROR("Shader upload failed: {}", infoLog.data());
+		SL_LOG_ERROR("Failed to upload shader!");
+		SL_LOG_ERROR(infoLog.data());
 
 		glDeleteShader(shaderHandle);
 
@@ -71,7 +72,8 @@ uint32_t UploadProgram(uint32_t vsHandle, uint32_t fsHandle = 0)
 		// The maxLength includes the NULL character
 		std::vector<GLchar> infoLog(maxLength);
 		glGetProgramInfoLog(programHandle, maxLength, &maxLength, infoLog.data());
-		SL_LOG_ERROR("Shader program upload failed: {}", infoLog.data());
+		SL_LOG_ERROR("Failed to upload shader program!");
+		SL_LOG_ERROR(infoLog.data());
 
 		return 0;
 	}

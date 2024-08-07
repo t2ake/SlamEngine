@@ -103,7 +103,7 @@ std::vector<uint32_t> ShaderCompiler::SourceToSpirv(const ShaderInfo &info)
 
 		if (result.GetCompilationStatus() != shaderc_compilation_status_success)
 		{
-			SL_LOG_ERROR("Shader preprocess failed: \"{}\"", name);
+			SL_LOG_ERROR("Failed to preprocess shader!");
 			SL_LOG_ERROR(result.GetErrorMessage());
 			return {};
 		}
@@ -133,7 +133,7 @@ std::vector<uint32_t> ShaderCompiler::SourceToSpirv(const ShaderInfo &info)
 
 		if (result.GetCompilationStatus() != shaderc_compilation_status_success)
 		{
-			SL_LOG_ERROR("Compile shader to SPIR-V failed: \"{}\"", name);
+			SL_LOG_ERROR("Failed to compile shader to SPIR-V!");
 			SL_LOG_ERROR(result.GetErrorMessage());
 			return {};
 		}

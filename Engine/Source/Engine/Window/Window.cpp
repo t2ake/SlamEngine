@@ -161,7 +161,7 @@ void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 
 // Init GLFW
 	bool initSuccess = glfwInit();
-	SL_ASSERT(initSuccess, "GLFW initialization failed!");
+	SL_ASSERT(initSuccess, "Failed to initialize GLFW!");
 
 	// Window hints by graphics backend
 	if (RenderCore::GetBackend() == GraphicsBackend::OpenGL)
@@ -177,7 +177,7 @@ void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 
 	// Creat window
 	m_pNativeWindow = glfwCreateWindow(width, height, title.data(), nullptr, nullptr);
-	SL_ASSERT(m_pNativeWindow, "GLFW creating window failed!");
+	SL_ASSERT(m_pNativeWindow, "Failed to create GLFW window!");
 	m_pRenderContext.reset(RenderContext::Create(m_pNativeWindow));
 
 	// Other settings

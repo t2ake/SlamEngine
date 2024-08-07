@@ -108,7 +108,7 @@ void ShaderResource::OnImport()
 	if (m_shaders[0].m_source.empty() ||
 		(m_programType == ShaderProgramType::Standard && m_shaders[1].m_source.empty()))
 	{
-		SL_LOG_ERROR("Failed to importing shader!");
+		SL_LOG_ERROR("Failed to import shader!");
 		SetStatus(ResourceStatus::Destroying);
 		return;
 	}
@@ -142,7 +142,7 @@ void ShaderResource::OnBuild()
 	if (m_shaders[0].m_source.empty() ||
 		(m_programType == ShaderProgramType::Standard && m_shaders[1].m_source.empty()))
 	{
-		SL_LOG_ERROR("Failed to building shader!");
+		SL_LOG_ERROR("Failed to build shader!");
 		SetStatus(ResourceStatus::Destroying);
 		return;
 	}

@@ -13,7 +13,7 @@ namespace sl
 OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool destroy) :
 	m_destroyTextureWithFramebuffer(destroy)
 {
-	SL_ASSERT(!textures.empty(), "Can not create framebuffer without any textures!");
+	SL_ASSERT(!textures.empty(), "Can not create framebuffer without any attachments!");
 
 	uint32_t minWidth = textures[0]->GetHeight();
 	uint32_t minHeight = textures[0]->GetHeight();
@@ -27,10 +27,9 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool des
 
 		if (type == AttachmentType::Color)
 		{
+			// GL_COLOR_ATTACHMENT0 += index
 			attachmentPoint += colorAttachmentIndex++;
-
-			SL_ASSERT(attachmentPoint < GL_COLOR_ATTACHMENT0 + RenderCore::GetMaxFramebufferColorAttachmentCount(),
-				"Color attachments count exceeds the limit!");
+			SL_ASSERT(attachmentPoint < GL_COLOR_ATTACHMENT0 + RenderCore::GetMaxFramebufferColorAttachmentCount());
 		}
 
 		m_attachments.emplace_back(pTexture, attachmentPoint);
