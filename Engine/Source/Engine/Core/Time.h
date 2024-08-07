@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Core/Core.h"
-
 #include <chrono>
 
 namespace sl

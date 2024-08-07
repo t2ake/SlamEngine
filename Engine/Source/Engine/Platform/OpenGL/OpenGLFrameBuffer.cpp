@@ -29,7 +29,7 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool des
 		{
 			// GL_COLOR_ATTACHMENT0 += index
 			attachmentPoint += colorAttachmentIndex++;
-			SL_ASSERT(attachmentPoint < GL_COLOR_ATTACHMENT0 + RenderCore::GetMaxFramebufferColorAttachmentCount());
+			SL_ASSERT(attachmentPoint < GL_COLOR_ATTACHMENT0 + RenderCore::GetInfo().m_maxFramebufferColorAttachmentCount);
 		}
 
 		m_attachments.emplace_back(pTexture, attachmentPoint);
@@ -79,7 +79,7 @@ void OpenGLFrameBuffer::Unbind() const
 
 void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 {
-	if (width <= 0 || height <= 0 || width > RenderCore::GetMaxFramebufferSize() || height > RenderCore::GetMaxFramebufferSize())
+	if (width <= 0 || height <= 0 || width > RenderCore::GetInfo().m_maxFramebufferSize || height > RenderCore::GetInfo().m_maxFramebufferSize)
 	{
 		SL_LOG_ERROR("Invalid frame bufferr size!");
 		return;

@@ -20,10 +20,10 @@ Editor::Editor(EditorInitor initor)
 	sl::Log::Init();
 	
 	sl::RenderCore::SetBackend(initor.m_backend);
-
 	auto &window = sl::Window::GetInstance();
-	window.Init(initor.title, initor.m_width, initor.m_height);
+	window.Init(initor.m_title, initor.m_width, initor.m_height);
 	window.SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
+
 	sl::Input::Init(window.GetNativeWindow());
 	sl::ImGuiContext::Init(window.GetNativeWindow());
 
@@ -48,10 +48,10 @@ Editor::Editor(EditorInitor initor)
 		{ "u_cameraPos", sl::AttribType::vec4f },
 	}));
 		
-	sl::Entity mainCameraEntity = sl::ECSWorld::CreateEntity("Editor Camera");
-	mainCameraEntity.AddComponent<sl::CameraComponent>();
-	mainCameraEntity.AddComponent<sl::CornerstoneComponent>("Currently we only support that only one camera in the scene.");
-	sl::ECSWorld::SetEditorCameraEntity(mainCameraEntity);
+	sl::Entity editorCameraEntity = sl::ECSWorld::CreateEntity("Editor Camera");
+	editorCameraEntity.AddComponent<sl::CameraComponent>();
+	editorCameraEntity.AddComponent<sl::CornerstoneComponent>("Editor camera must exist in the scene.");
+	sl::ECSWorld::SetEditorCameraEntity(editorCameraEntity);
 
 	auto pRendererLayer = std::make_unique<RendererLayer>();
 	auto pResourceManagerLayer = std::make_unique<ResourceManagerLayer>();

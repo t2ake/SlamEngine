@@ -5,11 +5,6 @@
 namespace sl
 {
 
-void RenderCore::SetBackend(GraphicsBackend backend)
-{
-	m_backend = backend;
-}
-
 void RenderCore::Init()
 {
 	m_pRenderAPI.reset(RenderAPI::Create());

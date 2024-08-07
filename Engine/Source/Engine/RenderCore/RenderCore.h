@@ -23,15 +23,13 @@ public:
 	RenderCore &operator=(RenderCore &&) = delete;
 	~RenderCore() = delete;
 
-	static void SetBackend(GraphicsBackend backend);
-	static GraphicsBackend GetBackend() { return m_backend; }
-
 	static void Init();
 
-	static uint32_t GetMaxTextureSize() { return m_info.m_maxTextureSize; }
-	static uint32_t GetMaxFramebufferSize() { return m_info.m_maxFramebufferSize; }
-	static uint32_t GetMaxFramebufferColorAttachmentCount() { return m_info.m_maxFramebufferColorAttachmentCount; }
+	static void SetBackend(GraphicsBackend backend) { m_backend = backend; }
+	static GraphicsBackend GetBackend() { return m_backend; }
 
+	static const BackendInfo &GetInfo() { return m_info; }
+	
 	static void SetMainFramebuffer(FrameBuffer *pBuffer) { m_pMainFrameBuffer.reset(pBuffer); }
 	static FrameBuffer *GetMainFramebuffer() { return m_pMainFrameBuffer.get(); }
 
@@ -46,7 +44,6 @@ public:
 	static void ClearColor(float r, float g, float b, float a);
 	static void ClearDepth(float depth);
 	static void ClearStencil(int stencil);
-
 	static void Culling(CullingMode mode);
 
 	static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);

@@ -28,7 +28,7 @@ void OpenGLTexture2D::Clear(const void *pClearData) const
 
 void OpenGLTexture2D::Resize(uint32_t width, uint32_t height, const void *pData)
 {
-	if (width <= 0 || height <= 0 || width > RenderCore::GetMaxTextureSize() || height > RenderCore::GetMaxTextureSize())
+	if (width <= 0 || height <= 0 || width > RenderCore::GetInfo().m_maxFramebufferSize || height > RenderCore::GetInfo().m_maxFramebufferSize)
 	{
 		SL_LOG_ERROR("Invalid texture size!");
 		return;

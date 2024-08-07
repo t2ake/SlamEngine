@@ -4,7 +4,6 @@
 #include "Core/Time.h"
 
 #include <memory>
-#include <string>
 
 namespace sl
 {
@@ -18,7 +17,7 @@ class LayerStack;
 
 struct EditorInitor
 {
-	std::string_view title;
+	const char *m_title;
 	uint32_t m_width;
 	uint32_t m_height;
 	sl::GraphicsBackend m_backend;

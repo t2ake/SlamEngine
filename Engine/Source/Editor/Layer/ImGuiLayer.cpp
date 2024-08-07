@@ -57,7 +57,7 @@ SL_FORCEINLINE void RightClickFocus()
 	}
 }
 
-SL_FORCEINLINE bool AlignButton(const char *label, float align = 0.5f, float customOffset = 0.0f)
+bool AlignButton(const char *label, float align = 0.5f, float customOffset = 0.0f)
 {
 	float size = ImGui::CalcTextSize(label).x + ImGui::GetStyle().FramePadding.x * 2.0f;
 	float avail = ImGui::GetContentRegionAvail().x;
@@ -520,14 +520,11 @@ void ImGuiLayer::ShowEntityList()
 	ImGui::Begin("Entity List");
 	RightClickFocus();
 
-	if (AlignButton("Add New Entity"))
-	{
-		sl::ECSWorld::CreateEntity();
-	}
-	ImGui::Separator();
+	bool isItemClicked = false;
 
-	auto view = sl::ECSWorld::GetRegistry().view<sl::TagComponent>();
-	for (auto entity : view)
+	// Each entity holds a TagComponent.
+	auto allEntityView = sl::ECSWorld::GetRegistry().view<sl::TagComponent>();
+	for (auto entity : allEntityView)
 	{
 		ImGui::PushID((void *)(uint64_t)(uint32_t)entity);
 
@@ -542,7 +539,7 @@ void ImGuiLayer::ShowEntityList()
 			treeNodeFlag |= ImGuiTreeNodeFlags_Selected;
 		}
 
-		auto &tag = view.get<sl::TagComponent>(entity);
+		auto &tag = allEntityView.get<sl::TagComponent>(entity);
 		bool nodeOpen = ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, treeNodeFlag, tag.m_name.c_str());
 
 		// Left click to select entity.
@@ -554,9 +551,10 @@ void ImGuiLayer::ShowEntityList()
 		// Right click to open an entity popup.
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
 		{
-			ImGui::OpenPopup("EntityPopupContext");
+			isItemClicked = true;
+			ImGui::OpenPopup("EntityPopup");
 		}
-		if (ImGui::BeginPopup("EntityPopupContext"))
+		if (ImGui::BeginPopup("EntityPopup"))
 		{
 			if (ImGui::MenuItem("Destory Entity"))
 			{
@@ -577,10 +575,26 @@ void ImGuiLayer::ShowEntityList()
 		ImGui::PopID();
 	}
 
-	// Left click at enpty space to clear selected entity.
-	if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	if (!isItemClicked && ImGui::IsWindowHovered())
 	{
-		m_selectedEntity.Reset();
+		// Left click on an enpty space to clear selected entity.
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+		{
+			m_selectedEntity.Reset();
+		}
+		// Right click on an enpty space to create a new entity.
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+		{
+			ImGui::OpenPopup("CreateNewEntityPopup");
+		}
+	}
+	if (ImGui::BeginPopup("CreateNewEntityPopup"))
+	{
+		if (ImGui::MenuItem("Creat Empty Entity"))
+		{
+			sl::ECSWorld::CreateEntity();
+		}
+		ImGui::EndPopup();
 	}
 
 	ImGui::End();
@@ -691,7 +705,7 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 	bool removeComponent = false;
 	if (ImGui::BeginPopup("ComponentPopup"))
 	{
-		// C++ 20 "requires" allows us to avoid forcing all composnets to implement a Reset() function.
+		// C++ 20 "requires" allows us to avoid forcing all composnets to implement a Reset function.
 		if constexpr (requires{ pComponent->Reset(); })
 		{
 			if (ImGui::MenuItem("Reset Component"))
@@ -979,11 +993,12 @@ void ImGuiLayer::ShowDetails()
 	// Add component button
 	if (AlignButton("Add Component"))
 	{
-		ImGui::OpenPopup("AddComponent");
+		ImGui::OpenPopup("AddComponentPopup");
 	}
-	if (ImGui::BeginPopup("AddComponent"))
+	if (ImGui::BeginPopup("AddComponentPopup"))
 	{
 		AddComponent<sl::CameraComponent>("Camera");
+		AddComponent<sl::CornerstoneComponent>("Cornerstone");
 		AddComponent<sl::RenderingComponent>("Rendering");
 		ImGui::EndPopup();
 	}
