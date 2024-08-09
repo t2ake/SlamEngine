@@ -151,6 +151,18 @@ void ImGuiLayer::OnUpdate(float deltaTime)
 	ShowAssetBrowser();
 	ShowDetails();
 	ShowSceneViewport();
+
+	if (m_selectedEntity == 0) {}
+	if (0 == m_selectedEntity) {}
+
+	if (m_selectedEntity == entt::entity{ 0 }) {}
+	if (entt::entity{ 0 } == m_selectedEntity) {}
+
+	if (m_selectedEntity == sl::Entity{ 0 }) {}
+	if (sl::Entity{ 0 } == m_selectedEntity) {}
+
+	if (m_selectedEntity.IsValid()) {}
+	if (!m_selectedEntity.IsValid()) {}
 }
 
 void ImGuiLayer::OnRender()
@@ -558,11 +570,11 @@ void ImGuiLayer::ShowEntityList()
 		{
 			if (ImGui::MenuItem("Destory Entity"))
 			{
-				sl::ECSWorld::DestroyEntity(entity);
 				if (m_selectedEntity == entity)
 				{
 					m_selectedEntity.Reset();
 				}
+				sl::Entity{ entity }.Destroy();
 			}
 			ImGui::EndPopup();
 		}
@@ -798,7 +810,7 @@ void ImGuiLayer::ShowDetails()
 	ImGui::Begin("Details");
 	RightClickFocus();
 
-	if (!m_selectedEntity)
+	if (!m_selectedEntity.IsValid())
 	{
 		ImGui::End();
 		return;
@@ -1090,7 +1102,7 @@ void ImGuiLayer::ShowSceneViewport()
 
 	// ImGuizmo
 	ShowImGuizmoOrientation();
-	if (m_imguizmoMode >= 0 && m_selectedEntity)
+	if (m_imguizmoMode >= 0 && m_selectedEntity.IsValid())
 	{
 		ShowImGuizmoTransform();
 	}

@@ -24,11 +24,8 @@ public:
 	ECSWorld &operator=(ECSWorld &&) = delete;
 	~ECSWorld() = delete;
 
-	static entt::registry &GetRegistry() { return m_registry; }
-
 	static Entity CreateEntity(std::string name = "Empty Entity");
-	// Destroy an entity and all its components.
-	static void DestroyEntity(Entity entity);
+	static entt::registry &GetRegistry() { return m_registry; }
 
 	static void SetEditorCameraEntity(Entity entity);
 	static Entity GetEditorCameraEntity();
@@ -47,7 +44,10 @@ public:
 	Entity(entt::entity entity) : m_handle(entity) {}
 	Entity(uint32_t entity) : m_handle((entt::entity)entity) {}
 
+	entt::entity GetHandle() const { return m_handle; }
+	bool IsValid() const { return m_handle != entt::null; }
 	void Reset() { m_handle = entt::null; }
+	void Destroy();
 
 	// Returns reference.
 	template<class T, class... Args>
@@ -111,21 +111,21 @@ public:
 		return ECSWorld::m_registry.remove<T>(m_handle);
 	}
 
-	operator bool() const { return m_handle != entt::null; }
-	operator uint32_t() const{ return (uint32_t)m_handle; }
-	operator entt::entity() const { return m_handle; }
-
-	bool operator==(const uint32_t other) const { return (uint32_t)m_handle == other; }
-	bool operator!=(const uint32_t other) const { return !(operator==(other)); }
-
 	bool operator==(const Entity &other) const { return m_handle == other.m_handle; }
 	bool operator!=(const Entity &other) const { return !(operator==(other)); }
-
-	bool operator==(const entt::entity &other) const { return m_handle == other; }
-	bool operator!=(const entt::entity &other) const { return !(operator==(other)); }
 
 private:
 	entt::entity m_handle = entt::null;
 };
 
 } // namespace sl
+
+inline bool operator==(const sl::Entity &entity, const entt::entity &other) { return entity.GetHandle() == other; }
+inline bool operator!=(const sl::Entity &entity, const entt::entity &other) { return !operator==(entity, other); }
+inline bool operator==(const entt::entity &other, const sl::Entity &entity) { return other == entity.GetHandle(); }
+inline bool operator!=(const entt::entity &other, const sl::Entity &entity) { return !operator==(other, entity); }
+
+inline bool operator==(const sl::Entity &entity, const uint32_t &other) { return (uint32_t)entity.GetHandle() == other; }
+inline bool operator!=(const sl::Entity &entity, const uint32_t &other) { return !operator==(entity, other); }
+inline bool operator==(const uint32_t &other, const sl::Entity &entity) { return other == (uint32_t)entity.GetHandle(); }
+inline bool operator!=(const uint32_t &other, const sl::Entity &entity) { return !operator==(other, entity); }

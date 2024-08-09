@@ -134,7 +134,7 @@ void SceneSerializer::SerializeYAML(std::string_view sceneName)
 	fileStream << out.c_str();
 }
 
-void SceneSerializer::SerializeBinary()
+void SceneSerializer::SerializeBinary(std::string_view sceneName)
 {
 
 }
@@ -298,7 +298,7 @@ bool SceneSerializer::DeserializeYAML(std::string_view sceneName)
 	return true;
 }
 
-bool SceneSerializer::DeserializeBinary()
+bool SceneSerializer::DeserializeBinary(std::string_view sceneName)
 {
 	return false;
 }

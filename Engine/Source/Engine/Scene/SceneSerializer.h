@@ -16,10 +16,10 @@ public:
 	~SceneSerializer() = delete;
 
 	static void SerializeYAML(std::string_view sceneName);
-	static void SerializeBinary();
+	static void SerializeBinary(std::string_view sceneName);
 
 	static bool DeserializeYAML(std::string_view sceneName);
-	static bool DeserializeBinary();
+	static bool DeserializeBinary(std::string_view sceneName);
 };
 
 } // namespace sl
