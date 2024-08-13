@@ -29,7 +29,7 @@ uint32_t UploadShader(const char *pSource, size_t size, ShaderType type)
 		GLint maxLength = 0;
 		glGetShaderiv(shaderHandle, GL_INFO_LOG_LENGTH, &maxLength);
 
-		// The maxLength includes the NULL character
+		// The maxLength includes the NULL character.
 		std::vector<GLchar> infoLog(maxLength);
 		glGetShaderInfoLog(shaderHandle, maxLength, &maxLength, infoLog.data());
 		SL_LOG_ERROR("Failed to upload shader!");
@@ -69,7 +69,7 @@ uint32_t UploadProgram(uint32_t vsHandle, uint32_t fsHandle = 0)
 		GLint maxLength = 0;
 		glGetProgramiv(programHandle, GL_INFO_LOG_LENGTH, &maxLength);
 
-		// The maxLength includes the NULL character
+		// The maxLength includes the NULL character.
 		std::vector<GLchar> infoLog(maxLength);
 		glGetProgramInfoLog(programHandle, maxLength, &maxLength, infoLog.data());
 		SL_LOG_ERROR("Failed to upload shader program!");

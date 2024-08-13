@@ -144,7 +144,7 @@ void OpenGLFrameBuffer::Create()
 
 	for (const auto &attachment : m_attachments)
 	{
-		// TODO: Parameterise the 3 and last parameter.
+		// TODO: Parameterise the 3rd and the last parameter.
 		glFramebufferTexture2D(GL_FRAMEBUFFER, attachment.m_point, GL_TEXTURE_2D, attachment.m_pTexture->GetHandle(), 0);
 	}
 

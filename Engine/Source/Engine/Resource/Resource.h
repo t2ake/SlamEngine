@@ -47,7 +47,7 @@ public:
 	virtual void OnUpload() = 0;
 	// Destroy CPU data deferred.
 	virtual void OnReady() = 0;
-	// Destroy GPU data
+	// Destroy GPU data.
 	virtual void OnDestroy() = 0;
 
 private:

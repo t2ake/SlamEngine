@@ -163,7 +163,6 @@ void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 	bool initSuccess = glfwInit();
 	SL_ASSERT(initSuccess, "Failed to initialize GLFW!");
 
-	// Window hints by graphics backend
 	if (RenderCore::GetBackend() == GraphicsBackend::OpenGL)
 	{
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

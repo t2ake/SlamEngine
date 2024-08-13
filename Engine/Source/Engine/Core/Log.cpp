@@ -27,7 +27,7 @@ void Log::Init()
 	auto pFileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(Path::FromeRoot("Engine/Log/Slam.log"), true);
 	pFileSink->set_pattern("[%T] [%l] %n: %v");
 
-	// Output to buffer and show on ui
+	// Output to buffer and show on ui.
 	auto pCallbackSink = std::make_shared<spdlog::sinks::callback_sink_mt>([](const spdlog::details::log_msg &msg)
 	{
 		// TODO: Add time information to log buffer.

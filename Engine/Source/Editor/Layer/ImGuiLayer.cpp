@@ -520,7 +520,7 @@ void ImGuiLayer::ShowEntityList()
 	ImGui::Begin("Entity List");
 	RightClickFocus();
 
-	bool isItemClicked = false;
+	bool isEntityRightClicked = false;
 
 	// Each entity holds a TagComponent.
 	auto allEntityView = sl::ECSWorld::GetRegistry().view<sl::TagComponent>();
@@ -528,7 +528,7 @@ void ImGuiLayer::ShowEntityList()
 	{
 		ImGui::PushID((void *)(uint64_t)(uint32_t)entity);
 
-		// TODO: hierarchy
+		// TODO: Hierarchy
 		ImGuiTreeNodeFlags treeNodeFlag =
 			ImGuiTreeNodeFlags_OpenOnDoubleClick |
 			ImGuiTreeNodeFlags_OpenOnArrow |
@@ -551,7 +551,7 @@ void ImGuiLayer::ShowEntityList()
 		// Right click to open an entity popup.
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
 		{
-			isItemClicked = true;
+			isEntityRightClicked = true;
 			ImGui::OpenPopup("EntityPopup");
 		}
 		if (ImGui::BeginPopup("EntityPopup"))
@@ -575,7 +575,7 @@ void ImGuiLayer::ShowEntityList()
 		ImGui::PopID();
 	}
 
-	if (!isItemClicked && ImGui::IsWindowHovered())
+	if (!isEntityRightClicked && ImGui::IsWindowHovered())
 	{
 		// Left click on an enpty space to clear selected entity.
 		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))

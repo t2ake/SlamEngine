@@ -107,7 +107,7 @@ public:
 	template<class T>
 	auto RemoveComponent()
 	{
-		// 'registry::remove' is safer than 'registry::erase'.
+		// Using 'registry::remove' is safer than using 'registry::erase'.
 		return ECSWorld::m_registry.remove<T>(m_handle);
 	}
 
