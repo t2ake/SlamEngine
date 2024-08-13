@@ -294,8 +294,8 @@ void ImGuiLayer::ShowInfo(float deltaTime)
 	static ScrollingBuffer s_coastBuffer;
 	static ScrollingBuffer s_fpsBuffer;
 
-	constexpr float History = 1000.0f;
-	constexpr float Delay = 1000.0f;
+	constexpr float History = 500.0f;
+	constexpr float Delay = 500.0f;
 
 	ImGui::AlignTextToFramePadding();
 	ImGui::Text("Delta Time Multiplier:");

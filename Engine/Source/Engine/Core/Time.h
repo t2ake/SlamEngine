@@ -8,9 +8,13 @@ namespace sl
 class Clock final
 {
 public:
-	Clock() = default;
-
-	void Tick();
+	void Tick()
+	{
+		auto crtTimePoint = std::chrono::high_resolution_clock::now();
+		long long deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(crtTimePoint - m_lastTimePoint).count();
+		m_deltaTime = (float)deltaTime * 0.001f;
+		m_lastTimePoint = crtTimePoint;
+	}
 
 	// Returns in milliseconds.
 	float GetDeltatIme() const { return m_deltaTime; }
@@ -23,12 +27,23 @@ private:
 class Timer final
 {
 public:
-	Timer();
+	Timer() : m_startTimePoint(std::chrono::high_resolution_clock::now())
+	{
 
-	void Reset();
+	}
+
+	void Reset()
+	{
+		m_startTimePoint = std::chrono::high_resolution_clock::now();
+	}
 
 	// Returns in milliseconds.
-	float GetDuration();
+	float GetDuration() const
+	{
+		auto crtTimePoint = std::chrono::high_resolution_clock::now();
+		long long deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(crtTimePoint - m_startTimePoint).count();
+		return (float)deltaTime * 0.001f;
+	}
 
 private:
 	std::chrono::steady_clock::time_point m_startTimePoint;
