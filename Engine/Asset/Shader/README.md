@@ -1,5 +1,5 @@
 ## File Name
-- `<Name>_<Suffix>.glsl`
+- Rule: `<Name>_<Suffix>.glsl`
   - ex: `PBR_vert.glsl`
 - A shader is named by its shader program name plus the stage suffix.
   - ex: `AAA_vert.glsl`, `AAA_frag.glsl`, `BBB_comp.glsl`
@@ -12,4 +12,4 @@
 - `#include <...>` will start searching files based on a specific path, which is `"/SlamEngine/Engine/Asset/Shader/Lib"`.
 
 ## Version
-- The first line of shader must be `#version`
+- The first line of shader must be `#version`.
