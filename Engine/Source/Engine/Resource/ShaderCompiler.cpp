@@ -47,7 +47,7 @@ public:
 		}
 		else if(type == shaderc_include_type_standard)
 		{
-			path = Path::FromeAsset("Shader/Header");
+			path = Path::FromeAsset("Shader/Lib");
 		}
 		else
 		{

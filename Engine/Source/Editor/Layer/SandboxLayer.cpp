@@ -42,15 +42,15 @@ SandboxLayer::SandboxLayer()
 	rendering.m_optTextureResourceName = "JCTexture";
 
 	auto pBaseShaderResource = std::make_unique<sl::ShaderResource>(
-		sl::Path::FromeAsset("Shader/Base.vert"),
-		sl::Path::FromeAsset("Shader/Base.frag")
+		sl::Path::FromeAsset("Shader/Base_vert.glsl"),
+		sl::Path::FromeAsset("Shader/Base_frag.glsl")
 	);
 	sl::ResourceManager::AddShaderResource("BaseShader", std::move(pBaseShaderResource));
 	rendering.m_optBaseShaderResourceName = "BaseShader";
 
 	auto pIDShaderResource = std::make_unique<sl::ShaderResource>(
-		sl::Path::FromeAsset("Shader/EntityID.vert"),
-		sl::Path::FromeAsset("Shader/EntityID.frag")
+		sl::Path::FromeAsset("Shader/EntityID_vert.glsl"),
+		sl::Path::FromeAsset("Shader/EntityID_frag.glsl")
 	);
 	sl::ResourceManager::AddShaderResource("IDShader", std::move(pIDShaderResource));
 	rendering.m_optIDShaderResourceName = "IDShader";

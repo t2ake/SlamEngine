@@ -33,15 +33,16 @@ ShaderType ProgramTypeToShaderType(ShaderProgramType programType)
 
 std::string GetShaderBinaryCachePath(std::string_view name)
 {
-	std::string path = Path::FromeRoot("Engine/Binary/");
-	path += name;
-	path.replace(path.find_last_of("."), 1, "_");
+	std::filesystem::path path = Path::FromeRoot("Engine/Binary");
+	path /= name;
+
 #if defined(SL_DEBUG)
 	path += "d";
 #endif
-	path += ".bin";
-	
-	return path;
+
+	path.replace_extension(".bin");
+
+	return path.generic_string();
 }
 
 } // namespace
@@ -50,12 +51,12 @@ ShaderResource::ShaderResource(std::string_view vsPath, std::string_view fsPath)
 	m_programType(ShaderProgramType::Standard)
 {
 	m_shaders[0].m_type = ShaderType::VertexShader;
-	m_shaders[0].m_name = Path::NameWithExtension(vsPath);
+	m_shaders[0].m_name = Path::NameWithoutExtension(vsPath);
 	m_shaders[0].m_assetPath = vsPath;
 	m_shaders[0].m_binaryPath = GetShaderBinaryCachePath(m_shaders[0].m_name);
 
 	m_shaders[1].m_type = ShaderType::FragmentShader;
-	m_shaders[1].m_name = Path::NameWithExtension(fsPath);
+	m_shaders[1].m_name = Path::NameWithoutExtension(fsPath);
 	m_shaders[1].m_assetPath = fsPath;
 	m_shaders[1].m_binaryPath = GetShaderBinaryCachePath(m_shaders[1].m_name);
 
@@ -176,14 +177,18 @@ void ShaderResource::OnLoad()
 
 void ShaderResource::OnUpload()
 {
+	// We assume that a shader is named by its shader program name plus the stage suffix.
+	// - Shader Program: XXX
+	// - Vertex Shader: XXX_vert.glsl
+	// - Fragment Shader: XXX_frag.glsl
+	SL_LOG_TRACE("Uploading shader program: \"{}\"", m_shaders[0].m_name.substr(0, m_shaders[0].m_name.rfind('_')));
+
 	if (m_programType == ShaderProgramType::Standard)
 	{
-		SL_LOG_TRACE("Uploading shader program: \"{}\"", Path::NameWithoutExtension(m_shaders[0].m_name));
 		m_pShaderProgram.reset(Shader::Create(m_shaders[0].m_source, m_shaders[1].m_source));
 	}
 	else
 	{
-		SL_LOG_TRACE("Uploading shader program: \"{}\"", Path::NameWithoutExtension(m_shaders[0].m_name));
 		m_pShaderProgram.reset(Shader::Create(m_shaders[0].m_source, m_shaders[0].m_type));
 	}
 
