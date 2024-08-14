@@ -1,10 +1,10 @@
 ## File Name
-- Rule: `<Name>_<Suffix>.glsl`
+- Rule: `<Name>_<Stage>.glsl`
   - ex: `PBR_vert.glsl`
 - A shader is named by its shader program name plus the stage suffix.
   - ex: `AAA_vert.glsl`, `AAA_frag.glsl`, `BBB_comp.glsl`
-- A shader containing code shared by multiple files becomes a library file with the `_lib` suffix.
-  - ex: `CCC_lib.glsl`
+- A shader that contains code for multiple file shares becomes a library file with **no suffix** and is placed in the `Lib` folder.
+  - ex: `CCC.glsl`
 - The name of shader file must be unique.
 
 ## Include

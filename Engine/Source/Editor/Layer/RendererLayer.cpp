@@ -33,8 +33,8 @@ void RendererLayer::OnUpdate(float deltaTime)
 
 void RendererLayer::OnRender()
 {
-	sl::RenderCore::GetUniformBuffer(0)->Upload("u_viewProjection", sl::ECSWorld::GetEditorCameraComponent().GetViewProjection());
-	sl::RenderCore::GetUniformBuffer(0)->Upload("u_cameraPos",
+	sl::RenderCore::GetUniformBuffer(0)->Upload("ub_viewProjection", sl::ECSWorld::GetEditorCameraComponent().GetViewProjection());
+	sl::RenderCore::GetUniformBuffer(0)->Upload("ub_cameraPos",
 		glm::vec4{ sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::TransformComponent>().m_position, 1.0f });
 	
 	BasePass();

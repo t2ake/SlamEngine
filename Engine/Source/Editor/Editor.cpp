@@ -44,8 +44,8 @@ Editor::Editor(EditorInitor initor)
 
 	sl::RenderCore::SetUniformBuffer(0, sl::UniformBuffer::Create(0, sl::UniformBufferLayout
 	{
-		{ "u_viewProjection", sl::AttribType::mat4f },
-		{ "u_cameraPos", sl::AttribType::vec4f },
+		{ "ub_cameraPos", sl::AttribType::vec4f },
+		{ "ub_viewProjection", sl::AttribType::mat4f },
 	}));
 		
 	sl::Entity editorCameraEntity = sl::ECSWorld::CreateEntity("Editor Camera");
