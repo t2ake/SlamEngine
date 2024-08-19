@@ -47,12 +47,8 @@ void MeshResource::OnUpload()
 
 void MeshResource::OnReady()
 {
-	static uint32_t frameCount = 0;
-	if (frameCount < 60)
-	{
-		++frameCount;
-	}
-	else if (frameCount == 60)
+	static uint8_t frameCount = 0;
+	if (frameCount <= 60 && frameCount++ == 60)
 	{
 		DestroyCPUData();
 	}
