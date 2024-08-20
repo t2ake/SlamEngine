@@ -5,9 +5,9 @@ layout(std140, binding = 0) uniform Camera
 	mat4 ub_viewProjection;
 };
 
-vec4 GetCameraPos()
+vec3 GetCameraPos()
 {
-    return ub_cameraPos;
+    return ub_cameraPos.xyz;
 }
 
 mat4 GetViewProjectionMat()
