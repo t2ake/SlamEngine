@@ -8,7 +8,7 @@
 namespace sl
 {
 
-inline constexpr GLenum GLAttribType[nameof::enum_count<AttribType>()] =
+constexpr GLenum GLAttribType[nameof::enum_count<AttribType>()] =
 {
 	GL_BYTE,           // AttribType::Int8
 	GL_UNSIGNED_BYTE,  // AttribType::Uint8
@@ -21,7 +21,7 @@ inline constexpr GLenum GLAttribType[nameof::enum_count<AttribType>()] =
 	GL_DOUBLE,         // AttribType::Double
 };
 
-inline constexpr GLenum GLInternalTextureFormat[nameof::enum_count<TextureFormat>()] =
+constexpr GLenum GLInternalTextureFormat[nameof::enum_count<TextureFormat>()] =
 {
 	GL_R8,                 // TextureFormat::R8
 	GL_R8_SNORM,           // TextureFormat::R8S
@@ -84,7 +84,7 @@ inline constexpr GLenum GLInternalTextureFormat[nameof::enum_count<TextureFormat
 	GL_STENCIL_INDEX8,	   // TextureFormat::S8
 };
 
-inline constexpr GLenum GLTextureFormat[nameof::enum_count<TextureFormat>()] =
+constexpr GLenum GLTextureFormat[nameof::enum_count<TextureFormat>()] =
 {
 	GL_RED,             // TextureFormat::R8
 	GL_RED,             // TextureFormat::R8S
@@ -147,7 +147,7 @@ inline constexpr GLenum GLTextureFormat[nameof::enum_count<TextureFormat>()] =
 	GL_STENCIL_INDEX,   // TextureFormat::S8
 };
 
-inline constexpr GLenum GLDataType[nameof::enum_count<TextureFormat>()] =
+constexpr GLenum GLDataType[nameof::enum_count<TextureFormat>()] =
 {
 	GL_UNSIGNED_BYTE,                  // TextureFormat::R8
 	GL_BYTE,                           // TextureFormat::R8S
@@ -210,7 +210,7 @@ inline constexpr GLenum GLDataType[nameof::enum_count<TextureFormat>()] =
 	GL_UNSIGNED_BYTE,                  // TextureFormat::S8
 };
 
-inline constexpr GLenum GLAttachmentPoint[nameof::enum_count<AttachmentType>()] =
+constexpr GLenum GLAttachmentPoint[nameof::enum_count<AttachmentType>()] =
 {
 	GL_COLOR_ATTACHMENT0,		 // AttachmentType::Color
 	GL_DEPTH_ATTACHMENT,		 // AttachmentType::Depth
@@ -218,14 +218,14 @@ inline constexpr GLenum GLAttachmentPoint[nameof::enum_count<AttachmentType>()] 
 	GL_DEPTH_STENCIL_ATTACHMENT, // AttachmentType::Stencil
 };
 
-inline constexpr GLenum GLShaderType[nameof::enum_count<ShaderType>()] =
+constexpr GLenum GLShaderType[nameof::enum_count<ShaderType>()] =
 {
 	GL_VERTEX_SHADER,   // ShaderType::VertexShader
 	GL_FRAGMENT_SHADER, // ShaderType::FragmentShader
 	GL_COMPUTE_SHADER,  // ShaderType::ComputeShader
 };
 
-inline constexpr GLenum GLCompareFunc[nameof::enum_count<CompareFunction>()] =
+constexpr GLenum GLCompareFunc[nameof::enum_count<CompareFunction>()] =
 {
 	GL_NEVER,	 // DepthFunc::Never 
 	GL_LESS,	 // DepthFunc::Less
@@ -237,7 +237,7 @@ inline constexpr GLenum GLCompareFunc[nameof::enum_count<CompareFunction>()] =
 	GL_ALWAYS,	 // DepthFunc::Always
 };
 
-inline constexpr GLenum GLBlendFunc[nameof::enum_count<BlendFunction>()] =
+constexpr GLenum GLBlendFunc[nameof::enum_count<BlendFunction>()] =
 {
 	GL_ZERO,					 // BlendFunction::Zero
 	GL_ONE,						 // BlendFunction::One
@@ -260,7 +260,7 @@ inline constexpr GLenum GLBlendFunc[nameof::enum_count<BlendFunction>()] =
 	GL_ONE_MINUS_SRC1_ALPHA,	 // BlendFunction::OneMinusSrc1Alpha
 };
 
-inline constexpr GLenum GLBlendEquation[nameof::enum_count<BlendEquation>()] =
+constexpr GLenum GLBlendEquation[nameof::enum_count<BlendEquation>()] =
 {
 	GL_FUNC_ADD,			  // BlendEquation::FunctionAdd
 	GL_FUNC_SUBTRACT,		  // BlendEquation::FunctionSubtract
@@ -269,7 +269,7 @@ inline constexpr GLenum GLBlendEquation[nameof::enum_count<BlendEquation>()] =
 	GL_MAX,					  // BlendEquation::Max
 };
 
-inline constexpr GLenum GLStencilOp[nameof::enum_count<StencilOperation>()] =
+constexpr GLenum GLStencilOp[nameof::enum_count<StencilOperation>()] =
 {
 	GL_KEEP,	  // StencilOp::Keep
 	GL_ZERO,	  // StencilOp::Zero
@@ -281,27 +281,27 @@ inline constexpr GLenum GLStencilOp[nameof::enum_count<StencilOperation>()] =
 	GL_INVERT,	  // StencilOp::Invert
 };
 
-inline constexpr GLenum GLCullingMode[nameof::enum_count<CullingMode>() - 1] =
+constexpr GLenum GLCullingMode[nameof::enum_count<CullingMode>() - 1] =
 {
 	GL_FRONT,		   // CullingMode::Front
 	GL_BACK,		   // CullingMode::Back
 	GL_FRONT_AND_BACK, // CullingMode::FrontAndBack
 };
 
-inline constexpr GLenum GLFrontFace[nameof::enum_count<FrontFace>()] =
+constexpr GLenum GLFrontFace[nameof::enum_count<FrontFace>()] =
 {
 	GL_CCW, // FrontFace::CCW
 	GL_CW,  // FrontFace::CW
 };
 
-inline constexpr GLint GLTextureFilter[] =
+constexpr GLint GLTextureFilter[] =
 {
 	0,
 	GL_NEAREST,
 	GL_LINEAR,
 };
 
-inline constexpr GLint GLTextureMipmapFilter[] =
+constexpr GLint GLTextureMipmapFilter[] =
 {
 	0,
 	GL_NEAREST_MIPMAP_NEAREST,
@@ -310,7 +310,7 @@ inline constexpr GLint GLTextureMipmapFilter[] =
 	GL_LINEAR_MIPMAP_LINEAR,
 };
 
-inline constexpr GLint GLTextureWrap[] =
+constexpr GLint GLTextureWrap[] =
 {
 	0,
 	GL_CLAMP_TO_EDGE,

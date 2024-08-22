@@ -467,6 +467,7 @@ void ImGuiLayer::ShowLog()
 
 	ImGui::Separator();
 
+	// TODO: Show time and level on log panel.
 	auto &logInfos = sl::Log::GetLogInfos();
 	if (ImGui::BeginChild("ScrollingLog", ImVec2(0, 0), ImGuiChildFlags_FrameStyle, ImGuiWindowFlags_HorizontalScrollbar))
 	{

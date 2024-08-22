@@ -147,7 +147,7 @@ private:
 	#define SL_LOG_WARN(...)  ::sl::Log::GetEngineLogger()->warn(__VA_ARGS__)
 	#define SL_LOG_ERROR(...) ::sl::Log::GetEngineLogger()->error(__VA_ARGS__)
 	#define SL_LOG_FATAL(...) ::sl::Log::GetEngineLogger()->critical(__VA_ARGS__)
-	
+
 	#define SL_ASSERT(x, ...) { if(!(x)) { __VA_OPT__(SL_LOG_FATAL(__VA_ARGS__);) SL_DEBUGBREAK(); } }
 #else
 	#define SL_LOG_TRACE(...)
@@ -156,5 +156,6 @@ private:
 	#define SL_LOG_WARN(...)
 	#define SL_LOG_ERROR(...)
 	#define SL_LOG_FATAL(...)
+
 	#define SL_ASSERT(x, ...)
 #endif

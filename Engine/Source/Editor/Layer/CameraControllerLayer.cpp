@@ -19,6 +19,7 @@ void CameraControllerLayer::OnDetach()
 {
 
 }
+
 void CameraControllerLayer::OnEvent(sl::Event &event)
 {
 	sl::EventDispatcher dispatcher(event);
@@ -32,6 +33,7 @@ void CameraControllerLayer::BeginFrame()
 {
 
 }
+
 void CameraControllerLayer::OnUpdate(float deltaTime)
 {
 	const auto &mode = sl::ECSWorld::GetEditorCameraComponent().m_controllerMode;
@@ -161,7 +163,7 @@ void CameraControllerLayer::UpdateFPSMode(float deltaTime)
 
 void CameraControllerLayer::UpdateEditorMode(float deltaTime)
 {
-	// TODO
+	 // TODO
 }
 
 bool CameraControllerLayer::OnMouseScroll(sl::MouseScrollEvent &event)
