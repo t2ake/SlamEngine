@@ -625,8 +625,8 @@ void ImGuiLayer::ShowAssetBrowser()
 	ImGui::Text(crtPath.c_str());
 	ImGui::Separator();
 
-	constexpr ImVec2 ButtonSize{ 100.0f, 100.0f };
-	float columnSize = ButtonSize.x + ImGui::GetStyle().ItemSpacing.x;
+	constexpr ImVec2 ItemSize{ 100.0f, 100.0f };
+	float columnSize = ItemSize.x + ImGui::GetStyle().ItemSpacing.x;
 	uint32_t columnCount = uint32_t(ImGui::GetContentRegionAvail().x / columnSize);
 
 	if (columnCount < 1)
@@ -659,7 +659,7 @@ void ImGuiLayer::ShowAssetBrowser()
 		if (pTextureResource->IsReady())
 		{
 			ImGui::ImageButton(fileName.c_str(), (ImTextureID)(uint64_t)pTextureResource->GetTexture()->GetHandle(),
-				ButtonSize, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
+				ItemSize, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 			
 			if (isDirectory && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			{

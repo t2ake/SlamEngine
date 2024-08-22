@@ -21,7 +21,7 @@
 #endif
 
 // Force inline
-#if defined(SL_FINAL)
+#if !defined(SL_DEBUG)
 	#if defined(_MSC_VER)
 		#define SL_FORCEINLINE __forceinline
 	#else

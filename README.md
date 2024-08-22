@@ -14,9 +14,9 @@
 |Symbol|On|On|Off|
 |Defination|`SL_DEBUG`|`SL_RELEASE`|`SL_FINAL`|
 |Log|On|On|Off|
-|Assertion|On|On|Off|
 |Error check|On|On|Part|
-|Force inline|Off|Off|On|
+|Assertion|On|On|Off|
+|Force inline|Off|On|On|
 |Shader optimization|Off|Off|On|
 |Shader debug info|On|On|Off|
 
