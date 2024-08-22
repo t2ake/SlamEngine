@@ -1,8 +1,9 @@
 # SlamEngine
 [![MSBuild](https://github.com/Hinageshi01/SlamEngine/actions/workflows/msbuild.yml/badge.svg?branch=main)](https://github.com/Hinageshi01/SlamEngine/actions/workflows/msbuild.yml)
+![Preview](https://github.com/roeas/SlamEngine/blob/main/Engine/Asset/Texture/Preview.png)
 
 # Build
-- Install Cmake(3.15 at least)
+- Install CMake(3.15 at least)
 - Install Visual Studio 2022
 - Run `SetupThirdParty.bat`
 - Run `Setup.bat`
