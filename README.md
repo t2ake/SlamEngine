@@ -12,8 +12,8 @@
 |Assertion|On|On|Off|
 |Error check|On|On|Part|
 |Force inline|Off|Off|On|
-|Shader optimization|Off|On|On|
-|Shader debug info|On|Off|Off|
+|Shader optimization|Off|Off|On|
+|Shader debug info|On|On|Off|
 
 # Third party
 premake5 v5.0.0-beta2

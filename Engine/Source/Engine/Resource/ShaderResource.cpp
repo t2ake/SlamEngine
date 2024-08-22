@@ -13,6 +13,15 @@ namespace sl
 namespace
 {
 
+bool IsShaderDebugMode()
+{
+#if !defined(SL_FINAL)
+	return true;
+#else
+	return false;
+#endif
+}
+
 ShaderType ProgramTypeToShaderType(ShaderProgramType programType)
 {
 	switch (programType)
@@ -31,15 +40,14 @@ ShaderType ProgramTypeToShaderType(ShaderProgramType programType)
 	}
 }
 
-std::string GetShaderBinaryCachePath(std::string_view name)
+std::string GetShaderBinaryCachePath(std::string_view name, bool isDebugMode)
 {
 	std::filesystem::path path = Path::FromeRoot("Engine/Binary");
 	path /= name;
-
-#if defined(SL_DEBUG)
-	path += "d";
-#endif
-
+	if (isDebugMode)
+	{
+		path += "d";
+	}
 	path.replace_extension(".bin");
 
 	return path.generic_string();
@@ -51,14 +59,16 @@ ShaderResource::ShaderResource(std::string_view vsPath, std::string_view fsPath)
 	m_programType(ShaderProgramType::Standard)
 {
 	m_shaders[0].m_type = ShaderType::VertexShader;
+	m_shaders[0].m_debugMode = IsShaderDebugMode();
 	m_shaders[0].m_name = Path::NameWithoutExtension(vsPath);
 	m_shaders[0].m_assetPath = vsPath;
-	m_shaders[0].m_binaryPath = GetShaderBinaryCachePath(m_shaders[0].m_name);
+	m_shaders[0].m_binaryPath = GetShaderBinaryCachePath(m_shaders[0].m_name, m_shaders[0].m_debugMode);
 
 	m_shaders[1].m_type = ShaderType::FragmentShader;
+	m_shaders[1].m_debugMode = IsShaderDebugMode();
 	m_shaders[1].m_name = Path::NameWithoutExtension(fsPath);
 	m_shaders[1].m_assetPath = fsPath;
-	m_shaders[1].m_binaryPath = GetShaderBinaryCachePath(m_shaders[1].m_name);
+	m_shaders[1].m_binaryPath = GetShaderBinaryCachePath(m_shaders[1].m_name, m_shaders[1].m_debugMode);
 
 	if (Path::Exists(m_shaders[0].m_binaryPath) && Path::Exists(m_shaders[1].m_binaryPath))
 	{
@@ -73,12 +83,11 @@ ShaderResource::ShaderResource(std::string_view vsPath, std::string_view fsPath)
 ShaderResource::ShaderResource(std::string_view path, ShaderProgramType type) :
 	m_programType(type)
 {
-	std::filesystem::path binaryCatchPath = Path::FromeRoot("Engine/Binary");
-
 	m_shaders[0].m_type = ProgramTypeToShaderType(m_programType);
+	m_shaders[0].m_debugMode = IsShaderDebugMode();
 	m_shaders[0].m_name = Path::NameWithExtension(path);
 	m_shaders[0].m_assetPath = path;
-	m_shaders[0].m_binaryPath = GetShaderBinaryCachePath(m_shaders[0].m_name);
+	m_shaders[0].m_binaryPath = GetShaderBinaryCachePath(m_shaders[0].m_name, m_shaders[0].m_debugMode);
 
 	if (Path::Exists(m_shaders[0].m_binaryPath))
 	{

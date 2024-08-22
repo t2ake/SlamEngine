@@ -10,8 +10,9 @@ namespace sl
 struct ShaderInfo
 {
 	ShaderType m_type;
-	std::string m_name; // Shader file name without extension
+	bool m_debugMode;
 
+	std::string m_name; // Shader file name without extension
 	std::string m_assetPath;
 	std::string m_binaryPath;
 
