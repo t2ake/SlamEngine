@@ -14,7 +14,6 @@ namespace
 
 uint32_t UploadShader(const char *pSource, size_t size, ShaderType type)
 {
-	static_assert(std::is_same_v<GLchar, char>);
 	const GLchar *pGLSource = static_cast<const GLchar *>(pSource);
 	const GLint GLsize = (GLint)size;
 
@@ -22,6 +21,7 @@ uint32_t UploadShader(const char *pSource, size_t size, ShaderType type)
 	glShaderSource(shaderHandle, 1, &pGLSource, &GLsize);
 	glCompileShader(shaderHandle);
 
+#if !defined(SL_FINAL)
 	GLint isCompiled = 0;
 	glGetShaderiv(shaderHandle, GL_COMPILE_STATUS, &isCompiled);
 	if (isCompiled == GL_FALSE)
@@ -39,29 +39,31 @@ uint32_t UploadShader(const char *pSource, size_t size, ShaderType type)
 
 		return 0;
 	}
+#endif
 
 	return shaderHandle;
 }
 
-uint32_t UploadProgram(uint32_t vsHandle, uint32_t fsHandle = 0)
+uint32_t UploadProgram(uint32_t VSHandle, std::optional<uint32_t> optFSHandle = std::nullopt)
 {
 	uint32_t programHandle = glCreateProgram();
-	glAttachShader(programHandle, vsHandle);
-	if (fsHandle != 0)
+	glAttachShader(programHandle, VSHandle);
+	if (optFSHandle)
 	{
-		glAttachShader(programHandle, fsHandle);
+		glAttachShader(programHandle, optFSHandle.value());
 	}
 	glLinkProgram(programHandle);
 
 	// Delete shaders.
-	glDetachShader(programHandle, vsHandle);
-	glDeleteShader(vsHandle);
-	if (fsHandle != 0)
+	glDetachShader(programHandle, VSHandle);
+	glDeleteShader(VSHandle);
+	if (optFSHandle)
 	{
-		glDetachShader(programHandle, fsHandle);
-		glDeleteShader(fsHandle);
+		glDetachShader(programHandle, optFSHandle.value());
+		glDeleteShader(optFSHandle.value());
 	}
 
+#if !defined(SL_FINAL)
 	GLint isLinked = 0;
 	glGetProgramiv(programHandle, GL_LINK_STATUS, &isLinked);
 	if (isLinked == GL_FALSE)
@@ -77,6 +79,7 @@ uint32_t UploadProgram(uint32_t vsHandle, uint32_t fsHandle = 0)
 
 		return 0;
 	}
+#endif
 
 	return programHandle;
 }
@@ -85,9 +88,9 @@ uint32_t UploadProgram(uint32_t vsHandle, uint32_t fsHandle = 0)
 
 OpenGLShader::OpenGLShader(std::string_view vsSource, std::string_view fsSource)
 {
-	uint32_t vsHandle = UploadShader(vsSource.data(), vsSource.size(), ShaderType::VertexShader);
-	uint32_t fsHandle = UploadShader(fsSource.data(), fsSource.size(), ShaderType::FragmentShader);
-	m_programHandle = UploadProgram(vsHandle, fsHandle);
+	uint32_t VSHandle = UploadShader(vsSource.data(), vsSource.size(), ShaderType::VertexShader);
+	uint32_t FSHandle = UploadShader(fsSource.data(), fsSource.size(), ShaderType::FragmentShader);
+	m_programHandle = UploadProgram(VSHandle, FSHandle);
 }
 
 OpenGLShader::OpenGLShader(std::string_view shaderSource, ShaderType type)
@@ -188,4 +191,6 @@ void OpenGLShader::UploadUniform(int location, const glm::mat4 &value)
 
 } // namespace sl
 
-static_assert(std::is_same_v<GLint, int>);
+static_assert(std::is_same_v<GLchar, char>);
+static_assert(std::is_same_v<GLint, int32_t>);
+static_assert(std::is_same_v<GLuint, uint32_t>);

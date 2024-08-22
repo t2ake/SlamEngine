@@ -15,7 +15,7 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool des
 {
 	SL_ASSERT(!textures.empty(), "Can not create framebuffer without any attachments!");
 
-	uint32_t minWidth = textures[0]->GetHeight();
+	uint32_t minWidth = textures[0]->GetWidth();
 	uint32_t minHeight = textures[0]->GetHeight();
 	uint32_t colorAttachmentIndex = 0;
 	m_attachments.reserve(textures.size());
@@ -79,7 +79,10 @@ void OpenGLFrameBuffer::Unbind() const
 
 void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 {
-	if (width <= 0 || height <= 0 || width > RenderCore::GetInfo().m_maxFramebufferSize || height > RenderCore::GetInfo().m_maxFramebufferSize)
+#if !defined(SL_FINAL)
+	if (width <= 0 || height <= 0 ||
+		width > RenderCore::GetInfo().m_maxFramebufferSize ||
+		height > RenderCore::GetInfo().m_maxFramebufferSize)
 	{
 		SL_LOG_ERROR("Invalid frame bufferr size!");
 		return;
@@ -89,6 +92,7 @@ void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 	{
 		return;
 	}
+#endif
 
 	for (auto &attachment : m_attachments)
 	{
@@ -100,6 +104,7 @@ void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 
 	m_width = width;
 	m_height = height;
+
 	Create();
 }
 
@@ -134,10 +139,12 @@ uint32_t OpenGLFrameBuffer::GetAttachmentHandle(size_t i) const
 
 void OpenGLFrameBuffer::Create()
 {
+#if !defined(SL_FINAL)
 	if (m_handle)
 	{
 		return;
 	}
+#endif
 
 	glCreateFramebuffers(1, &m_handle);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
@@ -161,10 +168,12 @@ void OpenGLFrameBuffer::Create()
 		glNamedFramebufferDrawBuffers(m_handle, m_colorAttachmentCount, buffers.data());
 	}
 
+#if !defined(SL_FINAL)
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
 		SL_LOG_ERROR("Incomplete frame buffer!");
 	}
+#endif
 }
 
 } // namespace sl

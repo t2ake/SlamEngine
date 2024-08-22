@@ -28,6 +28,7 @@ void OpenGLTexture2D::Clear(const void *pClearData) const
 
 void OpenGLTexture2D::Resize(uint32_t width, uint32_t height, const void *pData)
 {
+#if !defined(SL_FINAL)
 	if (width <= 0 || height <= 0 || width > RenderCore::GetInfo().m_maxFramebufferSize || height > RenderCore::GetInfo().m_maxFramebufferSize)
 	{
 		SL_LOG_ERROR("Invalid texture size!");
@@ -38,12 +39,14 @@ void OpenGLTexture2D::Resize(uint32_t width, uint32_t height, const void *pData)
 	{
 		return;
 	}
+#endif
 
 	glDeleteTextures(1, &m_handle);
 	m_handle = 0;
 
 	m_width = width;
 	m_height = height;
+
 	Create(pData);
 }
 
@@ -54,10 +57,12 @@ void OpenGLTexture2D::Bind(uint32_t slot) const
 
 void OpenGLTexture2D::Create(const void *pData)
 {
+#if !defined(SL_FINAL)
 	if (m_handle)
 	{
 		return;
 	}
+#endif
 
 	glCreateTextures(GL_TEXTURE_2D, 1, &m_handle);
 	glTextureStorage2D(m_handle, 1, GLInternalTextureFormat[(size_t)m_format], m_width, m_height);

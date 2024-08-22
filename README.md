@@ -1,8 +1,13 @@
 # SlamEngine
-
 [![MSBuild](https://github.com/Hinageshi01/SlamEngine/actions/workflows/msbuild.yml/badge.svg?branch=main)](https://github.com/Hinageshi01/SlamEngine/actions/workflows/msbuild.yml)
 
-# Config difference
+# Build
+- Install Cmake(3.15 at least)
+- Install Visual Studio 2022
+- Run `SetupThirdParty.bat`
+- Run `Setup.bat`
+
+# Config diff
 ||Debug|Release|Final|
 |:-|:-:|:-:|:-:|
 |Optimization|Off|On|On|

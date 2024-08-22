@@ -41,12 +41,14 @@ void TextureResource::OnImport()
 		pTextureData = stbi_load_from_memory((stbi_uc *)originalData.data(), (int)originalData.size(), &width, &height, &channels, 0);
 	}
 
+#if !defined(SL_FINAL)
 	if (!pTextureData || width <= 0 || height <= 0 || channels <= 0)
 	{
 		SL_LOG_ERROR("Invalid texture: \"{}\"", m_assetPath.c_str());
 		SetStatus(ResourceStatus::Destroying);
 		return;
 	}
+#endif
 
 	m_width = (uint32_t)width;
 	m_height = (uint32_t)height;

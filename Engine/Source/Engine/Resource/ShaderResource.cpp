@@ -115,6 +115,7 @@ void ShaderResource::OnImport()
 		m_shaders[1].m_source = FileIO::ReadString(m_shaders[1].m_assetPath);
 	}
 
+#if !defined(SL_FINAL)
 	if (m_shaders[0].m_source.empty() ||
 		(m_programType == ShaderProgramType::Standard && m_shaders[1].m_source.empty()))
 	{
@@ -122,6 +123,7 @@ void ShaderResource::OnImport()
 		SetStatus(ResourceStatus::Destroying);
 		return;
 	}
+#endif
 
 	SetStatus(ResourceStatus::Building);
 }
@@ -149,6 +151,7 @@ void ShaderResource::OnBuild()
 		SL_LOG_TRACE("  Done in {} ms", timer.GetDuration());
 	}
 
+#if !defined(SL_FINAL)
 	if (m_shaders[0].m_source.empty() ||
 		(m_programType == ShaderProgramType::Standard && m_shaders[1].m_source.empty()))
 	{
@@ -156,6 +159,7 @@ void ShaderResource::OnBuild()
 		SetStatus(ResourceStatus::Destroying);
 		return;
 	}
+#endif
 
 	SetStatus(ResourceStatus::Uploading);
 }
@@ -173,6 +177,7 @@ void ShaderResource::OnLoad()
 		m_shaders[1].m_source = ShaderCompiler::SpirvToSource(std::move(fragSpirvBinary));
 	}
 
+#if !defined(SL_FINAL)
 	if (m_shaders[0].m_source.empty() ||
 		(m_programType == ShaderProgramType::Standard && m_shaders[1].m_source.empty()))
 	{
@@ -180,6 +185,7 @@ void ShaderResource::OnLoad()
 		SetStatus(ResourceStatus::Destroying);
 		return;
 	}
+#endif
 
 	SetStatus(ResourceStatus::Uploading);
 }
@@ -201,12 +207,14 @@ void ShaderResource::OnUpload()
 		m_pShaderProgram.reset(Shader::Create(m_shaders[0].m_source, m_shaders[0].m_type));
 	}
 
+#if !defined(SL_FINAL)
 	if (!m_pShaderProgram)
 	{
 		SL_LOG_ERROR("Failed to create shader GPU handle!");
 		SetStatus(ResourceStatus::Destroying);
 		return;
 	}
+#endif
 
 	SetStatus(ResourceStatus::Ready);
 }
