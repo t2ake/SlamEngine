@@ -625,29 +625,29 @@ void ImGuiLayer::ShowAssetBrowser()
 	ImGui::Text(crtPath.c_str());
 	ImGui::Separator();
 
-	constexpr ImVec2 ItemSize{ 100.0f, 100.0f };
-	float columnSize = ItemSize.x + ImGui::GetStyle().ItemSpacing.x;
-	uint32_t columnCount = uint32_t(ImGui::GetContentRegionAvail().x / columnSize);
+	float basicItemSize = 100.0f;
+	float itemSpacing = ImGui::GetStyle().ItemSpacing.x;
+	float contentAvail = ImGui::GetContentRegionAvail().x;
 
-	if (columnCount < 1)
+	// To avoid scroll bar flickering.
+	if (ImGui::GetScrollMaxY() < 1.0f)
+	{
+		contentAvail -= ImGui::GetStyle().ScrollbarSize;
+	}
+
+	uint32_t itemCount = uint32_t(contentAvail / (basicItemSize + itemSpacing));
+	float fillingItemSize = contentAvail / (float)itemCount - itemSpacing;
+
+	if (itemCount < 1)
 	{
 		ImGui::End();
 		return;
 	}
-	
-	SL_ASSERT(columnCount > 0);
-	ImGui::Columns(columnCount, "AssetBrowserColums", false);
 
-	uint32_t columnIndex = 0;
+	ImGui::Columns(itemCount, "AssetBrowserColums", false);
+
 	for (const auto &it : std::filesystem::directory_iterator(m_assetBrowserCrtPath))
 	{
-		columnIndex = columnIndex >= columnCount ? 0 : columnIndex;
-		if (columnCount > 1)
-		{
-			// WHY: ImGui::SetColumnWidth just unhappy with displaying only one column.
-			ImGui::SetColumnWidth(columnIndex++, columnSize);
-		}
-
 		std::string fileName = it.path().filename().generic_string();
 		ImGui::PushID(fileName.c_str());
 
@@ -659,8 +659,9 @@ void ImGuiLayer::ShowAssetBrowser()
 		if (pTextureResource->IsReady())
 		{
 			ImGui::ImageButton(fileName.c_str(), (ImTextureID)(uint64_t)pTextureResource->GetTexture()->GetHandle(),
-				ItemSize, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
+				ImVec2{ fillingItemSize, fillingItemSize }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 			
+			// Open the path when double clicking on the folder.
 			if (isDirectory && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			{
 				m_assetBrowserCrtPath = it.path();
