@@ -621,11 +621,44 @@ void ImGuiLayer::ShowAssetBrowser()
 		ImGui::EndDisabled();
 	}
 
+	// Display the current path.
 	ImGui::SameLine();
 	ImGui::Text(crtPath.c_str());
+
+	// Change item size.
+	ImGui::SameLine();
+	static size_t s_itemSizeIndex = 2;
+	constexpr std::array<const char *, 5> ItemIcons =
+	{
+		"Very small", "Small", "Medium", "Large", "Very large",
+	};
+	constexpr std::array<float, 5> ItemSizes =
+	{
+		25.0f, 50.0f, 100.0f, 125.0f, 150.0f,
+	};
+
+	// Align this widget to the right side of the window.
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() +
+		ImGui::GetContentRegionAvail().x -
+		ImGui::CalcTextSize(ItemIcons[s_itemSizeIndex]).x -
+		ImGui::GetStyle().FramePadding.x * 2.0f -
+		25.0f); // 25.0f is the size of the triangle of the combo widget.
+
+	if (ImGui::BeginCombo("##ItemSizeCombo", ItemIcons[s_itemSizeIndex], ImGuiComboFlags_WidthFitPreview))
+	{
+		for (size_t i = 0; i < 5; ++i)
+		{
+			if (ImGui::Selectable(ItemIcons[i], i == s_itemSizeIndex))
+			{
+				s_itemSizeIndex = i;
+			}
+		}
+		ImGui::EndCombo();
+	}
+
 	ImGui::Separator();
 
-	float basicItemSize = 100.0f;
+	float basicItemSize = ItemSizes.at(s_itemSizeIndex);
 	float itemSpacing = ImGui::GetStyle().ItemSpacing.x;
 	float contentAvail = ImGui::GetContentRegionAvail().x;
 
@@ -646,6 +679,7 @@ void ImGuiLayer::ShowAssetBrowser()
 
 	ImGui::Columns(itemCount, "AssetBrowserColums", false);
 
+	// Show assets under current path.
 	for (const auto &it : std::filesystem::directory_iterator(m_assetBrowserCrtPath))
 	{
 		std::string fileName = it.path().filename().generic_string();
@@ -660,7 +694,7 @@ void ImGuiLayer::ShowAssetBrowser()
 		{
 			ImGui::ImageButton(fileName.c_str(), (ImTextureID)(uint64_t)pTextureResource->GetTexture()->GetHandle(),
 				ImVec2{ fillingItemSize, fillingItemSize }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
-			
+
 			// Open the path when double clicking on the folder.
 			if (isDirectory && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			{
@@ -669,7 +703,6 @@ void ImGuiLayer::ShowAssetBrowser()
 
 			ImGui::TextWrapped(fileName.c_str());
 		}
-
 		ImGui::PopID();
 		ImGui::NextColumn();
 	}
