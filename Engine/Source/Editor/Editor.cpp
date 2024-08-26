@@ -6,6 +6,7 @@
 #include "LayerStack/LayerStack.h"
 #include "RenderCore/RenderCore.h"
 #include "Scene/ECSWorld.h"
+#include "Utils/TracyWrapper.h"
 #include "Window/Input.h"
 #include "Window/Window.h"
 
@@ -90,6 +91,8 @@ void Editor::Run()
 		}
 
 		EndFrame();
+
+		FrameMark;
 	}
 }
 

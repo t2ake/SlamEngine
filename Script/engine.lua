@@ -32,6 +32,7 @@ project("Slam")
 		path.join(ThirdPartyPath, "yaml-cpp/include"),
 		path.join(ThirdPartyPath, "shaderc/libshaderc/include"),
 		path.join(ThirdPartyPath, "spirv-cross"),
+		path.join(ThirdPartyPath, "tracy/public"),
 	}
 	
 	-- Files
@@ -52,10 +53,11 @@ project("Slam")
 			path.join(ThirdPartyPath, "yaml-cpp/build/Debug"),
 			path.join(ThirdPartyPath, "shaderc/build/libshaderc/Debug"),
 			path.join(ThirdPartyPath, "spirv-cross/build/Debug"),
+			path.join(ThirdPartyPath, "tracy/build/Debug"),
 		}
 		links
 		{
-			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cppd", "shaderc_combined", "spirv-cross-cored", "spirv-cross-glsld",
+			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cppd", "shaderc_combined", "spirv-cross-cored", "spirv-cross-glsld", "TracyClient",
 		}
 	filter { "configurations:Release or configurations:Final" }
 		libdirs
@@ -68,10 +70,11 @@ project("Slam")
 			path.join(ThirdPartyPath, "yaml-cpp/build/Release"),
 			path.join(ThirdPartyPath, "shaderc/build/libshaderc/Release"),
 			path.join(ThirdPartyPath, "spirv-cross/build/Release"),
+			path.join(ThirdPartyPath, "tracy/build/Release"),
 		}
 		links
 		{
-			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cpp", "shaderc_combined", "spirv-cross-core", "spirv-cross-glsl",
+			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cpp", "shaderc_combined", "spirv-cross-core", "spirv-cross-glsl", "TracyClient",
 		}
 	filter {}
 	

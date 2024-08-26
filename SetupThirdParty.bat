@@ -71,6 +71,14 @@ cmake --build build --target spirv-cross-glsl --config Release
 :: cmake --build build --target spirv-cross-msl --config Debug
 :: cmake --build build --target spirv-cross-msl --config Release
 
+rem tracy
+set "TRACY_PATH=%THIRD_PARTY_PATH%\tracy"
+echo [ tracy ] path: %TRACY_PATH%
+cd %TRACY_PATH%
+
+cmake -B build
+cmake --build build --target TracyClient --config Debug
+cmake --build build --target TracyClient --config Release
 echo.
 
 pause

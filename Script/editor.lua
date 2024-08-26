@@ -28,6 +28,7 @@ project("Editor")
 		path.join(ThirdPartyPath, "imgui"),
 		path.join(ThirdPartyPath, "glm"),
 		path.join(ThirdPartyPath, "entt/src"),
+		path.join(ThirdPartyPath, "tracy/public"),
 	}
 	
 	-- Files
@@ -43,10 +44,11 @@ project("Editor")
 			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
 			path.join(ThirdPartyPath, "build/imgui/bin/Debug"),
 			path.join(ThirdPartyPath, "build/imguizmo/bin/Debug"),
+			path.join(ThirdPartyPath, "tracy/build/Debug"),
 		}
 		links
 		{
-			"Slam", "imgui", "imguizmo",
+			"Slam", "imgui", "imguizmo", "TracyClient",
 		}
 	filter { "configurations:Release or configurations:Final" }
 		libdirs
@@ -54,10 +56,11 @@ project("Editor")
 			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
 			path.join(ThirdPartyPath, "build/imgui/bin/Release"),
 			path.join(ThirdPartyPath, "build/imguizmo/bin/Release"),
+			path.join(ThirdPartyPath, "tracy/build/Release"),
 		}
 		links
 		{
-			"Slam", "imgui", "imguizmo",
+			"Slam", "imgui", "imguizmo", "TracyClient",
 		}
 	filter {}
 	
