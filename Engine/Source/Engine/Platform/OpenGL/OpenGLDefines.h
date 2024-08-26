@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/Defines.h"
-#include "Core/EnumOf.hpp"
+#include "Utils/EnumOf.hpp"
 
 #include <glad/glad.h>
 

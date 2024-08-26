@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core/EnumOf.hpp"
 #include "Scene/ECSWorld.h"
+#include "Utils/EnumOf.hpp"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>

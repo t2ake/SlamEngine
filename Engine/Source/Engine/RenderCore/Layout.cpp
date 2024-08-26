@@ -1,7 +1,7 @@
 #include "Layout.h"
 
-#include "Core/EnumOf.hpp"
 #include "Core/Log.h"
+#include "Utils/EnumOf.hpp"
 
 namespace sl
 {

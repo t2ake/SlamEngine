@@ -1,7 +1,6 @@
 #include "ImGuiLayer.h"
 
 #include "Core//Path.hpp"
-#include "Core/EnumOf.hpp"
 #include "Core/Log.h"
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
@@ -13,6 +12,7 @@
 #include "Resource/Font.h"
 #include "Resource/ResourceManager.h"
 #include "Scene/SceneSerializer.h"
+#include "Utils/EnumOf.hpp"
 #include "Window/Input.h"
 
 #include <glm/gtc/type_ptr.hpp>

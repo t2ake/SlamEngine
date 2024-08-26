@@ -1,9 +1,9 @@
 #include "ShaderCompiler.h"
 
-#include "Core/EnumOf.hpp"
 #include "Core/Path.hpp"
 #include "RenderCore/RenderCore.h"
 #include "Resource/FileIO.hpp"
+#include "Utils/EnumOf.hpp"
 
 #include <shaderc/shaderc.hpp>
 #include <spirv_glsl.hpp>

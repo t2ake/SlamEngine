@@ -1,6 +1,5 @@
 #include "OpenGLVertexArray.h"
 
-#include "Core/EnumOf.hpp"
 #include "Core/Log.h"
 #include "Platform/OpenGL/OpenGLDefines.h"
 
