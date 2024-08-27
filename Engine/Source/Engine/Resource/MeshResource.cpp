@@ -1,6 +1,7 @@
 #include "MeshResource.h"
 
 #include "RenderCore/VertexArray.h"
+#include "Utils/ProfilerCPU.h"
 
 namespace sl
 {
@@ -18,22 +19,30 @@ MeshResource::~MeshResource()
 
 void MeshResource::OnImport()
 {
+	SL_PROFILE;
+
 	// TODO: Import model file.
 	SetStatus(ResourceStatus::Building);
 }
 
 void MeshResource::OnBuild()
 {
+	SL_PROFILE;
+
 	SetStatus(ResourceStatus::Uploading);
 }
 
 void MeshResource::OnLoad()
 {
+	SL_PROFILE;
+
 	SetStatus(ResourceStatus::Uploading);
 }
 
 void MeshResource::OnUpload()
 {
+	SL_PROFILE;
+
 	sl::VertexBuffer *pVertexBuffer = sl::VertexBuffer::Create(m_verticesRowData.data(), m_verticesRowData.size() * sizeof(float));
 	pVertexBuffer->SetLayout(m_layout);
 	sl::IndexBuffer *pIndexBuffer = sl::IndexBuffer::Create(m_indicesowData.data(), m_indicesowData.size() * sizeof(uint32_t));
@@ -56,6 +65,8 @@ void MeshResource::OnReady()
 
 void MeshResource::OnDestroy()
 {
+	SL_PROFILE;
+
 	DestroyCPUData();
 	m_pVertexArray.reset();
 
@@ -64,6 +75,8 @@ void MeshResource::OnDestroy()
 
 void MeshResource::DestroyCPUData()
 {
+	SL_PROFILE;
+
 	m_verticesRowData.clear();
 	std::vector<float>().swap(m_verticesRowData);
 	m_indicesowData.clear();

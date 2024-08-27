@@ -4,6 +4,7 @@
 #include "RenderCore/RenderCore.h"
 #include "Resource/ResourceManager.h"
 #include "Scene/ECSWorld.h"
+#include "Utils/ProfilerCPU.h"
 
 void RendererLayer::OnAttach()
 {
@@ -17,6 +18,8 @@ void RendererLayer::OnDetach()
 
 void RendererLayer::OnEvent(sl::Event &event)
 {
+	SL_PROFILE;
+
 	sl::EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<sl::SceneViewportResizeEvent>(BIND_EVENT_CALLBACK(RendererLayer::OnSceneViewportResize));
 }
@@ -33,6 +36,8 @@ void RendererLayer::OnUpdate(float deltaTime)
 
 void RendererLayer::OnRender()
 {
+	SL_PROFILE;
+
 	sl::RenderCore::GetUniformBuffer(0)->Upload("ub_viewProjection", sl::ECSWorld::GetEditorCameraComponent().GetViewProjection());
 	sl::RenderCore::GetUniformBuffer(0)->Upload("ub_cameraPos",
 		glm::vec4{ sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::TransformComponent>().m_position, 1.0f });
@@ -48,6 +53,8 @@ void RendererLayer::EndFrame()
 
 void RendererLayer::BasePass()
 {
+	SL_PROFILE;
+
 	sl::RenderCore::GetMainFramebuffer()->Bind();
 	sl::RenderCore::ClearColor(0.1f, 0.1f, 0.1f, 1.0);
 	sl::RenderCore::ClearDepth(1.0f);
@@ -88,6 +95,8 @@ void RendererLayer::BasePass()
 
 void RendererLayer::EntityIDPass()
 {
+	SL_PROFILE;
+
 	sl::RenderCore::GetEntityIDFramebuffer()->Bind();
 	constexpr int entityIDClearData = -1;
 	sl::RenderCore::GetEntityIDFramebuffer()->Clear(0, &entityIDClearData);

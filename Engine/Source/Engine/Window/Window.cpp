@@ -7,6 +7,7 @@
 #include "Event/WindowEvent.h"
 #include "RenderCore/RenderContext.h"
 #include "RenderCore/RenderCore.h"
+#include "Utils/ProfilerCPU.h"
 
 #include <GLFW/glfw3.h>
 
@@ -157,6 +158,7 @@ Window::~Window()
 
 void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 {
+	SL_PROFILE;
 	SL_LOG_INFO("Create window \"{}\" ({}, {})", title, width, height);
 
 // Init GLFW
@@ -194,6 +196,8 @@ void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 
 void Window::Terminate()
 {
+	SL_PROFILE;
+
 	glfwDestroyWindow(static_cast<GLFWwindow *>(m_pNativeWindow));
 	glfwTerminate();
 }
@@ -205,6 +209,8 @@ void Window::BegineFrame()
 
 void Window::EndFrame()
 {
+	SL_PROFILE;
+
 	m_pRenderContext->MakeCurrent();
 	m_pRenderContext->SwapBuffers();
 	glfwPollEvents();

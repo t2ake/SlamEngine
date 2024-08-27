@@ -13,6 +13,7 @@
 #include "Resource/ResourceManager.h"
 #include "Scene/SceneSerializer.h"
 #include "Utils/EnumOf.hpp"
+#include "Utils/ProfilerCPU.h"
 #include "Window/Input.h"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -93,6 +94,8 @@ glm::vec3 RotationModAndRepeat(const glm::vec3 &v)
 
 ImGuiLayer::ImGuiLayer()
 {
+	SL_PROFILE;
+
 	m_dockSpaceFlag |= ImGuiDockNodeFlags_NoUndocking;
 	m_selectedEntity = sl::ECSWorld::GetEditorCameraEntity();
 	m_assetBrowserCrtPath = sl::Path::AssetPath;
@@ -125,6 +128,8 @@ void ImGuiLayer::OnDetach()
 
 void ImGuiLayer::OnEvent(sl::Event &event)
 {
+	SL_PROFILE;
+
 	sl::EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<sl::KeyPressEvent>(BIND_EVENT_CALLBACK(ImGuiLayer::OnKeyPressed));
 	dispatcher.Dispatch<sl::MouseButtonPressEvent>(BIND_EVENT_CALLBACK(ImGuiLayer::OnMouseButtonPress));
@@ -137,6 +142,8 @@ void ImGuiLayer::BeginFrame()
 
 void ImGuiLayer::OnUpdate(float deltaTime)
 {
+	SL_PROFILE;
+
 	sl::ImGuiContext::NewFrame();
 
 	ShowDebugPanel();
@@ -165,6 +172,8 @@ void ImGuiLayer::EndFrame()
 
 void ImGuiLayer::ShowDebugPanel()
 {
+	SL_PROFILE;
+
 	if (m_debugImGuiDemo)
 	{
 		ImGui::ShowDemoWindow(&m_debugImGuiDemo);
@@ -185,6 +194,8 @@ void ImGuiLayer::ShowDebugPanel()
 
 void ImGuiLayer::ShowToolOverlay()
 {
+	SL_PROFILE;
+
 	// Display on the upper left corner.
 	constexpr float ToolOverlayOffset = 10.0f;
 	ImGui::SetNextWindowPos(ImVec2{
@@ -229,6 +240,8 @@ void ImGuiLayer::ShowToolOverlay()
 
 void ImGuiLayer::ShowMenuBar()
 {
+	SL_PROFILE;
+
 	ImGui::BeginMainMenuBar();
 
 	if (ImGui::BeginMenu("File"))
@@ -281,6 +294,8 @@ void ImGuiLayer::ShowMenuBar()
 
 void ImGuiLayer::ShowInfo(float deltaTime)
 {
+	SL_PROFILE;
+
 	ImGui::Begin("Info");
 	RightClickFocus();
 
@@ -345,6 +360,8 @@ void ImGuiLayer::ShowInfo(float deltaTime)
 
 void ImGuiLayer::ShowLog()
 {
+	SL_PROFILE;
+
 	// 0011 1111, which means not filtering anything.
 	constexpr uint8_t FullLevelFilter = 0x3f;
 	static uint8_t s_levelFilter = FullLevelFilter;
@@ -518,6 +535,8 @@ void ImGuiLayer::ShowLog()
 
 void ImGuiLayer::ShowEntityList()
 {
+	SL_PROFILE;
+
 	ImGui::Begin("Entity List");
 	RightClickFocus();
 
@@ -603,6 +622,8 @@ void ImGuiLayer::ShowEntityList()
 
 void ImGuiLayer::ShowAssetBrowser()
 {
+	SL_PROFILE;
+
 	ImGui::Begin("Asset Browser");
 
 	// Disable the back button if the current path reaches the outermost path.
@@ -830,6 +851,8 @@ void ImGuiLayer::AddComponent(const char *label)
 
 void ImGuiLayer::ShowDetails()
 {
+	SL_PROFILE;
+
 	ImGui::Begin("Details");
 	RightClickFocus();
 
@@ -1099,6 +1122,8 @@ void ImGuiLayer::ShowImGuizmoTransform()
 
 void ImGuiLayer::ShowSceneViewport()
 {
+	SL_PROFILE;
+
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
 	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 	ImGui::PopStyleVar();

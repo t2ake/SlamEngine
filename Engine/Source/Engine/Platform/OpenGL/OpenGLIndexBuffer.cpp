@@ -1,12 +1,14 @@
 #include "OpenGLIndexBuffer.h"
 
-#include <glad/glad.h>
+#include "Utils/ProfilerGPU.h"
 
 namespace sl
 {
 
 OpenGLIndexBuffer::OpenGLIndexBuffer(const uint32_t *pIndices, size_t size)
 {
+	SL_PROFILE_GPU("glBufferData(IB)");
+
 	m_count = uint32_t(size / sizeof(uint32_t));
 
 	glCreateBuffers(1, &m_handle);

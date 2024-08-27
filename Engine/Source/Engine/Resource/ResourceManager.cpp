@@ -2,6 +2,7 @@
 
 #include "Core/Core.h"
 #include "Core/Log.h"
+#include "Utils/ProfilerCPU.h"
 
 #include <nameof/nameof.hpp>
 
@@ -10,6 +11,8 @@ namespace sl
 
 void ResourceManager::Update()
 {
+	SL_PROFILE;
+
 	for (auto& [_, pResource] : m_pShaderResources)
 	{
 		pResource->Update();

@@ -4,6 +4,7 @@
 #include "RenderCore/RenderCore.h"
 #include "Resource/FileIO.hpp"
 #include "Utils/EnumOf.hpp"
+#include "Utils/ProfilerCPU.h"
 
 #include <shaderc/shaderc.hpp>
 #include <spirv_glsl.hpp>
@@ -82,6 +83,8 @@ private:
 
 std::vector<uint32_t> ShaderCompiler::SourceToSpirv(const ShaderInfo &info)
 {
+	SL_PROFILE;
+
 	const char *name = info.m_name.c_str();
 	shaderc_shader_kind shaderKind = ShaderTypeToShaderKind[(size_t)info.m_type];
 	std::string preprocessedShaderSource;
@@ -149,6 +152,8 @@ std::vector<uint32_t> ShaderCompiler::SourceToSpirv(const ShaderInfo &info)
 
 std::string ShaderCompiler::SpirvToSource(std::vector<uint32_t> spirv)
 {
+	SL_PROFILE;
+
 	spirv_cross::CompilerGLSL::Options options;
 	options.version = 450;
 
@@ -160,6 +165,8 @@ std::string ShaderCompiler::SpirvToSource(std::vector<uint32_t> spirv)
 
 void ShaderCompiler::ReflectSpirv(const std::vector<uint32_t> &spirv)
 {
+	SL_PROFILE;
+
 	spirv_cross::CompilerGLSL glsl(spirv);
 	spirv_cross::ShaderResources resources = glsl.get_shader_resources();
 }

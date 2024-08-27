@@ -2,6 +2,7 @@
 
 #include "Core/Path.hpp"
 #include "Log.h"
+#include "Utils/ProfilerCPU.h"
 
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/callback_sink.h>
@@ -12,13 +13,20 @@
 namespace sl
 {
 
+namespace
+{
+
 constexpr std::array<LogLevel, 6> SpdLevelToSLLevel =
 {
 	LogLevel::Trace, LogLevel::Debug, LogLevel::Info, LogLevel::Warn, LogLevel::Error, LogLevel::Critical,
 };
 
+}
+
 void Log::Init()
 {
+	SL_PROFILE;
+
 	// Output to console.
 	auto pConsoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 	pConsoleSink->set_pattern("%^[%T] %n: %v%$");

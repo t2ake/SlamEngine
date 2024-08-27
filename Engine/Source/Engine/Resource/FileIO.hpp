@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Log.h"
+#include "Utils/ProfilerCPU.h"
 
 #include <fstream>
 #include <string>
@@ -22,6 +23,8 @@ public:
 	template<class T=std::byte>
 	static std::vector<T> ReadBinary(std::string_view filePath)
 	{
+		SL_PROFILE;
+
 		std::vector<T> fileData;
 
 		std::ifstream in(filePath.data(), std::ios::in | std::ios::binary);
@@ -45,6 +48,8 @@ public:
 
 	static std::string ReadString(std::string_view filePath)
 	{
+		SL_PROFILE;
+
 		std::string fileData;
 
 		std::ifstream in(filePath.data(), std::ios::in | std::ios::binary);
@@ -66,6 +71,7 @@ public:
 
 	static void WriteBinary(std::string_view path, char* pData, size_t size)
 	{
+		SL_PROFILE;
 		SL_ASSERT(pData && size > 0);
 
 		std::ofstream out(path.data(), std::ios::out | std::ios::binary | std::ios::trunc);

@@ -4,6 +4,7 @@
 #include "Event/MouseEvent.h"
 #include "Event/SceneViewportEvent.h"
 #include "Scene/ECSWorld.h"
+#include "Utils/ProfilerCPU.h"
 #include "Window/Input.h"
 #include "Window/Window.h"
 
@@ -22,6 +23,8 @@ void CameraControllerLayer::OnDetach()
 
 void CameraControllerLayer::OnEvent(sl::Event &event)
 {
+	SL_PROFILE;
+
 	sl::EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<sl::MouseScrollEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnMouseScroll));
 	dispatcher.Dispatch<sl::SceneViewportResizeEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnSceneViewportResize));
@@ -36,6 +39,8 @@ void CameraControllerLayer::BeginFrame()
 
 void CameraControllerLayer::OnUpdate(float deltaTime)
 {
+	SL_PROFILE;
+
 	const auto &mode = sl::ECSWorld::GetEditorCameraComponent().m_controllerMode;
 
 	if (mode == sl::CameraControllerMode::None)

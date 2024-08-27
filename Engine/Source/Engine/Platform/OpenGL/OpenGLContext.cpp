@@ -1,6 +1,7 @@
 #include "OpenGLContext.h"
 
 #include "Core/Log.h"
+#include "Utils/ProfilerGPU.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -19,6 +20,8 @@ OpenGLContext::OpenGLContext(void *pWindow) : m_pWindow(pWindow)
 	SL_LOG_INFO("  Vendor: {}", (const char *)glGetString(GL_VENDOR));
 	SL_LOG_INFO("  Renderer: {}", (const char *)glGetString(GL_RENDERER));
 	SL_LOG_INFO("  Version: {}", (const char *)glGetString(GL_VERSION));
+
+	SL_PROFILE_GPU_CONTEXT;
 }
 
 void OpenGLContext::MakeCurrent()
@@ -29,6 +32,8 @@ void OpenGLContext::MakeCurrent()
 void OpenGLContext::SwapBuffers()
 {
 	glfwSwapBuffers(static_cast<GLFWwindow *>(m_pWindow));
+
+	SL_PROFILE_GPU_COLLECT;
 }
 
 } // namespace sl

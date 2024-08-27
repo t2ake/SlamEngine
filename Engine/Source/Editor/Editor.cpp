@@ -6,7 +6,7 @@
 #include "LayerStack/LayerStack.h"
 #include "RenderCore/RenderCore.h"
 #include "Scene/ECSWorld.h"
-#include "Utils/TracyWrapper.h"
+#include "Utils/ProfilerCPU.h"
 #include "Window/Input.h"
 #include "Window/Window.h"
 
@@ -18,6 +18,8 @@
 
 Editor::Editor(EditorInitor initor)
 {
+	SL_PROFILE;
+
 	sl::Log::Init();
 	
 	sl::RenderCore::SetBackend(initor.m_backend);
@@ -74,12 +76,16 @@ Editor::Editor(EditorInitor initor)
 
 Editor::~Editor()
 {
+	SL_PROFILE;
+
 	sl::ImGuiContext::Shutdown();
 	sl::Window::GetInstance().Terminate();
 }
 
 void Editor::Run()
 {
+	SL_PROFILE;
+
 	while (m_isRunning)
 	{
 		BegineFrame();
@@ -92,12 +98,14 @@ void Editor::Run()
 
 		EndFrame();
 
-		FrameMark;
+		SL_PROFILE_FRAME;
 	}
 }
 
 void Editor::BegineFrame()
 {
+	SL_PROFILE;
+
 	m_clock.Tick();
 
 	m_pLayerStack->BeginFrame();
@@ -105,23 +113,30 @@ void Editor::BegineFrame()
 
 void Editor::Update()
 {
+	SL_PROFILE;
+	
 	m_pLayerStack->Update(m_clock.GetDeltatIme());
 }
 
 void Editor::Render()
 {
+	SL_PROFILE;
+	
 	m_pLayerStack->Render();
 }
 
 void Editor::EndFrame()
 {
+	SL_PROFILE;
+	
 	m_pLayerStack->EndFrame();
-
 	sl::Window::GetInstance().EndFrame();
 }
 
 void Editor::OnEvent(sl::Event &event)
 {
+	SL_PROFILE;
+	
 	sl::EventDispatcher dispatcher{ event };
 	dispatcher.Dispatch<sl::WindowCloseEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowClose));
 	dispatcher.Dispatch<sl::WindowResizeEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowResize));

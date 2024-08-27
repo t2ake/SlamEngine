@@ -1,8 +1,7 @@
 #include "OpenGLRenderAPI.h"
 
 #include "Platform/OpenGL/OpenGLDefines.h"
-
-#include <glad/glad.h>
+#include "Utils/ProfilerGPU.h"
 
 namespace sl
 {
@@ -52,16 +51,22 @@ void OpenGLRenderAPI::SetClearStencil(int stencil)
 
 void OpenGLRenderAPI::ClearColor()
 {
+	SL_PROFILE_GPU("glClear(Color)");
+
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void OpenGLRenderAPI::ClearDepth()
 {
+	SL_PROFILE_GPU("glClear(Depth)");
+
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void OpenGLRenderAPI::ClearStencil()
 {
+	SL_PROFILE_GPU("glClear(Stencil)");
+
 	glClear(GL_STENCIL_BUFFER_BIT);
 }
 
@@ -142,6 +147,8 @@ void OpenGLRenderAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32
 
 void OpenGLRenderAPI::DrawIndexed(uint32_t count)
 {
+	SL_PROFILE_GPU("glDrawElements");
+
 	glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 }
 

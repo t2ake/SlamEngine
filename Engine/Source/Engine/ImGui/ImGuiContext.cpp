@@ -3,6 +3,7 @@
 #include "Core/Log.h"
 #include "Core/Path.hpp"
 #include "Resource/Font.h"
+#include "Utils/ProfilerCPU.h"
 #include "Window/Window.h"
 
 #include "imgui_impl_glfw.h"
@@ -16,6 +17,8 @@ namespace sl
 
 void ImGuiContext::Init(void *pNativeWindow)
 {
+	SL_PROFILE;
+
 	// 1. Init imgui
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -55,6 +58,8 @@ void ImGuiContext::Init(void *pNativeWindow)
 
 void ImGuiContext::Shutdown()
 {
+	SL_PROFILE;
+
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImPlot::DestroyContext();
@@ -63,6 +68,8 @@ void ImGuiContext::Shutdown()
 
 void ImGuiContext::NewFrame()
 {
+	SL_PROFILE;
+
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
@@ -71,6 +78,8 @@ void ImGuiContext::NewFrame()
 
 void ImGuiContext::Submit()
 {
+	SL_PROFILE;
+
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

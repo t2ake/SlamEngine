@@ -6,6 +6,7 @@
 #include "RenderCore/Shader.h"
 #include "Resource/FileIO.hpp"
 #include "Resource/ShaderCompiler.h"
+#include "Utils/ProfilerCPU.h"
 
 namespace sl
 {
@@ -106,6 +107,8 @@ ShaderResource::~ShaderResource()
 
 void ShaderResource::OnImport()
 {
+	SL_PROFILE;
+
 	SL_LOG_TRACE("Loading shader: \"{}\"", m_shaders[0].m_assetPath.c_str());
 	m_shaders[0].m_source = FileIO::ReadString(m_shaders[0].m_assetPath);
 
@@ -130,6 +133,8 @@ void ShaderResource::OnImport()
 
 void ShaderResource::OnBuild()
 {
+	SL_PROFILE;
+
 	SL_LOG_TRACE("Compiling SPIR-V: \"{}\"", m_shaders[0].m_name.c_str());
 	
 	Timer timer;
@@ -166,6 +171,8 @@ void ShaderResource::OnBuild()
 
 void ShaderResource::OnLoad()
 {
+	SL_PROFILE;
+
 	SL_LOG_TRACE("Loading SPIR-V cache: \"{}\"", m_shaders[0].m_binaryPath.c_str());
 	auto spirvBinary = FileIO::ReadBinary<uint32_t>(m_shaders[0].m_binaryPath);
 	m_shaders[0].m_source = ShaderCompiler::SpirvToSource(std::move(spirvBinary));
@@ -192,6 +199,8 @@ void ShaderResource::OnLoad()
 
 void ShaderResource::OnUpload()
 {
+	SL_PROFILE;
+
 	// We assume that a shader is named by its shader program name plus the stage suffix.
 	// - Shader Program: XXX
 	// - Vertex Shader: XXX_vert.glsl
@@ -230,6 +239,8 @@ void ShaderResource::OnReady()
 
 void ShaderResource::OnDestroy()
 {
+	SL_PROFILE;
+
 	DestroyCPUData();
 	m_pShaderProgram.reset();
 
@@ -238,6 +249,8 @@ void ShaderResource::OnDestroy()
 
 void ShaderResource::DestroyCPUData()
 {
+	SL_PROFILE;
+
 	m_shaders[0].m_source.clear();
 	std::string().swap(m_shaders[0].m_source);
 

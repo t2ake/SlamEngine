@@ -4,8 +4,7 @@
 #include "Platform/OpenGL/OpenGLDefines.h"
 #include "RenderCore/RenderCore.h"
 #include "RenderCore/Texture.h"
-
-#include <glad/glad.h>
+#include "Utils/ProfilerGPU.h"
 
 namespace sl
 {
@@ -117,6 +116,8 @@ void OpenGLFrameBuffer::Clear(uint32_t attachmentIndex, const void *pClearData) 
 
 int OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex, uint32_t x, uint32_t y)
 {
+	SL_PROFILE_GPU("glReadPixels");
+
 	SL_ASSERT(attachmentIndex < m_colorAttachmentCount, "Attachment index out of range!");
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_handle);

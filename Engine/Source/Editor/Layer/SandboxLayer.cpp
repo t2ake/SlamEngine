@@ -4,11 +4,14 @@
 #include "RenderCore/RenderCore.h"
 #include "Resource/ResourceManager.h"
 #include "Scene/ECSWorld.h"
+#include "Utils/ProfilerCPU.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
 SandboxLayer::SandboxLayer()
 {
+	SL_PROFILE;
+
 	auto &transform = sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::TransformComponent>();
 	transform.m_position = glm::vec3{ 0.0f, 0.0f, 5.0f };
 	transform.m_rotation = glm::vec3{ 0.0f, -90.0f, 0.0f };

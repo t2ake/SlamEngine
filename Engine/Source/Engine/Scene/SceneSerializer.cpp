@@ -5,6 +5,7 @@
 #include "Resource/FileIO.hpp"
 #include "Scene/ECSWorld.h"
 #include "Scene/YAMLConvert.hpp"
+#include "Utils/ProfilerCPU.h"
 
 #include <yaml-cpp/yaml.h>
 
@@ -29,6 +30,8 @@ std::string GetSceneFilePath(std::string_view name)
 
 void SceneSerializer::SerializeYAML(std::string_view sceneName)
 {
+	SL_PROFILE;
+
 	std::string filePath = GetSceneFilePath(sceneName);
 	SL_LOG_INFO("Serialize scene data file: \"{}\"", filePath);
 
@@ -136,11 +139,13 @@ void SceneSerializer::SerializeYAML(std::string_view sceneName)
 
 void SceneSerializer::SerializeBinary(std::string_view sceneName)
 {
-
+	SL_PROFILE;
 }
 
 bool SceneSerializer::DeserializeYAML(std::string_view sceneName)
 {
+	SL_PROFILE;
+
 	std::string filePath = GetSceneFilePath(sceneName);
 	SL_LOG_INFO("Deserialize scene data file: \"{}\"", filePath);
 
@@ -300,6 +305,8 @@ bool SceneSerializer::DeserializeYAML(std::string_view sceneName)
 
 bool SceneSerializer::DeserializeBinary(std::string_view sceneName)
 {
+	SL_PROFILE;
+
 	return false;
 }
 

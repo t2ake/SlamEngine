@@ -4,6 +4,7 @@
 #include "Core/Path.hpp"
 #include "RenderCore/Texture.h"
 #include "Resource/FileIO.hpp"
+#include "Utils/ProfilerCPU.h"
 
 #include <stb/stb_image.h>
 
@@ -23,6 +24,8 @@ TextureResource::~TextureResource()
 
 void TextureResource::OnImport()
 {
+	SL_PROFILE;
+
 	SL_LOG_TRACE("Loading image: \"{}\"", m_assetPath.c_str());
 	const auto originalData = FileIO::ReadBinary(m_assetPath);
 
@@ -65,16 +68,22 @@ void TextureResource::OnImport()
 
 void TextureResource::OnBuild()
 {
+	SL_PROFILE;
+
 	SetStatus(ResourceStatus::Uploading);
 }
 
 void TextureResource::OnLoad()
 {
+	SL_PROFILE;
+
 	SetStatus(ResourceStatus::Uploading);
 }
 
 void TextureResource::OnUpload()
 {
+	SL_PROFILE;
+
 	sl::TextureFormat format = sl::TextureFormat::RGB8;
 	if (m_channels == 3 && !m_isHDR)
 	{
@@ -115,6 +124,8 @@ void TextureResource::OnReady()
 
 void TextureResource::OnDestroy()
 {
+	SL_PROFILE;
+
 	DestroyCPUData();
 	m_pTexture.reset();
 	
@@ -123,6 +134,8 @@ void TextureResource::OnDestroy()
 
 void TextureResource::DestroyCPUData()
 {
+	SL_PROFILE;
+
 	m_rowData.clear();
 	std::vector<std::byte>().swap(m_rowData);
 }
