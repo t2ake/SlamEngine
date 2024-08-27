@@ -1,14 +1,14 @@
 # Visual Studio
-.vs
+/.vs
+/Project
 *.sln
 *.vcxproj*
 
-# The folder name that most people use when saving build files
+# CMake
 build
 
-# Compiled engine binary asset files
+# Compiled binary files
 /Engine/Binary
+
 # Log
 /Engine/Log
-# The working directory
-/Engine/VSProject

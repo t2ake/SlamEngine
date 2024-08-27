@@ -16,12 +16,12 @@ namespace
 
 constexpr const char *BackendToDefinition[nameof::enum_count<GraphicsBackend>()] =
 {
-	"SL_NONE",	    // GraphicsBackend::None
-	"SL_OPENGL",    // GraphicsBackend::OpenGL,
-	"SL_VULKAN",    // GraphicsBackend::Vulkan,
-	"SL_DIRECTX",   // GraphicsBackend::DirectX11,
-	"SL_DIRECTX",   // GraphicsBackend::DirectX12,
-	"SL_METAL",	    // GraphicsBackend::Metal,
+	"SL_NONE",	  // GraphicsBackend::None
+	"SL_OPENGL",  // GraphicsBackend::OpenGL
+	"SL_VULKAN",  // GraphicsBackend::Vulkan
+	"SL_DIRECTX", // GraphicsBackend::DirectX11
+	"SL_DIRECTX", // GraphicsBackend::DirectX12
+	"SL_METAL",	  // GraphicsBackend::Metal
 };
 
 constexpr shaderc_shader_kind ShaderTypeToShaderKind[nameof::enum_count<ShaderType>()] =

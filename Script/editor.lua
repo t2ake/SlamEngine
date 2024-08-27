@@ -7,7 +7,7 @@ project("Editor")
 	dependson { "Slam" }
 	
 	-- Project, binary and intermediate file paths
-	location(path.join(RootPath, "Engine/VSProject"))
+	location(path.join(RootPath, "Project"))
 	targetdir(path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"))
 	objdir(path.join(IntermediatePath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"))
 	
