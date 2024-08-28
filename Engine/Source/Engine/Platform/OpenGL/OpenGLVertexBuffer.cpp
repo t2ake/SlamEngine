@@ -1,14 +1,12 @@
 #include "OpenGLVertexBuffer.h"
 
-#include "Utils/ProfilerGPU.h"
+#include <glad/glad.h>
 
 namespace sl
 {
 
 OpenGLVertexBuffer::OpenGLVertexBuffer(const float *pVertices, size_t size)
 {
-	SL_PROFILE_GPU("glBufferData(VB)");
-
 	glCreateBuffers(1, &m_handle);
 	glBindBuffer(GL_ARRAY_BUFFER, m_handle);
 	glBufferData(GL_ARRAY_BUFFER, size, pVertices, GL_STATIC_DRAW);

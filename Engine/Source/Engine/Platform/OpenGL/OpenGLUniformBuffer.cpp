@@ -1,8 +1,8 @@
 #include "OpenGLUniformBuffer.h"
 
 #include "Core/Log.h"
-#include "Utils/ProfilerGPU.h"
 
+#include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace sl
@@ -37,8 +37,6 @@ void OpenGLUniformBuffer::Unbind() const
 
 void OpenGLUniformBuffer::Upload(std::string_view name, const glm::vec4 &value) const
 {
-	SL_PROFILE_GPU("glBufferSubData");
-
 	SL_ASSERT(m_layout.GetSize(name) == sizeof(value));
 
 	glBindBuffer(GL_UNIFORM_BUFFER, m_handle);
@@ -48,8 +46,6 @@ void OpenGLUniformBuffer::Upload(std::string_view name, const glm::vec4 &value) 
 
 void OpenGLUniformBuffer::Upload(std::string_view name, const glm::mat4 &value) const
 {
-	SL_PROFILE_GPU("glBufferSubData");
-
 	SL_ASSERT(m_layout.GetSize(name) == sizeof(value));
 
 	glBindBuffer(GL_UNIFORM_BUFFER, m_handle);

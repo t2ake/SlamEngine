@@ -107,28 +107,27 @@ void Editor::BegineFrame()
 	SL_PROFILE;
 
 	m_clock.Tick();
-
 	m_pLayerStack->BeginFrame();
 }
 
 void Editor::Update()
 {
 	SL_PROFILE;
-	
+
 	m_pLayerStack->Update(m_clock.GetDeltatIme());
 }
 
 void Editor::Render()
 {
 	SL_PROFILE;
-	
+
 	m_pLayerStack->Render();
 }
 
 void Editor::EndFrame()
 {
 	SL_PROFILE;
-	
+
 	m_pLayerStack->EndFrame();
 	sl::Window::GetInstance().EndFrame();
 }

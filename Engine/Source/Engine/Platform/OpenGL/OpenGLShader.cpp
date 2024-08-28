@@ -2,7 +2,6 @@
 
 #include "Core/Log.h"
 #include "Platform/OpenGL/OpenGLDefines.h"
-#include "Utils/ProfilerGPU.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -116,106 +115,76 @@ void OpenGLShader::Unbind() const
 
 void OpenGLShader::UploadUniform(int location, int value)
 {
-	SL_PROFILE_GPU("glUniform1i");
-
 	glUniform1i(location, value);
 }
 
 void OpenGLShader::UploadUniform(int location, const glm::ivec2 &value)
 {
-	SL_PROFILE_GPU("glUniform2i");
-
 	glUniform2i(location, value.x, value.y);
 }
 
 void OpenGLShader::UploadUniform(int location, const glm::ivec3 &value)
 {
-	SL_PROFILE_GPU("glUniform3i");
-
 	glUniform3i(location, value.x, value.y, value.z);
 }
 
 void OpenGLShader::UploadUniform(int location, const glm::ivec4 &value)
 {
-	SL_PROFILE_GPU("glUniform4i");
-
 	glUniform4i(location, value.x, value.y, value.z, value.w);
 }
 
 void OpenGLShader::UploadUniform(int location, unsigned int value)
 {
-	SL_PROFILE_GPU("glUniform1ui");
-
 	glUniform1ui(location, value);
 }
 
 void OpenGLShader::UploadUniform(int location, const glm::uvec2 &value)
 {
-	SL_PROFILE_GPU("glUniform2ui");
-
 	glUniform2ui(location, value.x, value.y);
 }
 
 void OpenGLShader::UploadUniform(int location, const glm::uvec3 &value)
 {
-	SL_PROFILE_GPU("glUniform3ui");
-
 	glUniform3ui(location, value.x, value.y, value.z);
 }
 
 void OpenGLShader::UploadUniform(int location, const glm::uvec4 &value)
 {
-	SL_PROFILE_GPU("glUniform4ui");
-
 	glUniform4ui(location, value.x, value.y, value.z, value.w);
 }
 
 void OpenGLShader::UploadUniform(int location, float value)
 {
-	SL_PROFILE_GPU("glUniform1f");
-
 	glUniform1f(location, value);
 }
 
 void OpenGLShader::UploadUniform(int location, const glm::vec2 &value)
 {
-	SL_PROFILE_GPU("glUniform2f");
-
 	glUniform2f(location, value.x, value.y);
 }
 
 void OpenGLShader::UploadUniform(int location, const glm::vec3 &value)
 {
-	SL_PROFILE_GPU("glUniform3f");
-
 	glUniform3f(location, value.x, value.y, value.z);
 }
 
 void OpenGLShader::UploadUniform(int location, const glm::vec4 &value)
 {
-	SL_PROFILE_GPU("glUniform4f");
-
 	glUniform4f(location, value.x, value.y, value.z, value.w);
 }
 
 void OpenGLShader::UploadUniform(int location, const glm::mat2 &value)
 {
-	SL_PROFILE_GPU("glUniformMatrix2fv");
-
 	glUniformMatrix2fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void OpenGLShader::UploadUniform(int location, const glm::mat3 &value)
 {
-	SL_PROFILE_GPU("glUniformMatrix3fv");
-
 	glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void OpenGLShader::UploadUniform(int location, const glm::mat4 &value)
 {
-	SL_PROFILE_GPU("glUniformMatrix4fv");
-
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 

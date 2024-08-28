@@ -4,7 +4,7 @@
 #include "Platform/OpenGL/OpenGLDefines.h"
 #include "RenderCore/RenderCore.h"
 #include "RenderCore/Texture.h"
-#include "Utils/ProfilerGPU.h"
+#include "Utils/ProfilerCPU.h"
 
 namespace sl
 {
@@ -12,6 +12,7 @@ namespace sl
 OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool destroy) :
 	m_destroyTextureWithFramebuffer(destroy)
 {
+	SL_PROFILE;
 	SL_ASSERT(!textures.empty(), "Can not create framebuffer without any attachments!");
 
 	uint32_t minWidth = textures[0]->GetWidth();
@@ -54,6 +55,8 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool des
 
 OpenGLFrameBuffer::~OpenGLFrameBuffer()
 {
+	SL_PROFILE;
+
 	if (m_destroyTextureWithFramebuffer)
 	{
 		for (auto &attachment : m_attachments)
@@ -78,6 +81,8 @@ void OpenGLFrameBuffer::Unbind() const
 
 void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 {
+	SL_PROFILE;
+
 #if !defined(SL_FINAL)
 	if (width <= 0 || height <= 0 ||
 		width > RenderCore::GetInfo().m_maxFramebufferSize ||
@@ -109,6 +114,7 @@ void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 
 void OpenGLFrameBuffer::Clear(uint32_t attachmentIndex, const void *pClearData) const
 {
+	SL_PROFILE;
 	SL_ASSERT(attachmentIndex < m_attachments.size(), "Attachment index out of range!");
 
 	m_attachments.at(attachmentIndex).m_pTexture->Clear(pClearData);
@@ -116,8 +122,7 @@ void OpenGLFrameBuffer::Clear(uint32_t attachmentIndex, const void *pClearData) 
 
 int OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex, uint32_t x, uint32_t y)
 {
-	SL_PROFILE_GPU("glReadPixels");
-
+	SL_PROFILE;
 	SL_ASSERT(attachmentIndex < m_colorAttachmentCount, "Attachment index out of range!");
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
@@ -140,6 +145,8 @@ uint32_t OpenGLFrameBuffer::GetAttachmentHandle(size_t i) const
 
 void OpenGLFrameBuffer::Create()
 {
+	SL_PROFILE;
+
 #if !defined(SL_FINAL)
 	if (m_handle)
 	{

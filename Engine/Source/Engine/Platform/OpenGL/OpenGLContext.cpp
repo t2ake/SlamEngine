@@ -1,7 +1,7 @@
 #include "OpenGLContext.h"
 
 #include "Core/Log.h"
-#include "Utils/ProfilerGPU.h"
+#include "Utils/ProfilerCPU.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -11,6 +11,8 @@ namespace sl
 
 OpenGLContext::OpenGLContext(void *pWindow) : m_pWindow(pWindow)
 {
+	SL_PROFILE;
+
 	glfwMakeContextCurrent(static_cast<GLFWwindow *>(m_pWindow));
 
 	bool success = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -20,20 +22,20 @@ OpenGLContext::OpenGLContext(void *pWindow) : m_pWindow(pWindow)
 	SL_LOG_INFO("  Vendor: {}", (const char *)glGetString(GL_VENDOR));
 	SL_LOG_INFO("  Renderer: {}", (const char *)glGetString(GL_RENDERER));
 	SL_LOG_INFO("  Version: {}", (const char *)glGetString(GL_VERSION));
-
-	SL_PROFILE_GPU_CONTEXT;
 }
 
 void OpenGLContext::MakeCurrent()
 {
+	SL_PROFILE;
+
 	glfwMakeContextCurrent(static_cast<GLFWwindow *>(m_pWindow));
 }
 
 void OpenGLContext::SwapBuffers()
 {
-	glfwSwapBuffers(static_cast<GLFWwindow *>(m_pWindow));
+	SL_PROFILE;
 
-	SL_PROFILE_GPU_COLLECT;
+	glfwSwapBuffers(static_cast<GLFWwindow *>(m_pWindow));
 }
 
 } // namespace sl

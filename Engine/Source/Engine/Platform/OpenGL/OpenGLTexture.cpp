@@ -3,7 +3,6 @@
 #include "Core/Log.h"
 #include "Platform/OpenGL/OpenGLDefines.h"
 #include "RenderCore/RenderCore.h"
-#include "Utils/ProfilerGPU.h"
 
 #include <stb/stb_image.h>
 
@@ -68,8 +67,6 @@ void OpenGLTexture2D::Create(const void *pData)
 	glTextureStorage2D(m_handle, 1, GLInternalTextureFormat[(size_t)m_format], m_width, m_height);
 	if (pData)
 	{
-		SL_PROFILE_GPU("glTextureSubImage2D");
-
 		glTextureSubImage2D(m_handle, 0, 0, 0, m_width, m_height, GLTextureFormat[(size_t)m_format], GLDataType[(size_t)m_format], pData);
 	}
 
