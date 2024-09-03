@@ -72,7 +72,7 @@ void CameraControllerLayer::EndFrame()
 
 void CameraControllerLayer::UpdateFPSMode(float deltaTime)
 {
-	auto [camera, transform] = sl::ECSWorld::GetEditorCameraEntity().GetComponent<sl::CameraComponent, sl::TransformComponent>();
+	auto [camera, transform] = sl::ECSWorld::GetEditorCameraEntity().GetComponents<sl::CameraComponent, sl::TransformComponent>();
 
 	if (!m_isRotating)
 	{

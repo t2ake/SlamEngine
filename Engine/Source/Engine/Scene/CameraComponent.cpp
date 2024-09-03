@@ -63,7 +63,7 @@ void CameraComponent::Recalculate()
 		return;
 	}
 
-	auto transform = ECSWorld::GetEditorCameraEntity().GetComponent<TransformComponent>();
+	auto transform = ECSWorld::GetEditorCameraEntity().GetComponents<TransformComponent>();
 	auto rotation = transform.m_rotation;
 	auto position = transform.m_position;
 

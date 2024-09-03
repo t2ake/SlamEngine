@@ -43,14 +43,12 @@ constexpr ImGuiTreeNodeFlags DefaultTreeFlags =
 	ImGuiTreeNodeFlags_Framed |
 	ImGuiTreeNodeFlags_AllowOverlap;
 
-SL_FORCEINLINE float GetTitleBarSize()
+float GetTitleBarSize()
 {
-	// Can't change in runtime.
-	static float s_size = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
-	return s_size;
+	return ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
 }
 
-SL_FORCEINLINE void RightClickFocus()
+void RightClickFocus()
 {
 	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered())
 	{
@@ -58,18 +56,15 @@ SL_FORCEINLINE void RightClickFocus()
 	}
 }
 
-bool AlignButton(const char *label, float align = 0.5f, float customOffset = 0.0f)
+void AlignNextWidget(const char *label, float align = 0.5f, float customOffset = 0.0f)
 {
 	float size = ImGui::CalcTextSize(label).x + ImGui::GetStyle().FramePadding.x * 2.0f;
 	float avail = ImGui::GetContentRegionAvail().x;
 	float offset = (avail - size) * align;
-
 	if (offset > 0.0f)
 	{
 		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset + customOffset);
 	}
-
-	return ImGui::Button(label);
 }
 
 glm::vec3 RotationModAndRepeat(const glm::vec3 &v)
@@ -658,13 +653,8 @@ void ImGuiLayer::ShowAssetBrowser()
 		25.0f, 50.0f, 100.0f, 125.0f, 150.0f,
 	};
 
-	// Align this widget to the right side of the window.
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() +
-		ImGui::GetContentRegionAvail().x -
-		ImGui::CalcTextSize(ItemIcons[s_itemSizeIndex]).x -
-		ImGui::GetStyle().FramePadding.x * 2.0f -
-		25.0f); // 25.0f is the size of the triangle of the combo widget.
-
+	// 25.0f is approximately the size of the triangle of the combo widget.
+	AlignNextWidget(ItemIcons[s_itemSizeIndex], 1.0f, -25.0f);
 	if (ImGui::BeginCombo("##ItemSizeCombo", ItemIcons[s_itemSizeIndex], ImGuiComboFlags_WidthFitPreview))
 	{
 		for (size_t i = 0; i < 5; ++i)
@@ -735,7 +725,7 @@ void ImGuiLayer::ShowAssetBrowser()
 template<class T, class Fun>
 void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 {
-	T *pComponent = m_selectedEntity.TryGetComponent<T>();
+	T *pComponent = m_selectedEntity.TryGetComponents<T>();
 	if (!pComponent)
 	{
 		return;
@@ -751,9 +741,10 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 	// Draw component menu button
 	ImGui::SameLine();
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-	if (AlignButton(" : ", 1.0f, ImGui::GetStyle().WindowPadding.x / 2.0f))
+	// Don't know why (WindowPadding.x / 2) just works perfect here.
+	AlignNextWidget(" : ", 1.0f, ImGui::GetStyle().WindowPadding.x / 2.0f);
+	if(ImGui::Button(" : "))
 	{
-		// WHY: Don't know why (WindowPadding.x / 2) just works perfect here.
 		ImGui::OpenPopup("ComponentPopup");
 	}
 	ImGui::PopStyleColor();
@@ -771,7 +762,7 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 				// The camera entity will be affected by TransformComponent.
 				if constexpr (std::is_same_v<T, sl::TransformComponent>)
 				{
-					if (auto pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>(); pCamera)
+					if (auto pCamera = m_selectedEntity.TryGetComponents<sl::CameraComponent>(); pCamera)
 					{
 						pCamera->m_isDirty = true;
 					}
@@ -838,13 +829,13 @@ void ImGuiLayer::AddComponent(const char *label)
 {
 	if (ImGui::MenuItem(label))
 	{
-		if (!m_selectedEntity.TryGetComponent<T>())
+		if (!m_selectedEntity.TryGetComponents<T>())
 		{
 			m_selectedEntity.AddComponent<T>();
 		}
 		else
 		{
-			SL_LOG_WARN("Entity \"{}\" already has component \"{}\"", m_selectedEntity.GetComponent<sl::TagComponent>().m_name, label);
+			SL_LOG_WARN("Entity \"{}\" already has component \"{}\"", m_selectedEntity.GetComponents<sl::TagComponent>().m_name, label);
 		}
 	}
 }
@@ -912,7 +903,7 @@ void ImGuiLayer::ShowDetails()
 		if (cameraMayBeDirty)
 		{
 			// If we select camera entitiy.
-			if (auto *pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>(); pCamera)
+			if (auto *pCamera = m_selectedEntity.TryGetComponents<sl::CameraComponent>(); pCamera)
 			{
 				pCamera->m_isDirty = true; 
 			}
@@ -1049,7 +1040,8 @@ void ImGuiLayer::ShowDetails()
 	});
 
 	// Add component button
-	if (AlignButton("Add Component"))
+	AlignNextWidget("Add Component");
+	if (ImGui::Button("Add Component"))
 	{
 		ImGui::OpenPopup("AddComponentPopup");
 	}
@@ -1096,7 +1088,7 @@ void ImGuiLayer::ShowImGuizmoTransform()
 	const glm::mat4 &view = camera.GetView();
 	const glm::mat4 &projection = camera.GetProjection();
 
-	auto &transform = m_selectedEntity.GetComponent<sl::TransformComponent>();
+	auto &transform = m_selectedEntity.GetComponents<sl::TransformComponent>();
 	glm::mat4 manipulatedTransform = transform.GetTransform();
 
 	bool useSnap = ImGui::IsKeyDown(ImGuiKey_LeftCtrl);
@@ -1196,7 +1188,7 @@ void ImGuiLayer::MousePick()
 	}
 
 	SL_LOG_TRACE("Select entity, ID: {}, Name: \"{}\", Mouse position: ({}, {})",
-		entityID, crtEntity.GetComponent<sl::TagComponent>().m_name.c_str(),
+		entityID, crtEntity.GetComponents<sl::TagComponent>().m_name.c_str(),
 		mouseLocalPosX, mouseLocalPosY);
 
 	m_selectedEntity = crtEntity;

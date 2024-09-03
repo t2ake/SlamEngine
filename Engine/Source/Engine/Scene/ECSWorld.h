@@ -53,7 +53,7 @@ public:
 	template<class T, class... Args>
 	decltype(auto) AddComponent(Args&&... args)
 	{
-		SL_ASSERT(!HasAllComponent<T>(), "Entity already holds component!");
+		SL_ASSERT(!HasAllComponentsOf<T>(), "Entity already holds component!");
 		return ECSWorld::m_registry.emplace<T>(m_handle, std::forward<Args>(args)...);
 	}
 
@@ -61,7 +61,7 @@ public:
 	template<class T, class... Args>
 	decltype(auto) ReplaceComponent(Args&&... args)
 	{
-		SL_ASSERT(HasAllComponent<T>(), "Entity does not hold component!");
+		SL_ASSERT(HasAllComponentsOf<T>(), "Entity does not hold component!");
 		return ECSWorld::m_registry.replace<T>(m_handle, std::forward<Args>(args)...);
 	}
 
@@ -74,32 +74,32 @@ public:
 
 	// Returns tuple of references.
 	template<class... T>
-	decltype(auto) GetComponent()
+	decltype(auto) GetComponents()
 	{
-		SL_ASSERT(HasAllComponent<T...>(), "Entity does not hold any components!");
+		SL_ASSERT(HasAllComponentsOf<T...>(), "Entity does not hold components!");
 		return ECSWorld::m_registry.get<T...>(m_handle);
 	}
 
 	// Returns tuple of pointers.
 	template<class... T>
-	auto TryGetComponent()
+	auto TryGetComponents()
 	{
 		return ECSWorld::m_registry.try_get<T...>(m_handle);
 	}
 
 	template<class... T>
-	bool HasAllComponent()
+	bool HasAllComponentsOf()
 	{
 		return (ECSWorld::m_registry.all_of<T...>(m_handle));
 	}
 
 	template<class... T>
-	bool HasAnyComponent()
+	bool HasAnyComponentsOf()
 	{
 		return (ECSWorld::m_registry.any_of<T...>(m_handle));
 	}
 
-	bool HasComponent()
+	bool HasAnyComponent()
 	{
 		return !ECSWorld::m_registry.orphan(m_handle);
 	}
@@ -107,8 +107,15 @@ public:
 	template<class T>
 	auto RemoveComponent()
 	{
-		// Using 'registry::remove' is safer than using 'registry::erase'.
+		// Using 'registry::remove' is safer than 'registry::erase'.
 		return ECSWorld::m_registry.remove<T>(m_handle);
+	}
+
+	template<class T>
+	auto EraseComponent()
+	{
+		// Using 'registry::remove' is safer than 'registry::erase'.
+		return ECSWorld::m_registry.erase<T>(m_handle);
 	}
 
 	bool operator==(const Entity &other) const { return m_handle == other.m_handle; }

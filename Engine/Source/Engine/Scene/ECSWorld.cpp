@@ -27,7 +27,7 @@ Entity ECSWorld::GetEditorCameraEntity()
 
 CameraComponent &ECSWorld::GetEditorCameraComponent()
 {
-	return m_editorCameraEntity.GetComponent<CameraComponent>();
+	return m_editorCameraEntity.GetComponents<CameraComponent>();
 }
 
 void Entity::Destroy()
@@ -36,14 +36,14 @@ void Entity::Destroy()
 	{
 		return;
 	}
-	if (TryGetComponent<sl::CornerstoneComponent>())
+	if (TryGetComponents<sl::CornerstoneComponent>())
 	{
-		SL_LOG_WARN("Attempt to destroy entity \"{}\" with Cornerstone component!", GetComponent<sl::TagComponent>().m_name);
+		SL_LOG_WARN("Attempt to destroy entity \"{}\" with Cornerstone component!", GetComponents<sl::TagComponent>().m_name);
 		return;
 	}
 
 	// Destroy this entity and all its components.
-	SL_LOG_TRACE("Destroy Entity: \"{}\"", GetComponent<sl::TagComponent>().m_name);
+	SL_LOG_TRACE("Destroy Entity: \"{}\"", GetComponents<sl::TagComponent>().m_name);
 	ECSWorld::m_registry.destroy(m_handle);
 	m_handle = entt::null;
 }
