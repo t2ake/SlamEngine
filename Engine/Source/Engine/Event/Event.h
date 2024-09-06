@@ -23,7 +23,7 @@ enum class EventType
 #define SL_EVENT_CATEGORY_KEYBOARD       UINT8_C(0x04)
 #define SL_EVENT_CATEGORY_MOUSE          UINT8_C(0x08)
 #define SL_EVENT_CATEGORY_SCENE_VIEWPORT UINT8_C(0x10)
-#define SL_EVENT_CATEGORY_CAMERA         UINT8_C(0x12)
+#define SL_EVENT_CATEGORY_CAMERA         UINT8_C(0x11)
 
 #define BIND_EVENT_CALLBACK(fun) std::bind(&fun, this, std::placeholders::_1)
 

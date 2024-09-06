@@ -671,16 +671,16 @@ void ImGuiLayer::ShowAssetBrowser()
 
 	float basicItemSize = ItemSizes.at(s_itemSizeIndex);
 	float itemSpacing = ImGui::GetStyle().ItemSpacing.x;
-	float contentAvail = ImGui::GetContentRegionAvail().x;
+	float available = ImGui::GetContentRegionAvail().x;
 
 	// To avoid scroll bar flickering.
 	if (ImGui::GetScrollMaxY() < 1.0f)
 	{
-		contentAvail -= ImGui::GetStyle().ScrollbarSize;
+		available -= ImGui::GetStyle().ScrollbarSize;
 	}
 
-	uint32_t itemCount = uint32_t(contentAvail / (basicItemSize + itemSpacing));
-	float fillingItemSize = contentAvail / (float)itemCount - itemSpacing;
+	uint32_t itemCount = uint32_t((available - itemSpacing) / (basicItemSize + itemSpacing));
+	float filledItemSize = (available - itemSpacing) / (float)itemCount - itemSpacing;
 
 	if (itemCount < 1)
 	{
@@ -704,7 +704,7 @@ void ImGuiLayer::ShowAssetBrowser()
 		if (pTextureResource->IsReady())
 		{
 			ImGui::ImageButton(fileName.c_str(), (ImTextureID)(uint64_t)pTextureResource->GetTexture()->GetHandle(),
-				ImVec2{ fillingItemSize, fillingItemSize }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
+				ImVec2{ filledItemSize, filledItemSize }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 
 			// Open the path when double clicking on the folder.
 			if (isDirectory && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
@@ -714,6 +714,7 @@ void ImGuiLayer::ShowAssetBrowser()
 
 			ImGui::TextWrapped(fileName.c_str());
 		}
+
 		ImGui::PopID();
 		ImGui::NextColumn();
 	}
