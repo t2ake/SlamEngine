@@ -115,7 +115,7 @@ void ImGuiContext::SetColor()
 	colors[ImGuiCol_TextDisabled] = greyColor;
 
 	colors[ImGuiCol_WindowBg] = bgColor;
-	colors[ImGuiCol_ChildBg] = bgColorLight;
+	colors[ImGuiCol_ChildBg] = bgColor;
 	colors[ImGuiCol_PopupBg] = bgColorLight;
 
 	colors[ImGuiCol_Border] = blackColor;

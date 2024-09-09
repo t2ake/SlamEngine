@@ -203,7 +203,7 @@ void ImGuiLayer::ShowToolOverlay()
 
 	constexpr std::array<int, 4> Operations =
 	{
-		-1, // Don't use ImGuizmo tramsform.
+		-1, // No ImGuizmo tramsform.
 		ImGuizmo::OPERATION::TRANSLATE,
 		ImGuizmo::OPERATION::ROTATE,
 		ImGuizmo::OPERATION::SCALE,
@@ -211,6 +211,7 @@ void ImGuiLayer::ShowToolOverlay()
 	constexpr std::array<const char *, 4> Icons =
 	{
 		// TODO: Icon
+		// Mouse, Translate, Rotation, Scale
 		"M", "T", "R", "S",
 	};
 	auto SelectableButton = [this](size_t index)
@@ -641,25 +642,30 @@ void ImGuiLayer::ShowAssetBrowser()
 	ImGui::SameLine();
 	ImGui::Text(crtPath.c_str());
 
-	// Change item size.
-	ImGui::SameLine();
+	// Select item size.
 	static size_t s_itemSizeIndex = 2;
-	constexpr std::array<const char *, 5> ItemIcons =
+	constexpr size_t SizeCount = 5;
+	constexpr std::array<const char *, SizeCount> ItemIcons =
 	{
 		"Very small", "Small", "Medium", "Large", "Very large",
 	};
-	constexpr std::array<float, 5> ItemSizes =
+	constexpr std::array<float, SizeCount> ItemSizes =
 	{
 		25.0f, 50.0f, 100.0f, 125.0f, 150.0f,
 	};
-
-	// 25.0f is approximately the size of the triangle of the combo widget.
-	AlignNextWidget(ItemIcons[s_itemSizeIndex], 1.0f, -25.0f);
-	if (ImGui::BeginCombo("##ItemSizeCombo", ItemIcons[s_itemSizeIndex], ImGuiComboFlags_WidthFitPreview))
+	constexpr std::array<uint8_t, SizeCount> FileNameDisplayLines =
 	{
-		for (size_t i = 0; i < 5; ++i)
+		1, 2, 3, 4, 5,
+	};
+
+	ImGui::SameLine();
+	AlignNextWidget(ItemIcons.at(s_itemSizeIndex), 1.0f, -25.0f);
+	// 25.0f is approximately the size of the triangle of the combo widget.
+	if (ImGui::BeginCombo("##ItemSizeCombo", ItemIcons.at(s_itemSizeIndex), ImGuiComboFlags_WidthFitPreview))
+	{
+		for (size_t i = 0; i < SizeCount; ++i)
 		{
-			if (ImGui::Selectable(ItemIcons[i], i == s_itemSizeIndex))
+			if (ImGui::Selectable(ItemIcons.at(i), i == s_itemSizeIndex))
 			{
 				s_itemSizeIndex = i;
 			}
@@ -670,6 +676,7 @@ void ImGuiLayer::ShowAssetBrowser()
 	ImGui::Separator();
 
 	float basicItemSize = ItemSizes.at(s_itemSizeIndex);
+	float windowPadding = ImGui::GetStyle().WindowPadding.x;
 	float itemSpacing = ImGui::GetStyle().ItemSpacing.x;
 	float available = ImGui::GetContentRegionAvail().x;
 
@@ -679,8 +686,8 @@ void ImGuiLayer::ShowAssetBrowser()
 		available -= ImGui::GetStyle().ScrollbarSize;
 	}
 
-	uint32_t itemCount = uint32_t((available - itemSpacing) / (basicItemSize + itemSpacing));
-	float filledItemSize = (available - itemSpacing) / (float)itemCount - itemSpacing;
+	uint32_t itemCount = uint32_t((available + itemSpacing) / (basicItemSize + itemSpacing));
+	float filledItemSize = (available + itemSpacing) / (float)itemCount - itemSpacing;
 
 	if (itemCount < 1)
 	{
@@ -688,9 +695,8 @@ void ImGuiLayer::ShowAssetBrowser()
 		return;
 	}
 
+	// Show files and folders under current path.
 	ImGui::Columns(itemCount, "AssetBrowserColums", false);
-
-	// Show assets under current path.
 	for (const auto &it : std::filesystem::directory_iterator(m_assetBrowserCrtPath))
 	{
 		std::string fileName = it.path().filename().generic_string();
@@ -703,16 +709,23 @@ void ImGuiLayer::ShowAssetBrowser()
 
 		if (pTextureResource->IsReady())
 		{
-			ImGui::ImageButton(fileName.c_str(), (ImTextureID)(uint64_t)pTextureResource->GetTexture()->GetHandle(),
+			ImGui::ImageButton("##Icon", (ImTextureID)(uint64_t)pTextureResource->GetTexture()->GetHandle(),
 				ImVec2{ filledItemSize, filledItemSize }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 
-			// Open the path when double clicking on the folder.
+			// Open the folder when double clicking on the folder.
 			if (isDirectory && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			{
 				m_assetBrowserCrtPath = it.path();
 			}
-
+			
+			// Limit the number of lines displayed for a file or folder name.
+			ImGui::BeginChild(
+				"##Text",
+				ImVec2{ filledItemSize, ImGui::CalcTextSize("A").y * (float)FileNameDisplayLines.at(s_itemSizeIndex) },
+				ImGuiChildFlags_None,
+				ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoDecoration);
 			ImGui::TextWrapped(fileName.c_str());
+			ImGui::EndChild();
 		}
 
 		ImGui::PopID();
@@ -1059,6 +1072,8 @@ void ImGuiLayer::ShowDetails()
 
 void ImGuiLayer::ShowImGuizmoOrientation()
 {
+	SL_PROFILE;
+
 	// Display a cube on the upper right corner.
 	constexpr float Length = 100.0f;
 	ImVec2 pos = ImVec2{
@@ -1071,6 +1086,8 @@ void ImGuiLayer::ShowImGuizmoOrientation()
 
 void ImGuiLayer::ShowImGuizmoTransform()
 {
+	SL_PROFILE;
+
 	if (m_selectedEntity == sl::ECSWorld::GetEditorCameraEntity())
 	{
 		return;
