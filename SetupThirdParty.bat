@@ -21,7 +21,7 @@ echo.
 
 rem Manually organise thirdparty solution and projects, then compile them.
 cd %SCRIPT_PATH%
-"premake-bin\premake5.exe" --file=thirdparty.lua vs2022
+"Premake\premake5.exe" --file=thirdparty.lua vs2022
 "%MSBUILD_PATH%" "%THIRD_PARTY_BUILD_PATH%\SlamThirdparty.sln" -p:Configuration=Debug;Platform=x64
 "%MSBUILD_PATH%" "%THIRD_PARTY_BUILD_PATH%\SlamThirdparty.sln" -p:Configuration=Release;Platform=x64
 
