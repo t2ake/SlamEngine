@@ -648,7 +648,7 @@ void ImGuiLayer::ShowAssetBrowser()
 	{
 		"Very small", "Small", "Medium", "Large", "Very large",
 	};
-	constexpr std::array<float, SizeCount> ItemSizes =
+	constexpr std::array<float, SizeCount> BasicColumSizes =
 	{
 		25.0f, 50.0f, 100.0f, 125.0f, 150.0f,
 	};
@@ -674,30 +674,45 @@ void ImGuiLayer::ShowAssetBrowser()
 
 	ImGui::Separator();
 
-	float basicItemSize = ItemSizes.at(s_itemSizeIndex);
-	float windowPadding = ImGui::GetStyle().WindowPadding.x;
-	float itemSpacing = ImGui::GetStyle().ItemSpacing.x;
+	bool invalid = false;
 	float available = ImGui::GetContentRegionAvail().x;
+	float itemSpacing = ImGui::GetStyle().ItemSpacing.x;
+	ImVec2 framePadding = ImGui::GetStyle().FramePadding;
 
 	// To avoid scroll bar flickering.
 	if (ImGui::GetScrollMaxY() < 1.0f)
 	{
 		available -= ImGui::GetStyle().ScrollbarSize;
 	}
+	invalid |= available <= 0.0f;
 
-	uint32_t itemCount = uint32_t((available + itemSpacing) / (basicItemSize + itemSpacing));
-	float filledItemSize = (available + itemSpacing) / (float)itemCount - itemSpacing;
+	available += itemSpacing;
+	uint32_t columCount = (uint32_t)available / (uint32_t)BasicColumSizes.at(s_itemSizeIndex);
+	invalid |= columCount < 1;
 
-	if (itemCount < 1)
+	float columSize = std::floor(available / (float)columCount);
+	float filledItemSize = columSize - itemSpacing - 1.0f;
+	
+	if (invalid)
 	{
 		ImGui::End();
 		return;
 	}
 
 	// Show files and folders under current path.
-	ImGui::Columns(itemCount, "AssetBrowserColums", false);
+	uint32_t columIndex = 0;
+	ImGui::Columns(columCount, "AssetBrowserColums", false);
 	for (const auto &it : std::filesystem::directory_iterator(m_assetBrowserCrtPath))
 	{
+		if (columCount > 1)
+		{
+			if (columIndex >= columCount)
+			{
+				columIndex = 0;
+			}
+			ImGui::SetColumnWidth(columIndex++, columSize);
+		}
+
 		std::string fileName = it.path().filename().generic_string();
 		ImGui::PushID(fileName.c_str());
 
@@ -708,8 +723,10 @@ void ImGuiLayer::ShowAssetBrowser()
 
 		if (pTextureResource->IsReady())
 		{
+			// ImageButton will adds `style.FramePadding * 2.0f` to provided size.
 			ImGui::ImageButton("##Icon", (ImTextureID)(uint64_t)pTextureResource->GetTexture()->GetHandle(),
-				ImVec2{ filledItemSize, filledItemSize }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
+				ImVec2{ filledItemSize - framePadding.x * 2.0f, filledItemSize - framePadding.y * 2.0f },
+				ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 
 			// Open the folder when double clicking on the folder.
 			if (isDirectory && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
