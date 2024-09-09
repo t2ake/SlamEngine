@@ -9,7 +9,6 @@
 #include "ImGui/ImGuiContext.h"
 #include "Panel/ScrollingBuffer.h"
 #include "RenderCore/RenderCore.h"
-#include "Resource/Font.h"
 #include "Resource/ResourceManager.h"
 #include "Scene/SceneSerializer.h"
 #include "Utils/EnumOf.hpp"
@@ -721,7 +720,7 @@ void ImGuiLayer::ShowAssetBrowser()
 			// Limit the number of lines displayed for a file or folder name.
 			ImGui::BeginChild(
 				"##Text",
-				ImVec2{ filledItemSize, ImGui::CalcTextSize("A").y * (float)FileNameDisplayLines.at(s_itemSizeIndex) },
+				ImVec2{ filledItemSize, ImGui::GetFontSize() * (float)FileNameDisplayLines.at(s_itemSizeIndex) },
 				ImGuiChildFlags_None,
 				ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoDecoration);
 			ImGui::TextWrapped(fileName.c_str());
@@ -748,7 +747,7 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 	ImGui::PushID(nameof::nameof_type<T>().data());
 
 	// Draw tree node
-	ImGui::PushFont(sl::Font::GetBold());
+	ImGui::PushFont(sl::ImGuiContext::GetBold());
 	bool componentTreeOpen = ImGui::TreeNodeEx(label, DefaultTreeFlags, label);
 	ImGui::PopFont();
 

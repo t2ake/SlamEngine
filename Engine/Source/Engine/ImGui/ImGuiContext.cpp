@@ -2,7 +2,6 @@
 
 #include "Core/Log.h"
 #include "Core/Path.hpp"
-#include "Resource/Font.h"
 #include "Utils/ProfilerCPU.h"
 #include "Window/Window.h"
 
@@ -36,16 +35,10 @@ void ImGuiContext::Init(void *pNativeWindow)
 	io.IniFilename = m_iniFilePath.c_str();
 
 	// 3. Load font
-	// ImFont *pRegularFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Roboto/Roboto-Regular.ttf").c_str(), 18.0f);
-	// ImFont *pBoldFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Roboto/Roboto-Bold.ttf").c_str(), 18.0f);
-	// ImFont *pThinFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Roboto/Roboto-Thin.ttf").c_str(), 18.0f);
-	ImFont *pRegularFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Regular.ttf").c_str(), 18.0f);
-	ImFont *pBoldFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Bold.ttf").c_str(), 18.0f);
-	ImFont *pThinFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Light.ttf").c_str(), 18.0f);
-	sl::Font::SetRegular(pRegularFont);
-	sl::Font::SetBold(pBoldFont);
-	sl::Font::SetThin(pThinFont);
-	io.FontDefault = pRegularFont;
+	m_pRegularFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Regular.ttf").c_str(), 18.0f);
+	m_pBoldFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Bold.ttf").c_str(), 18.0f);
+	m_pThinFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Light.ttf").c_str(), 18.0f);
+	io.FontDefault = m_pRegularFont;
 
 	// 4. Set color and style
 	SetColor();
