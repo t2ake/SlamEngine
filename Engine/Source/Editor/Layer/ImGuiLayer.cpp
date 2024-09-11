@@ -650,7 +650,7 @@ void ImGuiLayer::ShowAssetBrowser()
 	};
 	constexpr std::array<float, SizeCount> BasicColumSizes =
 	{
-		25.0f, 50.0f, 100.0f, 125.0f, 150.0f,
+		50.0f, 75.0f, 100.0f, 125.0f, 150.0f,
 	};
 	constexpr std::array<uint8_t, SizeCount> FileNameDisplayLines =
 	{
@@ -674,7 +674,6 @@ void ImGuiLayer::ShowAssetBrowser()
 
 	ImGui::Separator();
 
-	bool invalid = false;
 	float available = ImGui::GetContentRegionAvail().x;
 	float itemSpacing = ImGui::GetStyle().ItemSpacing.x;
 	ImVec2 framePadding = ImGui::GetStyle().FramePadding;
@@ -684,21 +683,23 @@ void ImGuiLayer::ShowAssetBrowser()
 	{
 		available -= ImGui::GetStyle().ScrollbarSize;
 	}
-	invalid |= available <= 0.0f;
 
-	available += itemSpacing;
-	uint32_t columCount = (uint32_t)available / (uint32_t)BasicColumSizes.at(s_itemSizeIndex);
-	invalid |= columCount < 1;
-
-	float columSize = std::floor(available / (float)columCount);
-	float filledItemSize = columSize - itemSpacing - 1.0f;
-	
-	if (invalid)
+	if (available <= 0.0f)
 	{
 		ImGui::End();
 		return;
 	}
 
+	available += itemSpacing;
+	uint32_t columCount = (uint32_t)available / (uint32_t)BasicColumSizes.at(s_itemSizeIndex);
+	if (columCount < 1)
+	{
+		columCount = 1;
+	}
+
+	float columSize = std::floor(available / (float)columCount);
+	float filledItemSize = columSize - itemSpacing - 1.0f;
+	
 	// Show files and folders under current path.
 	uint32_t columIndex = 0;
 	ImGui::Columns(columCount, "AssetBrowserColums", false);
