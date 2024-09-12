@@ -26,8 +26,6 @@ private:
 	static void SetColor();
 	static void SetStyle();
 
-	inline static std::string m_iniFilePath;
-
 	// ImGui holds the ownership of these datas.
 	inline static ImFont *m_pRegularFont;
 	inline static ImFont *m_pBoldFont;

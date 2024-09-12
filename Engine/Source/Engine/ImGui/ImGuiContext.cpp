@@ -5,8 +5,9 @@
 #include "Utils/ProfilerCPU.h"
 #include "Window/Window.h"
 
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
+#include "ImGui/IconsMaterialSymbols.h"
+#include "ImGui/imgui_impl_glfw.h"
+#include "ImGui/imgui_impl_opengl3.h"
 
 #include <imguizmo/ImGuizmo.h>
 #include <implot/implot.h>
@@ -24,21 +25,35 @@ void ImGuiContext::Init(void *pNativeWindow)
 	ImPlot::CreateContext();
 	ImGuiIO &io = ImGui::GetIO();
 
-	// 2. Set flags
+	// 2. Setup configs
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	io.ConfigViewportsNoTaskBarIcon = true;
 
-	m_iniFilePath = Path::FromeRoot("Engine/Config/imgui.ini");
-	io.IniFilename = m_iniFilePath.c_str();
+	static std::string s_iniFilePath = Path::FromeRoot("Engine/Config/imgui.ini");
+	io.IniFilename = s_iniFilePath.c_str();
 
 	// 3. Load font
-	m_pRegularFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Regular.ttf").c_str(), 18.0f);
-	m_pBoldFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Bold.ttf").c_str(), 18.0f);
-	m_pThinFont = io.Fonts->AddFontFromFileTTF(sl::Path::FromeAsset("Font/Open_Sans/static/OpenSans-Light.ttf").c_str(), 18.0f);
+	// TODO: DPI
+	constexpr float FontSize = 18.0f;
+	ImFontConfig fontConfig;
+	fontConfig.GlyphOffset = ImVec2{ 0.0f, 2.0f };
+	fontConfig.GlyphMinAdvanceX = FontSize;
+	fontConfig.MergeMode = true;
+	static const ImWchar s_iconRange[] = { (ImWchar)ICON_MIN_MS, (ImWchar)ICON_MAX_MS, 0 };
+
+	m_pRegularFont = io.Fonts->AddFontFromFileTTF(
+		sl::Path::FromeAsset("Font/OpenSans/static/OpenSans-Regular.ttf").c_str(), FontSize);
 	io.FontDefault = m_pRegularFont;
+	io.Fonts->AddFontFromFileTTF(
+		sl::Path::FromeAsset("Font/GoogleMaterialSymbols/MaterialSymbolsOutlined.ttf").c_str(), FontSize, &fontConfig, s_iconRange);
+	
+	m_pBoldFont = io.Fonts->AddFontFromFileTTF(
+		sl::Path::FromeAsset("Font/OpenSans/static/OpenSans-Bold.ttf").c_str(), FontSize);
+	m_pThinFont = io.Fonts->AddFontFromFileTTF(
+		sl::Path::FromeAsset("Font/OpenSans/static/OpenSans-Light.ttf").c_str(), FontSize);
 
 	// 4. Set color and style
 	SetColor();
@@ -46,7 +61,7 @@ void ImGuiContext::Init(void *pNativeWindow)
 
 	// 5. Init platform and Rendering backend
 	ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(pNativeWindow), true);
-	ImGui_ImplOpenGL3_Init("#version 460");
+	ImGui_ImplOpenGL3_Init("#version 450");
 }
 
 void ImGuiContext::Shutdown()

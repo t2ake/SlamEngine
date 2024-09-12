@@ -16,7 +16,7 @@ enum class LogLevel : uint8_t
 	Info = 1 << 2,
 	Warn = 1 << 3,
 	Error = 1 << 4,
-	Critical = 1 << 5,
+	Fatal = 1 << 5,
 };
 
 struct LogInfo

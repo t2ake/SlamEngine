@@ -18,7 +18,7 @@ namespace
 
 constexpr std::array<LogLevel, 6> SpdLevelToSLLevel =
 {
-	LogLevel::Trace, LogLevel::Debug, LogLevel::Info, LogLevel::Warn, LogLevel::Error, LogLevel::Critical,
+	LogLevel::Trace, LogLevel::Debug, LogLevel::Info, LogLevel::Warn, LogLevel::Error, LogLevel::Fatal,
 };
 
 }

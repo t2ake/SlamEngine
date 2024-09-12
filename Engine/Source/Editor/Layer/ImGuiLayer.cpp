@@ -6,6 +6,7 @@
 #include "Event/MouseEvent.h"
 #include "Event/SceneViewportEvent.h"
 #include "Event/WindowEvent.h"
+#include "ImGui/IconsMaterialSymbols.h"
 #include "ImGui/ImGuiContext.h"
 #include "Panel/ScrollingBuffer.h"
 #include "RenderCore/RenderCore.h"
@@ -209,16 +210,14 @@ void ImGuiLayer::ShowToolOverlay()
 	};
 	constexpr std::array<const char *, 4> Icons =
 	{
-		// TODO: Icon
-		// Mouse, Translate, Rotation, Scale
-		"M", "T", "R", "S",
+		ICON_MS_ARROW_SELECTOR_TOOL, ICON_MS_DRAG_PAN, ICON_MS_CACHED, ICON_MS_ZOOM_OUT_MAP,
 	};
 	auto SelectableButton = [this](size_t index)
 	{
-		const int op = Operations[index];
+		const int op = Operations.at(index);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, m_imguizmoMode == op ? 1.0f : 0.5f);
-		if (ImGui::Button(Icons[index], ImVec2{ 32.0f, 32.0f }))
+		if (ImGui::Button(Icons.at(index), ImVec2{32.0f, 32.0f}))
 		{
 			m_imguizmoMode = op;
 		}
@@ -362,12 +361,12 @@ void ImGuiLayer::ShowLog()
 	static uint8_t s_levelFilter = FullLevelFilter;
 	static ImGuiTextFilter s_textFilter;
 
-	constexpr ImVec4 TraceColor    { 1.0f, 1.0f, 1.0f, 1.0f };
-	constexpr ImVec4 DebugColor    { 0.0f, 0.0f, 1.0f, 1.0f };
-	constexpr ImVec4 InfoColor     { 0.0f, 1.0f, 0.0f, 1.0f };
-	constexpr ImVec4 WarnColor     { 1.0f, 1.0f, 0.0f, 1.0f };
-	constexpr ImVec4 ErrorColor    { 1.0f, 0.0f, 0.0f, 1.0f };
-	constexpr ImVec4 CriticalColor { 1.0f, 0.0f, 1.0f, 1.0f };
+	constexpr ImVec4 TraceColor { 1.0f, 1.0f, 1.0f, 1.0f };
+	constexpr ImVec4 DebugColor { 0.1f, 0.5f, 0.9f, 1.0f };
+	constexpr ImVec4 InfoColor  { 0.1f, 0.9f, 0.1f, 1.0f };
+	constexpr ImVec4 WarnColor  { 0.9f, 0.8f, 0.1f, 1.0f };
+	constexpr ImVec4 ErrorColor { 0.9f, 0.1f, 0.1f, 1.0f };
+	constexpr ImVec4 FatalColor { 1.0f, 0.1f, 1.0f, 1.0f };
 
 	auto LogLevelToColor = [](sl::LogLevel level)
 	{
@@ -393,9 +392,9 @@ void ImGuiLayer::ShowLog()
 			{
 				return ErrorColor;
 			}
-			case sl::LogLevel::Critical:
+			case sl::LogLevel::Fatal:
 			{
-				return CriticalColor;
+				return FatalColor;
 			}
 			default:
 			{
@@ -410,27 +409,27 @@ void ImGuiLayer::ShowLog()
 		{
 			case sl::LogLevel::Trace:
 			{
-				return "T";
+				return ICON_MS_NOTES;
 			}
 			case sl::LogLevel::Debug:
 			{
-				return "D";
+				return ICON_MS_BUILD;
 			}
 			case sl::LogLevel::Info:
 			{
-				return "I";
+				return ICON_MS_CHAT;
 			}
 			case sl::LogLevel::Warn:
 			{
-				return "W";
+				return ICON_MS_WARNING;
 			}
 			case sl::LogLevel::Error:
 			{
-				return "E";
+				return ICON_MS_CANCEL;
 			}
-			case sl::LogLevel::Critical:
+			case sl::LogLevel::Fatal:
 			{
-				return "C";
+				return ICON_MS_BUG_REPORT;
 			}
 			default:
 			{
@@ -472,7 +471,7 @@ void ImGuiLayer::ShowLog()
 	LevelButton(sl::LogLevel::Info);
 	LevelButton(sl::LogLevel::Warn);
 	LevelButton(sl::LogLevel::Error);
-	LevelButton(sl::LogLevel::Critical);
+	LevelButton(sl::LogLevel::Fatal);
 
 	ImGui::SameLine();
 	s_textFilter.Draw("##TextFilter", -ImGui::GetStyle().ScrollbarSize);
@@ -481,9 +480,9 @@ void ImGuiLayer::ShowLog()
 
 	// TODO: Show time and level on log panel.
 	auto &logInfos = sl::Log::GetLogInfos();
-	if (ImGui::BeginChild("ScrollingLog", ImVec2(0, 0), ImGuiChildFlags_FrameStyle, ImGuiWindowFlags_HorizontalScrollbar))
+	if (ImGui::BeginChild("LogTexts", ImVec2{ 0.0f, 0.0f }, ImGuiChildFlags_FrameStyle, ImGuiWindowFlags_HorizontalScrollbar))
 	{
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0.0f, 0.0f });
 
 		// If any filter is active.
 		if (s_levelFilter < FullLevelFilter || s_textFilter.IsActive())
@@ -628,7 +627,7 @@ void ImGuiLayer::ShowAssetBrowser()
 	{
 		ImGui::BeginDisabled();
 	}
-	if (ImGui::Button("<-"))
+	if (ImGui::Button(ICON_MS_ARROW_BACK))
 	{
 		m_assetBrowserCrtPath = m_assetBrowserCrtPath.parent_path();
 	}
@@ -644,27 +643,27 @@ void ImGuiLayer::ShowAssetBrowser()
 	// Select item size.
 	static size_t s_itemSizeIndex = 2;
 	constexpr size_t SizeCount = 5;
-	constexpr std::array<const char *, SizeCount> ItemIcons =
+	constexpr std::array<const char *, SizeCount> SizeNames =
 	{
-		"Very small", "Small", "Medium", "Large", "Very large",
+		"Very Small", "Small", "Medium", "Large", "Very Large",
 	};
 	constexpr std::array<float, SizeCount> BasicColumSizes =
 	{
 		50.0f, 75.0f, 100.0f, 125.0f, 150.0f,
 	};
-	constexpr std::array<uint8_t, SizeCount> FileNameDisplayLines =
+	constexpr std::array<uint8_t, SizeCount> NameDisplayLines =
 	{
 		1, 2, 3, 4, 5,
 	};
 
 	ImGui::SameLine();
-	AlignNextWidget(ItemIcons.at(s_itemSizeIndex), 1.0f, -25.0f);
+	AlignNextWidget(SizeNames.at(s_itemSizeIndex), 1.0f, -25.0f);
 	// 25.0f is approximately the size of the triangle of the combo widget.
-	if (ImGui::BeginCombo("##ItemSizeCombo", ItemIcons.at(s_itemSizeIndex), ImGuiComboFlags_WidthFitPreview))
+	if (ImGui::BeginCombo("##ItemSizeCombo", SizeNames.at(s_itemSizeIndex), ImGuiComboFlags_WidthFitPreview))
 	{
 		for (size_t i = 0; i < SizeCount; ++i)
 		{
-			if (ImGui::Selectable(ItemIcons.at(i), i == s_itemSizeIndex))
+			if (ImGui::Selectable(SizeNames.at(i), i == s_itemSizeIndex))
 			{
 				s_itemSizeIndex = i;
 			}
@@ -702,7 +701,7 @@ void ImGuiLayer::ShowAssetBrowser()
 	
 	// Show files and folders under current path.
 	uint32_t columIndex = 0;
-	ImGui::Columns(columCount, "AssetBrowserColums", false);
+	ImGui::Columns(columCount, "##AssetBrowserColums", false);
 	for (const auto &it : std::filesystem::directory_iterator(m_assetBrowserCrtPath))
 	{
 		if (columCount > 1)
@@ -738,7 +737,7 @@ void ImGuiLayer::ShowAssetBrowser()
 			// Limit the number of lines displayed for a file or folder name.
 			ImGui::BeginChild(
 				"##Text",
-				ImVec2{ filledItemSize, ImGui::GetFontSize() * (float)FileNameDisplayLines.at(s_itemSizeIndex) },
+				ImVec2{ filledItemSize, ImGui::GetFontSize() * (float)NameDisplayLines.at(s_itemSizeIndex) },
 				ImGuiChildFlags_None,
 				ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoDecoration);
 			ImGui::TextWrapped(fileName.c_str());
@@ -773,8 +772,8 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 	ImGui::SameLine();
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 	// Don't know why (WindowPadding.x / 2) just works perfect here.
-	AlignNextWidget(" : ", 1.0f, ImGui::GetStyle().WindowPadding.x / 2.0f);
-	if(ImGui::Button(" : "))
+	AlignNextWidget(ICON_MS_MORE_VERT, 1.0f, ImGui::GetStyle().WindowPadding.x / 2.0f);
+	if(ImGui::Button(ICON_MS_MORE_VERT))
 	{
 		ImGui::OpenPopup("ComponentPopup");
 	}
