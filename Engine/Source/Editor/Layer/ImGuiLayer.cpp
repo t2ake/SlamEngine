@@ -38,7 +38,7 @@ constexpr ImGuiTreeNodeFlags DefaultTreeFlags =
 	ImGuiTreeNodeFlags_Framed |
 	ImGuiTreeNodeFlags_AllowOverlap;
 
-float GetDPIFactor()
+SL_FORCEINLINE float GetDPIFactor()
 {
 	// TEMPORARY
 	return ImGui::GetFontSize();
@@ -219,8 +219,8 @@ void ImGuiLayer::ShowToolOverlay()
 
 	// Display on the upper left corner.
 	ImGui::SetNextWindowPos(ImVec2{
-		(float)m_sceneViewportWindowPosX + GetDPIFactor(),
-		(float)m_sceneViewportWindowPosY + GetDPIFactor() + GetTitleBarSize() });
+		(float)m_sceneViewportWindowPosX + GetDPIFactor() * 0.5f,
+		(float)m_sceneViewportWindowPosY + GetDPIFactor() * 0.5f + GetTitleBarSize() });
 
 	ImGui::Begin("Tools", nullptr, ImGuiWindowFlags_NoTitleBar |
 		ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
@@ -644,13 +644,14 @@ void ImGuiLayer::ShowAssetBrowser()
 	// Select item size.
 	static size_t s_itemSizeIndex = 2;
 	constexpr size_t SizeCount = 5;
+	float DPIFactor = GetDPIFactor();
+	const std::array<float, SizeCount> BasicColumSizes =
+	{
+		DPIFactor * 2.0f, DPIFactor * 3.0f, DPIFactor * 4.0f, DPIFactor * 5.0f, DPIFactor * 6.0f,
+	};
 	constexpr std::array<const char *, SizeCount> SizeNames =
 	{
 		"Very Small", "Small", "Medium", "Large", "Very Large",
-	};
-	constexpr std::array<float, SizeCount> BasicColumSizes =
-	{
-		50.0f, 75.0f, 100.0f, 125.0f, 150.0f,
 	};
 	constexpr std::array<uint8_t, SizeCount> NameDisplayLines =
 	{
