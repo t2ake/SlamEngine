@@ -22,38 +22,38 @@
 |Shader debug info|On|On|Off|
 
 # Third party
-premake5 v5.0.0-beta2
+[premake-core](https://github.com/premake/premake-core) v5.0.0-beta2
 
-spdlog v1.13.0
+[spdlog](https://github.com/gabime/spdlog) v1.13.0
 
-glfw v3.4
+[glfw](https://github.com/glfw/glfw) v3.4
 
-glad v1
+[glad](https://github.com/Dav1dde/glad) v1
 
-imgui v1.90.5-docking
+[imgui](https://github.com/ocornut/imgui) v1.90.5-docking
 
-glm v1.0.1
+[glm](https://github.com/g-truc/glm) v1.0.1
 
-stb ae721c50eaf761660b4f90cc590453cdb0c2acd0
+[stb](https://github.com/nothings/stb) ae721c50eaf761660b4f90cc590453cdb0c2acd0
 
-entt v3.13.2
+[entt](https://github.com/skypjack/entt) v3.13.2
 
-nameof v0.10.4
+[nameof](https://github.com/Neargye/nameof) v0.10.4
 
-implot v0.16
+[implot](https://github.com/epezent/implot) v0.16
 
-imguizmo v1.84 WIP
+[ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo) v1.84 WIP
 
-yaml-cpp v0.8.0
+[yaml-cpp](https://github.com/jbeder/yaml-cpp) v0.8.0
 
-shaderc v2024.2
+[shaderc](https://github.com/google/shaderc) v2024.2
 
-spirv-cross vulkan-sdk-1.3.283.0
+[spirv-cross](https://github.com/KhronosGroup/SPIRV-Cross) vulkan-sdk-1.3.283.0
 
-tracy 0.11.1
+[tracy](https://github.com/wolfpld/tracy) 0.11.1
 
-IconFontCppHeaders bf610efb2e5d4361df799d0dfb5ae3977d7bba2e
+[IconFontCppHeaders](https://github.com/juliettef/IconFontCppHeaders) bf610efb2e5d4361df799d0dfb5ae3977d7bba2e
 
-material-design-icons e9da2194e65080a829d670ae39a99c7b5fc09548
+[material-design-icons](https://github.com/google/material-design-icons) e9da2194e65080a829d670ae39a99c7b5fc09548
 
 [Google Fonts](https://fonts.google.com/icons)
