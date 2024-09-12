@@ -51,3 +51,9 @@ shaderc v2024.2
 spirv-cross vulkan-sdk-1.3.283.0
 
 tracy 0.11.1
+
+IconFontCppHeaders bf610efb2e5d4361df799d0dfb5ae3977d7bba2e
+
+material-design-icons e9da2194e65080a829d670ae39a99c7b5fc09548
+
+[Google Fonts](https://fonts.google.com/icons)
