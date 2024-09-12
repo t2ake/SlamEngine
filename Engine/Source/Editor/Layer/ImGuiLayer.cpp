@@ -25,11 +25,6 @@
 namespace
 {
 
-constexpr ImGuiWindowFlags OverlayButtonFlags =
-	ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar |
-	ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-	ImGuiWindowFlags_NoBackground;
-
 constexpr ImGuiTreeNodeFlags DefaultSubTreeFlags =
 	ImGuiTreeNodeFlags_NoTreePushOnOpen |
 	ImGuiTreeNodeFlags_NoAutoOpenOnLog |
@@ -42,6 +37,12 @@ constexpr ImGuiTreeNodeFlags DefaultTreeFlags =
 	DefaultSubTreeFlags |
 	ImGuiTreeNodeFlags_Framed |
 	ImGuiTreeNodeFlags_AllowOverlap;
+
+float GetDPIFactor()
+{
+	// TEMPORARY
+	return ImGui::GetFontSize();
+}
 
 float GetTitleBarSize()
 {
@@ -191,40 +192,40 @@ void ImGuiLayer::ShowToolOverlay()
 {
 	SL_PROFILE;
 
-	// Display on the upper left corner.
-	constexpr float ToolOverlayOffset = 10.0f;
-	ImGui::SetNextWindowPos(ImVec2{
-		(float)m_sceneViewportWindowPosX + ToolOverlayOffset,
-		(float)m_sceneViewportWindowPosY + ToolOverlayOffset + GetTitleBarSize() });
-
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
-	ImGui::Begin("Tools", nullptr, OverlayButtonFlags);
-	ImGui::PopStyleVar();
-
-	constexpr std::array<int, 4> Operations =
+	constexpr size_t ToolCount = 4;
+	constexpr std::array<int, ToolCount> Operations =
 	{
 		-1, // No ImGuizmo tramsform.
 		ImGuizmo::OPERATION::TRANSLATE,
 		ImGuizmo::OPERATION::ROTATE,
 		ImGuizmo::OPERATION::SCALE,
 	};
-	constexpr std::array<const char *, 4> Icons =
+	constexpr std::array<const char *, ToolCount> Icons =
 	{
 		ICON_MS_ARROW_SELECTOR_TOOL, ICON_MS_DRAG_PAN, ICON_MS_CACHED, ICON_MS_ZOOM_OUT_MAP,
 	};
+
 	auto SelectableButton = [this](size_t index)
 	{
 		const int op = Operations.at(index);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, m_imguizmoMode == op ? 1.0f : 0.5f);
-		if (ImGui::Button(Icons.at(index), ImVec2{32.0f, 32.0f}))
+		if (ImGui::Button(Icons.at(index), ImVec2{ GetDPIFactor() * 2.0f, GetDPIFactor() * 2.0f }))
 		{
 			m_imguizmoMode = op;
 		}
 		ImGui::PopStyleVar();
 	};
 
-	for (size_t i = 0; i < 4; ++i)
+	// Display on the upper left corner.
+	ImGui::SetNextWindowPos(ImVec2{
+		(float)m_sceneViewportWindowPosX + GetDPIFactor(),
+		(float)m_sceneViewportWindowPosY + GetDPIFactor() + GetTitleBarSize() });
+
+	ImGui::Begin("Tools", nullptr, ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+
+	for (size_t i = 0; i < ToolCount; ++i)
 	{
 		SelectableButton(i);
 	}
@@ -293,11 +294,11 @@ void ImGuiLayer::ShowInfo(float deltaTime)
 	ImGui::Begin("Info");
 	RightClickFocus();
 
-	// Infos
+	// 1. Infos
 	ImGui::Text("Backend: %s", nameof::nameof_enum(sl::RenderCore::GetBackend()).data());
 	ImGui::Separator();
 
-	// FPS plot
+	// 2. FPS
 	static float s_sumTime = 0.0f; // Stores in millisecond.
 	static float s_deltaTimeMultiplier = 10.0f;
 	static ScrollingBuffer s_coastBuffer;
@@ -498,7 +499,7 @@ void ImGuiLayer::ShowLog()
 				}
 			}
 		}
-		else // Without any filter
+		else // Without any filter.
 		{
 			ImGuiListClipper clipper;
 			clipper.Begin((int)logInfos.size());
@@ -516,7 +517,7 @@ void ImGuiLayer::ShowLog()
 		}
 		ImGui::PopStyleVar();
 
-		// Auto scrolling
+		// Auto scrolling.
 		if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
 		{
 			ImGui::SetScrollHereY(1.0f);
@@ -770,9 +771,8 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 
 	// Draw component menu button
 	ImGui::SameLine();
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-	// Don't know why (WindowPadding.x / 2) just works perfect here.
-	AlignNextWidget(ICON_MS_MORE_VERT, 1.0f, ImGui::GetStyle().WindowPadding.x / 2.0f);
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.0f, 0.0f, 0.0f, 0.0f });
+	AlignNextWidget(ICON_MS_MORE_VERT, 1.0f, ImGui::GetStyle().WindowPadding.x * 0.5f);
 	if(ImGui::Button(ICON_MS_MORE_VERT))
 	{
 		ImGui::OpenPopup("ComponentPopup");
@@ -782,14 +782,14 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 	bool removeComponent = false;
 	if (ImGui::BeginPopup("ComponentPopup"))
 	{
-		// C++ 20 "requires" allows us to avoid forcing all composnets to implement a Reset function.
+		// C++ 20 `requires` allows us to avoid forcing all composnets to implement a `Reset` function.
 		if constexpr (requires{ pComponent->Reset(); })
 		{
 			if (ImGui::MenuItem("Reset Component"))
 			{
 				pComponent->Reset();
 
-				// The camera entity will be affected by TransformComponent.
+				// The camera entity will be affected by Transform component.
 				if constexpr (std::is_same_v<T, sl::TransformComponent>)
 				{
 					if (auto pCamera = m_selectedEntity.TryGetComponents<sl::CameraComponent>(); pCamera)
@@ -800,7 +800,7 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 			}
 		}
 
-		// We don't allow to remove TagComponent and TransformComponent.
+		// We don't allow to remove Tag and Transform component.
 		if constexpr (!std::is_same_v<T, sl::TagComponent> && !std::is_same_v<T, sl::TransformComponent>)
 		{
 			if (ImGui::MenuItem("Remove Component"))
@@ -812,8 +812,8 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 		ImGui::EndPopup();
 	}
 
-	// Draw component specific items
-	if (componentTreeOpen)
+	// Draw component specific parameters.
+	if (componentTreeOpen && !removeComponent)
 	{
 		uiFunction(pComponent);
 	}
@@ -833,25 +833,27 @@ void ImGuiLayer::StartWithText(std::string_view text)
 	static sl::Entity s_crtEntity;
 	if (s_crtEntity != m_selectedEntity)
 	{
-		// ImGui::CalcTextSize("Rotation").x == 56.0f
-		// ImGui::CalcTextSize("Position").x == 56.0f
-		// Just a little trick to avoid Tag Component flickering when it's rendered the first time,
+		// `ImGui::CalcTextSize("Rotation").x == 56.0f`
+		// `ImGui::CalcTextSize("Position").x == 56.0f`
+		// Just a little trick to avoid Tag component flickering when it is rendered the first time,
 		// as we known every entity must hold both Tag and Transform component.
 		m_maxTextSize = 56.0f;
 		s_crtEntity = m_selectedEntity;
 	}
 
 	float crtTextSize = ImGui::CalcTextSize(text.data()).x;
-	m_maxTextSize = std::max(m_maxTextSize, crtTextSize);
+	if (crtTextSize > m_maxTextSize)
+	{
+		m_maxTextSize = crtTextSize;
+	}
 
-	float offset = ImGui::GetStyle().IndentSpacing + ImGui::GetFontSize();
+	float offset = ImGui::GetStyle().IndentSpacing + GetDPIFactor();
 	ImGui::SetCursorPosX(offset);
 	ImGui::AlignTextToFramePadding();
 	ImGui::Text(text.data());
 
-	// TODO: Some hard code size here, need to be parameterised in the future.
-	ImGui::SameLine(m_maxTextSize + 50.0f);
-	ImGui::SetNextItemWidth(-8.0f);
+	ImGui::SameLine(m_maxTextSize + offset + GetDPIFactor());
+	ImGui::SetNextItemWidth(-GetDPIFactor());
 }
 
 template<class T>
@@ -865,7 +867,8 @@ void ImGuiLayer::AddComponent(const char *label)
 		}
 		else
 		{
-			SL_LOG_WARN("Entity \"{}\" already has component \"{}\"", m_selectedEntity.GetComponents<sl::TagComponent>().m_name, label);
+			SL_LOG_WARN("Entity \"{}\" already has component \"{}\"",
+				m_selectedEntity.GetComponents<sl::TagComponent>().m_name, label);
 		}
 	}
 }
@@ -883,7 +886,7 @@ void ImGuiLayer::ShowDetails()
 		return;
 	}
 
-	// Draw Tag component
+	// Draw Tag component.
 	DrawComponent<sl::TagComponent>("Tag", [this](sl::TagComponent *pComponent)
 	{
 		std::string &name = pComponent->m_name;
@@ -906,7 +909,7 @@ void ImGuiLayer::ShowDetails()
 		}
 	});
 
-	// Draw Transform component
+	// Draw Transform component.
 	DrawComponent<sl::TransformComponent>("Transform", [this](sl::TransformComponent *pComponent)
 	{
 		bool cameraMayBeDirty = false;
@@ -940,7 +943,7 @@ void ImGuiLayer::ShowDetails()
 		}
 	});
 
-	// Draw Camera component
+	// Draw Camera component.
 	DrawComponent<sl::CameraComponent>("Camera", [this](sl::CameraComponent *pComponent)
 	{
 		constexpr size_t Count = nameof::enum_count<sl::ProjectionType>();
@@ -1046,7 +1049,7 @@ void ImGuiLayer::ShowDetails()
 		}
 	});
 
-	// Draw Rendering component
+	// Draw Rendering component.
 	DrawComponent<sl::RenderingComponent>("Rendering", [this](sl::RenderingComponent *pComponent)
 	{
 		StartWithText("Base Shader");
@@ -1062,14 +1065,14 @@ void ImGuiLayer::ShowDetails()
 		ImGui::Text(pComponent->m_optMeshResourceName ? pComponent->m_optMeshResourceName->c_str() : "");
 	});
 
-	// Draw Cornerstone component
+	// Draw Cornerstone component.
 	DrawComponent<sl::CornerstoneComponent>("Cornerstone", [this](sl::CornerstoneComponent *pComponent)
 	{
 		StartWithText("Info");
 		ImGui::TextWrapped(pComponent->m_info.c_str());
 	});
 
-	// Add component button
+	// Add component button.
 	AlignNextWidget("Add Component");
 	if (ImGui::Button("Add Component"))
 	{
@@ -1091,7 +1094,7 @@ void ImGuiLayer::ShowImGuizmoOrientation()
 	SL_PROFILE;
 
 	// Display a cube on the upper right corner.
-	constexpr float Length = 100.0f;
+	float Length = GetDPIFactor() * 5.0f;
 	ImVec2 pos = ImVec2{
 		(float)m_sceneViewportWindowPosX + (float)m_sceneViewportSizeX - Length,
 		(float)m_sceneViewportWindowPosY + GetTitleBarSize() };
@@ -1158,7 +1161,7 @@ void ImGuiLayer::ShowSceneViewport()
 	m_sceneViewportWindowPosX = (uint32_t)ImGui::GetWindowPos().x;
 	m_sceneViewportWindowPosY = (uint32_t)ImGui::GetWindowPos().y;
 
-	// Resize event
+	// Send resize event.
 	uint32_t crtSceneViewportSizeX = (uint32_t)ImGui::GetContentRegionAvail().x;
 	uint32_t crtSceneViewportSizeY = (uint32_t)ImGui::GetContentRegionAvail().y;
 	if (m_sceneViewportSizeX != crtSceneViewportSizeX || m_sceneViewportSizeY != crtSceneViewportSizeY)
@@ -1170,7 +1173,7 @@ void ImGuiLayer::ShowSceneViewport()
 		m_eventCallback(event);
 	}
 
-	// Draw main frame buffer color attachment
+	// Draw main frame buffer color attachment.
 	uint32_t handle = sl::RenderCore::GetMainFramebuffer()->GetAttachmentHandle(0);
 	ImGui::Image((void *)(uint64_t)handle, ImGui::GetContentRegionAvail(), ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 
