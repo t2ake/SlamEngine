@@ -3,7 +3,7 @@ Scene: DemoScene
 Entities:
   - Entity ID: 1
     Tag Component:
-      Name: Test Entity
+      Name: Square Entity
     Transform Component:
       Position: [0, 0, 0]
       Rotation: [0, 0, 0]
@@ -15,12 +15,13 @@ Entities:
       Mesh: SquareMesh
   - Entity ID: 0
     Tag Component:
-      Name: Editor Camera
+      Name: Main Camera
     Transform Component:
       Position: [0, 0, 5]
-      Rotation: [0.00907571148, -89.8135757, 0]
+      Rotation: [0, -90, 0]
       Scale: [1, 1, 1]
     Camera Component:
+      Main Camera: true
       Projection Type: Perspective
       Perspective:
         FOV: 0.785398185
@@ -36,5 +37,3 @@ Entities:
         Acceleration: 0.00400000019
         Shift Multiplier: 4
         Scroll Multiplier: 1
-    Cornerstone Component:
-      Info: Currently we only support that only one camera in the scene.

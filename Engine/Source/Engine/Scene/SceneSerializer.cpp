@@ -71,6 +71,8 @@ void SceneSerializer::SerializeYAML(std::string_view sceneName)
 			out << YAML::Key << "Camera Component";
 			out << YAML::BeginMap;
 			
+			out << YAML::Key << "Main Camera" << YAML::Value << pCamera->m_isMainCamera;
+
 			out << YAML::Key << "Projection Type" << YAML::Value << pCamera->m_projectionType;
 
 			out << YAML::Key << "Perspective";
@@ -167,101 +169,106 @@ bool SceneSerializer::DeserializeYAML(std::string_view sceneName)
 			// Entity ID
 			if (auto entityID = entity["Entity ID"]; entityID)
 			{
-				SL_LOG_TRACE("  Entity ID: {}", entityID.as<uint32_t>());
+				SL_LOG_TRACE("\tEntity ID: {}", entityID.as<uint32_t>());
 			}
 
 			// Tag Component
 			if (auto tag = entity["Tag Component"]; tag)
 			{
-				SL_LOG_TRACE("    Tag Component:");
+				SL_LOG_TRACE("\t\tTag Component:");
 				if (auto name = tag["Name"]; name)
 				{
-					SL_LOG_TRACE("      Name: {}", name.as<std::string>());
+					SL_LOG_TRACE("\t\t\tName: {}", name.as<std::string>());
 				}
 			}
 
 			// Transform Component
 			if (auto transform = entity["Transform Component"]; transform)
 			{
-				SL_LOG_TRACE("    Transform Component:");
+				SL_LOG_TRACE("\t\tTransform Component:");
 				if (auto position = transform["Position"]; position)
 				{
-					SL_LOG_TRACE("      Position: {}", position.as<glm::vec3>());
+					SL_LOG_TRACE("\t\t\tPosition: {}", position.as<glm::vec3>());
 				}
 				if (auto rotation = transform["Rotation"]; rotation)
 				{
-					SL_LOG_TRACE("      Rotation: {}", rotation.as<glm::vec3>());
+					SL_LOG_TRACE("\t\t\tRotation: {}", rotation.as<glm::vec3>());
 				}
 				if (auto scale = transform["Scale"]; scale)
 				{
-					SL_LOG_TRACE("      Scale: {}", scale.as<glm::vec3>());
+					SL_LOG_TRACE("\t\t\tScale: {}", scale.as<glm::vec3>());
 				}
 			}
 
 			// Camera Component
 			if (auto camera = entity["Camera Component"]; camera)
 			{
-				SL_LOG_TRACE("    Camera Component:");
+				SL_LOG_TRACE("\t\tCamera Component:");
+
+				if (auto mainCamera = camera["Main Camera"]; mainCamera)
+				{
+					SL_LOG_TRACE("\t\t\tMain Camera: {}", mainCamera.as<bool>());
+				}
 
 				if (auto projectionType = camera["Projection Type"]; projectionType)
 				{
-					SL_LOG_TRACE("      Projection Type: {}", nameof::nameof_enum(projectionType.as<sl::ProjectionType>()));
+					SL_LOG_TRACE("\t\t\tProjection Type: {}", nameof::nameof_enum(projectionType.as<sl::ProjectionType>()));
 				}
 
 				if (auto perspective = camera["Perspective"]; perspective)
 				{
-					SL_LOG_TRACE("      Perspective:");
+					SL_LOG_TRACE("\t\t\tPerspective:");
 					if (auto fov = perspective["FOV"]; fov)
 					{
-						SL_LOG_TRACE("        FOV: {}", fov.as<float>());
+						SL_LOG_TRACE("\t\t\t\tFOV: {}", fov.as<float>());
 					}
 					if (auto nearPlan = perspective["Near Plane"]; nearPlan)
 					{
-						SL_LOG_TRACE("        Near Plane: {}", nearPlan.as<float>());
+						SL_LOG_TRACE("\t\t\t\tNear Plane: {}", nearPlan.as<float>());
 					}
 					if (auto farPaln = perspective["Far Plane"]; farPaln)
 					{
-						SL_LOG_TRACE("        Far Plane: {}", farPaln.as<float>());
+						SL_LOG_TRACE("\t\t\t\tFar Plane: {}", farPaln.as<float>());
 					}
 				}
 				if (auto orthographic = camera["Orthographic"]; orthographic)
 				{
-					SL_LOG_TRACE("      Orthographic:");
+					SL_LOG_TRACE("\t\t\tOrthographic:");
 					if (auto size = orthographic["Size"]; size)
 					{
-						SL_LOG_TRACE("        Size: {}", size.as<float>());
+						SL_LOG_TRACE("\t\t\t\tSize: {}", size.as<float>());
 					}
 					if (auto nearClip = orthographic["Near Clip"]; nearClip)
 					{
-						SL_LOG_TRACE("        Near Clip: {}", nearClip.as<float>());
+						SL_LOG_TRACE("\t\t\t\tNear Clip: {}", nearClip.as<float>());
 					}
 					if (auto farClip = orthographic["Far Clip"]; farClip)
 					{
-						SL_LOG_TRACE("        Far Clip: {}", farClip.as<float>());
+						SL_LOG_TRACE("\t\t\t\tFar Clip: {}", farClip.as<float>());
 					}
 				}
 				if (auto controller = camera["Controller"]; controller)
 				{
-					SL_LOG_TRACE("      Controller:");
+					SL_LOG_TRACE("\t\t\tController:");
 					if (auto rotateSpeed = controller["Rotate Speed"]; rotateSpeed)
 					{
-						SL_LOG_TRACE("        Rotate Speed: {}", rotateSpeed.as<float>());
+						SL_LOG_TRACE("\t\t\t\tRotate Speed: {}", rotateSpeed.as<float>());
 					}
 					if (auto moveSpeed = controller["Move Speed"]; moveSpeed)
 					{
-						SL_LOG_TRACE("        Move Speed: {}", moveSpeed.as<float>());
+						SL_LOG_TRACE("\t\t\t\tMove Speed: {}", moveSpeed.as<float>());
 					}
 					if (auto acceleration = controller["Acceleration"]; acceleration)
 					{
-						SL_LOG_TRACE("        Acceleration: {}", acceleration.as<float>());
+						SL_LOG_TRACE("\t\t\t\tAcceleration: {}", acceleration.as<float>());
 					}
 					if (auto shiftMultiplier = controller["Shift Multiplier"]; shiftMultiplier)
 					{
-						SL_LOG_TRACE("        Shift Multiplier: {}", shiftMultiplier.as<float>());
+						SL_LOG_TRACE("\t\t\t\tShift Multiplier: {}", shiftMultiplier.as<float>());
 					}
 					if (auto scrollMultiplier = controller["Scroll Multiplier"]; scrollMultiplier)
 					{
-						SL_LOG_TRACE("        Scroll Multiplier: {}", scrollMultiplier.as<float>());
+						SL_LOG_TRACE("\t\t\t\tScroll Multiplier: {}", scrollMultiplier.as<float>());
 					}
 				}
 			}
@@ -269,32 +276,32 @@ bool SceneSerializer::DeserializeYAML(std::string_view sceneName)
 			// Redering Component
 			if (auto redering = entity["Rendering Component"]; redering)
 			{
-				SL_LOG_TRACE("    Rendering Component:");
+				SL_LOG_TRACE("\t\tRendering Component:");
 				if (auto baseShader = redering["Base Shader"]; baseShader)
 				{
-					SL_LOG_TRACE("      Base Shader: {}", baseShader.as<std::string>());
+					SL_LOG_TRACE("\t\t\tBase Shader: {}", baseShader.as<std::string>());
 				}
 				if (auto IDShader = redering["ID Shader"]; IDShader)
 				{
-					SL_LOG_TRACE("      ID Shader: {}", IDShader.as<std::string>());
+					SL_LOG_TRACE("\t\t\tID Shader: {}", IDShader.as<std::string>());
 				}
 				if (auto texture = redering["Texture"]; texture)
 				{
-					SL_LOG_TRACE("      Texture: {}", texture.as<std::string>());
+					SL_LOG_TRACE("\t\t\tTexture: {}", texture.as<std::string>());
 				}
 				if (auto mesh = redering["Mesh"]; mesh)
 				{
-					SL_LOG_TRACE("      Mesh: {}", mesh.as<std::string>());
+					SL_LOG_TRACE("\t\t\tMesh: {}", mesh.as<std::string>());
 				}
 			}
 
 			// Cornerstone Component
 			if (auto cornerstone = entity["Cornerstone Component"]; cornerstone)
 			{
-				SL_LOG_TRACE("    Cornerstone Component:");
+				SL_LOG_TRACE("\t\tCornerstone Component:");
 				if (auto info = cornerstone["Info"]; info)
 				{
-					SL_LOG_TRACE("      Info: {}", info.as<std::string>());
+					SL_LOG_TRACE("\t\t\tInfo: {}", info.as<std::string>());
 				}
 			}
 		}

@@ -27,13 +27,11 @@ public:
 	static Entity CreateEntity(std::string name = "Empty Entity");
 	static entt::registry &GetRegistry() { return m_registry; }
 
-	static void SetEditorCameraEntity(Entity entity);
-	static Entity GetEditorCameraEntity();
-	static CameraComponent &GetEditorCameraComponent();
+	static Entity GetMainCameraEntity();
+	static CameraComponent &GetMainCameraComponent();
 
 private:
-	static entt::registry m_registry;
-	static Entity m_editorCameraEntity;
+	inline static entt::registry m_registry;
 };
 
 // Basically, Entity is just a tool class that allows us to use ECS more intuitively.
@@ -76,7 +74,8 @@ public:
 	template<class... T>
 	decltype(auto) GetComponents()
 	{
-		SL_ASSERT(HasAllComponentsOf<T...>(), "Entity does not hold components!");
+		SL_ASSERT(HasAllComponentsOf<T...>(),
+			(sizeof...(T) == 1U) ? "Entity does not hold component!" : "Entity does not hold components!");
 		return ECSWorld::m_registry.get<T...>(m_handle);
 	}
 
@@ -107,14 +106,14 @@ public:
 	template<class T>
 	auto RemoveComponent()
 	{
-		// Using 'registry::remove' is safer than 'registry::erase'.
+		// `registry::remove` is safer than `registry::erase`.
 		return ECSWorld::m_registry.remove<T>(m_handle);
 	}
 
 	template<class T>
 	auto EraseComponent()
 	{
-		// Using 'registry::remove' is safer than 'registry::erase'.
+		// `registry::remove` is safer than `registry::erase`.
 		return ECSWorld::m_registry.erase<T>(m_handle);
 	}
 

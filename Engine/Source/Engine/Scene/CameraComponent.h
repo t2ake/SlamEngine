@@ -40,6 +40,7 @@ struct CameraComponent
 
 	bool IsUsing() const { return  m_controllerMode != CameraControllerMode::None; }
 
+	bool m_isMainCamera = false;
 	ProjectionType m_projectionType = ProjectionType::Perspective;
 	CameraControllerMode m_controllerMode = CameraControllerMode::None;
 	

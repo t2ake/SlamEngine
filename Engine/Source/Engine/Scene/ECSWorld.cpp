@@ -3,9 +3,6 @@
 namespace sl
 {
 
-entt::registry ECSWorld::m_registry;
-Entity ECSWorld::m_editorCameraEntity;
-
 Entity ECSWorld::CreateEntity(std::string name)
 {
 	Entity entity{ m_registry.create() };
@@ -15,30 +12,29 @@ Entity ECSWorld::CreateEntity(std::string name)
 	return entity;
 }
 
-void ECSWorld::SetEditorCameraEntity(Entity entity)
+Entity ECSWorld::GetMainCameraEntity()
 {
-	m_editorCameraEntity = entity;
+	auto group = m_registry.group<CameraComponent>();
+	for (auto entity : group)
+	{
+		if (group.get<CameraComponent>(entity).m_isMainCamera)
+		{
+			return entity;
+		}
+	}
+
+	return {};
 }
 
-Entity ECSWorld::GetEditorCameraEntity()
+CameraComponent &ECSWorld::GetMainCameraComponent()
 {
-	return m_editorCameraEntity;
-}
-
-CameraComponent &ECSWorld::GetEditorCameraComponent()
-{
-	return m_editorCameraEntity.GetComponents<CameraComponent>();
+	return GetMainCameraEntity().GetComponents<CameraComponent>();
 }
 
 void Entity::Destroy()
 {
 	if (!IsValid())
 	{
-		return;
-	}
-	if (TryGetComponents<sl::CornerstoneComponent>())
-	{
-		SL_LOG_WARN("Attempt to destroy entity \"{}\" with Cornerstone component!", GetComponents<sl::TagComponent>().m_name);
 		return;
 	}
 

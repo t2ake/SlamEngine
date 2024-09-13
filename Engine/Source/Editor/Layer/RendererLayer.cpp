@@ -38,9 +38,12 @@ void RendererLayer::OnRender()
 {
 	SL_PROFILE;
 
-	sl::RenderCore::GetUniformBuffer(0)->Upload("ub_viewProjection", sl::ECSWorld::GetEditorCameraComponent().GetViewProjection());
+	sl::Entity mainCamera = sl::ECSWorld::GetMainCameraEntity();
+
+	sl::RenderCore::GetUniformBuffer(0)->Upload("ub_viewProjection",
+		mainCamera.GetComponents<sl::CameraComponent>().GetViewProjection());
 	sl::RenderCore::GetUniformBuffer(0)->Upload("ub_cameraPos",
-		glm::vec4{ sl::ECSWorld::GetEditorCameraEntity().GetComponents<sl::TransformComponent>().m_position, 1.0f });
+		glm::vec4{ mainCamera.GetComponents<sl::TransformComponent>().m_position, 1.0f });
 	
 	BasePass();
 	EntityIDPass();

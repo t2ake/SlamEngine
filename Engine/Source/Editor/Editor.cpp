@@ -51,10 +51,9 @@ Editor::Editor(EditorInitor initor)
 		{ "ub_viewProjection", sl::AttribType::mat4f },
 	}));
 		
-	sl::Entity editorCameraEntity = sl::ECSWorld::CreateEntity("Editor Camera");
-	editorCameraEntity.AddComponent<sl::CameraComponent>();
-	editorCameraEntity.AddComponent<sl::CornerstoneComponent>("Editor camera must exist in the scene.");
-	sl::ECSWorld::SetEditorCameraEntity(editorCameraEntity);
+	sl::Entity mainCameraEntity = sl::ECSWorld::CreateEntity("Main Camera");
+	auto &mainCameraComponent = mainCameraEntity.AddComponent<sl::CameraComponent>();
+	mainCameraComponent.m_isMainCamera = true;
 
 	auto pRendererLayer = std::make_unique<RendererLayer>();
 	auto pResourceManagerLayer = std::make_unique<ResourceManagerLayer>();

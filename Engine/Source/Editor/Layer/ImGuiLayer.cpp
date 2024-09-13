@@ -93,7 +93,7 @@ ImGuiLayer::ImGuiLayer()
 	SL_PROFILE;
 
 	m_dockSpaceFlag |= ImGuiDockNodeFlags_NoUndocking;
-	m_selectedEntity = sl::ECSWorld::GetEditorCameraEntity();
+	m_selectedEntity = sl::ECSWorld::GetMainCameraEntity();
 	m_assetBrowserCrtPath = sl::Path::AssetPath;
 	
 	auto pFileIconTextureResource = std::make_unique<sl::TextureResource>(
@@ -573,12 +573,35 @@ void ImGuiLayer::ShowEntityList()
 		{
 			if (ImGui::MenuItem("Destory Entity"))
 			{
-				if (m_selectedEntity == entity)
+				bool canDestroy = true;
+				sl::Entity slEntity{ entity };
+
+				// It is not allowed to destroy entity with Cornerstone coponent.
+				if (slEntity.TryGetComponents<sl::CornerstoneComponent>())
 				{
-					m_selectedEntity.Reset();
+					canDestroy = false;
+					SL_LOG_WARN("Can not destroy entity \"{}\" with Cornerstone component!",
+						slEntity.GetComponents<sl::TagComponent>().m_name.c_str());
 				}
-				sl::Entity{ entity }.Destroy();
+				// It is not allowed to destroy entity that is the main camera.
+				if (auto pCameraComponent = slEntity.TryGetComponents<sl::CameraComponent>();
+					pCameraComponent && pCameraComponent->m_isMainCamera)
+				{
+					canDestroy = false;
+					SL_LOG_WARN("Can not destroy entity \"{}\" as main camera!",
+						slEntity.GetComponents<sl::TagComponent>().m_name.c_str());
+				}
+
+				if (canDestroy)
+				{
+					if (m_selectedEntity == entity)
+					{
+						m_selectedEntity.Reset();
+					}
+					slEntity.Destroy();
+				}
 			}
+
 			ImGui::EndPopup();
 		}
 
@@ -765,12 +788,12 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 
 	ImGui::PushID(nameof::nameof_type<T>().data());
 
-	// Draw tree node
+	// Draw tree node.
 	ImGui::PushFont(sl::ImGuiContext::GetBold());
 	bool componentTreeOpen = ImGui::TreeNodeEx(label, DefaultTreeFlags, label);
 	ImGui::PopFont();
 
-	// Draw component menu button
+	// Draw component menu button.
 	ImGui::SameLine();
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.0f, 0.0f, 0.0f, 0.0f });
 	AlignNextWidget(ICON_MS_MORE_VERT, 1.0f, ImGui::GetStyle().WindowPadding.x * 0.5f);
@@ -801,13 +824,26 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 			}
 		}
 
-		// We don't allow to remove Tag and Transform component.
-		if constexpr (!std::is_same_v<T, sl::TagComponent> && !std::is_same_v<T, sl::TransformComponent>)
+		bool canRemove = true;
+		// It is not allowed to remove Tag and Transform component.
+		if constexpr (std::is_same_v<T, sl::TagComponent> || std::is_same_v<T, sl::TransformComponent>)
 		{
-			if (ImGui::MenuItem("Remove Component"))
+			canRemove = false;
+		}
+		// It is not allowed to remove Camera component if it is a main camera.
+		else if (std::is_same_v<T, sl::CameraComponent>)
+		{
+			if (m_selectedEntity.GetComponents<sl::CameraComponent>().m_isMainCamera)
 			{
-				removeComponent = true;
+				canRemove = false;
 			}
+		}
+
+		if (canRemove && ImGui::MenuItem("Remove Component"))
+		{
+			m_selectedEntity.RemoveComponent<T>();
+			m_maxTextSize = 56.0f;
+			removeComponent = true;
 		}
 
 		ImGui::EndPopup();
@@ -817,12 +853,6 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 	if (componentTreeOpen && !removeComponent)
 	{
 		uiFunction(pComponent);
-	}
-
-	if (removeComponent)
-	{
-		m_selectedEntity.RemoveComponent<T>();
-		m_maxTextSize = 56.0f;
 	}
 
 	ImGui::Separator();
@@ -947,8 +977,27 @@ void ImGuiLayer::ShowDetails()
 	// Draw Camera component.
 	DrawComponent<sl::CameraComponent>("Camera", [this](sl::CameraComponent *pComponent)
 	{
-		constexpr size_t Count = nameof::enum_count<sl::ProjectionType>();
-		constexpr std::array<const char *, Count> ProjectionTypeNames =
+		StartWithText("Main Camera");
+		bool isMainCamera = pComponent->m_isMainCamera;
+		if(ImGui::Checkbox("##MainCameraCheckBox", &isMainCamera))
+		{
+			if (isMainCamera)
+			{
+				auto view = sl::ECSWorld::GetRegistry().group<sl::CameraComponent>();
+				for (auto entity : view)
+				{
+					view.get<sl::CameraComponent>(entity).m_isMainCamera = false;
+				}
+				pComponent->m_isMainCamera = true;
+			}
+			else
+			{
+				SL_LOG_WARN("Main camera must exist in the scene!");
+			}
+		}
+
+		constexpr size_t ProjectionTypeCount = nameof::enum_count<sl::ProjectionType>();
+		constexpr std::array<const char *, ProjectionTypeCount> ProjectionTypeNames =
 		{
 			nameof::nameof_enum(sl::ProjectionType::Perspective).data(),
 			nameof::nameof_enum(sl::ProjectionType::Orthographic).data(),
@@ -957,7 +1006,7 @@ void ImGuiLayer::ShowDetails()
 		StartWithText("Projection");
 		if (ImGui::BeginCombo("##Projection", ProjectionTypeNames[(size_t)pComponent->m_projectionType], ImGuiComboFlags_WidthFitPreview))
 		{
-			for (size_t i = 0; i < Count; ++i)
+			for (size_t i = 0; i < ProjectionTypeCount; ++i)
 			{
 				if (ImGui::Selectable(ProjectionTypeNames[i], i == (size_t)pComponent->m_projectionType))
 				{
@@ -1100,7 +1149,7 @@ void ImGuiLayer::ShowImGuizmoOrientation()
 		(float)m_sceneViewportWindowPosX + (float)m_sceneViewportSizeX - Length,
 		(float)m_sceneViewportWindowPosY + GetTitleBarSize() };
 
-	auto view = sl::ECSWorld::GetEditorCameraComponent().GetView();
+	auto view = sl::ECSWorld::GetMainCameraComponent().GetView();
 	ImGuizmo::ViewManipulate(glm::value_ptr(view), Length, pos, ImVec2{ Length , Length }, 0);
 }
 
@@ -1108,13 +1157,14 @@ void ImGuiLayer::ShowImGuizmoTransform()
 {
 	SL_PROFILE;
 
-	if (m_selectedEntity == sl::ECSWorld::GetEditorCameraEntity())
+	auto mainCameraEntity = sl::ECSWorld::GetMainCameraEntity();
+	if (m_selectedEntity == mainCameraEntity)
 	{
 		return;
 	}
 
 	// Disable ImGuizmo when camera is using.
-	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
+	auto &camera = mainCameraEntity.GetComponents<sl::CameraComponent>();
 	ImGuizmo::Enable(!camera.IsUsing());
 
 	ImGuizmo::SetDrawlist();
@@ -1185,7 +1235,7 @@ void ImGuiLayer::ShowSceneViewport()
 		ShowImGuizmoTransform();
 	}
 
-	if (sl::ECSWorld::GetEditorCameraComponent().IsUsing() ||
+	if (sl::ECSWorld::GetMainCameraComponent().IsUsing() ||
 		!ImGui::IsWindowHovered() || ImGuizmo::IsUsing() ||
 		ImGui::IsMouseDragging(ImGuiMouseButton_Left) ||
 		ImGui::IsMouseDragging(ImGuiMouseButton_Right))
@@ -1234,7 +1284,7 @@ void ImGuiLayer::MousePick()
 
 bool ImGuiLayer::OnKeyPressed(sl::KeyPressEvent& event)
 {
-	if (sl::ECSWorld::GetEditorCameraComponent().IsUsing() || ImGuizmo::IsUsing())
+	if (sl::ECSWorld::GetMainCameraComponent().IsUsing() || ImGuizmo::IsUsing())
 	{
 		return false;
 	}
@@ -1278,7 +1328,7 @@ bool ImGuiLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
 		return false;
 	}
 
-	auto &camera = sl::ECSWorld::GetEditorCameraComponent();
+	auto &camera = sl::ECSWorld::GetMainCameraComponent();
 	if (event.GetButton() == SL_MOUSE_BUTTON_LEFT)
 	{
 		if (sl::Input::IsKeyPressed(SL_KEY_LEFT_ALT))
