@@ -777,8 +777,8 @@ void ImGuiLayer::ShowAssetBrowser()
 	ImGui::End();
 }
 
-template<class T, class Fun>
-void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
+template<class T>
+void ImGuiLayer::DrawComponent(const char *label, auto drawParameters)
 {
 	T *pComponent = m_selectedEntity.TryGetComponents<T>();
 	if (!pComponent)
@@ -849,10 +849,10 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 		ImGui::EndPopup();
 	}
 
-	// Draw component specific parameters.
+	// Draw component specific parameters ui.
 	if (componentTreeOpen && !removeComponent)
 	{
-		uiFunction(pComponent);
+		drawParameters(pComponent);
 	}
 
 	ImGui::Separator();

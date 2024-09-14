@@ -57,10 +57,9 @@ public:
 		return (std::filesystem::path{ AssetPath } / path).generic_string();
 	}
 
-	template<class... Args>
-	SL_FORCEINLINE static std::string Join(Args&&... args)
+	SL_FORCEINLINE static std::string Join(auto &&...args)
 	{
-		return (std::filesystem::path{ std::forward<Args>(args)} / ...).generic_string();
+		return (... / std::filesystem::path{ std::forward<decltype(args)>(args) }).generic_string();
 	}
 };
 

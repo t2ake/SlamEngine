@@ -25,7 +25,7 @@ enum class EventType
 #define SL_EVENT_CATEGORY_SCENE_VIEWPORT UINT8_C(0x10)
 #define SL_EVENT_CATEGORY_CAMERA         UINT8_C(0x11)
 
-#define BIND_EVENT_CALLBACK(fun) std::bind(&fun, this, std::placeholders::_1)
+#define BIND_EVENT_CALLBACK(fun) std::bind_front(&fun, this)
 
 class Event
 {
@@ -55,15 +55,15 @@ public:
 	EventDispatcher(Event &event) : m_event(event) {}
 
 	template<typename T>
-	bool Dispatch(std::function<bool(T &)> func)
+	bool Dispatch(std::function<bool(T &)> fun)
 	{
 		static_assert(std::is_base_of_v<Event, T>);
 		static_assert(requires{ T::GetStaticEventType(); });
 
-		// Call func if type of m_event is T.
+		// Call fun if type of m_event is T.
 		if (m_event.GetEventType() == T::GetStaticEventType())
 		{
-			m_event.IsHandled() |= func(static_cast<T &>(m_event));
+			m_event.IsHandled() |= fun(static_cast<T &>(m_event));
 			return true;
 		}
 
