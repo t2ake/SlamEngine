@@ -54,16 +54,16 @@ class EventDispatcher
 public:
 	EventDispatcher(Event &event) : m_event(event) {}
 
-	template<typename T>
-	bool Dispatch(std::function<bool(T &)> fun)
+	template<class DerivedEvent>
+	bool Dispatch(auto fun)
 	{
-		static_assert(std::is_base_of_v<Event, T>);
-		static_assert(requires{ T::GetStaticEventType(); });
+		static_assert(std::is_base_of_v<Event, DerivedEvent>);
+		static_assert(requires{ DerivedEvent::GetStaticEventType(); });
 
-		// Call fun if type of m_event is T.
-		if (m_event.GetEventType() == T::GetStaticEventType())
+		// Call fun if type of m_event is DerivedEvent.
+		if (m_event.GetEventType() == DerivedEvent::GetStaticEventType())
 		{
-			m_event.IsHandled() |= fun(static_cast<T &>(m_event));
+			m_event.IsHandled() |= fun(static_cast<DerivedEvent &>(m_event));
 			return true;
 		}
 

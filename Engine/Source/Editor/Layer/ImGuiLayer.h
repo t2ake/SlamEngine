@@ -31,7 +31,7 @@ public:
 	virtual void OnRender() override;
 	virtual void EndFrame() override;
 
-	void SetEventCallback(sl::EventCallback fun) { m_eventCallback = std::move(fun); }
+	void SetEventCallback(auto fun) { m_eventCallback = fun; }
 
 private:
 	void ShowDebugPanel();

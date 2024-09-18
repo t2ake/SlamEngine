@@ -39,11 +39,10 @@ public:
 	void SetCursorPos(float x, float y);
 	void SetGlobalCursorPos(float x, float y);
 
-	void SetEventCallback(EventCallback fun) { m_eventCallback = std::move(fun); }
+	void SetEventCallback(auto fun) { m_eventCallback = fun; }
 	void DespatchEvent(Event &event) { m_eventCallback(event); }
 
 private:
-	// No need to delete this pointer.
 	void *m_pNativeWindow = nullptr;
 	std::unique_ptr<RenderContext> m_pRenderContext;
 	EventCallback m_eventCallback;
