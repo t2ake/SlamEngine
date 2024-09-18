@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/Defines.h"
-#include "Core/Time.h"
+#include "Core/Time.hpp"
 
 #include <memory>
 

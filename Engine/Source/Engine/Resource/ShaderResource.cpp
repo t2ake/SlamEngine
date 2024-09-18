@@ -2,7 +2,7 @@
 
 #include "Core/Log.h"
 #include "Core/Path.hpp"
-#include "Core/Time.h"
+#include "Core/Time.hpp"
 #include "RenderCore/Shader.h"
 #include "Resource/FileIO.hpp"
 #include "Resource/ShaderCompiler.h"
