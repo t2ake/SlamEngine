@@ -814,6 +814,8 @@ void ImGuiLayer::ShowAssetBrowser()
 template<class T>
 void ImGuiLayer::DrawComponent(const char *label, auto drawParameters)
 {
+	static_assert(requires{ drawParameters(m_selectedEntity.TryGetComponents<T>()); });
+
 	T *pComponent = m_selectedEntity.TryGetComponents<T>();
 	if (!pComponent)
 	{
@@ -893,6 +895,25 @@ void ImGuiLayer::DrawComponent(const char *label, auto drawParameters)
 	ImGui::PopID();
 }
 
+template<class T>
+void ImGuiLayer::AddComponentMenuItem(const char *label)
+{
+	static_assert(requires{ m_selectedEntity.TryGetComponents<T>(); });
+
+	if (ImGui::MenuItem(label))
+	{
+		if (!m_selectedEntity.TryGetComponents<T>())
+		{
+			m_selectedEntity.AddComponent<T>();
+		}
+		else
+		{
+			SL_LOG_WARN("Entity \"{}\" already has component \"{}\"",
+				m_selectedEntity.GetComponents<sl::TagComponent>().m_name, label);
+		}
+	}
+}
+
 void ImGuiLayer::StartWithText(std::string_view text)
 {
 	static sl::Entity s_crtEntity;
@@ -919,23 +940,6 @@ void ImGuiLayer::StartWithText(std::string_view text)
 
 	ImGui::SameLine(m_maxTextSize + offset + GetDPIFactor());
 	ImGui::SetNextItemWidth(-GetDPIFactor());
-}
-
-template<class T>
-void ImGuiLayer::AddComponent(const char *label)
-{
-	if (ImGui::MenuItem(label))
-	{
-		if (!m_selectedEntity.TryGetComponents<T>())
-		{
-			m_selectedEntity.AddComponent<T>();
-		}
-		else
-		{
-			SL_LOG_WARN("Entity \"{}\" already has component \"{}\"",
-				m_selectedEntity.GetComponents<sl::TagComponent>().m_name, label);
-		}
-	}
 }
 
 void ImGuiLayer::ShowDetails()
@@ -1164,9 +1168,9 @@ void ImGuiLayer::ShowDetails()
 	}
 	if (ImGui::BeginPopup("AddComponentPopup"))
 	{
-		AddComponent<sl::CameraComponent>("Camera");
-		AddComponent<sl::CornerstoneComponent>("Cornerstone");
-		AddComponent<sl::RenderingComponent>("Rendering");
+		AddComponentMenuItem<sl::CameraComponent>("Camera");
+		AddComponentMenuItem<sl::CornerstoneComponent>("Cornerstone");
+		AddComponentMenuItem<sl::RenderingComponent>("Rendering");
 		ImGui::EndPopup();
 	}
 

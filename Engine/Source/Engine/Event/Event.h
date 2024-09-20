@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <cstdint>
 #include <format>
 #include <functional>
@@ -49,21 +50,26 @@ private:
 	bool m_handled = false;
 };
 
+template<class T, class Fun>
+concept DispatchableDerivedEvent = requires(T e, Fun fun)
+{
+	requires std::is_base_of_v<Event, T>;
+	{ T::GetStaticEventType() } -> std::same_as<EventType>;
+	{ fun(e) } -> std::same_as<bool>;
+};
+
 class EventDispatcher
 {
 public:
 	EventDispatcher(Event &event) : m_event(event) {}
 
-	template<class DerivedEvent>
-	bool Dispatch(auto fun)
+	template<class T, class Fun> requires DispatchableDerivedEvent<T, Fun>
+	bool Dispatch(Fun fun)
 	{
-		static_assert(std::is_base_of_v<Event, DerivedEvent>);
-		static_assert(requires{ DerivedEvent::GetStaticEventType(); });
-
-		// Call fun if type of m_event is DerivedEvent.
-		if (m_event.GetEventType() == DerivedEvent::GetStaticEventType())
+		// Call fun if type of m_event is T.
+		if (m_event.GetEventType() == T::GetStaticEventType())
 		{
-			m_event.IsHandled() |= fun(static_cast<DerivedEvent &>(m_event));
+			m_event.IsHandled() |= fun(static_cast<T &>(m_event));
 			return true;
 		}
 

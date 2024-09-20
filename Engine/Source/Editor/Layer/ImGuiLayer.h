@@ -46,7 +46,7 @@ private:
 	template<class T>
 	void DrawComponent(const char *label, auto drawParameters);
 	template<class T>
-	void AddComponent(const char *label);
+	void AddComponentMenuItem(const char *label);
 	void StartWithText(std::string_view text);
 	void ShowDetails();
 
