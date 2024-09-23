@@ -79,17 +79,16 @@ void CameraControllerLayer::UpdateFPSMode(float deltaTime)
 		// When the camera starts to rotate.
 		camera.m_acceleration = 0.0f;
 		camera.m_moveSpeed = 0.0f;
-		camera.m_mouseLastPos = sl::Input::GetMousePos();
+		camera.m_mouseDeltaPos = sl::Input::GetMouseDelta();
 		m_isRotating = true;
 	}
 
 	// Rotation
 	{
-		glm::vec2 crtPos = sl::Input::GetMousePos();
-		glm::vec2 offset{ camera.m_mouseLastPos.y - crtPos.y, crtPos.x - camera.m_mouseLastPos.x };
-		camera.m_mouseLastPos = crtPos;
+		glm::vec2 offset = sl::Input::GetMouseDelta();
+		camera.m_mouseDeltaPos = glm::vec2{ -offset.y, offset.x };
 
-		transform.m_rotation += glm::vec3{ offset * camera.m_rotateSpeed, 0.0f };
+		transform.m_rotation += glm::vec3{ camera.m_mouseDeltaPos * camera.m_rotateSpeed, 0.0f };
 		transform.m_rotation.x = std::clamp(transform.m_rotation.x, glm::radians(-89.9f), glm::radians(89.9f));
 
 		camera.m_isDirty = true;
@@ -159,7 +158,7 @@ void CameraControllerLayer::UpdateFPSMode(float deltaTime)
 
 	camera.m_moveSpeed += camera.m_acceleration * deltaTime;
 	camera.m_moveSpeed = std::clamp(camera.m_moveSpeed, 0.0f, camera.m_maxMoveSpeed);
-	float moveSpeedKeyShiftMultiplier = sl::Input::IsKeyPressed(SL_KEY_LEFT_SHIFT) ? camera.m_moveSpeedKeyShiftMultiplier : 1.0f;
+	float moveSpeedKeyShiftMultiplier = sl::Input::IsKeyPressed(SL_KEY_LSHIFT) ? camera.m_moveSpeedKeyShiftMultiplier : 1.0f;
 	float finalMoveSpeed = camera.m_moveSpeed * moveSpeedKeyShiftMultiplier * camera.m_moveSpeedMouseScrollMultiplier * deltaTime;
 
 	transform.m_position += finalMoveDir * finalMoveSpeed;
@@ -204,7 +203,7 @@ bool CameraControllerLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
 
 	if (mode == sl::CameraControllerMode::FPS || mode == sl::CameraControllerMode::Editor)
 	{
-		sl::Window::GetInstance().CursorModeDisabled();
+		sl::Window::GetInstance().SetMouseRelativeMode(true);
 	}
 
 	return false;
@@ -218,7 +217,7 @@ bool CameraControllerLayer::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &ev
 		(mode == sl::CameraControllerMode::Editor&& event.GetButton() == SL_MOUSE_BUTTON_LEFT))
 	{
 		mode = sl::CameraControllerMode::None;
-		sl::Window::GetInstance().CursorModeNormal();
+		sl::Window::GetInstance().SetMouseRelativeMode(false);
 	}
 
 	return false;
@@ -228,7 +227,7 @@ bool CameraControllerLayer::OnKeyRelease(sl::KeyReleaseEvent &event)
 {
 	auto &mode = sl::ECSWorld::GetMainCameraComponent().m_controllerMode;
 
-	if (mode == sl::CameraControllerMode::Editor && event.GetKey() == SL_KEY_LEFT_ALT)
+	if (mode == sl::CameraControllerMode::Editor && event.GetKey() == SL_KEY_LALT)
 	{
 		mode = sl::CameraControllerMode::None;
 	}

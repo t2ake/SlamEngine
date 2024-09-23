@@ -21,18 +21,18 @@ Editor::Editor(EditorInitor initor)
 	SL_PROFILE;
 
 	sl::Log::Init();
-	
+
 	sl::RenderCore::SetBackend(initor.m_backend);
 	auto &window = sl::Window::GetInstance();
 	window.Init(initor.m_title, initor.m_width, initor.m_height);
 	window.SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
 	sl::Input::Init(window.GetNativeWindow());
-	sl::ImGuiContext::Init(window.GetNativeWindow());
-
+	sl::ImGuiContext::Init(window.GetNativeWindow(), window.GetRenderContext());
+	
 	sl::RenderCore::Init();
 	sl::RenderCore::SetDefaultState();
-
+	
 	// Size is meaningless here.
 	sl::RenderCore::SetMainFramebuffer(sl::FrameBuffer::Create(
 	{
@@ -44,7 +44,7 @@ Editor::Editor(EditorInitor initor)
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::R32I, SL_SAMPLER_CLAMP | SL_SAMPLER_NEAREST),
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
 	}));
-
+	
 	sl::RenderCore::SetUniformBuffer(0, sl::UniformBuffer::Create(0, sl::UniformBufferLayout
 	{
 		{ "ub_cameraPos", sl::AttribType::vec4f },
@@ -54,15 +54,15 @@ Editor::Editor(EditorInitor initor)
 	sl::Entity mainCameraEntity = sl::ECSWorld::CreateEntity("Main Camera");
 	auto &mainCameraComponent = mainCameraEntity.AddComponent<sl::CameraComponent>();
 	mainCameraComponent.m_isMainCamera = true;
-
+	
 	auto pRendererLayer = std::make_unique<RendererLayer>();
 	auto pResourceManagerLayer = std::make_unique<ResourceManagerLayer>();
 	auto pCameraControllerLayer = std::make_unique<CameraControllerLayer>();
 	auto pImGuiLayer = std::make_unique<ImGuiLayer>();
 	auto pSandboxLayer = std::make_unique<SandboxLayer>();
-
+	
 	pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
-
+	
 	m_pLayerStack = std::make_unique<sl::LayerStack>();
 	m_pLayerStack->PushLayer(std::move(pRendererLayer));
 	m_pLayerStack->PushLayer(std::move(pResourceManagerLayer));
@@ -137,7 +137,8 @@ void Editor::OnEvent(sl::Event &event)
 	
 	sl::EventDispatcher dispatcher{ event };
 	dispatcher.Dispatch<sl::WindowCloseEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowClose));
-	dispatcher.Dispatch<sl::WindowResizeEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowResize));
+	dispatcher.Dispatch<sl::WindowMinimizeEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowMinimize));
+	dispatcher.Dispatch<sl::WindowRestoreEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowRestore));
 
 	// Iterate layers from top to bottom / from end to begin.
 	for (auto it = m_pLayerStack->rend(); it != m_pLayerStack->rbegin(); ++it)
@@ -154,21 +155,19 @@ bool Editor::OnWindowClose(sl::WindowCloseEvent &event)
 {
 	SL_LOG_TRACE("Window close");
 	m_isRunning = false;
-
 	return true;
 }
 
-bool Editor::OnWindowResize(sl::WindowResizeEvent &event)
+bool Editor::OnWindowMinimize(sl::WindowMinimizeEvent &event)
 {
-	if (event.GetWidth() == 0 || event.GetHeight() == 0)
-	{
-		SL_LOG_TRACE("Window minimise");
-		m_isMinimized = true;
-	}
-	else
-	{
-		m_isMinimized = false;
-	}
+	SL_LOG_TRACE("Window minimise");
+	m_isMinimized = true;
+	return true;
+}
 
-	return false;
+bool Editor::OnWindowRestore(sl::WindowRestoreEvent &event)
+{
+	SL_LOG_TRACE("Window restore");
+	m_isMinimized = false;
+	return true;
 }

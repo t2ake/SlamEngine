@@ -12,11 +12,12 @@ class ImGuiContext final
 public:
 	ImGuiContext() = delete;
 
-	static void Init(void *pNativeWindow);
+	static void Init(void *pNativeWindow, void *pRenderContext);
 	static void Shutdown();
 
 	static void NewFrame();
 	static void Submit();
+	static void OnEvent(void *pSDLEvent);
 
 	static ImFont *GetRegular() { return m_pRegularFont; }
 	static ImFont *GetBold() { return m_pBoldFont; }

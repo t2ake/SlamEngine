@@ -4,10 +4,19 @@
 
 #include <memory>
 
+struct SDL_WindowEvent;
+
 namespace sl
 {
 
 class RenderContext;
+
+enum class VSync
+{
+	On = 1,
+	Off = 0,
+	Adaptive = -1,
+};
 
 class Window final
 {
@@ -33,16 +42,17 @@ public:
 	void EndFrame();
 
 	void *GetNativeWindow() const { return m_pNativeWindow; }
-	void SetVSync(bool VSync);
-	void CursorModeDisabled();
-	void CursorModeNormal();
-	void SetCursorPos(float x, float y);
-	void SetGlobalCursorPos(float x, float y);
+	void *GetRenderContext() const;
+
+	void SetVSync(VSync VSync);
+	void SetMouseRelativeMode(bool mode);
 
 	void SetEventCallback(auto fun) { m_eventCallback = fun; }
-	void DespatchEvent(Event &event) { m_eventCallback(event); }
 
 private:
+	void PullEvents();
+	void ForwardWindowEvents(SDL_WindowEvent &SDLWindowEvent);
+
 	void *m_pNativeWindow = nullptr;
 	std::unique_ptr<RenderContext> m_pRenderContext;
 	EventCallback m_eventCallback;

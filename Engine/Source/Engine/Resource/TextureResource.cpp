@@ -57,7 +57,7 @@ void TextureResource::OnImport()
 	m_height = (uint32_t)height;
 	m_channels = (uint32_t)channels;
 	m_isHDR = isHDR;
-	SL_LOG_TRACE("  Width: {}, Height: {}, Channels: {}, IsHDR: {}", m_width, m_height, m_channels, m_isHDR);
+	SL_LOG_TRACE("\tWidth: {}, Height: {}, Channels: {}, IsHDR: {}", m_width, m_height, m_channels, m_isHDR);
 
 	m_rowData.resize(m_width * m_height * m_channels * (m_isHDR ? 4 : 1));
 	memcpy(m_rowData.data(), pTextureData, m_rowData.size());

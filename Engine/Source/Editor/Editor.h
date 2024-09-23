@@ -10,7 +10,8 @@ namespace sl
 
 class Event;
 class WindowCloseEvent;
-class WindowResizeEvent;
+class WindowMinimizeEvent;
+class WindowRestoreEvent;
 class LayerStack;
 
 }
@@ -45,7 +46,8 @@ private:
 
 	void OnEvent(sl::Event &event);
 	bool OnWindowClose(sl::WindowCloseEvent &event);
-	bool OnWindowResize(sl::WindowResizeEvent &event);
+	bool OnWindowMinimize(sl::WindowMinimizeEvent &event);
+	bool OnWindowRestore(sl::WindowRestoreEvent &event);
 
 	bool m_isRunning = true;
 	bool m_isMinimized = false;

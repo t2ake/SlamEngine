@@ -11,6 +11,8 @@ public:
 public:
 	virtual ~RenderContext() = default;
 
+	virtual void *GetContext() = 0;
+
 	virtual void MakeCurrent() = 0;
 	virtual void SwapBuffers() = 0;
 };

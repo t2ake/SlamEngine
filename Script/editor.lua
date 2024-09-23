@@ -42,25 +42,27 @@ project("Editor")
 		libdirs
 		{
 			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
-			path.join(ThirdPartyPath, "build/imgui/bin/Debug"),
-			path.join(ThirdPartyPath, "build/imguizmo/bin/Debug"),
-			path.join(ThirdPartyPath, "tracy/build/Debug"),
 		}
 		links
 		{
-			"Slam", "imgui", "imguizmo", "TracyClient",
+			"Slam",
+		}
+		postbuildcommands 
+		{
+			"{COPYFILE} %[" .. path.join(ThirdPartyPath, "sdl/build/Debug/SDL2d.dll") .. "] %[%{cfg.targetdir}]",
 		}
 	filter { "configurations:Release or configurations:Final" }
 		libdirs
 		{
 			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
-			path.join(ThirdPartyPath, "build/imgui/bin/Release"),
-			path.join(ThirdPartyPath, "build/imguizmo/bin/Release"),
-			path.join(ThirdPartyPath, "tracy/build/Release"),
 		}
 		links
 		{
-			"Slam", "imgui", "imguizmo", "TracyClient",
+			"Slam",
+		}
+		postbuildcommands 
+		{
+			"{COPYFILE} %[" .. path.join(ThirdPartyPath, "sdl/build/Release/SDL2.dll") .. "] %[%{cfg.targetdir}]",
 		}
 	filter {}
 	

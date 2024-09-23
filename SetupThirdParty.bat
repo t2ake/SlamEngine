@@ -25,15 +25,13 @@ cd %SCRIPT_PATH%
 "%MSBUILD_PATH%" "%THIRD_PARTY_BUILD_PATH%\SlamThirdparty.sln" -p:Configuration=Debug;Platform=x64
 "%MSBUILD_PATH%" "%THIRD_PARTY_BUILD_PATH%\SlamThirdparty.sln" -p:Configuration=Release;Platform=x64
 
-rem glfw
-set "GLFW_PATH=%THIRD_PARTY_PATH%\glfw"
-echo [ glfw ] path: %GLFW_PATH%
-cd %GLFW_PATH%
-
-cmake -B build -DUSE_MSVC_RUNTIME_LIBRARY_DLL=OFF
-cmake --build build --target glfw --config Debug
-cmake --build build --target glfw --config Release
-echo.
+rem sdl
+set "SDL_PATH=%THIRD_PARTY_PATH%\sdl"
+echo [ sdl ] path: %SDL_PATH%
+cd %SDL_PATH%
+cmake -B build -DSDL_FORCE_STATIC_VCRT=ON
+cmake --build build --target SDL2 --config Debug
+cmake --build build --target SDL2 --config Release
 
 rem yaml-cpp
 set "YAMLCPP_PATH=%THIRD_PARTY_PATH%\yaml-cpp"

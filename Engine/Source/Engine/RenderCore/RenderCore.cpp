@@ -10,12 +10,12 @@ void RenderCore::Init()
 	m_pRenderAPI.reset(RenderAPI::Create());
 	m_info = m_pRenderAPI->GetBackendInfo();
 
-	SL_LOG_TRACE("  Max texture size: {}", m_info.m_maxTextureSize);
-	SL_LOG_TRACE("  Max framebuffer size: {}", m_info.m_maxFramebufferSize);
-	SL_LOG_TRACE("  Max framebuffer color attachment count: {}", m_info.m_maxFramebufferColorAttachmentCount);
-	SL_LOG_TRACE("  Max vertex uniform component count: {}", m_info.m_maxVertexUniformComponentCount);
-	SL_LOG_TRACE("  Max fragment uniform component count: {}", m_info.m_maxFragmentUniformComponentCount);
-	SL_LOG_TRACE("  Max uniform location: {}", m_info.m_maxUniformLocation);
+	SL_LOG_TRACE("\tMax texture size: {}", m_info.m_maxTextureSize);
+	SL_LOG_TRACE("\tMax framebuffer size: {}", m_info.m_maxFramebufferSize);
+	SL_LOG_TRACE("\tMax framebuffer color attachment count: {}", m_info.m_maxFramebufferColorAttachmentCount);
+	SL_LOG_TRACE("\tMax vertex uniform component count: {}", m_info.m_maxVertexUniformComponentCount);
+	SL_LOG_TRACE("\tMax fragment uniform component count: {}", m_info.m_maxFragmentUniformComponentCount);
+	SL_LOG_TRACE("\tMax uniform location: {}", m_info.m_maxUniformLocation);
 }
 
 void RenderCore::SetUniformBuffer(uint32_t bindingPoint, UniformBuffer *pUniformBuffer)

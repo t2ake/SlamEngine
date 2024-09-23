@@ -7,6 +7,30 @@
 namespace sl
 {
 
+class WindowCloseEvent : public Event
+{
+public:
+	static EventType GetStaticEventType()
+	{
+		return EventType::WindowClose;
+	}
+
+	virtual EventType GetEventType() const override
+	{
+		return GetStaticEventType();
+	}
+
+	virtual std::string ToString() const override
+	{
+		return "WindowClose";
+	}
+
+	virtual uint8_t GetCategories() const override
+	{
+		return SL_EVENT_CATEGORY_WINDOW;
+	}
+};
+
 class WindowResizeEvent : public Event
 {
 public:
@@ -41,12 +65,12 @@ private:
 	uint32_t m_width, m_height;
 };
 
-class WindowCloseEvent : public Event
+class WindowMinimizeEvent : public Event
 {
 public:
 	static EventType GetStaticEventType()
 	{
-		return EventType::WindowClose;
+		return EventType::WindowMinimize;
 	}
 
 	virtual EventType GetEventType() const override
@@ -56,7 +80,55 @@ public:
 
 	virtual std::string ToString() const override
 	{
-		return "WindowClose";
+		return "WindowMinimize";
+	}
+
+	virtual uint8_t GetCategories() const override
+	{
+		return SL_EVENT_CATEGORY_WINDOW;
+	}
+};
+
+class WindowMaximizeEvent : public Event
+{
+public:
+	static EventType GetStaticEventType()
+	{
+		return EventType::WindowMaximize;
+	}
+
+	virtual EventType GetEventType() const override
+	{
+		return GetStaticEventType();
+	}
+
+	virtual std::string ToString() const override
+	{
+		return "WindowMaximize";
+	}
+
+	virtual uint8_t GetCategories() const override
+	{
+		return SL_EVENT_CATEGORY_WINDOW;
+	}
+};
+
+class WindowRestoreEvent : public Event
+{
+public:
+	static EventType GetStaticEventType()
+	{
+		return EventType::WindowRestore;
+	}
+
+	virtual EventType GetEventType() const override
+	{
+		return GetStaticEventType();
+	}
+
+	virtual std::string ToString() const override
+	{
+		return "WindowRestore";
 	}
 
 	virtual uint8_t GetCategories() const override
@@ -80,7 +152,7 @@ public:
 
 	virtual std::string ToString() const override
 	{
-		return "WindowFocus";
+		return "WindowGetFocus";
 	}
 
 	virtual uint8_t GetCategories() const override
@@ -89,7 +161,7 @@ public:
 	}
 };
 
-class WindowLostFocusEvent : public Event
+class WindowLossFocusEvent : public Event
 {
 public:
 	static EventType GetStaticEventType()
@@ -104,7 +176,7 @@ public:
 
 	virtual std::string ToString() const override
 	{
-		return "WindowLostFocus";
+		return "WindowLossFocus";
 	}
 
 	virtual uint8_t GetCategories() const override

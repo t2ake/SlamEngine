@@ -5,146 +5,16 @@
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
+#include "ImGui/ImGuiContext.h"
 #include "RenderCore/RenderContext.h"
 #include "RenderCore/RenderCore.h"
 #include "Utils/ProfilerCPU.h"
 
-#include <GLFW/glfw3.h>
+#include <nameof/nameof.hpp>
+#include <SDL2/SDL.h>
 
 namespace sl
 {
-
-namespace
-{
-
-void SetCallbacks(GLFWwindow *pNativeWindow)
-{
-	glfwSetWindowSizeCallback(pNativeWindow, [](GLFWwindow *window, int width, int height)
-	{
-		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
-		WindowResizeEvent event{ uint32_t(width), uint32_t(height) };
-		pWindow->DespatchEvent(event);
-	});
-
-	glfwSetWindowCloseCallback(pNativeWindow, [](GLFWwindow *window)
-	{
-		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
-		WindowCloseEvent event{};
-		pWindow->DespatchEvent(event);
-	});
-
-	glfwSetKeyCallback(pNativeWindow, [](GLFWwindow *window, int key, int scancode, int action, int mods)
-	{
-		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
-
-		switch (action)
-		{
-			case GLFW_PRESS:
-			{
-				KeyPressEvent event{ key , false };
-				pWindow->DespatchEvent(event);
-				break;
-			}
-			case GLFW_RELEASE:
-			{
-				KeyReleaseEvent event{ key };
-				pWindow->DespatchEvent(event);
-				break;
-			}
-			case GLFW_REPEAT:
-			{
-				KeyPressEvent event{ key , true };
-				pWindow->DespatchEvent(event);
-				break;
-			}
-			default:
-			{
-				SL_ASSERT(false);
-			}
-		}
-	});
-
-	glfwSetCharCallback(pNativeWindow, [](GLFWwindow *window, unsigned int codepoint)
-	{
-		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
-		KeyTypeEvent event{ int(codepoint) };
-		pWindow->DespatchEvent(event);
-	});
-
-	glfwSetMouseButtonCallback(pNativeWindow, [](GLFWwindow *window, int button, int action, int mods)
-	{
-		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
-
-		switch (action)
-		{
-			case GLFW_PRESS:
-			{
-				MouseButtonPressEvent event{ button };
-				pWindow->DespatchEvent(event);
-				break;
-			}
-			case GLFW_RELEASE:
-			{
-				MouseButtonReleaseEvent event{ button };
-				pWindow->DespatchEvent(event);
-				break;
-			}
-			default:
-			{
-				SL_ASSERT(false);
-			}
-		}
-	});
-
-	glfwSetCursorPosCallback(pNativeWindow, [](GLFWwindow *window, double xpos, double ypos)
-	{
-		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
-		MouseMoveEvent event{ float(xpos), float(ypos) };
-		pWindow->DespatchEvent(event);
-	});
-
-	glfwSetScrollCallback(pNativeWindow, [](GLFWwindow *window, double xoffset, double yoffset)
-	{
-		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
-		MouseScrollEvent event{ float(xoffset), float(yoffset) };
-		pWindow->DespatchEvent(event);
-	});
-
-	glfwSetWindowFocusCallback(pNativeWindow, [](GLFWwindow *window, int focused)
-	{
-		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
-		if (focused == GLFW_TRUE)
-		{
-			WindowGetFocusEvent event;
-			pWindow->DespatchEvent(event);
-		}
-		if (focused == GLFW_FALSE)
-		{
-			WindowLostFocusEvent event;
-			pWindow->DespatchEvent(event);
-		}
-	});
-
-	glfwSetDropCallback(pNativeWindow, [](GLFWwindow *window, int path_count, const char *paths[])
-	{
-		if (path_count > 1)
-		{
-			SL_LOG_ERROR("Only one file can be dropped simultaneously for now!");
-			return;
-		}
-
-		Window *pWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
-		WindowDropEvent event{ paths[0] };
-		pWindow->DespatchEvent(event);
-	});
-
-	glfwSetErrorCallback([](int error_code, const char *description)
-	{
-		SL_LOG_ERROR("GLFW error {}: {}", error_code, description);
-	});
-}
-
-} // namespace
 
 Window::Window()
 {
@@ -161,45 +31,39 @@ void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 	SL_PROFILE;
 	SL_LOG_INFO("Create window \"{}\" ({}, {})", title, width, height);
 
-// Init GLFW
-	bool initSuccess = glfwInit();
-	SL_ASSERT(initSuccess, "Failed to initialize GLFW!");
+	// Init SDL
+	int errorCode = SDL_Init(SDL_INIT_EVENTS);
+	SL_ASSERT(errorCode == 0, "Failed to initialize SDL:\n\t{}", SDL_GetError());
+	
+	const char *glsl_version = "#version 450";
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	
+	constexpr SDL_WindowFlags WindowFlags = (SDL_WindowFlags)(
+		SDL_WINDOW_OPENGL |
+		SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE |
+		SDL_WINDOW_ALLOW_HIGHDPI);
 
-	if (RenderCore::GetBackend() == GraphicsBackend::OpenGL)
-	{
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	}
-	else
-	{
-		SL_ASSERT(false, "Slam only support OpenGL for now!");
-	}
-
-	// Creat window
-	m_pNativeWindow = glfwCreateWindow(width, height, title.data(), nullptr, nullptr);
-	SL_ASSERT(m_pNativeWindow, "Failed to create GLFW window!");
+	m_pNativeWindow = SDL_CreateWindow(title.data(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, WindowFlags);
+	SL_ASSERT(m_pNativeWindow, "Failed to create SDL window!");
+	
 	m_pRenderContext.reset(RenderContext::Create(m_pNativeWindow));
-
-	// Other settings
-	glfwMaximizeWindow(static_cast<GLFWwindow *>(m_pNativeWindow));
-#if defined(SL_FINAL)
-	glfwSwapInterval(0);
-#else
-	glfwSwapInterval(1);
-#endif
-
-	// Callbacks
-	glfwSetWindowUserPointer(static_cast<GLFWwindow *>(m_pNativeWindow), this);
-	SetCallbacks(static_cast<GLFWwindow *>(m_pNativeWindow));
+	
+	if (SDL_GL_SetSwapInterval(-1) < 0)
+	{
+		SL_LOG_WARN(SDL_GetError());
+		SDL_GL_SetSwapInterval(1);
+	}
 }
 
 void Window::Terminate()
 {
 	SL_PROFILE;
 
-	glfwDestroyWindow(static_cast<GLFWwindow *>(m_pNativeWindow));
-	glfwTerminate();
+	SDL_DestroyWindow(static_cast<SDL_Window *>(m_pNativeWindow));
+	SDL_Quit();
 }
 
 void Window::BegineFrame()
@@ -213,34 +77,143 @@ void Window::EndFrame()
 
 	m_pRenderContext->MakeCurrent();
 	m_pRenderContext->SwapBuffers();
-	glfwPollEvents();
+
+	PullEvents();
 }
 
-void Window::SetVSync(bool VSync)
+void *Window::GetRenderContext() const
 {
-	glfwSwapInterval(VSync ? 1 : 0);
+	return m_pRenderContext->GetContext();
 }
 
-void Window::CursorModeDisabled()
+void Window::SetVSync(VSync VSync)
 {
-	glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	if (SDL_GL_SetSwapInterval(static_cast<int>(VSync)) < 0)
+	{
+		SL_LOG_ERROR(SDL_GetError());
+	}
 }
 
-void Window::CursorModeNormal()
+void Window::SetMouseRelativeMode(bool mode)
 {
-	glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	SDL_SetRelativeMouseMode((SDL_bool)mode);
 }
 
-void Window::SetCursorPos(float x, float y)
+void Window::PullEvents()
 {
-	glfwSetCursorPos(static_cast<GLFWwindow *>(m_pNativeWindow), (double)x, (double)y);
+	SL_PROFILE;
+
+	SDL_Event SDLEvent;
+	while (SDL_PollEvent(&SDLEvent))
+	{
+		ImGuiContext::OnEvent(&SDLEvent);
+
+		switch (SDLEvent.type)
+		{
+			case SDL_WINDOWEVENT:
+			{
+				ForwardWindowEvents(SDLEvent.window);
+				break;
+			}
+			case SDL_KEYDOWN:
+			{
+				KeyPressEvent event{ (int)SDLEvent.key.keysym.scancode, (bool)SDLEvent.key.repeat };
+				m_eventCallback(event);
+				break;
+			}
+			case SDL_KEYUP:
+			{
+				KeyReleaseEvent event{ (int)SDLEvent.key.keysym.scancode };
+				m_eventCallback(event);
+				break;
+			}
+			case SDL_MOUSEMOTION:
+			{
+				MouseMoveEvent event{ (float)SDLEvent.motion.x, (float)SDLEvent.motion.y };
+				m_eventCallback(event);
+				break;
+			}
+			case SDL_MOUSEBUTTONDOWN:
+			{
+				MouseButtonPressEvent event{ (int)SDLEvent.button.button };
+				m_eventCallback(event);
+				break;
+			}
+			case SDL_MOUSEBUTTONUP:
+			{
+				MouseButtonReleaseEvent  event{ (int)SDLEvent.button.button };
+				m_eventCallback(event);
+				break;
+			}
+			case SDL_MOUSEWHEEL:
+			{
+				MouseScrollEvent event{ SDLEvent.wheel.preciseX, SDLEvent.wheel.preciseY };
+				m_eventCallback(event);
+				break;
+			}
+
+			// TODO: Drop Event
+		}
+	}
 }
 
-void Window::SetGlobalCursorPos(float x, float y)
+void Window::ForwardWindowEvents(SDL_WindowEvent &SDLWindowEvent)
 {
-	int windowPosX, windowPosY;
-	glfwGetWindowPos(static_cast<GLFWwindow *>(m_pNativeWindow), &windowPosX, &windowPosY);
-	glfwSetCursorPos(static_cast<GLFWwindow *>(m_pNativeWindow), (double)x - (double)windowPosX, (double)y - (double)windowPosY);
+	switch (SDLWindowEvent.event)
+	{
+		case SDL_WINDOWEVENT_CLOSE:
+		{
+			WindowCloseEvent event;
+			m_eventCallback(event);
+			break;
+		}
+		case SDL_WINDOWEVENT_RESIZED:
+		{
+			WindowResizeEvent event{ (uint32_t)SDLWindowEvent.data1, (uint32_t)SDLWindowEvent.data2 };
+			m_eventCallback(event);
+			break;
+		}
+		case SDL_WINDOWEVENT_MINIMIZED:
+		{
+			WindowMinimizeEvent event;
+			m_eventCallback(event);
+			break;
+		}
+		case SDL_WINDOWEVENT_MAXIMIZED:
+		{
+			WindowMaximizeEvent event;
+			m_eventCallback(event);
+			break;
+		}
+		case SDL_WINDOWEVENT_RESTORED:
+		{
+			WindowRestoreEvent event;
+			m_eventCallback(event);
+			break;
+		}
+		case SDL_WINDOWEVENT_FOCUS_GAINED:
+		{
+			WindowGetFocusEvent event;
+			m_eventCallback(event);
+			break;
+		}
+		case SDL_WINDOWEVENT_FOCUS_LOST:
+		{
+			WindowLossFocusEvent event;
+			m_eventCallback(event);
+			break;
+		}
+		case SDL_WINDOWEVENT_TAKE_FOCUS:
+		{
+			WindowLossFocusEvent event;
+			m_eventCallback(event);
+			break;
+		}
+		default:
+		{
+			//SL_LOG_DEBUG("Unknown window event: {}", nameof::nameof_enum(static_cast<SDL_WindowEventID>(SDLWindowEvent.event)));
+		}
+	}
 }
 
 } // namespace sl

@@ -3,11 +3,10 @@
 #include "Core/Log.h"
 #include "Core/Path.hpp"
 #include "Utils/ProfilerCPU.h"
-#include "Window/Window.h"
 
 #include "ImGui/IconsMaterialSymbols.h"
-#include "ImGui/imgui_impl_glfw.h"
 #include "ImGui/imgui_impl_opengl3.h"
+#include "ImGui/imgui_impl_sdl2.h"
 
 #include <imguizmo/ImGuizmo.h>
 #include <implot/implot.h>
@@ -15,7 +14,7 @@
 namespace sl
 {
 
-void ImGuiContext::Init(void *pNativeWindow)
+void ImGuiContext::Init(void *pNativeWindow, void *pRenderContext)
 {
 	SL_PROFILE;
 
@@ -60,7 +59,7 @@ void ImGuiContext::Init(void *pNativeWindow)
 	SetStyle();
 
 	// 5. Init platform and Rendering backend
-	ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(pNativeWindow), true);
+	ImGui_ImplSDL2_InitForOpenGL(static_cast<SDL_Window *>(pNativeWindow), pRenderContext);
 	ImGui_ImplOpenGL3_Init("#version 450");
 }
 
@@ -69,7 +68,7 @@ void ImGuiContext::Shutdown()
 	SL_PROFILE;
 
 	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
 	ImPlot::DestroyContext();
 	ImGui::DestroyContext();
 }
@@ -79,7 +78,7 @@ void ImGuiContext::NewFrame()
 	SL_PROFILE;
 
 	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
+	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
 	ImGuizmo::BeginFrame();
 }
@@ -94,6 +93,11 @@ void ImGuiContext::Submit()
 	// For docking
 	ImGui::UpdatePlatformWindows();
 	ImGui::RenderPlatformWindowsDefault();
+}
+
+void ImGuiContext::OnEvent(void *pSDLEvent)
+{
+	ImGui_ImplSDL2_ProcessEvent(static_cast<const SDL_Event *>(pSDLEvent));
 }
 
 void ImGuiContext::SetColor()

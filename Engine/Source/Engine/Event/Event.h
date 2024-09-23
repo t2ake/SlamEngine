@@ -11,11 +11,10 @@ namespace sl
 enum class EventType
 {
 	None = 0,
-	WindowClose, WindowResize, WindowGetFocus, WindowLostFocus, WindowDrop,
+	WindowClose, WindowResize, WindowMinimize, WindowMaximize, WindowRestore, WindowGetFocus, WindowLostFocus, WindowDrop,
 	KeyPress, KeyRelease, KeyType,
-	MouseButtonPress, MouseButtonRelease, MouseButtonAcross, MouseMove, MouseScroll,
+	MouseButtonPress, MouseButtonRelease, MouseMove, MouseScroll,
 	SceneViewportResize, SceneViewportGetFocus, SceneViewportLostFocus, SceneViewportHover,
-	CameraActivate, CameraDeactivate,
 };
 
 #define SL_EVENT_CATEGORY_NONE           UINT8_C(0x00)
@@ -24,7 +23,13 @@ enum class EventType
 #define SL_EVENT_CATEGORY_KEYBOARD       UINT8_C(0x04)
 #define SL_EVENT_CATEGORY_MOUSE          UINT8_C(0x08)
 #define SL_EVENT_CATEGORY_SCENE_VIEWPORT UINT8_C(0x10)
-#define SL_EVENT_CATEGORY_CAMERA         UINT8_C(0x11)
+
+#define SL_EVENT_CATEGORY_ALL ( \
+		SL_EVENT_CATEGORY_WINDOW | \
+		SL_EVENT_CATEGORY_INPUT | \
+		SL_EVENT_CATEGORY_KEYBOARD | \
+		SL_EVENT_CATEGORY_MOUSE | \
+		SL_EVENT_CATEGORY_SCENE_VIEWPORT)
 
 #define BIND_EVENT_CALLBACK(fun) std::bind_front(&fun, this)
 

@@ -24,7 +24,8 @@ project("Slam")
 		EnginePath,
 		ThirdPartyPath,
 		path.join(ThirdPartyPath, "spdlog/include"),
-		path.join(ThirdPartyPath, "glfw/include"),
+		path.join(ThirdPartyPath, "sdl/build/include"),
+		path.join(ThirdPartyPath, "sdl/build/include/SDL2"),
 		path.join(ThirdPartyPath, "glad/include"),
 		path.join(ThirdPartyPath, "imgui"),
 		path.join(ThirdPartyPath, "glm"),
@@ -43,9 +44,13 @@ project("Slam")
 	
 	-- Thirdparty libs
 	filter { "configurations:Debug" }
+		includedirs
+		{
+			path.join(ThirdPartyPath, "sdl/build/include-config-debug/SDL2"),
+		}
 		libdirs
 		{
-			path.join(ThirdPartyPath, "glfw/build/src/Debug"),
+			path.join(ThirdPartyPath, "sdl/build/Debug"),
 			path.join(ThirdPartyPath, "build/glad/bin/Debug"),
 			path.join(ThirdPartyPath, "build/imgui/bin/Debug"),
 			path.join(ThirdPartyPath, "build/implot/bin/Debug"),
@@ -57,12 +62,25 @@ project("Slam")
 		}
 		links
 		{
-			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cppd", "shaderc_combined", "spirv-cross-cored", "spirv-cross-glsld", "TracyClient",
+			"SDL2d",
+			"glad",
+			"imgui",
+			"implot",
+			"imguizmo",
+			"yaml-cppd",
+			"shaderc_combined",
+			"spirv-cross-cored",
+			"spirv-cross-glsld",
+			"TracyClient",
 		}
 	filter { "configurations:Release or configurations:Final" }
+		includedirs
+		{
+			path.join(ThirdPartyPath, "sdl/build/include-config-release/SDL2"),
+		}
 		libdirs
 		{
-			path.join(ThirdPartyPath, "glfw/build/src/Release"),
+			path.join(ThirdPartyPath, "sdl/build/Release"),
 			path.join(ThirdPartyPath, "build/glad/bin/Release"),
 			path.join(ThirdPartyPath, "build/imgui/bin/Release"),
 			path.join(ThirdPartyPath, "build/implot/bin/Release"),
@@ -74,7 +92,16 @@ project("Slam")
 		}
 		links
 		{
-			"glfw3", "glad", "imgui", "implot", "imguizmo", "yaml-cpp", "shaderc_combined", "spirv-cross-core", "spirv-cross-glsl", "TracyClient",
+			"SDL2",
+			"glad",
+			"imgui",
+			"implot",
+			"imguizmo",
+			"yaml-cpp",
+			"shaderc_combined",
+			"spirv-cross-core",
+			"spirv-cross-glsl",
+			"TracyClient",
 		}
 	filter {}
 	

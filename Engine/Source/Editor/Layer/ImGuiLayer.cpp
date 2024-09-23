@@ -1369,7 +1369,7 @@ bool ImGuiLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
 	auto &camera = sl::ECSWorld::GetMainCameraComponent();
 	if (event.GetButton() == SL_MOUSE_BUTTON_LEFT)
 	{
-		if (sl::Input::IsKeyPressed(SL_KEY_LEFT_ALT))
+		if (sl::Input::IsKeyPressed(SL_KEY_LALT))
 		{
 			camera.m_controllerMode = sl::CameraControllerMode::Editor;
 		}
