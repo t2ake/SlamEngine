@@ -29,40 +29,40 @@ Editor::Editor(EditorInitor initor)
 
 	sl::Input::Init(window.GetNativeWindow());
 	sl::ImGuiContext::Init(window.GetNativeWindow(), window.GetRenderContext());
-	
+
 	sl::RenderCore::Init();
 	sl::RenderCore::SetDefaultState();
-	
+
 	// Size is meaningless here.
 	sl::RenderCore::SetMainFramebuffer(sl::FrameBuffer::Create(
-	{
-		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::RGBA8, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
-		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
-	}));
+		{
+			sl::Texture2D::Create(1, 1, false, sl::TextureFormat::RGBA8, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
+			sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
+		}));
 	sl::RenderCore::SetEntityIDFramebuffer(sl::FrameBuffer::Create(
-	{
-		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::R32I, SL_SAMPLER_CLAMP | SL_SAMPLER_NEAREST),
-		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
-	}));
-	
+		{
+			sl::Texture2D::Create(1, 1, false, sl::TextureFormat::R32I, SL_SAMPLER_CLAMP | SL_SAMPLER_NEAREST),
+			sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
+		}));
+
 	sl::RenderCore::SetUniformBuffer(0, sl::UniformBuffer::Create(0, sl::UniformBufferLayout
-	{
-		{ "ub_cameraPos", sl::AttribType::vec4f },
-		{ "ub_viewProjection", sl::AttribType::mat4f },
-	}));
-		
+		{
+			{ "ub_cameraPos", sl::AttribType::vec4f },
+			{ "ub_viewProjection", sl::AttribType::mat4f },
+		}));
+
 	sl::Entity mainCameraEntity = sl::ECSWorld::CreateEntity("Main Camera");
 	auto &mainCameraComponent = mainCameraEntity.AddComponent<sl::CameraComponent>();
 	mainCameraComponent.m_isMainCamera = true;
-	
+
 	auto pRendererLayer = std::make_unique<RendererLayer>();
 	auto pResourceManagerLayer = std::make_unique<ResourceManagerLayer>();
 	auto pCameraControllerLayer = std::make_unique<CameraControllerLayer>();
 	auto pImGuiLayer = std::make_unique<ImGuiLayer>();
 	auto pSandboxLayer = std::make_unique<SandboxLayer>();
-	
+
 	pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
-	
+
 	m_pLayerStack = std::make_unique<sl::LayerStack>();
 	m_pLayerStack->PushLayer(std::move(pRendererLayer));
 	m_pLayerStack->PushLayer(std::move(pResourceManagerLayer));

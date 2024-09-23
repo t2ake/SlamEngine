@@ -22,11 +22,11 @@ public:
 
 	static bool IsKeyPressed(int key);
 	static bool IsMouseButtonPressed(int button);
-	
+
 	// Use the upper left corner of the window as the coordinate origin.
 	static glm::vec2 GetMousePos();
 	static glm::vec2 GetMouseDelta();
-	
+
 private:
 	inline static void *m_pWindow = nullptr;
 };

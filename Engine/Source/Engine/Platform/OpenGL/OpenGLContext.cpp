@@ -18,7 +18,7 @@ OpenGLContext::OpenGLContext(void *pWindow) : m_pWindow(pWindow)
 
 	bool success = gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress);
 	SL_ASSERT(success, "Failed to initialize GLAD context!");
-	
+
 	SL_LOG_INFO("OpenGL inof:");
 	SL_LOG_INFO("\tVendor: {}", (const char *)glGetString(GL_VENDOR));
 	SL_LOG_INFO("\tRenderer: {}", (const char *)glGetString(GL_RENDERER));
