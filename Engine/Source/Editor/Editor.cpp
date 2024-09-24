@@ -35,21 +35,21 @@ Editor::Editor(EditorInitor initor)
 
 	// Size is meaningless here.
 	sl::RenderCore::SetMainFramebuffer(sl::FrameBuffer::Create(
-		{
-			sl::Texture2D::Create(1, 1, false, sl::TextureFormat::RGBA8, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
-			sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
-		}));
+	{
+		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::RGBA8, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
+		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
+	}));
 	sl::RenderCore::SetEntityIDFramebuffer(sl::FrameBuffer::Create(
-		{
-			sl::Texture2D::Create(1, 1, false, sl::TextureFormat::R32I, SL_SAMPLER_CLAMP | SL_SAMPLER_NEAREST),
-			sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
-		}));
+	{
+		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::R32I, SL_SAMPLER_CLAMP | SL_SAMPLER_NEAREST),
+		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
+	}));
 
 	sl::RenderCore::SetUniformBuffer(0, sl::UniformBuffer::Create(0, sl::UniformBufferLayout
-		{
-			{ "ub_cameraPos", sl::AttribType::vec4f },
-			{ "ub_viewProjection", sl::AttribType::mat4f },
-		}));
+	{
+		{ "ub_cameraPos", sl::AttribType::vec4f },
+		{ "ub_viewProjection", sl::AttribType::mat4f },
+	}));
 
 	sl::Entity mainCameraEntity = sl::ECSWorld::CreateEntity("Main Camera");
 	auto &mainCameraComponent = mainCameraEntity.AddComponent<sl::CameraComponent>();
