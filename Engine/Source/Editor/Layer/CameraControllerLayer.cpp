@@ -79,16 +79,14 @@ void CameraControllerLayer::UpdateFPSMode(float deltaTime)
 		// When the camera starts to rotate.
 		camera.m_acceleration = 0.0f;
 		camera.m_moveSpeed = 0.0f;
-		camera.m_mouseDeltaPos = sl::Input::GetMouseDelta();
 		m_isRotating = true;
+		sl::Input::GetMouseDelta();
 	}
 
 	// Rotation
 	{
 		glm::vec2 offset = sl::Input::GetMouseDelta();
-		camera.m_mouseDeltaPos = glm::vec2{ -offset.y, offset.x };
-
-		transform.m_rotation += glm::vec3{ camera.m_mouseDeltaPos * camera.m_rotateSpeed, 0.0f };
+		transform.m_rotation += glm::vec3{ glm::vec2{ -offset.y, offset.x } * camera.m_rotateSpeed, 0.0f };
 		transform.m_rotation.x = std::clamp(transform.m_rotation.x, glm::radians(-89.9f), glm::radians(89.9f));
 
 		camera.m_isDirty = true;

@@ -1,16 +1,13 @@
 #include "Window.h"
 
-#include "Core/Defines.h"
 #include "Core/Log.h"
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
 #include "RenderCore/RenderContext.h"
-#include "RenderCore/RenderCore.h"
 #include "Utils/ProfilerCPU.h"
 
-#include <nameof/nameof.hpp>
 #include <SDL2/SDL.h>
 
 namespace sl
@@ -31,11 +28,14 @@ void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 	SL_PROFILE;
 	SL_LOG_INFO("Create window \"{}\" ({}, {})", title, width, height);
 
-	// Init SDL
+	// Init SDL.
+	SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_CENTER, "0");
+	SDL_SetHint(SDL_HINT_WINDOWS_DPI_SCALING, "1");
+
 	int errorCode = SDL_Init(SDL_INIT_EVENTS);
 	SL_ASSERT(errorCode == 0, "Failed to initialize SDL:\n\t{}", SDL_GetError());
-	
-	const char *glsl_version = "#version 450";
+
+	// Creat window.
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
@@ -43,14 +43,16 @@ void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 	
 	constexpr SDL_WindowFlags WindowFlags = (SDL_WindowFlags)(
 		SDL_WINDOW_OPENGL |
-		SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE |
+		SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED |
 		SDL_WINDOW_ALLOW_HIGHDPI);
 
-	m_pNativeWindow = SDL_CreateWindow(title.data(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, WindowFlags);
+	m_pNativeWindow = SDL_CreateWindow(title.data(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, WindowFlags);
 	SL_ASSERT(m_pNativeWindow, "Failed to create SDL window!");
 	
+	// Create rendering context.
 	m_pRenderContext.reset(RenderContext::Create(m_pNativeWindow));
 	
+	// Other settings.
 	if (SDL_GL_SetSwapInterval(-1) < 0)
 	{
 		SL_LOG_WARN(SDL_GetError());
@@ -86,17 +88,30 @@ void *Window::GetRenderContext() const
 	return m_pRenderContext->GetContext();
 }
 
-void Window::SetVSync(VSync VSync)
+void Window::SetVSync(VSyncMode mode)
 {
-	if (SDL_GL_SetSwapInterval(static_cast<int>(VSync)) < 0)
+	if (SDL_GL_SetSwapInterval(static_cast<int>(mode)) < 0)
 	{
 		SL_LOG_ERROR(SDL_GetError());
 	}
 }
 
-void Window::SetMouseRelativeMode(bool mode)
+void Window::SetMouseRelativeMode(bool enable)
 {
-	SDL_SetRelativeMouseMode((SDL_bool)mode);
+	static int s_posX;
+	static int s_posY;
+
+	if (enable)
+	{
+		SDL_GetMouseState(&s_posX, &s_posY);
+		SDL_SetRelativeMouseMode(SDL_TRUE);
+	}
+	else
+	{
+		// Reset the mouse position after the mouse exits the relative mode.
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+		SDL_WarpMouseInWindow(static_cast<SDL_Window *>(m_pNativeWindow), s_posX, s_posY);
+	}
 }
 
 void Window::PullEvents()

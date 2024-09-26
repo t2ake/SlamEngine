@@ -11,7 +11,7 @@ namespace sl
 
 class RenderContext;
 
-enum class VSync
+enum class VSyncMode
 {
 	On = 1,
 	Off = 0,
@@ -44,8 +44,8 @@ public:
 	void *GetNativeWindow() const { return m_pNativeWindow; }
 	void *GetRenderContext() const;
 
-	void SetVSync(VSync VSync);
-	void SetMouseRelativeMode(bool mode);
+	void SetVSync(VSyncMode mode);
+	void SetMouseRelativeMode(bool enable);
 
 	void SetEventCallback(auto fun) { m_eventCallback = fun; }
 
