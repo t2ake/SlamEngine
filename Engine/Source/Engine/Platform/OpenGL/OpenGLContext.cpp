@@ -32,15 +32,11 @@ OpenGLContext::~OpenGLContext()
 
 void OpenGLContext::MakeCurrent()
 {
-	SL_PROFILE;
-
 	SDL_GL_MakeCurrent(static_cast<SDL_Window *>(m_pWindow), m_pContext);
 }
 
 void OpenGLContext::SwapBuffers()
 {
-	SL_PROFILE;
-
 	SDL_GL_SwapWindow(static_cast<SDL_Window *>(m_pWindow));
 }
 

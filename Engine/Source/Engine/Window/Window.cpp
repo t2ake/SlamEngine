@@ -6,6 +6,7 @@
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
 #include "RenderCore/RenderContext.h"
+#include "RenderCore/RenderCore.h"
 #include "Utils/ProfilerCPU.h"
 
 #include <SDL2/SDL.h>
@@ -32,22 +33,32 @@ void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 	SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_CENTER, "0");
 	SDL_SetHint(SDL_HINT_WINDOWS_DPI_SCALING, "1");
 
-	int errorCode = SDL_Init(SDL_INIT_EVENTS);
-	SL_ASSERT(errorCode == 0, "Failed to initialize SDL:\n\t{}", SDL_GetError());
-
-	// Creat window.
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
-	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	int initSuccess = SDL_Init(SDL_INIT_EVENTS);
+	SL_ASSERT(initSuccess == 0, "Failed to initialize SDL:\n\t{}", SDL_GetError());
 	
-	constexpr SDL_WindowFlags WindowFlags = (SDL_WindowFlags)(
-		SDL_WINDOW_OPENGL |
-		SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED |
-		SDL_WINDOW_ALLOW_HIGHDPI);
+	// Creat window.
+	uint32_t windowFlags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI;
+	switch (RenderCore::GetBackend())
+	{
+		case GraphicsBackend::OpenGL:
+		{
+			windowFlags |= SDL_WINDOW_OPENGL;
 
-	m_pNativeWindow = SDL_CreateWindow(title.data(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, WindowFlags);
-	SL_ASSERT(m_pNativeWindow, "Failed to create SDL window!");
+			// OpenGL 4.5 core profile.
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+			SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+			break;
+		}
+		default:
+		{
+			SL_ASSERT(false, "Only support OpenGL backend for now!");
+		}
+	}
+
+	m_pNativeWindow = SDL_CreateWindow(title.data(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, windowFlags);
+	SL_ASSERT(m_pNativeWindow, "Failed to create SDL window:\n\t{}", SDL_GetError());
 	
 	// Create rendering context.
 	m_pRenderContext.reset(RenderContext::Create(m_pNativeWindow));
@@ -55,7 +66,7 @@ void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 	// Other settings.
 	if (SDL_GL_SetSwapInterval(-1) < 0)
 	{
-		SL_LOG_WARN(SDL_GetError());
+		SL_LOG_WARN("Failed to enable adaptive vsync, enabled normal vsync instead.\n\t{}", SDL_GetError());
 		SDL_GL_SetSwapInterval(1);
 	}
 }
@@ -64,6 +75,7 @@ void Window::Terminate()
 {
 	SL_PROFILE;
 
+	m_pRenderContext.reset();
 	SDL_DestroyWindow(static_cast<SDL_Window *>(m_pNativeWindow));
 	SDL_Quit();
 }

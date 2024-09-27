@@ -26,7 +26,6 @@ void ImGuiContext::Init(void *pNativeWindow, void *pRenderContext)
 
 	// 2. Setup configs
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	io.ConfigViewportsNoTaskBarIcon = true;
@@ -35,7 +34,6 @@ void ImGuiContext::Init(void *pNativeWindow, void *pRenderContext)
 	io.IniFilename = s_iniFilePath.c_str();
 
 	// 3. Load font
-	// TODO: DPI
 	constexpr float FontSize = 18.0f;
 	ImFontConfig fontConfig;
 	fontConfig.GlyphOffset = ImVec2{ 0.0f, 2.0f };
@@ -45,14 +43,14 @@ void ImGuiContext::Init(void *pNativeWindow, void *pRenderContext)
 
 	m_pRegularFont = io.Fonts->AddFontFromFileTTF(
 		sl::Path::FromeAsset("Font/OpenSans/static/OpenSans-Regular.ttf").c_str(), FontSize);
-	io.FontDefault = m_pRegularFont;
+	// Merge icon font
 	io.Fonts->AddFontFromFileTTF(
 		sl::Path::FromeAsset("Font/GoogleMaterialSymbols/MaterialSymbolsOutlined.ttf").c_str(), FontSize, &fontConfig, s_iconRange);
-	
 	m_pBoldFont = io.Fonts->AddFontFromFileTTF(
 		sl::Path::FromeAsset("Font/OpenSans/static/OpenSans-Bold.ttf").c_str(), FontSize);
 	m_pThinFont = io.Fonts->AddFontFromFileTTF(
 		sl::Path::FromeAsset("Font/OpenSans/static/OpenSans-Light.ttf").c_str(), FontSize);
+	io.FontDefault = m_pRegularFont;
 
 	// 4. Set color and style
 	SetColor();
