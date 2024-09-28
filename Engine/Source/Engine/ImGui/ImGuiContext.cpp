@@ -98,6 +98,19 @@ void ImGuiContext::OnEvent(void *pSDLEvent)
 	ImGui_ImplSDL2_ProcessEvent(static_cast<const SDL_Event *>(pSDLEvent));
 }
 
+void ImGuiContext::SetUsingMouse(bool enable)
+{
+	auto &io = ImGui::GetIO();
+	if (enable)
+	{
+		io.ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
+	}
+	else
+	{
+		io.ConfigFlags |= ImGuiConfigFlags_NoMouse;
+	}
+}
+
 void ImGuiContext::SetColor()
 {
 	constexpr auto ColorFromByte = [](uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255)

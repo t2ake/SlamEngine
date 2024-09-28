@@ -825,7 +825,7 @@ void ImGuiLayer::DrawComponent(const char *label, auto drawParameters)
 	ImGui::PushID(nameof::nameof_type<T>().data());
 
 	// Draw tree node.
-	ImGui::PushFont(sl::ImGuiContext::GetBold());
+	ImGui::PushFont(sl::ImGuiContext::GetBoldFont());
 	bool componentTreeOpen = ImGui::TreeNodeEx(label, DefaultTreeFlags, label);
 	ImGui::PopFont();
 
@@ -1294,8 +1294,12 @@ void ImGuiLayer::MousePick()
 	// Origin is on the upper left of scene viewport.
 	uint32_t mouseLocalPosX = (uint32_t)ImGui::GetMousePos().x - m_sceneViewportWindowPosX;
 	uint32_t mouseLocalPosY = (uint32_t)ImGui::GetMousePos().y - (m_sceneViewportWindowPosY + (uint32_t)GetTitleBarSize());
-	SL_ASSERT(mouseLocalPosX >= 0 && mouseLocalPosY >= 0 &&
-		mouseLocalPosX < m_sceneViewportSizeX && mouseLocalPosY < m_sceneViewportSizeY);
+	if (mouseLocalPosX < 0 || mouseLocalPosY < 0 ||
+		mouseLocalPosX >= m_sceneViewportSizeX || mouseLocalPosY >= m_sceneViewportSizeY)
+	{
+		SL_LOG_ERROR("`ImGuiLayer::MousePick` got an invalid coordinate: ({}, {})", mouseLocalPosX, mouseLocalPosY);
+		return;
+	}
 
 	auto *pEntityIDFB = sl::RenderCore::GetEntityIDFramebuffer();
 	int entityID = pEntityIDFB->ReadPixel(0, mouseLocalPosX, mouseLocalPosY);

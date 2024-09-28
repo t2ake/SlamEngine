@@ -3,6 +3,7 @@
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 #include "Event/SceneViewportEvent.h"
+#include "ImGui/ImGuiContext.h"
 #include "Scene/ECSWorld.h"
 #include "Utils/ProfilerCPU.h"
 #include "Window/Input.h"
@@ -202,6 +203,7 @@ bool CameraControllerLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
 	if (mode == sl::CameraControllerMode::FPS || mode == sl::CameraControllerMode::Editor)
 	{
 		sl::Window::GetInstance().SetMouseRelativeMode(true);
+		sl::ImGuiContext::SetUsingMouse(false);
 	}
 
 	return false;
@@ -216,6 +218,7 @@ bool CameraControllerLayer::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &ev
 	{
 		mode = sl::CameraControllerMode::None;
 		sl::Window::GetInstance().SetMouseRelativeMode(false);
+		sl::ImGuiContext::SetUsingMouse(true);
 	}
 
 	return false;

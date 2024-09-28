@@ -19,9 +19,11 @@ public:
 	static void Submit();
 	static void OnEvent(void *pSDLEvent);
 
-	static ImFont *GetRegular() { return m_pRegularFont; }
-	static ImFont *GetBold() { return m_pBoldFont; }
-	static ImFont *GetThin() { return m_pThinFont; }
+	static void SetUsingMouse(bool enable);
+
+	static ImFont *GetRegularFont() { return m_pRegularFont; }
+	static ImFont *GetBoldFont() { return m_pBoldFont; }
+	static ImFont *GetThinFont() { return m_pThinFont; }
 
 private:
 	static void SetColor();
