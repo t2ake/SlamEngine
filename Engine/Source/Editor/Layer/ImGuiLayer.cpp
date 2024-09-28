@@ -1195,14 +1195,8 @@ void ImGuiLayer::ShowImGuizmoTransform()
 {
 	SL_PROFILE;
 
-	auto mainCameraEntity = sl::ECSWorld::GetMainCameraEntity();
-	if (m_selectedEntity == mainCameraEntity)
-	{
-		return;
-	}
-
 	// Disable ImGuizmo when camera is using.
-	auto &camera = mainCameraEntity.GetComponents<sl::CameraComponent>();
+	auto &camera = sl::ECSWorld::GetMainCameraEntity().GetComponents<sl::CameraComponent>();
 	ImGuizmo::Enable(!camera.IsUsing());
 
 	ImGuizmo::SetDrawlist();
@@ -1268,7 +1262,7 @@ void ImGuiLayer::ShowSceneViewport()
 
 	// ImGuizmo
 	ShowImGuizmoOrientation();
-	if (m_imguizmoMode >= 0 && m_selectedEntity.IsValid())
+	if (m_imguizmoMode >= 0 && m_selectedEntity.IsValid() && m_selectedEntity != sl::ECSWorld::GetMainCameraEntity())
 	{
 		ShowImGuizmoTransform();
 	}
@@ -1279,7 +1273,6 @@ void ImGuiLayer::ShowSceneViewport()
 		ImGui::IsMouseDragging(ImGuiMouseButton_Right))
 	{
 		m_isMouseFreeInSceneView = false;
-
 	}
 	else
 	{
@@ -1301,8 +1294,8 @@ void ImGuiLayer::MousePick()
 		return;
 	}
 
-	auto *pEntityIDFB = sl::RenderCore::GetEntityIDFramebuffer();
-	int entityID = pEntityIDFB->ReadPixel(0, mouseLocalPosX, mouseLocalPosY);
+	auto *pEntityIDFramebuffer = sl::RenderCore::GetEntityIDFramebuffer();
+	int entityID = pEntityIDFramebuffer->ReadPixel(0, mouseLocalPosX, mouseLocalPosY);
 
 	// We clear the Entity ID buffer by -1 every frame in RendererLayer.
 	if (entityID < 0)
@@ -1331,7 +1324,7 @@ bool ImGuiLayer::OnKeyPressed(sl::KeyPressEvent& event)
 		return false;
 	}
 
-	auto key = event.GetKey();
+	int key = event.GetKey();
 	switch (key)
 	{
 		case SL_KEY_Q:
@@ -1377,7 +1370,8 @@ bool ImGuiLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
 		{
 			camera.m_controllerMode = sl::CameraControllerMode::Editor;
 		}
-		else if (!ImGuizmo::IsOver())
+		// It seems to be a bug of `ImGuizmo` that `IsOver` still returns true even if i do not call `ShowImGuizmoTransform`.
+		else if (!ImGuizmo::IsOver() || !m_selectedEntity.IsValid() || m_selectedEntity == sl::ECSWorld::GetMainCameraEntity())
 		{
 			MousePick();
 		}
