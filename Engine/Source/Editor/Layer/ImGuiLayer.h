@@ -12,7 +12,9 @@ namespace sl
 {
 
 class KeyPressEvent;
+class KeyReleaseEvent;
 class MouseButtonPressEvent;
+class MouseButtonReleaseEvent;
 
 }
 
@@ -56,8 +58,10 @@ private:
 	void MousePick();
 
 	bool OnKeyPressed(sl::KeyPressEvent& event);
+	bool OnKeyRelease(sl::KeyReleaseEvent &event);
 	bool OnMouseButtonPress(sl::MouseButtonPressEvent &event);
-	
+	bool OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event);
+
 	// Dock space
 	int m_dockSpaceFlag = 0; // ImGuiDockNodeFlags m_dockSpaceFlag = ImGuiDockNodeFlags_None
 	

@@ -29,8 +29,6 @@ void CameraControllerLayer::OnEvent(sl::Event &event)
 	sl::EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<sl::MouseScrollEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnMouseScroll));
 	dispatcher.Dispatch<sl::SceneViewportResizeEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnSceneViewportResize));
-	dispatcher.Dispatch<sl::MouseButtonPressEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnMouseButtonPress));
-	dispatcher.Dispatch<sl::MouseButtonReleaseEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnMouseButtonRelease));
 }
 
 void CameraControllerLayer::BeginFrame()
@@ -192,46 +190,6 @@ bool CameraControllerLayer::OnSceneViewportResize(sl::SceneViewportResizeEvent &
 	camera.m_aspect = aspect;
 	camera.m_fovMultiplier = fovMultiplier;
 	camera.m_isDirty = true;
-
-	return false;
-}
-
-bool CameraControllerLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
-{
-	const auto &mode = sl::ECSWorld::GetMainCameraComponent().m_controllerMode;
-
-	if (mode == sl::CameraControllerMode::FPS || mode == sl::CameraControllerMode::Editor)
-	{
-		sl::Window::GetInstance().SetMouseRelativeMode(true);
-		sl::ImGuiContext::SetUsingMouse(false);
-	}
-
-	return false;
-}
-
-bool CameraControllerLayer::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event)
-{
-	auto &mode = sl::ECSWorld::GetMainCameraComponent().m_controllerMode;
-
-	if ((mode == sl::CameraControllerMode::FPS && event.GetButton() == SL_MOUSE_BUTTON_RIGHT) ||
-		(mode == sl::CameraControllerMode::Editor&& event.GetButton() == SL_MOUSE_BUTTON_LEFT))
-	{
-		mode = sl::CameraControllerMode::None;
-		sl::Window::GetInstance().SetMouseRelativeMode(false);
-		sl::ImGuiContext::SetUsingMouse(true);
-	}
-
-	return false;
-}
-
-bool CameraControllerLayer::OnKeyRelease(sl::KeyReleaseEvent &event)
-{
-	auto &mode = sl::ECSWorld::GetMainCameraComponent().m_controllerMode;
-
-	if (mode == sl::CameraControllerMode::Editor && event.GetKey() == SL_KEY_LALT)
-	{
-		mode = sl::CameraControllerMode::None;
-	}
 
 	return false;
 }

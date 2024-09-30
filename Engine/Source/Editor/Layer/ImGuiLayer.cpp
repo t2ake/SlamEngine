@@ -14,6 +14,7 @@
 #include "Utils/EnumOf.hpp"
 #include "Utils/ProfilerCPU.h"
 #include "Window/Input.h"
+#include "Window/Window.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui/imgui.h>
@@ -120,6 +121,12 @@ struct ScrollingBuffer
 	ImVector<ImVec2> m_datas;
 };
 
+void SetMouseHidden(bool hide, bool imguiUseMouse)
+{
+	sl::Window::GetInstance().SetMouseRelativeMode(hide);
+	sl::ImGuiContext::SetUsingMouse(imguiUseMouse);
+}
+
 } // namespace
 
 ImGuiLayer::ImGuiLayer()
@@ -162,7 +169,9 @@ void ImGuiLayer::OnEvent(sl::Event &event)
 
 	sl::EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<sl::KeyPressEvent>(BIND_EVENT_CALLBACK(ImGuiLayer::OnKeyPressed));
+	dispatcher.Dispatch<sl::KeyReleaseEvent>(BIND_EVENT_CALLBACK(ImGuiLayer::OnKeyRelease));
 	dispatcher.Dispatch<sl::MouseButtonPressEvent>(BIND_EVENT_CALLBACK(ImGuiLayer::OnMouseButtonPress));
+	dispatcher.Dispatch<sl::MouseButtonReleaseEvent>(BIND_EVENT_CALLBACK(ImGuiLayer::OnMouseButtonRelease));
 }
 
 void ImGuiLayer::BeginFrame()
@@ -955,6 +964,14 @@ void ImGuiLayer::ShowDetails()
 		return;
 	}
 
+	bool dragWidgetActivated = false;
+	bool dragWidgetDeactivated = false;
+	auto CheckDragWidgetState = [&dragWidgetActivated, &dragWidgetDeactivated]()
+	{
+		dragWidgetActivated |= ImGui::IsItemActivated();
+		dragWidgetDeactivated |= ImGui::IsItemDeactivated();
+	};
+
 	// Draw Tag component.
 	DrawComponent<sl::TagComponent>("Tag", [this](sl::TagComponent *pComponent)
 	{
@@ -979,7 +996,7 @@ void ImGuiLayer::ShowDetails()
 	});
 
 	// Draw Transform component.
-	DrawComponent<sl::TransformComponent>("Transform", [this](sl::TransformComponent *pComponent)
+	DrawComponent<sl::TransformComponent>("Transform", [this, &CheckDragWidgetState](sl::TransformComponent *pComponent)
 	{
 		bool cameraMayBeDirty = false;
 
@@ -989,6 +1006,7 @@ void ImGuiLayer::ShowDetails()
 		{
 			cameraMayBeDirty = true;
 		}
+		CheckDragWidgetState();
 
 		glm::vec3 ratationDegrees = RotationModAndRepeat(pComponent->GetRotationDegrees());
 		StartWithText("Rotation");
@@ -997,10 +1015,12 @@ void ImGuiLayer::ShowDetails()
 			pComponent->SetRotationDegrees(ratationDegrees);
 			cameraMayBeDirty = true;
 		}
+		CheckDragWidgetState();
 
 		glm::vec3 &scale = pComponent->m_scale;
 		StartWithText("Scale");
 		ImGui::DragFloat3("##Scale", glm::value_ptr(scale), 0.1f);
+		CheckDragWidgetState();
 
 		if (cameraMayBeDirty)
 		{
@@ -1013,7 +1033,7 @@ void ImGuiLayer::ShowDetails()
 	});
 
 	// Draw Camera component.
-	DrawComponent<sl::CameraComponent>("Camera", [this](sl::CameraComponent *pComponent)
+	DrawComponent<sl::CameraComponent>("Camera", [this, &CheckDragWidgetState](sl::CameraComponent *pComponent)
 	{
 		StartWithText("Main Camera");
 		bool isMainCamera = pComponent->m_isMainCamera;
@@ -1067,18 +1087,21 @@ void ImGuiLayer::ShowDetails()
 				pComponent->m_fov = glm::radians(fovDegrees);
 				pComponent->m_isDirty = true;
 			}
+			CheckDragWidgetState();
 
 			StartWithText("Near Plane");
 			if (ImGui::DragFloat("##NearPlane", &(pComponent->m_nearPlane), 0.001f, 0.01f, 1.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
+			CheckDragWidgetState();
 
 			StartWithText("Far Plane");
 			if (ImGui::DragFloat("##FarPlane", &(pComponent->m_farPlane), 100.0f, 1.0f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
+			CheckDragWidgetState();
 
 			ImGui::Unindent();
 		}
@@ -1093,18 +1116,21 @@ void ImGuiLayer::ShowDetails()
 			{
 				pComponent->m_isDirty = true;
 			}
+			CheckDragWidgetState();
 
 			StartWithText("Near Clip");
 			if (ImGui::DragFloat("##NearClip", &(pComponent->m_orthoNearClip), 100.0f, -100000.0f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
+			CheckDragWidgetState();
 
 			StartWithText("Far Clip");
 			if (ImGui::DragFloat("##FarClip", &(pComponent->m_orthoFarClip), 100.0f, -100000.0f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
+			CheckDragWidgetState();
 
 			ImGui::Unindent();
 		}
@@ -1120,18 +1146,23 @@ void ImGuiLayer::ShowDetails()
 			{
 				pComponent->m_rotateSpeed = glm::radians(rotateSpeedDegrees);
 			}
+			CheckDragWidgetState();
 
 			StartWithText("Move Speed");
 			ImGui::DragFloat("##MoveSpeed", &(pComponent->m_maxMoveSpeed), 0.001f, 0.001f, 0.5f);
+			CheckDragWidgetState();
 
 			StartWithText("Acceleration");
 			ImGui::DragFloat("##Acceleration", &(pComponent->m_maxSpeedToAcceleration), 0.001f, 0.001f, 0.5f);
+			CheckDragWidgetState();
 
 			StartWithText("Shift Multiplier");
 			ImGui::DragFloat("##ShiftMultiplier", &(pComponent->m_moveSpeedKeyShiftMultiplier), 0.01f, 0.1f, 10.0f);
+			CheckDragWidgetState();
 
 			StartWithText("Scroll Multiplier");
 			ImGui::DragFloat("##ScrollMultiplier", &(pComponent->m_moveSpeedMouseScrollMultiplier), 0.01f, 0.1f, 10.0f);
+			CheckDragWidgetState();
 
 			ImGui::Unindent();
 		}
@@ -1175,6 +1206,15 @@ void ImGuiLayer::ShowDetails()
 	}
 
 	ImGui::End();
+
+	if (dragWidgetActivated)
+	{
+		// SetMouseHidden(true, true);
+	}
+	if (dragWidgetDeactivated)
+	{
+		// SetMouseHidden(false, true);
+	}
 }
 
 void ImGuiLayer::ShowImGuizmoOrientation()
@@ -1356,6 +1396,24 @@ bool ImGuiLayer::OnKeyPressed(sl::KeyPressEvent& event)
 	return false;
 }
 
+bool ImGuiLayer::OnKeyRelease(sl::KeyReleaseEvent &event)
+{
+	if (event.GetKey() != SL_KEY_LALT)
+	{
+		return false;
+	}
+
+	// Mouse exit Editor mode and restore mouse frome hidden state.
+	if (auto &mode = sl::ECSWorld::GetMainCameraComponent().m_controllerMode;
+		mode == sl::CameraControllerMode::Editor)
+	{
+		mode = sl::CameraControllerMode::None;
+		SetMouseHidden(false, true);
+	}
+
+	return false;
+}
+
 bool ImGuiLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
 {
 	if (!m_isMouseFreeInSceneView)
@@ -1369,8 +1427,9 @@ bool ImGuiLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
 		if (sl::Input::IsKeyPressed(SL_KEY_LALT))
 		{
 			camera.m_controllerMode = sl::CameraControllerMode::Editor;
+			SetMouseHidden(true, false);
 		}
-		// It seems to be a bug of `ImGuizmo` that `IsOver` still returns true even if i do not call `ShowImGuizmoTransform`.
+		// It seems to be a bug of ImGuizmo that `IsOver` still returns true even if `ShowImGuizmoTransform` was not called.
 		else if (!ImGuizmo::IsOver() || !m_selectedEntity.IsValid() || m_selectedEntity == sl::ECSWorld::GetMainCameraEntity())
 		{
 			MousePick();
@@ -1379,6 +1438,25 @@ bool ImGuiLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
 	else if (event.GetButton() == SL_MOUSE_BUTTON_RIGHT)
 	{
 		camera.m_controllerMode = sl::CameraControllerMode::FPS;
+		SetMouseHidden(true, false);
+	}
+
+	return false;
+}
+
+bool ImGuiLayer::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event)
+{
+	if (event.GetButton() != SL_MOUSE_BUTTON_RIGHT && event.GetButton() != SL_MOUSE_BUTTON_LEFT)
+	{
+		return false;
+	}
+
+	// Mouse exit FPS / Editor mode and restore mouse frome hidden state.
+	if (auto &mode = sl::ECSWorld::GetMainCameraComponent().m_controllerMode;
+		mode == sl::CameraControllerMode::FPS || mode == sl::CameraControllerMode::Editor)
+	{
+		mode = sl::CameraControllerMode::None;
+		SetMouseHidden(false, true);
 	}
 
 	return false;

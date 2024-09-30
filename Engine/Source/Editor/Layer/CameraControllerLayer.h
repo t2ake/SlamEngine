@@ -8,9 +8,6 @@ namespace sl
 
 class MouseScrollEvent;
 class SceneViewportResizeEvent;
-class MouseButtonPressEvent;
-class MouseButtonReleaseEvent;
-class KeyReleaseEvent;
 
 }
 
@@ -32,9 +29,6 @@ private:
 
 	bool OnMouseScroll(sl::MouseScrollEvent &event);
 	bool OnSceneViewportResize(sl::SceneViewportResizeEvent &event);
-	bool OnMouseButtonPress(sl::MouseButtonPressEvent &event);
-	bool OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event);
-	bool OnKeyRelease(sl::KeyReleaseEvent &event);
 
 	bool m_isRotating = false;
 	bool m_isMoving = false;

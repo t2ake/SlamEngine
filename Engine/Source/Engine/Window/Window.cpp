@@ -30,12 +30,11 @@ void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 	SL_LOG_INFO("Create window \"{}\" ({}, {})", title, width, height);
 
 	// Init SDL.
-	SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_CENTER, "0");
-	SDL_SetHint(SDL_HINT_WINDOWS_DPI_SCALING, "1");
-
 	int initSuccess = SDL_Init(SDL_INIT_EVENTS);
 	SL_ASSERT(initSuccess == 0, "Failed to initialize SDL:\n\t{}", SDL_GetError());
 	
+	SDL_SetHint(SDL_HINT_WINDOWS_DPI_SCALING, "1");
+
 	// Creat window.
 	uint32_t windowFlags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI;
 	switch (RenderCore::GetBackend())
@@ -120,7 +119,7 @@ void Window::SetMouseRelativeMode(bool enable)
 	}
 	else
 	{
-		// Reset the mouse position after the mouse exits the relative mode.
+		// Reset the mouse position after the mouse exits relative mode.
 		SDL_SetRelativeMouseMode(SDL_FALSE);
 		SDL_WarpMouseInWindow(static_cast<SDL_Window *>(m_pNativeWindow), s_posX, s_posY);
 	}
