@@ -15,6 +15,7 @@ class KeyPressEvent;
 class KeyReleaseEvent;
 class MouseButtonPressEvent;
 class MouseButtonReleaseEvent;
+class MouseMoveEvent;
 
 }
 
@@ -61,6 +62,7 @@ private:
 	bool OnKeyRelease(sl::KeyReleaseEvent &event);
 	bool OnMouseButtonPress(sl::MouseButtonPressEvent &event);
 	bool OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event);
+	bool OnMouseMove(sl::MouseMoveEvent &event);
 
 	// Dock space
 	int m_dockSpaceFlag = 0; // ImGuiDockNodeFlags m_dockSpaceFlag = ImGuiDockNodeFlags_None

@@ -79,7 +79,7 @@ private:
 class MouseMoveEvent : public Event
 {
 public:
-	MouseMoveEvent(float x, float y) : m_posX(x), m_posY(y) {}
+	MouseMoveEvent(int x, int y) : m_posX(x), m_posY(y) {}
 
 	static EventType GetStaticEventType()
 	{
@@ -103,12 +103,12 @@ public:
 		return SL_EVENT_CATEGORY_INPUT | SL_EVENT_CATEGORY_MOUSE;
 	}
 
-	glm::vec2 GetPosition() const { return { m_posX , m_posY }; }
-	float GetPositionX() const { return m_posX; }
-	float GetPositionY() const { return m_posY; }
+	glm::ivec2 GetPosition() const { return { m_posX , m_posY }; }
+	int GetPositionX() const { return m_posX; }
+	int GetPositionY() const { return m_posY; }
 
 private:
-	float m_posX, m_posY;
+	int m_posX, m_posY;
 };
 
 class MouseScrollEvent : public Event

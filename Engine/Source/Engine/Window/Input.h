@@ -18,17 +18,24 @@ public:
 	Input &operator=(Input &&) = delete;
 	~Input() = delete;
 
-	static void Init(void *pWindow) { m_pWindow = pWindow; }
+	static void Init(void *pWindow);
 
 	static bool IsKeyPressed(int key);
 	static bool IsMouseButtonPressed(int button);
 
-	// Use the upper left corner of the window as the coordinate origin.
-	static glm::vec2 GetMousePos();
-	static glm::vec2 GetMouseDelta();
+	static glm::ivec2 GetMousePos();
+	static glm::ivec2 GetMouseGlobalPos();
+	static glm::ivec2 GetMouseDelta();
+
+	static void SetMousePos(glm::ivec2 pos);
+	static void SetMouseGlobalPos(glm::ivec2 globalPos);
+
+	static void SetMouseWarpMode(bool warp, bool showCursor, bool restoreMousePos = true);
+	static bool IsMouseInWrapMode() { return m_wrapMode; }
 
 private:
 	inline static void *m_pWindow = nullptr;
+	inline static bool m_wrapMode = false;
 };
 
 } // namespace sl

@@ -121,12 +121,6 @@ struct ScrollingBuffer
 	ImVector<ImVec2> m_datas;
 };
 
-void SetMouseHidden(bool hide, bool imguiUseMouse)
-{
-	sl::Window::GetInstance().SetMouseRelativeMode(hide);
-	sl::ImGuiContext::SetUsingMouse(imguiUseMouse);
-}
-
 } // namespace
 
 ImGuiLayer::ImGuiLayer()
@@ -172,6 +166,7 @@ void ImGuiLayer::OnEvent(sl::Event &event)
 	dispatcher.Dispatch<sl::KeyReleaseEvent>(BIND_EVENT_CALLBACK(ImGuiLayer::OnKeyRelease));
 	dispatcher.Dispatch<sl::MouseButtonPressEvent>(BIND_EVENT_CALLBACK(ImGuiLayer::OnMouseButtonPress));
 	dispatcher.Dispatch<sl::MouseButtonReleaseEvent>(BIND_EVENT_CALLBACK(ImGuiLayer::OnMouseButtonRelease));
+	dispatcher.Dispatch<sl::MouseMoveEvent>(BIND_EVENT_CALLBACK(ImGuiLayer::OnMouseMove));
 }
 
 void ImGuiLayer::BeginFrame()
@@ -1209,11 +1204,11 @@ void ImGuiLayer::ShowDetails()
 
 	if (dragWidgetActivated)
 	{
-		// SetMouseHidden(true, true);
+		sl::Input::SetMouseWarpMode(true, false);
 	}
 	if (dragWidgetDeactivated)
 	{
-		// SetMouseHidden(false, true);
+		sl::Input::SetMouseWarpMode(false, true);
 	}
 }
 
@@ -1408,7 +1403,7 @@ bool ImGuiLayer::OnKeyRelease(sl::KeyReleaseEvent &event)
 		mode == sl::CameraControllerMode::Editor)
 	{
 		mode = sl::CameraControllerMode::None;
-		SetMouseHidden(false, true);
+		sl::Input::SetMouseWarpMode(false, true);
 	}
 
 	return false;
@@ -1427,7 +1422,7 @@ bool ImGuiLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
 		if (sl::Input::IsKeyPressed(SL_KEY_LALT))
 		{
 			camera.m_controllerMode = sl::CameraControllerMode::Editor;
-			SetMouseHidden(true, false);
+			sl::Input::SetMouseWarpMode(true, false);
 		}
 		// It seems to be a bug of ImGuizmo that `IsOver` still returns true even if `ShowImGuizmoTransform` was not called.
 		else if (!ImGuizmo::IsOver() || !m_selectedEntity.IsValid() || m_selectedEntity == sl::ECSWorld::GetMainCameraEntity())
@@ -1438,7 +1433,7 @@ bool ImGuiLayer::OnMouseButtonPress(sl::MouseButtonPressEvent &event)
 	else if (event.GetButton() == SL_MOUSE_BUTTON_RIGHT)
 	{
 		camera.m_controllerMode = sl::CameraControllerMode::FPS;
-		SetMouseHidden(true, false);
+		sl::Input::SetMouseWarpMode(true, false);
 	}
 
 	return false;
@@ -1456,7 +1451,45 @@ bool ImGuiLayer::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event)
 		mode == sl::CameraControllerMode::FPS || mode == sl::CameraControllerMode::Editor)
 	{
 		mode = sl::CameraControllerMode::None;
-		SetMouseHidden(false, true);
+		sl::Input::SetMouseWarpMode(false, true);
+	}
+
+	return false;
+}
+
+bool ImGuiLayer::OnMouseMove(sl::MouseMoveEvent &event)
+{
+	if (!sl::Input::IsMouseInWrapMode())
+	{
+		return false;
+	}
+
+	constexpr int TeleportZone = 2;
+	const glm::ivec2 mouseZone = sl::Window::GetInstance().GetSize() - glm::ivec2{ TeleportZone, TeleportZone };
+	const glm::ivec2 pos = event.GetPosition();
+
+	glm::ivec2 newPos = pos;
+	if (pos.x < TeleportZone)
+	{
+		newPos.x = mouseZone.x - 1;
+	}
+	if (pos.y < TeleportZone)
+	{
+		newPos.y = mouseZone.y - 1;
+	}
+	if (pos.x > mouseZone.x)
+	{
+		newPos.x = TeleportZone;
+	}
+	if (pos.y > mouseZone.y)
+	{
+		newPos.y = TeleportZone;
+	}
+
+	if (newPos != pos)
+	{
+		sl::Input::SetMousePos(newPos);
+		ImGui::GetIO().WantSetMousePos = true;
 	}
 
 	return false;

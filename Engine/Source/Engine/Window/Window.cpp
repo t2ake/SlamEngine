@@ -32,7 +32,6 @@ void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 	// Init SDL.
 	int initSuccess = SDL_Init(SDL_INIT_EVENTS);
 	SL_ASSERT(initSuccess == 0, "Failed to initialize SDL:\n\t{}", SDL_GetError());
-	
 	SDL_SetHint(SDL_HINT_WINDOWS_DPI_SCALING, "1");
 
 	// Creat window.
@@ -99,7 +98,7 @@ void *Window::GetRenderContext() const
 	return m_pRenderContext->GetContext();
 }
 
-void Window::SetVSync(VSyncMode mode)
+void Window::SetVSync(VSyncMode mode) const
 {
 	if (SDL_GL_SetSwapInterval(static_cast<int>(mode)) < 0)
 	{
@@ -107,22 +106,12 @@ void Window::SetVSync(VSyncMode mode)
 	}
 }
 
-void Window::SetMouseRelativeMode(bool enable)
+glm::ivec2 Window::GetSize() const
 {
-	static int s_posX;
-	static int s_posY;
+	int sizeX, sizeY;
+	SDL_GetWindowSize(static_cast<SDL_Window *>(m_pNativeWindow), &sizeX, &sizeY);
 
-	if (enable)
-	{
-		SDL_GetMouseState(&s_posX, &s_posY);
-		SDL_SetRelativeMouseMode(SDL_TRUE);
-	}
-	else
-	{
-		// Reset the mouse position after the mouse exits relative mode.
-		SDL_SetRelativeMouseMode(SDL_FALSE);
-		SDL_WarpMouseInWindow(static_cast<SDL_Window *>(m_pNativeWindow), s_posX, s_posY);
-	}
+	return glm::ivec2{ sizeX, sizeY };
 }
 
 void Window::PullEvents()
@@ -155,7 +144,7 @@ void Window::PullEvents()
 			}
 			case SDL_MOUSEMOTION:
 			{
-				MouseMoveEvent event{ (float)SDLEvent.motion.x, (float)SDLEvent.motion.y };
+				MouseMoveEvent event{ SDLEvent.motion.x, SDLEvent.motion.y };
 				m_eventCallback(event);
 				break;
 			}

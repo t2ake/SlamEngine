@@ -2,6 +2,7 @@
 
 #include "Event/Event.h"
 
+#include <glm/glm.hpp>
 #include <memory>
 
 struct SDL_WindowEvent;
@@ -11,7 +12,7 @@ namespace sl
 
 class RenderContext;
 
-enum class VSyncMode
+enum class VSyncMode : int
 {
 	On = 1,
 	Off = 0,
@@ -44,8 +45,8 @@ public:
 	void *GetNativeWindow() const { return m_pNativeWindow; }
 	void *GetRenderContext() const;
 
-	void SetVSync(VSyncMode mode);
-	void SetMouseRelativeMode(bool enable);
+	void SetVSync(VSyncMode mode) const;
+	glm::ivec2 GetSize() const;
 
 	void SetEventCallback(auto fun) { m_eventCallback = fun; }
 
