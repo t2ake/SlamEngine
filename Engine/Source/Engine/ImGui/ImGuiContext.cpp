@@ -79,6 +79,11 @@ void ImGuiContext::NewFrame()
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
 	ImGuizmo::BeginFrame();
+
+	if (!m_showMouse)
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_None);
+	}
 }
 
 void ImGuiContext::Submit()

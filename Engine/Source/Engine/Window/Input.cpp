@@ -1,6 +1,7 @@
 #include "Input.h"
 
 #include "Core/Log.h"
+#include "ImGui/ImGuiContext.h"
 #include "Window/Window.h"
 
 #include <imgui/imgui.h>
@@ -81,7 +82,7 @@ void Input::SetMouseWarpMode(bool warp, bool showCursor, bool restoreMousePos)
 		}
 	}
 
-	SDL_ShowCursor(showCursor ? SDL_ENABLE : SDL_DISABLE);
+	sl::ImGuiContext::SetMouseVisibility(showCursor);
 }
 
 } // namespace sl
