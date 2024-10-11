@@ -30,12 +30,10 @@ public:
 	static void SetMousePos(glm::ivec2 pos);
 	static void SetMouseGlobalPos(glm::ivec2 globalPos);
 
-	static void SetMouseWarpMode(bool warp, bool showCursor, bool restoreMousePos = true);
-	static bool IsMouseInWrapMode() { return m_wrapMode; }
+	static void SetMouseWrapMode(bool wrap, bool restoreMousePos = true);
 
 private:
 	inline static void *m_pWindow = nullptr;
-	inline static bool m_wrapMode = false;
 };
 
 } // namespace sl

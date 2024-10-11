@@ -26,6 +26,7 @@ void ImGuiContext::Init(void *pNativeWindow, void *pRenderContext)
 
 	// 2. Setup configs
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	io.ConfigViewportsNoTaskBarIcon = true;
@@ -79,11 +80,6 @@ void ImGuiContext::NewFrame()
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
 	ImGuizmo::BeginFrame();
-
-	if (!m_showMouse)
-	{
-		ImGui::SetMouseCursor(ImGuiMouseCursor_None);
-	}
 }
 
 void ImGuiContext::Submit()

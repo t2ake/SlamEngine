@@ -31,21 +31,21 @@ glm::ivec2 Input::GetMousePos()
 {
 	int posX, posY;
 	SDL_GetMouseState(&posX, &posY);
-	return glm::ivec2{ float(posX), float(posY)};
+	return glm::ivec2{ posX, posY };
 }
 
 glm::ivec2 Input::GetMouseGlobalPos()
 {
 	int posX, posY;
 	SDL_GetGlobalMouseState(&posX, &posY);
-	return glm::ivec2{ float(posX), float(posY) };
+	return glm::ivec2{ posX, posY };
 }
 
 glm::ivec2 Input::GetMouseDelta()
 {
 	int deltaX, deltaY;
 	SDL_GetRelativeMouseState(&deltaX, &deltaY);
-	return glm::ivec2{ float(deltaX), float(deltaY) };
+	return glm::ivec2{ deltaX, deltaY };
 }
 
 void Input::SetMousePos(glm::ivec2 pos)
@@ -58,15 +58,17 @@ void Input::SetMouseGlobalPos(glm::ivec2 globalPos)
 	SDL_WarpMouseGlobal(globalPos.x, globalPos.y);
 }
 
-void Input::SetMouseWarpMode(bool warp, bool showCursor, bool restoreMousePos)
+void Input::SetMouseWrapMode(bool wrap, bool restoreMousePos)
 {
+	// TODO: ImGui `DragFloat` does not work very well in SDL relative mode, mouse will still hit the edge of window.
+	// Waiting for `TeleportMousePos` to be completed in docking branch.(imgui #228)
+
 	static int s_posX;
 	static int s_posY;
 
-	m_wrapMode = warp;
-
-	if (warp)
+	if (wrap)
 	{
+		SDL_SetRelativeMouseMode(SDL_TRUE);
 		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
 		if (restoreMousePos)
 		{
@@ -75,14 +77,13 @@ void Input::SetMouseWarpMode(bool warp, bool showCursor, bool restoreMousePos)
 	}
 	else
 	{
+		SDL_SetRelativeMouseMode(SDL_FALSE);
 		ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
 		if (restoreMousePos)
 		{
 			SDL_WarpMouseInWindow(static_cast<SDL_Window *>(m_pWindow), s_posX, s_posY);
 		}
 	}
-
-	sl::ImGuiContext::SetMouseVisibility(showCursor);
 }
 
 } // namespace sl

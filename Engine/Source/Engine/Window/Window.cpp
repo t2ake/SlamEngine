@@ -32,6 +32,8 @@ void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 	// Init SDL.
 	int initSuccess = SDL_Init(SDL_INIT_EVENTS);
 	SL_ASSERT(initSuccess == 0, "Failed to initialize SDL:\n\t{}", SDL_GetError());
+	// SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_CURSOR_VISIBLE, "1");
+	SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_CENTER, "0");
 	SDL_SetHint(SDL_HINT_WINDOWS_DPI_SCALING, "1");
 
 	// Creat window.
@@ -57,10 +59,10 @@ void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 
 	m_pNativeWindow = SDL_CreateWindow(title.data(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, windowFlags);
 	SL_ASSERT(m_pNativeWindow, "Failed to create SDL window:\n\t{}", SDL_GetError());
-	
+
 	// Create rendering context.
 	m_pRenderContext.reset(RenderContext::Create(m_pNativeWindow));
-	
+
 	// Other settings.
 	if (SDL_GL_SetSwapInterval(-1) < 0)
 	{
@@ -110,7 +112,6 @@ glm::ivec2 Window::GetSize() const
 {
 	int sizeX, sizeY;
 	SDL_GetWindowSize(static_cast<SDL_Window *>(m_pNativeWindow), &sizeX, &sizeY);
-
 	return glm::ivec2{ sizeX, sizeY };
 }
 

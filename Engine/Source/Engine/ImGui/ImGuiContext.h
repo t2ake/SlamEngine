@@ -25,8 +25,6 @@ public:
 	static ImFont *GetBoldFont() { return m_pBoldFont; }
 	static ImFont *GetThinFont() { return m_pThinFont; }
 
-	static void SetMouseVisibility(bool vis) { m_showMouse = vis; }
-
 private:
 	static void SetColor();
 	static void SetStyle();
@@ -35,8 +33,6 @@ private:
 	inline static ImFont *m_pRegularFont;
 	inline static ImFont *m_pBoldFont;
 	inline static ImFont *m_pThinFont;
-
-	inline static bool m_showMouse = true;
 };
 
 } // namespace sl

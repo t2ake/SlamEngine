@@ -75,7 +75,7 @@ void CameraControllerLayer::UpdateFPSMode(float deltaTime)
 
 	if (!m_isRotating)
 	{
-		// When the camera starts to rotate.
+		// When camera starts to rotate.
 		camera.m_acceleration = 0.0f;
 		camera.m_moveSpeed = 0.0f;
 		m_isRotating = true;
