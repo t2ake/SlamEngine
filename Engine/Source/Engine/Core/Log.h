@@ -94,6 +94,33 @@ struct std::formatter<glm::vec4> : std::formatter<std::string>
 	}
 };
 
+template<>
+struct std::formatter<glm::ivec2> : std::formatter<std::string>
+{
+	auto format(const glm::ivec2 &vec, std::format_context &context) const
+	{
+		return formatter<string>::format(std::format("ivec2({}, {})", vec.x, vec.y), context);
+	}
+};
+
+template<>
+struct std::formatter<glm::ivec3> : std::formatter<std::string>
+{
+	auto format(const glm::ivec3 &vec, std::format_context &context) const
+	{
+		return formatter<string>::format(std::format("ivec3({}, {}, {})", vec.x, vec.y, vec.z), context);
+	}
+};
+
+template<>
+struct std::formatter<glm::ivec4> : std::formatter<std::string>
+{
+	auto format(const glm::ivec4 &vec, std::format_context &context) const
+	{
+		return formatter<string>::format(std::format("ivec4({}, {}, {}, {})", vec.x, vec.y, vec.z, vec.w), context);
+	}
+};
+
 // TODO: Such a dirty implementation, improve it.
 template<glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
 struct std::formatter<glm::mat<C, R, T, Q>> : std::formatter<std::string>

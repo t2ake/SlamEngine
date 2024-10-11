@@ -223,6 +223,22 @@ void ImGuiLayer::ShowDebugPanel()
 	{
 		ImGui::DebugStartItemPicker();
 	}
+	if (m_debugImGuizmoStatus)
+	{
+		ImGui::Begin("ImGuizmo Status", &m_debugImGuizmoStatus);
+
+		ImGui::Text("IsOver: ");
+		ImGui::SameLine();
+		ImGui::Text(ImGuizmo::IsOver() ? "true" : "fasle");
+		ImGui::Text("IsUsing: ");
+		ImGui::SameLine();
+		ImGui::Text(ImGuizmo::IsUsing() ? "true" : "fasle");
+		ImGui::Text("IsUsingAny: ");
+		ImGui::SameLine();
+		ImGui::Text(ImGuizmo::IsUsingAny() ? "true" : "fasle");
+
+		ImGui::End();
+	}
 }
 
 void ImGuiLayer::ShowToolOverlay()
@@ -318,6 +334,7 @@ void ImGuiLayer::ShowMenuBar()
 		ImGui::MenuItem("Style Editor", "", &m_debugStyleEditor);
 		ImGui::MenuItem("ID Stack", "", &m_debugIDStack);
 		ImGui::MenuItem("Item Picker", "", &m_debugItemPicker);
+		ImGui::MenuItem("ImGuizmo Status", "", &m_debugImGuizmoStatus);
 		ImGui::EndMenu();
 	}
 
@@ -1229,13 +1246,27 @@ void ImGuiLayer::ShowImGuizmoTransform()
 {
 	SL_PROFILE;
 
+	static int count;
+	if (m_imguizmoMode < 0 || !m_selectedEntity.IsValid() || m_selectedEntity == sl::ECSWorld::GetMainCameraEntity())
+	{
+		count = 1;
+		ImGuizmo::Enable(false);
+		return;
+	}
+	else if(count > 0)
+	{
+		// A little trick to avoid dragging ImGuizmo while selecting entity at the same time.
+		--count;
+		return;
+	}
+
 	// Disable ImGuizmo when camera is using.
-	auto &camera = sl::ECSWorld::GetMainCameraEntity().GetComponents<sl::CameraComponent>();
+	auto &camera = sl::ECSWorld::GetMainCameraComponent();
 	ImGuizmo::Enable(!camera.IsUsing());
+	ImGuizmo::AllowAxisFlip(false);
 
 	ImGuizmo::SetDrawlist();
 	ImGuizmo::SetOrthographic(camera.m_projectionType == sl::ProjectionType::Orthographic ? true : false);
-	ImGuizmo::AllowAxisFlip(false);
 	ImGuizmo::SetRect((float)m_sceneViewportWindowPosX, (float)m_sceneViewportWindowPosY + GetTitleBarSize(),
 		(float)m_sceneViewportSizeX, (float)m_sceneViewportSizeY);
 
@@ -1296,10 +1327,7 @@ void ImGuiLayer::ShowSceneViewport()
 
 	// ImGuizmo
 	ShowImGuizmoOrientation();
-	if (m_imguizmoMode >= 0 && m_selectedEntity.IsValid() && m_selectedEntity != sl::ECSWorld::GetMainCameraEntity())
-	{
-		ShowImGuizmoTransform();
-	}
+	ShowImGuizmoTransform();
 
 	if (sl::ECSWorld::GetMainCameraComponent().IsUsing() ||
 		!ImGui::IsWindowHovered() || ImGuizmo::IsUsing() ||
