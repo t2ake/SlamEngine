@@ -1246,17 +1246,17 @@ void ImGuiLayer::ShowImGuizmoTransform()
 {
 	SL_PROFILE;
 
-	static int count;
+	static int s_delayFrameCout;
 	if (m_imguizmoMode < 0 || !m_selectedEntity.IsValid() || m_selectedEntity == sl::ECSWorld::GetMainCameraEntity())
 	{
-		count = 1;
+		s_delayFrameCout = 1;
 		ImGuizmo::Enable(false);
 		return;
 	}
-	else if(count > 0)
+	else if(s_delayFrameCout > 0)
 	{
 		// A little trick to avoid dragging ImGuizmo while selecting entity at the same time.
-		--count;
+		--s_delayFrameCout;
 		return;
 	}
 

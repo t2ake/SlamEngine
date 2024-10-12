@@ -1,6 +1,6 @@
 #version 450 core
 
-// input
+// output
 layout(location = 0) out int o_entityID;
 
 // uniform

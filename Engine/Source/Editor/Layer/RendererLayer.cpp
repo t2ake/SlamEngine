@@ -39,7 +39,6 @@ void RendererLayer::OnRender()
 	SL_PROFILE;
 
 	sl::Entity mainCamera = sl::ECSWorld::GetMainCameraEntity();
-
 	sl::RenderCore::GetUniformBuffer(0)->Upload("ub_viewProjection",
 		mainCamera.GetComponents<sl::CameraComponent>().GetViewProjection());
 	sl::RenderCore::GetUniformBuffer(0)->Upload("ub_cameraPos",
