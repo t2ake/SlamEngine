@@ -50,10 +50,12 @@
 
 [spirv-cross](https://github.com/KhronosGroup/SPIRV-Cross) vulkan-sdk-1.3.283.0
 
-[tracy](https://github.com/wolfpld/tracy) 0.11.1
+[tracy](https://github.com/wolfpld/tracy) v0.11.1
 
 [IconFontCppHeaders](https://github.com/juliettef/IconFontCppHeaders) bf610efb2e5d4361df799d0dfb5ae3977d7bba2e
 
 [material-design-icons](https://github.com/google/material-design-icons) e9da2194e65080a829d670ae39a99c7b5fc09548
 
 [Google Fonts](https://fonts.google.com/icons)
+
+[assimp](https://github.com/assimp/assimp/) v5.4.3

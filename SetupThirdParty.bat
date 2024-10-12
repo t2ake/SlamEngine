@@ -68,6 +68,7 @@ cmake --build build --target spirv-cross-glsl --config Release
 :: cmake --build build --target spirv-cross-hlsl --config Release
 :: cmake --build build --target spirv-cross-msl --config Debug
 :: cmake --build build --target spirv-cross-msl --config Release
+echo.
 
 rem tracy
 set "TRACY_PATH=%THIRD_PARTY_PATH%\tracy"
@@ -77,6 +78,16 @@ cd %TRACY_PATH%
 cmake -B build
 cmake --build build --target TracyClient --config Debug
 cmake --build build --target TracyClient --config Release
+echo.
+
+rem assimp
+set "ASSIMP_PATH=%THIRD_PARTY_PATH%\assimp"
+echo [ assimp ] path: %ASSIMP_PATH%
+cd %ASSIMP_PATH%
+
+cmake -B build -DBUILD_SHARED_LIBS=OFF -DUSE_STATIC_CRT=ON
+cmake --build build --target assimp --config Debug
+cmake --build build --target assimp --config Release
 echo.
 
 pause

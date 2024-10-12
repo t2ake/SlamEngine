@@ -34,6 +34,8 @@ project("Slam")
 		path.join(ThirdPartyPath, "shaderc/libshaderc/include"),
 		path.join(ThirdPartyPath, "spirv-cross"),
 		path.join(ThirdPartyPath, "tracy/public"),
+		path.join(ThirdPartyPath, "assimp/include"),
+		path.join(ThirdPartyPath, "assimp/build/include"),
 	}
 	
 	-- Files
@@ -59,6 +61,8 @@ project("Slam")
 			path.join(ThirdPartyPath, "shaderc/build/libshaderc/Debug"),
 			path.join(ThirdPartyPath, "spirv-cross/build/Debug"),
 			path.join(ThirdPartyPath, "tracy/build/Debug"),
+			path.join(ThirdPartyPath, "assimp/build/lib/Debug"),
+			path.join(ThirdPartyPath, "assimp/build/contrib/zlib/Debug"),
 		}
 		links
 		{
@@ -72,6 +76,8 @@ project("Slam")
 			"spirv-cross-cored",
 			"spirv-cross-glsld",
 			"TracyClient",
+			"assimp-vc143-mtd",
+			"zlibstaticd",
 		}
 	filter { "configurations:Release or configurations:Final" }
 		includedirs
@@ -89,6 +95,8 @@ project("Slam")
 			path.join(ThirdPartyPath, "shaderc/build/libshaderc/Release"),
 			path.join(ThirdPartyPath, "spirv-cross/build/Release"),
 			path.join(ThirdPartyPath, "tracy/build/Release"),
+			path.join(ThirdPartyPath, "assimp/build/lib/Release"),
+			path.join(ThirdPartyPath, "assimp/build/contrib/zlib/Release"),
 		}
 		links
 		{
@@ -102,6 +110,8 @@ project("Slam")
 			"spirv-cross-core",
 			"spirv-cross-glsl",
 			"TracyClient",
+			"assimp-vc143-mt",
+			"zlibstatic",
 		}
 	filter {}
 	

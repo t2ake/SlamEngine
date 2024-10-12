@@ -3,6 +3,10 @@
 #include "RenderCore/VertexArray.h"
 #include "Utils/ProfilerCPU.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+
 namespace sl
 {
 
@@ -21,7 +25,8 @@ void MeshResource::OnImport()
 {
 	SL_PROFILE;
 
-	// TODO: Import model file.
+	Assimp::Importer importer;
+
 	SetStatus(ResourceStatus::Building);
 }
 
