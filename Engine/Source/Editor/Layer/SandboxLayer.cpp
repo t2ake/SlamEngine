@@ -2,6 +2,7 @@
 
 #include "Core/Path.hpp"
 #include "RenderCore/RenderCore.h"
+#include "Resource/ModelImporter.h"
 #include "Resource/ResourceManager.h"
 #include "Scene/ECSWorld.h"
 #include "Utils/ProfilerCPU.h"
@@ -21,21 +22,26 @@ SandboxLayer::SandboxLayer()
 
 	std::vector<float> vertices =
 	{
-		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
-		-0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+		// position,        normal,           tangent,          uv0
+		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+		-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
 	};
 	std::vector<uint32_t> indices = { 0, 1, 3, 1, 2, 3 };
 
 	auto pMeshResource = std::make_unique<sl::MeshResource>("TODO");
+	pMeshResource->SetStatus(sl::ResourceStatus::Uploading);
+	pMeshResource->SetVertexRowData(std::move(vertices));
+	pMeshResource->SetIndexRowData(std::move(indices));
 	pMeshResource->SetLayout(sl::VertexLayout
 	{
 		{ "Position", sl::AttribType::Float, 3 },
-		{ "UV", sl::AttribType::Float, 2 },
+		{ "Normal", sl::AttribType::Float, 3 },
+		{ "Tangent", sl::AttribType::Float, 3 },
+		{ "UV0", sl::AttribType::Float, 2 },
 	});
-	pMeshResource->SetVertexRowData(std::move(vertices));
-	pMeshResource->SetIndexRowData(std::move(indices));
+
 	sl::ResourceManager::AddMeshResource("SquareMesh", std::move(pMeshResource));
 	rendering.m_optMeshResourceName = "SquareMesh";
 
@@ -44,19 +50,7 @@ SandboxLayer::SandboxLayer()
 	sl::ResourceManager::AddTextureResource("JCTexture", std::move(pTextureResource));
 	rendering.m_optTextureResourceName = "JCTexture";
 
-	auto pBaseShaderResource = std::make_unique<sl::ShaderResource>(
-		sl::Path::FromeAsset("Shader/Base_vert.glsl"),
-		sl::Path::FromeAsset("Shader/Base_frag.glsl")
-	);
-	sl::ResourceManager::AddShaderResource("BaseShader", std::move(pBaseShaderResource));
-	rendering.m_optBaseShaderResourceName = "BaseShader";
-
-	auto pIDShaderResource = std::make_unique<sl::ShaderResource>(
-		sl::Path::FromeAsset("Shader/EntityID_vert.glsl"),
-		sl::Path::FromeAsset("Shader/EntityID_frag.glsl")
-	);
-	sl::ResourceManager::AddShaderResource("IDShader", std::move(pIDShaderResource));
-	rendering.m_optIDShaderResourceName = "IDShader";
+	sl::ModelImporter::Import(0, "D:/Works/Model/venice_mask/scene.gltf");
 }
 
 SandboxLayer::~SandboxLayer()

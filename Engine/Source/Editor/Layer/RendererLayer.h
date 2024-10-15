@@ -14,7 +14,7 @@ class SceneViewportResizeEvent;
 class RendererLayer : public sl::Layer
 {
 public:
-	RendererLayer() = default;
+	RendererLayer();
 	virtual ~RendererLayer() override = default;
 
 	virtual void OnAttach() override;

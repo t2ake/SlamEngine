@@ -20,7 +20,7 @@ public:
 	FileIO &operator=(FileIO &&) = delete;
 	~FileIO() = delete;
 
-	template<class T=std::byte>
+	template<class T = std::byte>
 	static std::vector<T> ReadBinary(std::string_view filePath)
 	{
 		SL_PROFILE;

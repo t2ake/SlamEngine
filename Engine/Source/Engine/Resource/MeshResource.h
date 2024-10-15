@@ -27,7 +27,7 @@ public:
 
 	void SetLayout(VertexLayout layout) { m_layout = std::move(layout); }
 	void SetVertexRowData(std::vector<float> data) { m_verticesRowData = std::move(data); }
-	void SetIndexRowData(std::vector<uint32_t> data) { m_indicesowData = std::move(data); }
+	void SetIndexRowData(std::vector<uint32_t> data) { m_indicesRowData = std::move(data); }
 
 	VertexArray *GetVertexArray() { return m_pVertexArray.get(); }
 
@@ -38,7 +38,7 @@ private:
 
 	VertexLayout m_layout;
 	std::vector<float> m_verticesRowData;
-	std::vector<uint32_t> m_indicesowData;
+	std::vector<uint32_t> m_indicesRowData;
 
 	std::unique_ptr<VertexArray> m_pVertexArray;
 };

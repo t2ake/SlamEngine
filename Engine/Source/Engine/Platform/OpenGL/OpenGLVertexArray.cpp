@@ -49,7 +49,7 @@ void OpenGLVertexArray::SetVertexBuffer(VertexBuffer *pVertexBuffer)
 			element.m_normalize ? GL_TRUE : GL_FALSE,
 			layout.GetStride(),
 			(void *)(uint64_t)element.m_offset);
-		index++;
+		++index;
 	}
 
 	glBindVertexArray(0);

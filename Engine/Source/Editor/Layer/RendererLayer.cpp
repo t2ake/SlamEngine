@@ -1,10 +1,27 @@
 #include "RendererLayer.h"
 
+#include "Core/Path.hpp"
 #include "Event/SceneViewportEvent.h"
 #include "RenderCore/RenderCore.h"
 #include "Resource/ResourceManager.h"
 #include "Scene/ECSWorld.h"
 #include "Utils/ProfilerCPU.h"
+
+RendererLayer::RendererLayer()
+{
+	auto pBaseShaderResource = std::make_unique<sl::ShaderResource>(
+		sl::Path::FromeAsset("Shader/Base_vert.glsl"),
+		sl::Path::FromeAsset("Shader/Base_frag.glsl")
+	);
+	sl::ResourceManager::AddShaderResource("BaseShader", std::move(pBaseShaderResource));
+
+	auto pIDShaderResource = std::make_unique<sl::ShaderResource>(
+		sl::Path::FromeAsset("Shader/EntityID_vert.glsl"),
+		sl::Path::FromeAsset("Shader/EntityID_frag.glsl")
+	);
+	sl::ResourceManager::AddShaderResource("IDShader", std::move(pIDShaderResource));
+
+}
 
 void RendererLayer::OnAttach()
 {

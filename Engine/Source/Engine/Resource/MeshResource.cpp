@@ -1,11 +1,8 @@
 #include "MeshResource.h"
 
+#include "Core/Log.h"
 #include "RenderCore/VertexArray.h"
 #include "Utils/ProfilerCPU.h"
-
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
 
 namespace sl
 {
@@ -25,9 +22,7 @@ void MeshResource::OnImport()
 {
 	SL_PROFILE;
 
-	Assimp::Importer importer;
-
-	SetStatus(ResourceStatus::Building);
+	SetStatus(ResourceStatus::Destroying);
 }
 
 void MeshResource::OnBuild()
@@ -50,7 +45,7 @@ void MeshResource::OnUpload()
 
 	sl::VertexBuffer *pVertexBuffer = sl::VertexBuffer::Create(m_verticesRowData.data(), m_verticesRowData.size() * sizeof(float));
 	pVertexBuffer->SetLayout(m_layout);
-	sl::IndexBuffer *pIndexBuffer = sl::IndexBuffer::Create(m_indicesowData.data(), m_indicesowData.size() * sizeof(uint32_t));
+	sl::IndexBuffer *pIndexBuffer = sl::IndexBuffer::Create(m_indicesRowData.data(), m_indicesRowData.size() * sizeof(uint32_t));
 
 	m_pVertexArray.reset(sl::VertexArray::Create());
 	m_pVertexArray->SetVertexBuffer(pVertexBuffer);
@@ -84,8 +79,8 @@ void MeshResource::DestroyCPUData()
 
 	m_verticesRowData.clear();
 	std::vector<float>().swap(m_verticesRowData);
-	m_indicesowData.clear();
-	std::vector<uint32_t>().swap(m_indicesowData);
+	m_indicesRowData.clear();
+	std::vector<uint32_t>().swap(m_indicesRowData);
 }
 
 } // namespace sl

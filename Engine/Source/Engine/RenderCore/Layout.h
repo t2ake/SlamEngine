@@ -73,7 +73,7 @@ public:
 	auto end() const { return m_elements.end(); }
 
 private:
-	// Will increase inside AddElement.
+	// Will increase inside `AddElement`.
 	uint32_t m_offset = 0;
 
 	uint32_t m_stride = 0;
