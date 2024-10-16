@@ -22,7 +22,7 @@ void MeshResource::OnImport()
 {
 	SL_PROFILE;
 
-	SetStatus(ResourceStatus::Destroying);
+	SetStatus(ResourceStatus::Building);
 }
 
 void MeshResource::OnBuild()

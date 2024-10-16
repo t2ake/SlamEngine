@@ -60,9 +60,6 @@ void Input::SetMouseGlobalPos(glm::ivec2 globalPos)
 
 void Input::SetMouseWrapMode(bool wrap, bool restoreMousePos)
 {
-	// TODO: ImGui `DragFloat` does not work very well in SDL relative mode, mouse will still hit the edge of window.
-	// Waiting for `TeleportMousePos` to be completed in docking branch.(imgui #228)
-
 	static int s_posX;
 	static int s_posY;
 

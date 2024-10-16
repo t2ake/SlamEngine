@@ -1218,6 +1218,8 @@ void ImGuiLayer::ShowDetails()
 
 	ImGui::End();
 
+	// TODO: ImGui `DragFloat` does not work very well with SDL relative mode, mouse will still hit the edge of window.
+	// Waiting for `TeleportMousePos` to be completed in docking branch.(imgui #228)
 	if (dragWidgetActivated)
 	{
 		sl::Input::SetMouseWrapMode(true);

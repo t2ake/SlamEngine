@@ -8,6 +8,7 @@
 #include "RenderCore/RenderContext.h"
 #include "RenderCore/RenderCore.h"
 #include "Utils/ProfilerCPU.h"
+#include "Core/Time.hpp"
 
 #include <SDL2/SDL.h>
 
@@ -30,7 +31,7 @@ void Window::Init(std::string_view title, uint32_t width, uint32_t height)
 	SL_LOG_INFO("Create window \"{}\" ({}, {})", title, width, height);
 
 	// Init SDL.
-	int initSuccess = SDL_Init(SDL_INIT_EVENTS);
+	int initSuccess = SDL_Init(SDL_INIT_VIDEO);
 	SL_ASSERT(initSuccess == 0, "Failed to initialize SDL:\n\t{}", SDL_GetError());
 	// SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_CURSOR_VISIBLE, "1");
 	SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_CENTER, "0");
