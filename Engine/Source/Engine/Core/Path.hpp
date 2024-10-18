@@ -41,6 +41,11 @@ public:
 		return std::filesystem::path{ path }.extension().generic_string();
 	}
 
+	SL_FORCEINLINE static std::string Parent(std::string_view path)
+	{
+		return std::filesystem::path{ path }.parent_path().generic_string();
+	}
+
 	SL_FORCEINLINE static bool Contain(std::string_view base, std::string_view sub)
 	{
 		auto rel = std::filesystem::relative(sub, base);

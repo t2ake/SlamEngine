@@ -23,13 +23,10 @@ public:
 	virtual void OnUpload() override;
 	virtual void OnReady() override;
 	virtual void OnDestroy() override;
+	virtual void DestroyCPUData() override;
 
 	void SetRowData(std::vector<std::byte> data) { m_rowData = std::move(data); }
-
 	Texture2D *GetTexture() const { return m_pTexture.get(); }
-
-private:
-	virtual void DestroyCPUData() override;
 
 	std::string m_assetPath;
 	std::vector<std::byte> m_rowData;

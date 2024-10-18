@@ -24,11 +24,9 @@ public:
 	virtual void OnUpload() override;
 	virtual void OnReady() override;
 	virtual void OnDestroy() override;
+	virtual void DestroyCPUData() override;
 
 	Shader* GetShaderProgram() { return m_pShaderProgram.get(); }
-
-private:
-	virtual void DestroyCPUData() override;
 
 	ShaderProgramType m_programType;
 	// TODO: Using template class to avoid ShaderInfo storage redundancy in non-standard shader situations.

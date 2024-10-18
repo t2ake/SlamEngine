@@ -82,29 +82,39 @@ void RendererLayer::BasePass()
 	for (auto entity : group)
 	{
 		auto [rendering, transform] = group.get<sl::RenderingComponent, sl::TransformComponent>(entity);
-		if (!rendering.m_optBaseShaderResourceName || !rendering.m_optTextureResourceName || !rendering.m_optMeshResourceName)
+		if (!rendering.m_optMeshResourceName || !rendering.m_optMaterialResourceName || !rendering.m_optBaseShaderResourceName)
 		{
 			continue;
 		}
 
-		auto* pShaderResource = sl::ResourceManager::GetShaderResource(rendering.m_optBaseShaderResourceName.value());
-		auto* pTextureResource = sl::ResourceManager::GetTextureResource(rendering.m_optTextureResourceName.value());
-		auto* pMeshResource = sl::ResourceManager::GetMeshResource(rendering.m_optMeshResourceName.value());
-		if (!pShaderResource || !pTextureResource || !pMeshResource)
+		auto *pMeshResource = sl::ResourceManager::GetMeshResource(rendering.m_optMeshResourceName.value());
+		auto *pMaterialResource = sl::ResourceManager::GetMaterialResource(rendering.m_optMaterialResourceName.value());
+		auto *pShaderResource = sl::ResourceManager::GetShaderResource(rendering.m_optBaseShaderResourceName.value());
+		if (!pMeshResource || !pMaterialResource || !pShaderResource)
 		{
 			continue;
 		}
 
-		if (!pShaderResource->IsReady() || !pTextureResource->IsReady() || !pMeshResource->IsReady())
+		if (!pMeshResource->IsReady() || !pMaterialResource->IsReady() || !pShaderResource->IsReady())
 		{
 			continue;
 		}
 
-		auto* pShader = pShaderResource->GetShaderProgram();
+		auto *pShader = pShaderResource->GetShaderProgram();
 		pShader->Bind();
-		pShader->UploadUniform(0, transform.GetTransform());
 
-		pTextureResource->GetTexture()->Bind(0);
+		if (pMaterialResource->m_albedoPropertyGroup.m_useTexture)
+		{
+			auto *pTextureResource = sl::ResourceManager::GetTextureResource(pMaterialResource->m_albedoPropertyGroup.m_texture);
+			if (!pTextureResource || !pTextureResource->IsReady())
+			{
+				continue;
+			}
+
+			pTextureResource->GetTexture()->Bind(0);
+		}
+
+		pShader->UploadUniform(0, transform.GetTransform());
 
 		sl::RenderCore::Submit(pMeshResource->GetVertexArray(), pShader);
 	}
@@ -130,8 +140,8 @@ void RendererLayer::EntityIDPass()
 			continue;
 		}
 
-		auto* pShaderResource = sl::ResourceManager::GetShaderResource(rendering.m_optIDShaderResourceName.value());
-		auto* pMeshResource = sl::ResourceManager::GetMeshResource(rendering.m_optMeshResourceName.value());
+		auto *pShaderResource = sl::ResourceManager::GetShaderResource(rendering.m_optIDShaderResourceName.value());
+		auto *pMeshResource = sl::ResourceManager::GetMeshResource(rendering.m_optMeshResourceName.value());
 		if (!pShaderResource ||!pMeshResource)
 		{
 			continue;
@@ -142,7 +152,7 @@ void RendererLayer::EntityIDPass()
 			continue;
 		}
 
-		auto* pShader = pShaderResource->GetShaderProgram();
+		auto *pShader = pShaderResource->GetShaderProgram();
 		pShader->Bind();
 		pShader->UploadUniform(0, transform.GetTransform());
 		pShader->UploadUniform(1, (int)entity);

@@ -48,7 +48,12 @@ SandboxLayer::SandboxLayer()
 	auto pTextureResource = std::make_unique<sl::TextureResource>(
 		sl::Path::FromeAsset("Texture/jc.png"), SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR);
 	sl::ResourceManager::AddTextureResource("JCTexture", std::move(pTextureResource));
-	rendering.m_optTextureResourceName = "JCTexture";
+
+	auto pMaterialResource = std::make_unique<sl::MaterialResource>("TODO");
+	pMaterialResource->m_albedoPropertyGroup.m_texture = "JCTexture";
+	pMaterialResource->m_albedoPropertyGroup.m_useTexture = true;
+	sl::ResourceManager::AddMaterialResource("AlbedoMaterial", std::move(pMaterialResource));
+	rendering.m_optMaterialResourceName = "AlbedoMaterial";
 
 	sl::ModelImporter::Import(0, "D:/Works/Model/venice_mask/scene.gltf");
 }

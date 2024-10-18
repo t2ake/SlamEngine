@@ -1182,17 +1182,19 @@ void ImGuiLayer::ShowDetails()
 	// Draw Rendering component.
 	DrawComponent<sl::RenderingComponent>("Rendering", [this](sl::RenderingComponent *pComponent)
 	{
+		StartWithText("Mesh");
+		ImGui::Text(pComponent->m_optMeshResourceName ? pComponent->m_optMeshResourceName->c_str() : "");
+
+		StartWithText("Material");
+		ImGui::Text(pComponent->m_optMaterialResourceName ? pComponent->m_optMaterialResourceName->c_str() : "");
+
+		// TODOD: Textures
+
 		StartWithText("Base Shader");
 		ImGui::Text(pComponent->m_optBaseShaderResourceName ? pComponent->m_optBaseShaderResourceName->c_str() : "");
 
 		StartWithText("ID Shader");
 		ImGui::Text(pComponent->m_optIDShaderResourceName ? pComponent->m_optIDShaderResourceName->c_str() : "");
-
-		StartWithText("Texture");
-		ImGui::Text(pComponent->m_optTextureResourceName ? pComponent->m_optTextureResourceName->c_str() : "");
-
-		StartWithText("Mesh");
-		ImGui::Text(pComponent->m_optMeshResourceName ? pComponent->m_optMeshResourceName->c_str() : "");
 	});
 
 	// Draw Cornerstone component.
@@ -1220,14 +1222,14 @@ void ImGuiLayer::ShowDetails()
 
 	// TODO: ImGui `DragFloat` does not work very well with SDL relative mode, mouse will still hit the edge of window.
 	// Waiting for `TeleportMousePos` to be completed in docking branch.(imgui #228)
-	if (dragWidgetActivated)
-	{
-		sl::Input::SetMouseWrapMode(true);
-	}
-	if (dragWidgetDeactivated)
-	{
-		sl::Input::SetMouseWrapMode(false);
-	}
+	// if (dragWidgetActivated)
+	// {
+	// 	sl::Input::SetMouseWrapMode(true);
+	// }
+	// if (dragWidgetDeactivated)
+	// {
+	// 	sl::Input::SetMouseWrapMode(false);
+	// }
 }
 
 void ImGuiLayer::ShowImGuizmoOrientation()

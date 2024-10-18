@@ -106,10 +106,11 @@ void SceneSerializer::SerializeYAML(std::string_view sceneName)
 			out << YAML::Key << "Rendering Component";
 			out << YAML::BeginMap;
 
+			out << YAML::Key << "Mesh" << YAML::Value << (pRendering->m_optMeshResourceName ? pRendering->m_optMeshResourceName->c_str() : "");
+			out << YAML::Key << "Material" << YAML::Value << (pRendering->m_optMaterialResourceName ? pRendering->m_optMaterialResourceName->c_str() : "");
+
 			out << YAML::Key << "Base Shader" << YAML::Value << (pRendering->m_optBaseShaderResourceName ? pRendering->m_optBaseShaderResourceName->c_str() : "");
 			out << YAML::Key << "ID Shader" << YAML::Value << (pRendering->m_optIDShaderResourceName ? pRendering->m_optIDShaderResourceName->c_str() : "");
-			out << YAML::Key << "Texture" << YAML::Value << (pRendering->m_optTextureResourceName ? pRendering->m_optTextureResourceName->c_str() : "");
-			out << YAML::Key << "Mesh" << YAML::Value << (pRendering->m_optMeshResourceName ? pRendering->m_optMeshResourceName->c_str() : "");
 
 			out << YAML::EndMap;
 		}
@@ -277,6 +278,14 @@ bool SceneSerializer::DeserializeYAML(std::string_view sceneName)
 			if (auto redering = entity["Rendering Component"]; redering)
 			{
 				SL_LOG_TRACE("\t\tRendering Component:");
+				if (auto mesh = redering["Mesh"]; mesh)
+				{
+					SL_LOG_TRACE("\t\t\tMesh: {}", mesh.as<std::string>());
+				}
+				if (auto material = redering["Material"]; material)
+				{
+					SL_LOG_TRACE("\t\t\tMaterial: {}", material.as<std::string>());
+				}
 				if (auto baseShader = redering["Base Shader"]; baseShader)
 				{
 					SL_LOG_TRACE("\t\t\tBase Shader: {}", baseShader.as<std::string>());
@@ -284,14 +293,6 @@ bool SceneSerializer::DeserializeYAML(std::string_view sceneName)
 				if (auto IDShader = redering["ID Shader"]; IDShader)
 				{
 					SL_LOG_TRACE("\t\t\tID Shader: {}", IDShader.as<std::string>());
-				}
-				if (auto texture = redering["Texture"]; texture)
-				{
-					SL_LOG_TRACE("\t\t\tTexture: {}", texture.as<std::string>());
-				}
-				if (auto mesh = redering["Mesh"]; mesh)
-				{
-					SL_LOG_TRACE("\t\t\tMesh: {}", mesh.as<std::string>());
 				}
 			}
 
