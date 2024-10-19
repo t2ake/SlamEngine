@@ -31,7 +31,7 @@ SandboxLayer::SandboxLayer()
 	std::vector<uint32_t> indices = { 0, 1, 3, 1, 2, 3 };
 
 	auto pMeshResource = std::make_unique<sl::MeshResource>("TODO");
-	pMeshResource->m_status = sl::ResourceStatus::Uploading;
+	pMeshResource->m_state = sl::ResourceState::Uploading;
 	pMeshResource->m_verticesRowData = std::move(vertices);
 	pMeshResource->m_indicesRowData = std::move(indices);
 	pMeshResource->m_layout = sl::VertexLayout

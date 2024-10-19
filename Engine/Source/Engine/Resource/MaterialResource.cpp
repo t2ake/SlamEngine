@@ -8,7 +8,7 @@ namespace sl
 MaterialResource::MaterialResource(std::string_view path) :
 	m_assetPath(path)
 {
-	SetStatus(ResourceStatus::Importing);
+	SetState(ResourceState::Importing);
 }
 
 MaterialResource::~MaterialResource()
@@ -20,28 +20,28 @@ void MaterialResource::OnImport()
 {
 	SL_PROFILE;
 
-	SetStatus(ResourceStatus::Building);
+	SetState(ResourceState::Building);
 }
 
 void MaterialResource::OnBuild()
 {
 	SL_PROFILE;
 
-	SetStatus(ResourceStatus::Uploading);
+	SetState(ResourceState::Uploading);
 }
 
 void MaterialResource::OnLoad()
 {
 	SL_PROFILE;
 
-	SetStatus(ResourceStatus::Uploading);
+	SetState(ResourceState::Uploading);
 }
 
 void MaterialResource::OnUpload()
 {
 	SL_PROFILE;
 
-	SetStatus(ResourceStatus::Ready);
+	SetState(ResourceState::Ready);
 }
 
 void MaterialResource::OnReady()
@@ -59,7 +59,7 @@ void MaterialResource::OnDestroy()
 
 	DestroyCPUData();
 
-	SetStatus(ResourceStatus::Destroyed);
+	SetState(ResourceState::Destroyed);
 }
 
 void MaterialResource::DestroyCPUData()

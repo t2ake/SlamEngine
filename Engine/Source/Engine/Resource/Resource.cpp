@@ -7,39 +7,39 @@ namespace sl
 
 void Resource::Update()
 {
-	switch (m_status)
+	switch (m_state)
 	{
-		case ResourceStatus::Importing:
+		case ResourceState::Importing:
 		{
 			OnImport();
 			break;
 		}
-		case ResourceStatus::Building:
+		case ResourceState::Building:
 		{
 			OnBuild();
 			break;
 		}
-		case ResourceStatus::Loading:
+		case ResourceState::Loading:
 		{
 			OnLoad();
 			break;
 		}
-		case ResourceStatus::Uploading:
+		case ResourceState::Uploading:
 		{
 			OnUpload();
 			break;
 		}
-		case ResourceStatus::Ready:
+		case ResourceState::Ready:
 		{
 			OnReady();
 			break;
 		}
-		case ResourceStatus::Destroying:
+		case ResourceState::Destroying:
 		{
 			OnDestroy();
 			break;
 		}
-		case ResourceStatus::Destroyed:
+		case ResourceState::Destroyed:
 		{
 			break;
 		}

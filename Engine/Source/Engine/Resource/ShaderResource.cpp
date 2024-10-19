@@ -73,11 +73,11 @@ ShaderResource::ShaderResource(std::string_view vsPath, std::string_view fsPath)
 
 	if (Path::Exists(m_shaders[0].m_binaryPath) && Path::Exists(m_shaders[1].m_binaryPath))
 	{
-		SetStatus(ResourceStatus::Loading);
+		SetState(ResourceState::Loading);
 	}
 	else
 	{
-		SetStatus(ResourceStatus::Importing);
+		SetState(ResourceState::Importing);
 	}
 }
 
@@ -92,11 +92,11 @@ ShaderResource::ShaderResource(std::string_view path, ShaderProgramType type) :
 
 	if (Path::Exists(m_shaders[0].m_binaryPath))
 	{
-		SetStatus(ResourceStatus::Loading);
+		SetState(ResourceState::Loading);
 	}
 	else
 	{
-		SetStatus(ResourceStatus::Importing);
+		SetState(ResourceState::Importing);
 	}
 }
 
@@ -123,12 +123,12 @@ void ShaderResource::OnImport()
 		(m_programType == ShaderProgramType::Standard && m_shaders[1].m_source.empty()))
 	{
 		SL_LOG_ERROR("Failed to import shader!");
-		SetStatus(ResourceStatus::Destroying);
+		SetState(ResourceState::Destroying);
 		return;
 	}
 #endif
 
-	SetStatus(ResourceStatus::Building);
+	SetState(ResourceState::Building);
 }
 
 void ShaderResource::OnBuild()
@@ -161,12 +161,12 @@ void ShaderResource::OnBuild()
 		(m_programType == ShaderProgramType::Standard && m_shaders[1].m_source.empty()))
 	{
 		SL_LOG_ERROR("Failed to build shader!");
-		SetStatus(ResourceStatus::Destroying);
+		SetState(ResourceState::Destroying);
 		return;
 	}
 #endif
 
-	SetStatus(ResourceStatus::Uploading);
+	SetState(ResourceState::Uploading);
 }
 
 void ShaderResource::OnLoad()
@@ -189,12 +189,12 @@ void ShaderResource::OnLoad()
 		(m_programType == ShaderProgramType::Standard && m_shaders[1].m_source.empty()))
 	{
 		SL_LOG_ERROR("Failed to load shader binary cache!");
-		SetStatus(ResourceStatus::Destroying);
+		SetState(ResourceState::Destroying);
 		return;
 	}
 #endif
 
-	SetStatus(ResourceStatus::Uploading);
+	SetState(ResourceState::Uploading);
 }
 
 void ShaderResource::OnUpload()
@@ -220,12 +220,12 @@ void ShaderResource::OnUpload()
 	if (!m_pShaderProgram)
 	{
 		SL_LOG_ERROR("Failed to create shader GPU handle!");
-		SetStatus(ResourceStatus::Destroying);
+		SetState(ResourceState::Destroying);
 		return;
 	}
 #endif
 
-	SetStatus(ResourceStatus::Ready);
+	SetState(ResourceState::Ready);
 }
 
 void ShaderResource::OnReady()
@@ -244,7 +244,7 @@ void ShaderResource::OnDestroy()
 	DestroyCPUData();
 	m_pShaderProgram.reset();
 
-	SetStatus(ResourceStatus::Destroyed);
+	SetState(ResourceState::Destroyed);
 }
 
 void ShaderResource::DestroyCPUData()

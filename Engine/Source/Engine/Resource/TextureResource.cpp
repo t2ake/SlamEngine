@@ -14,7 +14,7 @@ namespace sl
 TextureResource::TextureResource(std::string_view path, uint32_t flags) :
 	m_assetPath(path), m_flags(flags)
 {
-	SetStatus(ResourceStatus::Importing);
+	SetState(ResourceState::Importing);
 }
 
 TextureResource::~TextureResource()
@@ -48,7 +48,7 @@ void TextureResource::OnImport()
 	if (!pTextureData || width <= 0 || height <= 0 || channels <= 0)
 	{
 		SL_LOG_ERROR("Invalid texture: \"{}\"", m_assetPath.c_str());
-		SetStatus(ResourceStatus::Destroying);
+		SetState(ResourceState::Destroying);
 		return;
 	}
 #endif
@@ -63,21 +63,21 @@ void TextureResource::OnImport()
 	memcpy(m_rowData.data(), pTextureData, m_rowData.size());
 	stbi_image_free(pTextureData);
 
-	SetStatus(ResourceStatus::Building);
+	SetState(ResourceState::Building);
 }
 
 void TextureResource::OnBuild()
 {
 	SL_PROFILE;
 
-	SetStatus(ResourceStatus::Uploading);
+	SetState(ResourceState::Uploading);
 }
 
 void TextureResource::OnLoad()
 {
 	SL_PROFILE;
 
-	SetStatus(ResourceStatus::Uploading);
+	SetState(ResourceState::Uploading);
 }
 
 void TextureResource::OnUpload()
@@ -104,13 +104,13 @@ void TextureResource::OnUpload()
 	else
 	{
 		SL_LOG_ERROR("Unknown image texture format!");
-		SetStatus(ResourceStatus::Destroying);
+		SetState(ResourceState::Destroying);
 		return;
 	}
 
 	m_pTexture.reset(Texture2D::Create(m_width, m_height, true, format, m_flags, m_rowData.data()));
 
-	SetStatus(ResourceStatus::Ready);
+	SetState(ResourceState::Ready);
 }
 
 void TextureResource::OnReady()
@@ -129,7 +129,7 @@ void TextureResource::OnDestroy()
 	DestroyCPUData();
 	m_pTexture.reset();
 	
-	SetStatus(ResourceStatus::Destroyed);
+	SetState(ResourceState::Destroyed);
 }
 
 void TextureResource::DestroyCPUData()

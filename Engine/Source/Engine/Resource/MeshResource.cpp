@@ -10,7 +10,7 @@ namespace sl
 MeshResource::MeshResource(std::string_view path) :
 	m_assetPath(path)
 {
-	SetStatus(ResourceStatus::Importing);
+	SetState(ResourceState::Importing);
 }
 
 MeshResource::~MeshResource()
@@ -22,21 +22,21 @@ void MeshResource::OnImport()
 {
 	SL_PROFILE;
 
-	SetStatus(ResourceStatus::Building);
+	SetState(ResourceState::Building);
 }
 
 void MeshResource::OnBuild()
 {
 	SL_PROFILE;
 
-	SetStatus(ResourceStatus::Uploading);
+	SetState(ResourceState::Uploading);
 }
 
 void MeshResource::OnLoad()
 {
 	SL_PROFILE;
 
-	SetStatus(ResourceStatus::Uploading);
+	SetState(ResourceState::Uploading);
 }
 
 void MeshResource::OnUpload()
@@ -51,7 +51,7 @@ void MeshResource::OnUpload()
 	m_pVertexArray->SetVertexBuffer(pVertexBuffer);
 	m_pVertexArray->SetIndexBuffer(pIndexBuffer);
 
-	SetStatus(ResourceStatus::Ready);
+	SetState(ResourceState::Ready);
 }
 
 void MeshResource::OnReady()
@@ -70,7 +70,7 @@ void MeshResource::OnDestroy()
 	DestroyCPUData();
 	m_pVertexArray.reset();
 
-	SetStatus(ResourceStatus::Destroyed);
+	SetState(ResourceState::Destroyed);
 }
 
 void MeshResource::DestroyCPUData()

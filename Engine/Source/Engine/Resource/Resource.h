@@ -5,7 +5,7 @@
 namespace sl
 {
 
-enum class ResourceStatus : uint8_t
+enum class ResourceState : uint8_t
 {
 	Importing = 0,
 	Building,
@@ -31,9 +31,9 @@ class Resource
 public:
 	virtual	~Resource() = default;
 
-	void SetStatus(ResourceStatus status) { m_status = status; }
-	ResourceStatus GetStatus() const { return m_status; }
-	bool IsReady() { return m_status == ResourceStatus::Ready; }
+	void SetState(ResourceState state) { m_state = state; }
+	ResourceState GetState() const { return m_state; }
+	bool IsReady() { return m_state == ResourceState::Ready; }
 
 	void Update();
 
@@ -51,7 +51,7 @@ public:
 	virtual void OnDestroy() = 0;
 	virtual void DestroyCPUData() = 0;
 
-	ResourceStatus m_status;
+	ResourceState m_state;
 };
 
 } // namespace sl
