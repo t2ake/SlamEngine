@@ -522,6 +522,8 @@ void ImGuiLayer::ShowLog()
 	auto &logInfos = sl::Log::GetLogInfos();
 	if (ImGui::BeginChild("LogTexts", ImVec2{ 0.0f, 0.0f }, ImGuiChildFlags_FrameStyle, ImGuiWindowFlags_HorizontalScrollbar))
 	{
+		RightClickFocus();
+
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0.0f, 0.0f });
 
 		// If any filter is active.
@@ -682,6 +684,7 @@ void ImGuiLayer::ShowAssetBrowser()
 	SL_PROFILE;
 
 	ImGui::Begin("Asset Browser");
+	RightClickFocus();
 
 	// Disable the back button if the current path reaches the outermost path.
 	std::string crtPath = m_assetBrowserCrtPath.generic_string();
@@ -1294,6 +1297,11 @@ void ImGuiLayer::ShowSceneViewport()
 	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 	ImGui::PopStyleVar();
 	RightClickFocus();
+
+	if (sl::ECSWorld::GetMainCameraComponent().IsUsing())
+	{
+		ImGui::SetWindowFocus();
+	}
 
 	m_sceneViewportWindowPosX = (uint32_t)ImGui::GetWindowPos().x;
 	m_sceneViewportWindowPosY = (uint32_t)ImGui::GetWindowPos().y;
