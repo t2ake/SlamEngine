@@ -8,6 +8,7 @@
 #include "Scene/ECSWorld.h"
 #include "Utils/ProfilerCPU.h"
 #include "Window/Input.h"
+#include "Window/KeyboardLayout.h"
 #include "Window/Window.h"
 
 #include "Layer/CameraControllerLayer.h"
@@ -107,6 +108,8 @@ void Editor::BegineFrame()
 
 	m_clock.Tick();
 	m_pLayerStack->BeginFrame();
+
+	sl::KeyboardLayout::SwitchToEnglish();
 }
 
 void Editor::Update()
