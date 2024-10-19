@@ -25,6 +25,8 @@ void ProcessTexture(std::string_view path)
 		return;
 	}
 
+	// TODO: Support embedded texture.
+
 	auto pTextureResource = std::make_unique<sl::TextureResource>(path, SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR);
 	sl::ResourceManager::AddTextureResource(path, std::move(pTextureResource));
 }
@@ -204,10 +206,10 @@ void ProcessMesh(const aiMesh *pMesh, const aiScene *pScene, std::string_view pa
 
 	// 3. Mesh resource
 	auto pMeshResource = std::make_unique<sl::MeshResource>("TODO");
-	pMeshResource->m_status = sl::ResourceStatus::Uploading;
+	pMeshResource->m_state = sl::ResourceState::Uploading;
 	pMeshResource->m_verticesRowData = std::move(vertices);
 	pMeshResource->m_indicesRowData = std::move(indices);
-	pMeshResource->m_layout = layout;
+	pMeshResource->m_layout = std::move(layout);
 
 	std::string MeshResourceName = path.data();
 	MeshResourceName += pMeshName;

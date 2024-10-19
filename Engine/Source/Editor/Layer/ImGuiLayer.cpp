@@ -211,21 +211,9 @@ void ImGuiLayer::ShowDebugPanel()
 	{
 		ImGui::ShowDemoWindow(&m_debugImGuiDemo);
 	}
-	if (m_debugStyleEditor)
+	if (m_debugImGuizmoState)
 	{
-		ImGui::ShowStyleEditor();
-	}
-	if (m_debugIDStack)
-	{
-		ImGui::ShowIDStackToolWindow(&m_debugIDStack);
-	}
-	if (m_debugItemPicker)
-	{
-		ImGui::DebugStartItemPicker();
-	}
-	if (m_debugImGuizmoStatus)
-	{
-		ImGui::Begin("ImGuizmo Status", &m_debugImGuizmoStatus);
+		ImGui::Begin("ImGuizmo state", &m_debugImGuizmoState);
 
 		ImGui::Text("IsOver: ");
 		ImGui::SameLine();
@@ -331,10 +319,7 @@ void ImGuiLayer::ShowMenuBar()
 	if (ImGui::BeginMenu("Debug"))
 	{
 		ImGui::MenuItem("ImGui Demo", "", &m_debugImGuiDemo);
-		ImGui::MenuItem("Style Editor", "", &m_debugStyleEditor);
-		ImGui::MenuItem("ID Stack", "", &m_debugIDStack);
-		ImGui::MenuItem("Item Picker", "", &m_debugItemPicker);
-		ImGui::MenuItem("ImGuizmo Status", "", &m_debugImGuizmoStatus);
+		ImGui::MenuItem("ImGuizmo State", "", &m_debugImGuizmoState);
 		ImGui::EndMenu();
 	}
 
@@ -1334,9 +1319,7 @@ void ImGuiLayer::ShowSceneViewport()
 	ShowImGuizmoTransform();
 
 	if (sl::ECSWorld::GetMainCameraComponent().IsUsing() ||
-		!ImGui::IsWindowHovered() || ImGuizmo::IsUsing() ||
-		ImGui::IsMouseDragging(ImGuiMouseButton_Left) ||
-		ImGui::IsMouseDragging(ImGuiMouseButton_Right))
+		ImGui::IsAnyItemHovered() || !ImGui::IsWindowHovered() || ImGuizmo::IsUsing())
 	{
 		m_isMouseFreeInSceneView = false;
 	}

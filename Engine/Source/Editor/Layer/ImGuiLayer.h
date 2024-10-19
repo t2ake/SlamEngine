@@ -67,10 +67,7 @@ private:
 	
 	// Debug panel
 	bool m_debugImGuiDemo = false;
-	bool m_debugStyleEditor = false;
-	bool m_debugItemPicker = false;
-	bool m_debugIDStack = false;
-	bool m_debugImGuizmoStatus = false;
+	bool m_debugImGuizmoState = false;
 
 	// Entity list and many other panels
 	sl::Entity m_selectedEntity;

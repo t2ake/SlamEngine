@@ -30,6 +30,7 @@ void ImGuiContext::Init(void *pNativeWindow, void *pRenderContext)
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	io.ConfigViewportsNoTaskBarIcon = true;
+	io.ConfigDebugIsDebuggerPresent = true;
 
 	static std::string s_iniFilePath = Path::FromeRoot("Engine/Config/imgui.ini");
 	io.IniFilename = s_iniFilePath.c_str();
