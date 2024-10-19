@@ -47,10 +47,8 @@ public:
 	virtual void OnUpload() = 0;
 	// Destroy CPU data deferred.
 	virtual void OnReady() = 0;
-	// Destroy GPU data.
+	// Destroy both CPU and GPU data.
 	virtual void OnDestroy() = 0;
-
-private:
 	virtual void DestroyCPUData() = 0;
 
 	ResourceStatus m_status;

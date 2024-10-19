@@ -31,17 +31,17 @@ SandboxLayer::SandboxLayer()
 	std::vector<uint32_t> indices = { 0, 1, 3, 1, 2, 3 };
 
 	auto pMeshResource = std::make_unique<sl::MeshResource>("TODO");
-	pMeshResource->SetStatus(sl::ResourceStatus::Uploading);
-	pMeshResource->SetVertexRowData(std::move(vertices));
-	pMeshResource->SetIndexRowData(std::move(indices));
-	pMeshResource->SetLayout(sl::VertexLayout
+	pMeshResource->m_status = sl::ResourceStatus::Uploading;
+	pMeshResource->m_verticesRowData = std::move(vertices);
+	pMeshResource->m_indicesRowData = std::move(indices);
+	pMeshResource->m_layout = sl::VertexLayout
 	{
 		{ "Position", sl::AttribType::Float, 3 },
 		{ "Normal", sl::AttribType::Float, 3 },
 		{ "Tangent", sl::AttribType::Float, 3 },
 		{ "UV0", sl::AttribType::Float, 2 },
-	});
-
+	};
+	
 	sl::ResourceManager::AddMeshResource("SquareMesh", std::move(pMeshResource));
 	rendering.m_optMeshResourceName = "SquareMesh";
 

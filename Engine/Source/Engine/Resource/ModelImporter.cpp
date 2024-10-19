@@ -33,122 +33,116 @@ std::string ProcessMaterial(const aiMaterial *pMaterial, std::string_view path)
 {
 	auto pMaterialResource = std::make_unique<MaterialResource>("TODO");
 
-	{   // Albedo
-		if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_BASE_COLOR, 0), texture) == AI_SUCCESS)
-		{
-			std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
-			ProcessTexture(fullPath);
+	// Albedo
+	if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_BASE_COLOR, 0), texture) == AI_SUCCESS)
+	{
+		std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
+		ProcessTexture(fullPath);
 
-			pMaterialResource->m_albedoPropertyGroup.m_texture = std::move(fullPath);
-			pMaterialResource->m_albedoPropertyGroup.m_useTexture = true;
-		}
-		if (aiColor3D factor; pMaterial->Get(AI_MATKEY_BASE_COLOR, factor) == AI_SUCCESS)
-		{
-			pMaterialResource->m_albedoPropertyGroup.m_factor = glm::vec3{ factor.r, factor.g , factor.b };
-		}
-		if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_DIFFUSE, 0), transform) == AI_SUCCESS)
-		{
-			pMaterialResource->m_albedoPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
-			pMaterialResource->m_albedoPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
-			pMaterialResource->m_albedoPropertyGroup.m_rotation = transform.mRotation;
-		}
+		pMaterialResource->m_albedoPropertyGroup.m_texture = std::move(fullPath);
+		pMaterialResource->m_albedoPropertyGroup.m_useTexture = true;
+	}
+	if (aiColor3D factor; pMaterial->Get(AI_MATKEY_BASE_COLOR, factor) == AI_SUCCESS)
+	{
+		pMaterialResource->m_albedoPropertyGroup.m_factor = glm::vec3{ factor.r, factor.g , factor.b };
+	}
+	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_BASE_COLOR, 0), transform) == AI_SUCCESS)
+	{
+		pMaterialResource->m_albedoPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
+		pMaterialResource->m_albedoPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
+		pMaterialResource->m_albedoPropertyGroup.m_rotation = transform.mRotation;
 	}
 
-	{   // Normal
-		if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_NORMALS, 0), texture) == AI_SUCCESS)
-		{
-			std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
-			ProcessTexture(fullPath);
+	// Normal
+	if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_NORMALS, 0), texture) == AI_SUCCESS)
+	{
+		std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
+		ProcessTexture(fullPath);
 
-			pMaterialResource->m_normalPropertyGroup.m_texture = texture.C_Str();
-			pMaterialResource->m_normalPropertyGroup.m_useTexture = true;
-		}
-		if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_NORMALS, 0), transform) == AI_SUCCESS)
-		{
-			pMaterialResource->m_normalPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
-			pMaterialResource->m_normalPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
-			pMaterialResource->m_normalPropertyGroup.m_rotation = transform.mRotation;
-		}
+		pMaterialResource->m_normalPropertyGroup.m_texture = texture.C_Str();
+		pMaterialResource->m_normalPropertyGroup.m_useTexture = true;
+	}
+	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_NORMALS, 0), transform) == AI_SUCCESS)
+	{
+		pMaterialResource->m_normalPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
+		pMaterialResource->m_normalPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
+		pMaterialResource->m_normalPropertyGroup.m_rotation = transform.mRotation;
 	}
 
-	{   // Metallic
-		if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_METALNESS, 0), texture) == AI_SUCCESS)
-		{
-			std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
-			ProcessTexture(fullPath);
+	// Metallic
+	if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_METALNESS, 0), texture) == AI_SUCCESS)
+	{
+		std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
+		ProcessTexture(fullPath);
 
-			pMaterialResource->m_metallicPropertyGroup.m_texture = texture.C_Str();
-			pMaterialResource->m_metallicPropertyGroup.m_useTexture = true;
-		}
-		if (float factor; pMaterial->Get(AI_MATKEY_METALLIC_FACTOR, factor) == AI_SUCCESS)
-		{
-			pMaterialResource->m_metallicPropertyGroup.m_factor = factor;
-		}
-		if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_METALNESS, 0), transform) == AI_SUCCESS)
-		{
-			pMaterialResource->m_metallicPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
-			pMaterialResource->m_metallicPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
-			pMaterialResource->m_metallicPropertyGroup.m_rotation = transform.mRotation;
-		}
+		pMaterialResource->m_metallicPropertyGroup.m_texture = texture.C_Str();
+		pMaterialResource->m_metallicPropertyGroup.m_useTexture = true;
+	}
+	if (float factor; pMaterial->Get(AI_MATKEY_METALLIC_FACTOR, factor) == AI_SUCCESS)
+	{
+		pMaterialResource->m_metallicPropertyGroup.m_factor = factor;
+	}
+	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_METALNESS, 0), transform) == AI_SUCCESS)
+	{
+		pMaterialResource->m_metallicPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
+		pMaterialResource->m_metallicPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
+		pMaterialResource->m_metallicPropertyGroup.m_rotation = transform.mRotation;
 	}
 
-	{   // Roughness
-		if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE_ROUGHNESS, 0), texture) == AI_SUCCESS)
-		{
-			std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
-			ProcessTexture(fullPath);
+	// Roughness
+	if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE_ROUGHNESS, 0), texture) == AI_SUCCESS)
+	{
+		std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
+		ProcessTexture(fullPath);
 
-			pMaterialResource->m_roughnessPropertyGroup.m_texture = texture.C_Str();
-			pMaterialResource->m_roughnessPropertyGroup.m_useTexture = true;
-		}
-		if (float factor; pMaterial->Get(AI_MATKEY_ROUGHNESS_FACTOR, factor) == AI_SUCCESS)
-		{
-			pMaterialResource->m_roughnessPropertyGroup.m_factor = factor;
-		}
-		if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_DIFFUSE_ROUGHNESS, 0), transform) == AI_SUCCESS)
-		{
-			pMaterialResource->m_roughnessPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
-			pMaterialResource->m_roughnessPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
-			pMaterialResource->m_roughnessPropertyGroup.m_rotation = transform.mRotation;
-		}
+		pMaterialResource->m_roughnessPropertyGroup.m_texture = texture.C_Str();
+		pMaterialResource->m_roughnessPropertyGroup.m_useTexture = true;
+	}
+	if (float factor; pMaterial->Get(AI_MATKEY_ROUGHNESS_FACTOR, factor) == AI_SUCCESS)
+	{
+		pMaterialResource->m_roughnessPropertyGroup.m_factor = factor;
+	}
+	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_DIFFUSE_ROUGHNESS, 0), transform) == AI_SUCCESS)
+	{
+		pMaterialResource->m_roughnessPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
+		pMaterialResource->m_roughnessPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
+		pMaterialResource->m_roughnessPropertyGroup.m_rotation = transform.mRotation;
 	}
 
-	{   // Occlusion
-		if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_AMBIENT_OCCLUSION, 0), texture) == AI_SUCCESS)
-		{
-			std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
-			ProcessTexture(fullPath);
+	// Occlusion
+	if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_AMBIENT_OCCLUSION, 0), texture) == AI_SUCCESS)
+	{
+		std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
+		ProcessTexture(fullPath);
 
-			pMaterialResource->m_occlusionPropertyGroup.m_texture = texture.C_Str();
-			pMaterialResource->m_occlusionPropertyGroup.m_useTexture = true;
-		}
-		if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_AMBIENT_OCCLUSION, 0), transform) == AI_SUCCESS)
-		{
-			pMaterialResource->m_occlusionPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
-			pMaterialResource->m_occlusionPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
-			pMaterialResource->m_occlusionPropertyGroup.m_rotation = transform.mRotation;
-		}
+		pMaterialResource->m_occlusionPropertyGroup.m_texture = texture.C_Str();
+		pMaterialResource->m_occlusionPropertyGroup.m_useTexture = true;
+	}
+	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_AMBIENT_OCCLUSION, 0), transform) == AI_SUCCESS)
+	{
+		pMaterialResource->m_occlusionPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
+		pMaterialResource->m_occlusionPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
+		pMaterialResource->m_occlusionPropertyGroup.m_rotation = transform.mRotation;
 	}
 
-	{   // Emissive
-		if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_EMISSION_COLOR, 0), texture) == AI_SUCCESS)
-		{
-			std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
-			ProcessTexture(fullPath);
+	// Emissive
+	if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_EMISSION_COLOR, 0), texture) == AI_SUCCESS)
+	{
+		std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
+		ProcessTexture(fullPath);
 
-			pMaterialResource->m_emissivePropertyGroup.m_texture = texture.C_Str();
-			pMaterialResource->m_emissivePropertyGroup.m_useTexture = true;
-		}
-		if (aiColor3D factor; pMaterial->Get(AI_MATKEY_EMISSIVE_INTENSITY, factor) == AI_SUCCESS)
-		{
-			pMaterialResource->m_emissivePropertyGroup.m_factor = glm::vec3{ factor.r, factor.g , factor.b };
-		}
-		if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_EMISSION_COLOR, 0), transform) == AI_SUCCESS)
-		{
-			pMaterialResource->m_emissivePropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
-			pMaterialResource->m_emissivePropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
-			pMaterialResource->m_emissivePropertyGroup.m_rotation = transform.mRotation;
-		}
+		pMaterialResource->m_emissivePropertyGroup.m_texture = texture.C_Str();
+		pMaterialResource->m_emissivePropertyGroup.m_useTexture = true;
+	}
+	if (aiColor3D factor; pMaterial->Get(AI_MATKEY_EMISSIVE_INTENSITY, factor) == AI_SUCCESS)
+	{
+		pMaterialResource->m_emissivePropertyGroup.m_factor = glm::vec3{ factor.r, factor.g , factor.b };
+	}
+	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_EMISSION_COLOR, 0), transform) == AI_SUCCESS)
+	{
+		pMaterialResource->m_emissivePropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
+		pMaterialResource->m_emissivePropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
+		pMaterialResource->m_emissivePropertyGroup.m_rotation = transform.mRotation;
 	}
 
 	if (int twoSide; pMaterial->Get(AI_MATKEY_TWOSIDED, twoSide))
@@ -156,7 +150,8 @@ std::string ProcessMaterial(const aiMaterial *pMaterial, std::string_view path)
 		pMaterialResource->m_twoSide = (bool)twoSide;
 	}
 
-	std::string materialResourceName = pMaterial->GetName().C_Str();
+	std::string materialResourceName = path.data();
+	materialResourceName += pMaterial->GetName().C_Str();
 	sl::ResourceManager::AddMaterialResource(materialResourceName, std::move(pMaterialResource));
 
 	return materialResourceName;
@@ -170,7 +165,8 @@ void ProcessMesh(const aiMesh *pMesh, const aiScene *pScene, std::string_view pa
 	SL_ASSERT(pMesh->mTextureCoords[0] && pMesh->mNumUVComponents[0] == 2);
 
 	const char *pMeshName = pMesh->mName.C_Str();
-	SL_LOG_TRACE("\tMesh name: {}", pMeshName);
+	SL_LOG_TRACE("\t\tMesh: {}", pMeshName);
+	SL_LOG_TRACE("\t\t\tMaterial: {}", pScene->mMaterials[pMesh->mMaterialIndex]->GetName().C_Str());
 
 	// 1. Vertex
 	sl::VertexLayout layout
@@ -208,11 +204,14 @@ void ProcessMesh(const aiMesh *pMesh, const aiScene *pScene, std::string_view pa
 
 	// 3. Mesh resource
 	auto pMeshResource = std::make_unique<sl::MeshResource>("TODO");
-	pMeshResource->SetStatus(sl::ResourceStatus::Uploading);
-	pMeshResource->SetVertexRowData(std::move(vertices));
-	pMeshResource->SetIndexRowData(std::move(indices));
-	pMeshResource->SetLayout(std::move(layout));
-	sl::ResourceManager::AddMeshResource(pMeshName, std::move(pMeshResource));
+	pMeshResource->m_status = sl::ResourceStatus::Uploading;
+	pMeshResource->m_verticesRowData = std::move(vertices);
+	pMeshResource->m_indicesRowData = std::move(indices);
+	pMeshResource->m_layout = layout;
+
+	std::string MeshResourceName = path.data();
+	MeshResourceName += pMeshName;
+	sl::ResourceManager::AddMeshResource(MeshResourceName, std::move(pMeshResource));
 
 	// 4. Material resource
 	std::string materialResourceName = ProcessMaterial(pScene->mMaterials[pMesh->mMaterialIndex], path);
@@ -220,22 +219,16 @@ void ProcessMesh(const aiMesh *pMesh, const aiScene *pScene, std::string_view pa
 	// 5. Entity and component
 	sl::Entity entity = sl::ECSWorld::CreateEntity(pMeshName);
 	auto &rendering = entity.AddComponent<sl::RenderingComponent>();
-	rendering.m_optMeshResourceName = pMeshName;
+	rendering.m_optMeshResourceName = std::move(MeshResourceName);
 	rendering.m_optMaterialResourceName = std::move(materialResourceName);
-
-	// TODO: Log Mesh and Material separately.
-	// SL_LOG_TRACE("\t\tVertex count: {}", vertexCount);
-	// SL_LOG_TRACE("\t\tIndex count: {}", indexCount);
-	// SL_LOG_TRACE("\t\tMaterial name: {}", pScene->mMaterials[pMesh->mMaterialIndex]->GetName().C_Str());
-	// SL_LOG_TRACE("\t\t\tProterty count: {}", pScene->mMaterials[pMesh->mMaterialIndex]->mNumProperties);
 
 	// TODO: AABB
 }
 
 void ProcessNode(const aiNode *pNode, const aiScene *pScene, std::string_view path)
 {
-	SL_LOG_TRACE("\tNode name: {}", pNode->mName.C_Str());
-	SL_LOG_TRACE("\tParent: {}", pNode->mParent ? pNode->mParent->mName.C_Str() : "nullptr");
+	SL_LOG_TRACE("\tNode: {}", pNode->mName.C_Str());
+	SL_LOG_TRACE("\t\tParent: {}", pNode->mParent ? pNode->mParent->mName.C_Str() : "nullptr");
 
 	uint32_t meshCount = pNode->mNumMeshes;
 	for (size_t i = 0; i < meshCount; ++i)
@@ -244,7 +237,6 @@ void ProcessNode(const aiNode *pNode, const aiScene *pScene, std::string_view pa
 		const aiMesh *pMesh = pScene->mMeshes[meshIndex];
 		ProcessMesh(pMesh, pScene, path);
 	}
-	SL_LOG_TRACE("");
 
 	uint32_t childCount = pNode->mNumChildren;
 	for (size_t i = 0; i < childCount; ++i)
@@ -288,9 +280,54 @@ void ModelImporter::Import(uint32_t entity, std::string_view path)
 	SL_LOG_TRACE("\tTexture count: {}", pScene->mNumLights);
 	SL_LOG_TRACE("\tLight count: {}", pScene->mNumCameras);
 	SL_LOG_TRACE("\tCamera count: {}", pScene->mNumSkeletons);
-	SL_LOG_TRACE("");
 
 	ProcessNode(pScene->mRootNode, pScene, path);
+
+#if !defined(SL_FINAL)
+	for (size_t i = 0; i < pScene->mNumMeshes; ++i)
+	{
+		aiMesh *pMesh = pScene->mMeshes[i];
+		SL_LOG_TRACE("\tMesh: {}", pMesh->mName.C_Str());
+		SL_LOG_TRACE("\t\tVertex count: {}", pMesh->mNumVertices);
+		SL_LOG_TRACE("\t\tIndex count: {}", pMesh->mNumFaces * 3);
+	}
+
+	for (size_t i = 0; i < pScene->mNumMaterials; ++i)
+	{
+		aiMaterial *pMaterial = pScene->mMaterials[i];
+		SL_LOG_TRACE("\tMaterial: {}", pMaterial->GetName().C_Str());
+
+		if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_BASE_COLOR, 0), texture) == AI_SUCCESS)
+		{
+			SL_LOG_TRACE("\t\tAlbedo: {}", texture.C_Str());
+		}
+		if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_NORMALS, 0), texture) == AI_SUCCESS)
+		{
+			SL_LOG_TRACE("\t\tNormal: {}", texture.C_Str());
+		}
+		if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_METALNESS, 0), texture) == AI_SUCCESS)
+		{
+			SL_LOG_TRACE("\t\tMetallic: {}", texture.C_Str());
+		}
+		if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE_ROUGHNESS, 0), texture) == AI_SUCCESS)
+		{
+			SL_LOG_TRACE("\t\tRoughness: {}", texture.C_Str());
+		}
+		if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_AMBIENT_OCCLUSION, 0), texture) == AI_SUCCESS)
+		{
+			SL_LOG_TRACE("\t\tOcclusion: {}", texture.C_Str());
+		}
+		if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_EMISSION_COLOR, 0), texture) == AI_SUCCESS)
+		{
+			SL_LOG_TRACE("\t\tEmission: {}", texture.C_Str());
+		}
+	}
+
+	for (size_t i = 0; i < pScene->mNumTextures; ++i)
+	{
+		SL_LOG_TRACE("\tEmbedded Texture: {}", pScene->mTextures[i]->mFilename.C_Str());
+	}
+#endif
 }
 
 } // namespace sl

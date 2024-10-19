@@ -24,15 +24,9 @@ public:
 	virtual void OnUpload() override;
 	virtual void OnReady() override;
 	virtual void OnDestroy() override;
-
-	void SetLayout(VertexLayout layout) { m_layout = std::move(layout); }
-	void SetVertexRowData(std::vector<float> data) { m_verticesRowData = std::move(data); }
-	void SetIndexRowData(std::vector<uint32_t> data) { m_indicesRowData = std::move(data); }
+	virtual void DestroyCPUData() override;
 
 	VertexArray *GetVertexArray() { return m_pVertexArray.get(); }
-
-private:
-	virtual void DestroyCPUData() override;
 
 	std::string m_assetPath;
 

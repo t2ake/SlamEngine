@@ -150,7 +150,6 @@ static T* ResourceManager::GetResource(std::string_view name)
 		SL_ASSERT(false, "Unknown resource type!");
 	}
 
-	SL_LOG_WARN("Resource \"{}\" does not exist!", name.data());
 	return nullptr;
 }
 
