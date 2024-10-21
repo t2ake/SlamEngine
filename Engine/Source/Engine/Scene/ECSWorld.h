@@ -43,7 +43,7 @@ public:
 	Entity(uint32_t entity) : m_handle((entt::entity)entity) {}
 
 	entt::entity GetHandle() const { return m_handle; }
-	bool IsValid() const { return m_handle != entt::null; }
+	bool IsValid() const { return ECSWorld::m_registry.valid(m_handle); }
 	void Reset() { m_handle = entt::null; }
 	void Destroy();
 

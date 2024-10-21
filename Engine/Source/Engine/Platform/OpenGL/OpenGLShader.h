@@ -17,6 +17,8 @@ public:
 	virtual void Bind() const override;
 	virtual void Unbind() const override;
 
+	virtual void UploadUniform(int location, bool value) override;
+
 	virtual void UploadUniform(int location, int value) override;
 	virtual void UploadUniform(int location, const glm::ivec2 &value) override;
 	virtual void UploadUniform(int location, const glm::ivec3 &value) override;

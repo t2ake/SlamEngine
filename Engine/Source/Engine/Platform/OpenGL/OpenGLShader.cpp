@@ -113,6 +113,11 @@ void OpenGLShader::Unbind() const
 	glUseProgram(0);
 }
 
+void OpenGLShader::UploadUniform(int location, bool value)
+{
+	glUniform1f(location, (float)value);
+}
+
 void OpenGLShader::UploadUniform(int location, int value)
 {
 	glUniform1i(location, value);

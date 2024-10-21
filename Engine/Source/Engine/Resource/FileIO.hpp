@@ -72,7 +72,12 @@ public:
 	static void WriteBinary(std::string_view path, char* pData, size_t size)
 	{
 		SL_PROFILE;
-		SL_ASSERT(pData && size > 0);
+
+		if (!pData || size <= 0)
+		{
+			SL_LOG_ERROR("Failed to write file: \"{}\"", path.data());
+			return;
+		}
 
 		std::ofstream out(path.data(), std::ios::out | std::ios::binary | std::ios::trunc);
 		if (!out)

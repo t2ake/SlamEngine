@@ -9,7 +9,9 @@ layout(location = 2) in vec3 a_tangent;
 layout(location = 3) in vec2 a_uv0;
 
 // output
-layout(location = 0) out vec2 v_uv0;
+layout(location = 0) out vec3 v_worldPos;
+layout(location = 1) out vec3 v_normal;
+layout(location = 2) out vec2 v_uv0;
 
 // uniform
 layout(location = 0) uniform mat4 u_model;

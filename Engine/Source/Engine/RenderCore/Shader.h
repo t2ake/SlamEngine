@@ -26,6 +26,8 @@ public:
 	virtual void Bind() const = 0;
 	virtual void Unbind() const = 0;
 
+	virtual void UploadUniform(int location, bool value) = 0;
+
 	virtual void UploadUniform(int location, int value) = 0;
 	virtual void UploadUniform(int location, const glm::ivec2 &value) = 0;
 	virtual void UploadUniform(int location, const glm::ivec3 &value) = 0;

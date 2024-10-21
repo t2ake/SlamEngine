@@ -5,7 +5,63 @@
 #include "RenderCore/RenderCore.h"
 #include "Resource/ResourceManager.h"
 #include "Scene/ECSWorld.h"
+#include "Utils/EnumOf.hpp"
 #include "Utils/ProfilerCPU.h"
+
+namespace
+{
+
+enum class MaterialPropertyGroupType : uint8_t
+{
+	Albedo = 0,
+	Normal,
+	Emissive,
+	Occlusion,
+	Roughness,
+	Metallic,
+};
+
+struct MaterialPropertyGroupLocation
+{
+	int textureSampler;
+	int useTexture;
+	int factor;
+};
+
+constexpr MaterialPropertyGroupLocation MaterialPropertyGroupLocations[nameof::enum_count<MaterialPropertyGroupType>()] =
+{
+	{ 0, 1, 7 },
+	{ 1, 2, 8 },
+	{ 2, 3, 9 },
+	{ 3, 4, 10 },
+	{ 3, 5, 11 },
+	{ 3, 6, 12 },
+};
+
+void UploadMaterial(sl::Shader *pShader, MaterialPropertyGroupType type, const auto &propertyGroup)
+{
+	SL_ASSERT(requires{ propertyGroup.m_useTexture; propertyGroup.m_texture; propertyGroup.m_factor; });
+
+	MaterialPropertyGroupLocation location = MaterialPropertyGroupLocations[(size_t)type];
+
+	if (propertyGroup.m_useTexture)
+	{
+		auto *pTextureResource = sl::ResourceManager::GetTextureResource(propertyGroup.m_texture);
+		if (pTextureResource && pTextureResource->IsReady())
+		{
+			pTextureResource->GetTexture()->Bind(location.textureSampler);
+			pShader->UploadUniform(location.useTexture, true);
+		}
+	}
+	else
+	{
+		pShader->UploadUniform(location.useTexture, false);
+	}
+
+	pShader->UploadUniform(location.factor, propertyGroup.m_factor);
+}
+
+}
 
 RendererLayer::RendererLayer()
 {
@@ -90,32 +146,24 @@ void RendererLayer::BasePass()
 		auto *pMeshResource = sl::ResourceManager::GetMeshResource(rendering.m_optMeshResourceName.value());
 		auto *pMaterialResource = sl::ResourceManager::GetMaterialResource(rendering.m_optMaterialResourceName.value());
 		auto *pShaderResource = sl::ResourceManager::GetShaderResource(rendering.m_optBaseShaderResourceName.value());
-		if (!pMeshResource || !pMaterialResource || !pShaderResource)
-		{
-			continue;
-		}
-
-		if (!pMeshResource->IsReady() || !pMaterialResource->IsReady() || !pShaderResource->IsReady())
+		if(!pMeshResource || !pMeshResource->IsReady() ||
+			!pMaterialResource || !pMaterialResource->IsReady() ||
+			!pShaderResource || !pShaderResource->IsReady())
 		{
 			continue;
 		}
 
 		auto *pShader = pShaderResource->GetShaderProgram();
 		pShader->Bind();
-
-		if (pMaterialResource->m_albedoPropertyGroup.m_useTexture)
-		{
-			auto *pTextureResource = sl::ResourceManager::GetTextureResource(pMaterialResource->m_albedoPropertyGroup.m_texture);
-			if (!pTextureResource || !pTextureResource->IsReady())
-			{
-				continue;
-			}
-
-			pTextureResource->GetTexture()->Bind(0);
-		}
-
 		pShader->UploadUniform(0, transform.GetTransform());
 
+		UploadMaterial(pShader, MaterialPropertyGroupType::Albedo, pMaterialResource->m_albedoPropertyGroup);
+		UploadMaterial(pShader, MaterialPropertyGroupType::Normal, pMaterialResource->m_normalPropertyGroup);
+		UploadMaterial(pShader, MaterialPropertyGroupType::Emissive, pMaterialResource->m_metallicPropertyGroup);
+		UploadMaterial(pShader, MaterialPropertyGroupType::Occlusion, pMaterialResource->m_roughnessPropertyGroup);
+		UploadMaterial(pShader, MaterialPropertyGroupType::Roughness, pMaterialResource->m_occlusionPropertyGroup);
+		UploadMaterial(pShader, MaterialPropertyGroupType::Metallic, pMaterialResource->m_emissivePropertyGroup);
+		
 		sl::RenderCore::Submit(pMeshResource->GetVertexArray(), pShader);
 	}
 

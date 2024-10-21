@@ -1362,7 +1362,7 @@ void ImGuiLayer::MousePick()
 	}
 
 	sl::Entity crtEntity{ (uint32_t)entityID };
-	if (m_selectedEntity == crtEntity)
+	if (!crtEntity.IsValid() || crtEntity == m_selectedEntity)
 	{
 		return;
 	}
