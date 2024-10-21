@@ -18,6 +18,28 @@ namespace sl
 namespace
 {
 
+const aiTexture *GetEmbeddedTexture(const aiString textureStr, const aiScene *pScene, std::string_view path)
+{
+	if (sl::Path::Extension(path) == ".fbx")
+	{
+		if (const aiTexture *pEmbeddedTexture = pScene->GetEmbeddedTexture(textureStr.C_Str()); pEmbeddedTexture)
+		{
+			return pEmbeddedTexture;
+		}
+	}
+	else if (const char *pStr = textureStr.C_Str(); *pStr == '*')
+	{
+		return pScene->mTextures[atoi(pStr + 1)];
+	}
+	
+	return nullptr;
+}
+
+void ProcessEmbeddedTexture(const aiTexture pEmbeddedTexture)
+{
+	// TODO
+}
+
 void ProcessTexture(std::string_view path)
 {
 	if (sl::ResourceManager::GetTextureResource(path))
@@ -25,24 +47,29 @@ void ProcessTexture(std::string_view path)
 		return;
 	}
 
-	// TODO: Support embedded texture.
-
 	auto pTextureResource = std::make_unique<sl::TextureResource>(path, SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR);
 	sl::ResourceManager::AddTextureResource(path, std::move(pTextureResource));
 }
 
-std::string ProcessMaterial(const aiMaterial *pMaterial, std::string_view path)
+std::string ProcessMaterial(const aiMaterial *pMaterial, const aiScene *pScene, std::string_view path)
 {
 	auto pMaterialResource = std::make_unique<MaterialResource>("TODO");
 
 	// Albedo
-	if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_BASE_COLOR, 0), texture) == AI_SUCCESS)
+	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_BASE_COLOR, 0), textureStr) == AI_SUCCESS)
 	{
-		std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
-		ProcessTexture(fullPath);
+		if (const aiTexture *pEmbeddedTexture = GetEmbeddedTexture(textureStr, pScene, path))
+		{
+			SL_LOG_ERROR("\t\t\tDo not support embedded texture: {}", textureStr.C_Str());
+		}
+		else
+		{
+			std::string fullPath = Path::Join(Path::Parent(path), textureStr.C_Str());
+			ProcessTexture(fullPath);
 
-		pMaterialResource->m_albedoPropertyGroup.m_texture = std::move(fullPath);
-		pMaterialResource->m_albedoPropertyGroup.m_useTexture = true;
+			pMaterialResource->m_albedoPropertyGroup.m_texture = std::move(fullPath);
+			pMaterialResource->m_albedoPropertyGroup.m_useTexture = true;
+		}
 	}
 	if (aiColor3D factor; pMaterial->Get(AI_MATKEY_BASE_COLOR, factor) == AI_SUCCESS)
 	{
@@ -56,13 +83,20 @@ std::string ProcessMaterial(const aiMaterial *pMaterial, std::string_view path)
 	}
 
 	// Normal
-	if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_NORMALS, 0), texture) == AI_SUCCESS)
+	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_NORMALS, 0), textureStr) == AI_SUCCESS)
 	{
-		std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
-		ProcessTexture(fullPath);
+		if (const aiTexture *pEmbeddedTexture = GetEmbeddedTexture(textureStr, pScene, path))
+		{
+			SL_LOG_ERROR("\t\t\tDo not support embedded texture: {}", textureStr.C_Str());
+		}
+		else
+		{
+			std::string fullPath = Path::Join(Path::Parent(path), textureStr.C_Str());
+			ProcessTexture(fullPath);
 
-		pMaterialResource->m_normalPropertyGroup.m_texture = texture.C_Str();
-		pMaterialResource->m_normalPropertyGroup.m_useTexture = true;
+			pMaterialResource->m_normalPropertyGroup.m_texture = textureStr.C_Str();
+			pMaterialResource->m_normalPropertyGroup.m_useTexture = true;
+		}
 	}
 	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_NORMALS, 0), transform) == AI_SUCCESS)
 	{
@@ -72,13 +106,20 @@ std::string ProcessMaterial(const aiMaterial *pMaterial, std::string_view path)
 	}
 
 	// Metallic
-	if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_METALNESS, 0), texture) == AI_SUCCESS)
+	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_METALNESS, 0), textureStr) == AI_SUCCESS)
 	{
-		std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
-		ProcessTexture(fullPath);
+		if (const aiTexture *pEmbeddedTexture = GetEmbeddedTexture(textureStr, pScene, path))
+		{
+			SL_LOG_ERROR("\t\t\tDo not support embedded texture: {}", textureStr.C_Str());
+		}
+		else
+		{
+			std::string fullPath = Path::Join(Path::Parent(path), textureStr.C_Str());
+			ProcessTexture(fullPath);
 
-		pMaterialResource->m_metallicPropertyGroup.m_texture = texture.C_Str();
-		pMaterialResource->m_metallicPropertyGroup.m_useTexture = true;
+			pMaterialResource->m_metallicPropertyGroup.m_texture = textureStr.C_Str();
+			pMaterialResource->m_metallicPropertyGroup.m_useTexture = true;
+		}
 	}
 	if (float factor; pMaterial->Get(AI_MATKEY_METALLIC_FACTOR, factor) == AI_SUCCESS)
 	{
@@ -92,13 +133,20 @@ std::string ProcessMaterial(const aiMaterial *pMaterial, std::string_view path)
 	}
 
 	// Roughness
-	if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE_ROUGHNESS, 0), texture) == AI_SUCCESS)
+	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE_ROUGHNESS, 0), textureStr) == AI_SUCCESS)
 	{
-		std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
-		ProcessTexture(fullPath);
+		if (const aiTexture *pEmbeddedTexture = GetEmbeddedTexture(textureStr, pScene, path))
+		{
+			SL_LOG_ERROR("\t\t\tDo not support embedded texture: {}", textureStr.C_Str());
+		}
+		else
+		{
+			std::string fullPath = Path::Join(Path::Parent(path), textureStr.C_Str());
+			ProcessTexture(fullPath);
 
-		pMaterialResource->m_roughnessPropertyGroup.m_texture = texture.C_Str();
-		pMaterialResource->m_roughnessPropertyGroup.m_useTexture = true;
+			pMaterialResource->m_roughnessPropertyGroup.m_texture = textureStr.C_Str();
+			pMaterialResource->m_roughnessPropertyGroup.m_useTexture = true;
+		}
 	}
 	if (float factor; pMaterial->Get(AI_MATKEY_ROUGHNESS_FACTOR, factor) == AI_SUCCESS)
 	{
@@ -112,13 +160,20 @@ std::string ProcessMaterial(const aiMaterial *pMaterial, std::string_view path)
 	}
 
 	// Occlusion
-	if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_AMBIENT_OCCLUSION, 0), texture) == AI_SUCCESS)
+	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_AMBIENT_OCCLUSION, 0), textureStr) == AI_SUCCESS)
 	{
-		std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
-		ProcessTexture(fullPath);
+		if (const aiTexture *pEmbeddedTexture = GetEmbeddedTexture(textureStr, pScene, path))
+		{
+			SL_LOG_ERROR("\t\t\tDo not support embedded texture: {}", textureStr.C_Str());
+		}
+		else
+		{
+			std::string fullPath = Path::Join(Path::Parent(path), textureStr.C_Str());
+			ProcessTexture(fullPath);
 
-		pMaterialResource->m_occlusionPropertyGroup.m_texture = texture.C_Str();
-		pMaterialResource->m_occlusionPropertyGroup.m_useTexture = true;
+			pMaterialResource->m_occlusionPropertyGroup.m_texture = textureStr.C_Str();
+			pMaterialResource->m_occlusionPropertyGroup.m_useTexture = true;
+		}
 	}
 	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_AMBIENT_OCCLUSION, 0), transform) == AI_SUCCESS)
 	{
@@ -128,13 +183,20 @@ std::string ProcessMaterial(const aiMaterial *pMaterial, std::string_view path)
 	}
 
 	// Emissive
-	if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_EMISSION_COLOR, 0), texture) == AI_SUCCESS)
+	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_EMISSION_COLOR, 0), textureStr) == AI_SUCCESS)
 	{
-		std::string fullPath = Path::Join(Path::Parent(path), texture.C_Str());
-		ProcessTexture(fullPath);
+		if (const aiTexture *pEmbeddedTexture = GetEmbeddedTexture(textureStr, pScene, path))
+		{
+			SL_LOG_ERROR("\t\t\tDo not support embedded texture: {}", textureStr.C_Str());
+		}
+		else
+		{
+			std::string fullPath = Path::Join(Path::Parent(path), textureStr.C_Str());
+			ProcessTexture(fullPath);
 
-		pMaterialResource->m_emissivePropertyGroup.m_texture = texture.C_Str();
-		pMaterialResource->m_emissivePropertyGroup.m_useTexture = true;
+			pMaterialResource->m_emissivePropertyGroup.m_texture = textureStr.C_Str();
+			pMaterialResource->m_emissivePropertyGroup.m_useTexture = true;
+		}
 	}
 	if (aiColor3D factor; pMaterial->Get(AI_MATKEY_EMISSIVE_INTENSITY, factor) == AI_SUCCESS)
 	{
@@ -216,7 +278,7 @@ void ProcessMesh(const aiMesh *pMesh, const aiScene *pScene, std::string_view pa
 	sl::ResourceManager::AddMeshResource(MeshResourceName, std::move(pMeshResource));
 
 	// 4. Material resource
-	std::string materialResourceName = ProcessMaterial(pScene->mMaterials[pMesh->mMaterialIndex], path);
+	std::string materialResourceName = ProcessMaterial(pScene->mMaterials[pMesh->mMaterialIndex], pScene, path);
 
 	// 5. Entity and component
 	sl::Entity entity = sl::ECSWorld::CreateEntity(pMeshName);
@@ -263,7 +325,7 @@ void ModelImporter::Import(uint32_t entity, std::string_view path)
 		aiProcess_FindDegenerates | aiProcess_SortByPType |
 		aiProcess_JoinIdenticalVertices | aiProcess_RemoveRedundantMaterials | aiProcess_FindInstances |
 		aiProcess_ImproveCacheLocality | aiProcess_OptimizeMeshes |
-		aiProcess_PreTransformVertices;
+		aiProcess_PreTransformVertices; // TODO: Hierarchy
 
 	Assimp::Importer importer;
 	importer.SetPropertyInteger(AI_CONFIG_PP_SBP_REMOVE, aiPrimitiveType::aiPrimitiveType_LINE | aiPrimitiveType::aiPrimitiveType_POINT);
@@ -271,17 +333,18 @@ void ModelImporter::Import(uint32_t entity, std::string_view path)
 	const aiScene *pScene = importer.ReadFile(path.data(), ImportFlags);
 	if (!pScene || !pScene->mRootNode || pScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
 	{
-		SL_LOG_ERROR("Failed to importing model: \"{}\"!\n\t{}", path.data(), importer.GetErrorString());
+		SL_LOG_ERROR("Failed to import model: \"{}\"!\n\t{}", path.data(), importer.GetErrorString());
 		return;
 	}
 
 	SL_LOG_TRACE("\tScene name: {}", pScene->mName.C_Str());
 	SL_LOG_TRACE("\tMesh count: {}", pScene->mNumMeshes);
 	SL_LOG_TRACE("\tMaterial count: {}", pScene->mNumMaterials);
-	SL_LOG_TRACE("\tAnimation count: {}", pScene->mNumTextures);
-	SL_LOG_TRACE("\tTexture count: {}", pScene->mNumLights);
-	SL_LOG_TRACE("\tLight count: {}", pScene->mNumCameras);
-	SL_LOG_TRACE("\tCamera count: {}", pScene->mNumSkeletons);
+	SL_LOG_TRACE("\tAnimation count: {}", pScene->mNumAnimations);
+	SL_LOG_TRACE("\tEmbedded Texture count: {}", pScene->mNumTextures);
+	SL_LOG_TRACE("\tLight count: {}", pScene->mNumLights);
+	SL_LOG_TRACE("\tCamera count: {}", pScene->mNumCameras);
+	SL_LOG_TRACE("\tSkeleton count: {}", pScene->mNumSkeletons);
 
 	ProcessNode(pScene->mRootNode, pScene, path);
 
