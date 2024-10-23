@@ -34,17 +34,14 @@ vec3 SampleAlbedoTexture(vec2 uv)
 	// TODO: Compile albedo textures to linear space before rendering.
 	return pow(texture(s_albedo, uv).xyz, vec3(2.2));
 }
-
 vec3 SampleNormalTexture(vec2 uv)
 {
 	return texture(s_normal, uv).xyz;
 }
-
 vec3 SampleEmissiveTexture(vec2 uv)
 {
 	return texture(s_emissive, uv).xyz;
 }
-
 vec3 SampleORMTexture(vec2 uv)
 {
 	return texture(s_ORM, uv).xyz;
@@ -59,7 +56,6 @@ struct Material
 	float roughness;
 	float metallic;
 };
-
 Material GetMaterial()
 {
 	Material material;
@@ -70,28 +66,28 @@ Material GetMaterial()
 	material.roughness = u_roughnessFactor;
 	material.metallic = u_metallicFactor;
 
-	if(u_useAlbedoTexture)
+	if (u_useAlbedoTexture)
 	{
 		material.albedo *= SampleAlbedoTexture(v_uv0);
 	}
-	if(u_useNormalTexture)
+	if (u_useNormalTexture)
 	{
 		material.normal *= SampleNormalTexture(v_uv0);
 	}
-	if(u_useEmissiveTexture)
+	if (u_useEmissiveTexture)
 	{
 		material.emissive *= SampleEmissiveTexture(v_uv0);
 	}
 	vec3 orm = SampleORMTexture(v_uv0);
-	if(u_useOcclusionTexture)
+	if (u_useOcclusionTexture)
 	{
 		material.occlusion *= orm.x;
 	}
-	if(u_useRoughnessTexture)
+	if (u_useRoughnessTexture)
 	{
 		material.roughness *= orm.y;
 	}
-	if(u_useMetallicTexture)
+	if (u_useMetallicTexture)
 	{
 		material.metallic *= orm.z;
 	}

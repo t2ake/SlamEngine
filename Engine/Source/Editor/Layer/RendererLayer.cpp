@@ -159,10 +159,10 @@ void RendererLayer::BasePass()
 
 		UploadMaterial(pShader, MaterialPropertyGroupType::Albedo, pMaterialResource->m_albedoPropertyGroup);
 		UploadMaterial(pShader, MaterialPropertyGroupType::Normal, pMaterialResource->m_normalPropertyGroup);
-		UploadMaterial(pShader, MaterialPropertyGroupType::Emissive, pMaterialResource->m_metallicPropertyGroup);
-		UploadMaterial(pShader, MaterialPropertyGroupType::Occlusion, pMaterialResource->m_roughnessPropertyGroup);
-		UploadMaterial(pShader, MaterialPropertyGroupType::Roughness, pMaterialResource->m_occlusionPropertyGroup);
-		UploadMaterial(pShader, MaterialPropertyGroupType::Metallic, pMaterialResource->m_emissivePropertyGroup);
+		UploadMaterial(pShader, MaterialPropertyGroupType::Emissive, pMaterialResource->m_emissivePropertyGroup);
+		UploadMaterial(pShader, MaterialPropertyGroupType::Occlusion, pMaterialResource->m_occlusionPropertyGroup);
+		UploadMaterial(pShader, MaterialPropertyGroupType::Roughness, pMaterialResource->m_roughnessPropertyGroup);
+		UploadMaterial(pShader, MaterialPropertyGroupType::Metallic, pMaterialResource->m_metallicPropertyGroup);
 		
 		sl::RenderCore::Submit(pMeshResource->GetVertexArray(), pShader);
 	}

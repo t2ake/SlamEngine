@@ -94,7 +94,7 @@ std::string ProcessMaterial(const aiMaterial *pMaterial, const aiScene *pScene, 
 			std::string fullPath = Path::Join(Path::Parent(path), textureStr.C_Str());
 			ProcessTexture(fullPath);
 
-			pMaterialResource->m_normalPropertyGroup.m_texture = textureStr.C_Str();
+			pMaterialResource->m_normalPropertyGroup.m_texture = std::move(fullPath);
 			pMaterialResource->m_normalPropertyGroup.m_useTexture = true;
 		}
 	}
@@ -103,83 +103,6 @@ std::string ProcessMaterial(const aiMaterial *pMaterial, const aiScene *pScene, 
 		pMaterialResource->m_normalPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
 		pMaterialResource->m_normalPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
 		pMaterialResource->m_normalPropertyGroup.m_rotation = transform.mRotation;
-	}
-
-	// Metallic
-	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_METALNESS, 0), textureStr) == AI_SUCCESS)
-	{
-		if (const aiTexture *pEmbeddedTexture = GetEmbeddedTexture(textureStr, pScene, path))
-		{
-			SL_LOG_ERROR("\t\t\tDo not support embedded texture: {}", textureStr.C_Str());
-		}
-		else
-		{
-			std::string fullPath = Path::Join(Path::Parent(path), textureStr.C_Str());
-			ProcessTexture(fullPath);
-
-			pMaterialResource->m_metallicPropertyGroup.m_texture = textureStr.C_Str();
-			pMaterialResource->m_metallicPropertyGroup.m_useTexture = true;
-		}
-	}
-	if (float factor; pMaterial->Get(AI_MATKEY_METALLIC_FACTOR, factor) == AI_SUCCESS)
-	{
-		pMaterialResource->m_metallicPropertyGroup.m_factor = factor;
-	}
-	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_METALNESS, 0), transform) == AI_SUCCESS)
-	{
-		pMaterialResource->m_metallicPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
-		pMaterialResource->m_metallicPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
-		pMaterialResource->m_metallicPropertyGroup.m_rotation = transform.mRotation;
-	}
-
-	// Roughness
-	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE_ROUGHNESS, 0), textureStr) == AI_SUCCESS)
-	{
-		if (const aiTexture *pEmbeddedTexture = GetEmbeddedTexture(textureStr, pScene, path))
-		{
-			SL_LOG_ERROR("\t\t\tDo not support embedded texture: {}", textureStr.C_Str());
-		}
-		else
-		{
-			std::string fullPath = Path::Join(Path::Parent(path), textureStr.C_Str());
-			ProcessTexture(fullPath);
-
-			pMaterialResource->m_roughnessPropertyGroup.m_texture = textureStr.C_Str();
-			pMaterialResource->m_roughnessPropertyGroup.m_useTexture = true;
-		}
-	}
-	if (float factor; pMaterial->Get(AI_MATKEY_ROUGHNESS_FACTOR, factor) == AI_SUCCESS)
-	{
-		pMaterialResource->m_roughnessPropertyGroup.m_factor = factor;
-	}
-	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_DIFFUSE_ROUGHNESS, 0), transform) == AI_SUCCESS)
-	{
-		pMaterialResource->m_roughnessPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
-		pMaterialResource->m_roughnessPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
-		pMaterialResource->m_roughnessPropertyGroup.m_rotation = transform.mRotation;
-	}
-
-	// Occlusion
-	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_AMBIENT_OCCLUSION, 0), textureStr) == AI_SUCCESS)
-	{
-		if (const aiTexture *pEmbeddedTexture = GetEmbeddedTexture(textureStr, pScene, path))
-		{
-			SL_LOG_ERROR("\t\t\tDo not support embedded texture: {}", textureStr.C_Str());
-		}
-		else
-		{
-			std::string fullPath = Path::Join(Path::Parent(path), textureStr.C_Str());
-			ProcessTexture(fullPath);
-
-			pMaterialResource->m_occlusionPropertyGroup.m_texture = textureStr.C_Str();
-			pMaterialResource->m_occlusionPropertyGroup.m_useTexture = true;
-		}
-	}
-	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_AMBIENT_OCCLUSION, 0), transform) == AI_SUCCESS)
-	{
-		pMaterialResource->m_occlusionPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
-		pMaterialResource->m_occlusionPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
-		pMaterialResource->m_occlusionPropertyGroup.m_rotation = transform.mRotation;
 	}
 
 	// Emissive
@@ -194,7 +117,7 @@ std::string ProcessMaterial(const aiMaterial *pMaterial, const aiScene *pScene, 
 			std::string fullPath = Path::Join(Path::Parent(path), textureStr.C_Str());
 			ProcessTexture(fullPath);
 
-			pMaterialResource->m_emissivePropertyGroup.m_texture = textureStr.C_Str();
+			pMaterialResource->m_emissivePropertyGroup.m_texture = std::move(fullPath);
 			pMaterialResource->m_emissivePropertyGroup.m_useTexture = true;
 		}
 	}
@@ -207,6 +130,83 @@ std::string ProcessMaterial(const aiMaterial *pMaterial, const aiScene *pScene, 
 		pMaterialResource->m_emissivePropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
 		pMaterialResource->m_emissivePropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
 		pMaterialResource->m_emissivePropertyGroup.m_rotation = transform.mRotation;
+	}
+
+	// Occlusion
+	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_AMBIENT_OCCLUSION, 0), textureStr) == AI_SUCCESS)
+	{
+		if (const aiTexture *pEmbeddedTexture = GetEmbeddedTexture(textureStr, pScene, path))
+		{
+			SL_LOG_ERROR("\t\t\tDo not support embedded texture: {}", textureStr.C_Str());
+		}
+		else
+		{
+			std::string fullPath = Path::Join(Path::Parent(path), textureStr.C_Str());
+			ProcessTexture(fullPath);
+
+			pMaterialResource->m_occlusionPropertyGroup.m_texture = std::move(fullPath);
+			pMaterialResource->m_occlusionPropertyGroup.m_useTexture = true;
+		}
+	}
+	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_AMBIENT_OCCLUSION, 0), transform) == AI_SUCCESS)
+	{
+		pMaterialResource->m_occlusionPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
+		pMaterialResource->m_occlusionPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
+		pMaterialResource->m_occlusionPropertyGroup.m_rotation = transform.mRotation;
+	}
+
+	// Roughness
+	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE_ROUGHNESS, 0), textureStr) == AI_SUCCESS)
+	{
+		if (const aiTexture *pEmbeddedTexture = GetEmbeddedTexture(textureStr, pScene, path))
+		{
+			SL_LOG_ERROR("\t\t\tDo not support embedded texture: {}", textureStr.C_Str());
+		}
+		else
+		{
+			std::string fullPath = Path::Join(Path::Parent(path), textureStr.C_Str());
+			ProcessTexture(fullPath);
+
+			pMaterialResource->m_roughnessPropertyGroup.m_texture = std::move(fullPath);
+			pMaterialResource->m_roughnessPropertyGroup.m_useTexture = true;
+		}
+	}
+	if (float factor; pMaterial->Get(AI_MATKEY_ROUGHNESS_FACTOR, factor) == AI_SUCCESS)
+	{
+		pMaterialResource->m_roughnessPropertyGroup.m_factor = factor;
+	}
+	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_DIFFUSE_ROUGHNESS, 0), transform) == AI_SUCCESS)
+	{
+		pMaterialResource->m_roughnessPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
+		pMaterialResource->m_roughnessPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
+		pMaterialResource->m_roughnessPropertyGroup.m_rotation = transform.mRotation;
+	}
+
+	// Metallic
+	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_METALNESS, 0), textureStr) == AI_SUCCESS)
+	{
+		if (const aiTexture *pEmbeddedTexture = GetEmbeddedTexture(textureStr, pScene, path))
+		{
+			SL_LOG_ERROR("\t\t\tDo not support embedded texture: {}", textureStr.C_Str());
+		}
+		else
+		{
+			std::string fullPath = Path::Join(Path::Parent(path), textureStr.C_Str());
+			ProcessTexture(fullPath);
+
+			pMaterialResource->m_metallicPropertyGroup.m_texture = std::move(fullPath);
+			pMaterialResource->m_metallicPropertyGroup.m_useTexture = true;
+		}
+	}
+	if (float factor; pMaterial->Get(AI_MATKEY_METALLIC_FACTOR, factor) == AI_SUCCESS)
+	{
+		pMaterialResource->m_metallicPropertyGroup.m_factor = factor;
+	}
+	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_METALNESS, 0), transform) == AI_SUCCESS)
+	{
+		pMaterialResource->m_metallicPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
+		pMaterialResource->m_metallicPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
+		pMaterialResource->m_metallicPropertyGroup.m_rotation = transform.mRotation;
 	}
 
 	if (int twoSide; pMaterial->Get(AI_MATKEY_TWOSIDED, twoSide))

@@ -3,6 +3,8 @@
 #include "Core/Log.h"
 #include "Utils/ProfilerCPU.h"
 
+#include <nameof/nameof.hpp>
+
 #include <fstream>
 #include <string>
 #include <vector>
@@ -35,12 +37,16 @@ public:
 		}
 
 		in.seekg(0, std::ios::end);
-		const size_t size = in.tellg();
-		fileData.resize(size / sizeof(T));
-		SL_ASSERT(size % sizeof(T) == 0, "Please ensure that the file size is an integer multiple of sizeof(T) by yourself.");
+		size_t fileSize = in.tellg();
+		if (fileSize % sizeof(T) != 0)
+		{
+			SL_LOG_ERROR("File size {} is not divisible by sizeof({})!", fileSize, nameof::nameof_type<T>());
+			return fileData;
+		}
 
+		fileData.resize(fileSize / sizeof(T));
 		in.seekg(0, std::ios::beg);
-		in.read(reinterpret_cast<char *>(fileData.data()), size);
+		in.read(reinterpret_cast<char *>(fileData.data()), fileSize);
 		in.close();
 
 		return fileData;
@@ -69,7 +75,7 @@ public:
 		return fileData;
 	}
 
-	static void WriteBinary(std::string_view path, char* pData, size_t size)
+	static void WriteBinary(std::string_view path, const char* pData, size_t size)
 	{
 		SL_PROFILE;
 

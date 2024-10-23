@@ -95,10 +95,10 @@ public:
 	// TODO: Only support PBR for now.
 	AlbedoPropertyGroup m_albedoPropertyGroup;
 	NormalPropertyGroup m_normalPropertyGroup;
-	MetallicPropertyGroup m_metallicPropertyGroup;
-	RoughnessPropertyGroup m_roughnessPropertyGroup;
-	OcclusionPropertyGroup m_occlusionPropertyGroup;
 	EmissivePropertyGroup m_emissivePropertyGroup;
+	OcclusionPropertyGroup m_occlusionPropertyGroup;
+	RoughnessPropertyGroup m_roughnessPropertyGroup;
+	MetallicPropertyGroup m_metallicPropertyGroup;
 
 	float m_specular = 0.5f;
 	bool m_twoSide = false;
