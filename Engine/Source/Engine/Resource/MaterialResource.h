@@ -32,7 +32,18 @@ struct NormalPropertyGroup
 	float m_rotation = 0.0f;
 };
 
-struct MetallicPropertyGroup
+struct EmissivePropertyGroup
+{
+	std::string m_texture;
+	bool m_useTexture = false;
+	glm::vec3 m_factor{ 1.0f, 1.0f , 1.0f };
+
+	glm::vec2 m_offset{ 0.0f, 0.0f };
+	glm::vec2 m_scale{ 1.0f, 1.0f };
+	float m_rotation = 0.0f;
+};
+
+struct OcclusionPropertyGroup
 {
 	std::string m_texture;
 	bool m_useTexture = false;
@@ -54,22 +65,11 @@ struct RoughnessPropertyGroup
 	float m_rotation = 0.0f;
 };
 
-struct OcclusionPropertyGroup
+struct MetallicPropertyGroup
 {
 	std::string m_texture;
 	bool m_useTexture = false;
 	float m_factor = 1.0f;
-
-	glm::vec2 m_offset{ 0.0f, 0.0f };
-	glm::vec2 m_scale{ 1.0f, 1.0f };
-	float m_rotation = 0.0f;
-};
-
-struct EmissivePropertyGroup
-{
-	std::string m_texture;
-	bool m_useTexture = false;
-	glm::vec3 m_factor{ 1.0f, 1.0f , 1.0f };
 
 	glm::vec2 m_offset{ 0.0f, 0.0f };
 	glm::vec2 m_scale{ 1.0f, 1.0f };

@@ -214,6 +214,39 @@ std::string ProcessMaterial(const aiMaterial *pMaterial, const aiScene *pScene, 
 		pMaterialResource->m_twoSide = (bool)twoSide;
 	}
 
+#if !defined(SL_FINAL)
+	std::vector<std::string> texturePaths;
+	if (pMaterialResource->m_occlusionPropertyGroup.m_useTexture)
+	{
+		texturePaths.emplace_back(pMaterialResource->m_occlusionPropertyGroup.m_texture);
+	}
+	if (pMaterialResource->m_roughnessPropertyGroup.m_useTexture)
+	{
+		texturePaths.emplace_back(pMaterialResource->m_roughnessPropertyGroup.m_texture);
+	}
+	if (pMaterialResource->m_metallicPropertyGroup.m_useTexture)
+	{
+		texturePaths.emplace_back(pMaterialResource->m_metallicPropertyGroup.m_texture);
+	}
+	if (texturePaths.size() >= 2)
+	{
+		std::string_view path = texturePaths[0];
+		for (size_t i = 1; i < texturePaths.size(); ++i)
+		{
+			std::string_view crtPath = texturePaths[i];
+			if (crtPath != path)
+			{
+				SL_LOG_ERROR("Occlusion, Roughness and Metallic use different Textures:");
+				for (const auto &p : texturePaths)
+				{
+					SL_LOG_ERROR("\t{}", p.c_str());
+				}
+				break;
+			}
+		}
+	}
+#endif
+
 	std::string materialResourceName = path.data();
 	materialResourceName += pMaterial->GetName().C_Str();
 	sl::ResourceManager::AddMaterialResource(materialResourceName, std::move(pMaterialResource));
