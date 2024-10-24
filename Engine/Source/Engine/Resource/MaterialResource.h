@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Asset/Shader/Shared/PBRMaterial.h"
 #include "Resource/Resource.h"
 
 #include <glm/glm.hpp>
@@ -19,6 +20,11 @@ struct AlbedoPropertyGroup
 	glm::vec2 m_offset{ 0.0f, 0.0f };
 	glm::vec2 m_scale{ 1.0f, 1.0f };
 	float m_rotation = 0.0f;
+
+	int m_textureSlot = SL_ALBEDO_SLOT;
+	int m_useTextureLocation = SL_USE_ALBEDO_TEXTURE_LOCATION;
+	int m_factorLocation = SL_ALBEDO_FACTOR_LOCATION;
+	int m_tillingLocation;
 };
 
 struct NormalPropertyGroup
@@ -30,6 +36,11 @@ struct NormalPropertyGroup
 	glm::vec2 m_offset{ 0.0f, 0.0f };
 	glm::vec2 m_scale{ 1.0f, 1.0f };
 	float m_rotation = 0.0f;
+
+	int m_textureSlot = SL_NORMAL_SLOT;
+	int m_useTextureLocation = SL_USE_NORMAL_TEXTURE_LOCATION;
+	int m_factorLocation = SL_NORMAL_FACTOR_LOCATION;
+	int m_tillingLocation;
 };
 
 struct EmissivePropertyGroup
@@ -41,6 +52,11 @@ struct EmissivePropertyGroup
 	glm::vec2 m_offset{ 0.0f, 0.0f };
 	glm::vec2 m_scale{ 1.0f, 1.0f };
 	float m_rotation = 0.0f;
+
+	int m_textureSlot = SL_EMISSIVE_SLOT;
+	int m_useTextureLocation = SL_USE_EMISSIVE_TEXTURE_LOCATION;
+	int m_factorLocation = SL_EMISSIVE_FACTOR_LOCATION;
+	int m_tillingLocation;
 };
 
 struct OcclusionPropertyGroup
@@ -52,6 +68,11 @@ struct OcclusionPropertyGroup
 	glm::vec2 m_offset{ 0.0f, 0.0f };
 	glm::vec2 m_scale{ 1.0f, 1.0f };
 	float m_rotation = 0.0f;
+
+	int m_textureSlot = SL_ORM_SLOT;
+	int m_useTextureLocation = SL_USE_OCCLUSION_TEXTURE_LOCATION;
+	int m_factorLocation = SL_OCCLUSION_FACTOR_LOCATION;
+	int m_tillingLocation;
 };
 
 struct RoughnessPropertyGroup
@@ -63,6 +84,11 @@ struct RoughnessPropertyGroup
 	glm::vec2 m_offset{ 0.0f, 0.0f };
 	glm::vec2 m_scale{ 1.0f, 1.0f };
 	float m_rotation = 0.0f;
+
+	int m_textureSlot = SL_ORM_SLOT;
+	int m_useTextureLocation = SL_USE_ROUGHNESS_TEXTURE_LOCATION;
+	int m_factorLocation = SL_ROUGHNESS_FACTOR_LOCATION;
+	int m_tillingLocation;
 };
 
 struct MetallicPropertyGroup
@@ -74,6 +100,11 @@ struct MetallicPropertyGroup
 	glm::vec2 m_offset{ 0.0f, 0.0f };
 	glm::vec2 m_scale{ 1.0f, 1.0f };
 	float m_rotation = 0.0f;
+
+	int m_textureSlot = SL_ORM_SLOT;
+	int m_useTextureLocation = SL_USE_METALLIC_TEXTURE_LOCATION;
+	int m_factorLocation = SL_METALLIC_FACTOR_LOCATION;
+	int m_tillingLocation;
 };
 
 class MaterialResource : public Resource

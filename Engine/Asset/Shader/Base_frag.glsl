@@ -1,5 +1,7 @@
 #version 450 core
 
+#include "Shared/PBRMaterial.h"
+
 // input
 layout(location = 0) in vec3 v_worldPos;
 layout(location = 1) in vec3 v_normal;
@@ -9,24 +11,24 @@ layout(location = 2) in vec2 v_uv0;
 layout(location = 0) out vec4 o_color;
 
 // sampler
-layout(binding = 0) uniform sampler2D s_albedo;
-layout(binding = 1) uniform sampler2D s_normal;
-layout(binding = 2) uniform sampler2D s_emissive;
-layout(binding = 3) uniform sampler2D s_ORM;
+layout(binding = SL_ALBEDO_SLOT) uniform sampler2D s_albedo;
+layout(binding = SL_NORMAL_SLOT) uniform sampler2D s_normal;
+layout(binding = SL_EMISSIVE_SLOT) uniform sampler2D s_emissive;
+layout(binding = SL_ORM_SLOT) uniform sampler2D s_ORM;
 
 // Uniform
-layout(location = 1) uniform bool u_useAlbedoTexture;
-layout(location = 2) uniform bool u_useNormalTexture;
-layout(location = 3) uniform bool u_useEmissiveTexture;
-layout(location = 4) uniform bool u_useOcclusionTexture;
-layout(location = 5) uniform bool u_useRoughnessTexture;
-layout(location = 6) uniform bool u_useMetallicTexture;
-layout(location = 7) uniform vec3 u_albedoFactor;
-layout(location = 8) uniform vec3 u_normalFactor;
-layout(location = 9) uniform vec3 u_emissiveFactor;
-layout(location = 10) uniform float u_occlusionFactor;
-layout(location = 11) uniform float u_roughnessFactor;
-layout(location = 12) uniform float u_metallicFactor;
+layout(location = SL_USE_ALBEDO_TEXTURE_LOCATION) uniform bool u_useAlbedoTexture;
+layout(location = SL_USE_NORMAL_TEXTURE_LOCATION) uniform bool u_useNormalTexture;
+layout(location = SL_USE_EMISSIVE_TEXTURE_LOCATION) uniform bool u_useEmissiveTexture;
+layout(location = SL_USE_OCCLUSION_TEXTURE_LOCATION) uniform bool u_useOcclusionTexture;
+layout(location = SL_USE_ROUGHNESS_TEXTURE_LOCATION) uniform bool u_useRoughnessTexture;
+layout(location = SL_USE_METALLIC_TEXTURE_LOCATION) uniform bool u_useMetallicTexture;
+layout(location = SL_ALBEDO_FACTOR_LOCATION) uniform vec3 u_albedoFactor;
+layout(location = SL_NORMAL_FACTOR_LOCATION) uniform vec3 u_normalFactor;
+layout(location = SL_EMISSIVE_FACTOR_LOCATION) uniform vec3 u_emissiveFactor;
+layout(location = SL_OCCLUSION_FACTOR_LOCATION) uniform float u_occlusionFactor;
+layout(location = SL_ROUGHNESS_FACTOR_LOCATION) uniform float u_roughnessFactor;
+layout(location = SL_METALLIC_FACTOR_LOCATION) uniform float u_metallicFactor;
 // TODO: Tilling uniforms
 
 vec3 SampleAlbedoTexture(vec2 uv)

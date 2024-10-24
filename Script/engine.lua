@@ -21,6 +21,7 @@ project("Slam")
 	-- Include paths
 	includedirs
 	{
+		path.join(RootPath, "Engine"),
 		EnginePath,
 		ThirdPartyPath,
 		path.join(ThirdPartyPath, "spdlog/include"),

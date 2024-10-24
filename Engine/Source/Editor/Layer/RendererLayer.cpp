@@ -11,54 +11,26 @@
 namespace
 {
 
-enum class MaterialPropertyGroupType : uint8_t
-{
-	Albedo = 0,
-	Normal,
-	Emissive,
-	Occlusion,
-	Roughness,
-	Metallic,
-};
-
-struct MaterialPropertyGroupLocation
-{
-	int textureSampler;
-	int useTexture;
-	int factor;
-};
-
-constexpr MaterialPropertyGroupLocation MaterialPropertyGroupLocations[nameof::enum_count<MaterialPropertyGroupType>()] =
-{
-	{ 0, 1, 7 },
-	{ 1, 2, 8 },
-	{ 2, 3, 9 },
-	{ 3, 4, 10 },
-	{ 3, 5, 11 },
-	{ 3, 6, 12 },
-};
-
-void UploadMaterial(sl::Shader *pShader, MaterialPropertyGroupType type, const auto &propertyGroup)
+void UploadMaterial(sl::Shader *pShader, const auto &propertyGroup)
 {
 	SL_ASSERT(requires{ propertyGroup.m_useTexture; propertyGroup.m_texture; propertyGroup.m_factor; });
-
-	MaterialPropertyGroupLocation location = MaterialPropertyGroupLocations[(size_t)type];
+	SL_ASSERT(requires{ propertyGroup.m_textureSlot; propertyGroup.m_useTextureLocation; propertyGroup.m_factorLocation; });
 
 	if (propertyGroup.m_useTexture)
 	{
 		auto *pTextureResource = sl::ResourceManager::GetTextureResource(propertyGroup.m_texture);
 		if (pTextureResource && pTextureResource->IsReady())
 		{
-			pTextureResource->GetTexture()->Bind(location.textureSampler);
-			pShader->UploadUniform(location.useTexture, true);
+			pTextureResource->GetTexture()->Bind(propertyGroup.m_textureSlot);
+			pShader->UploadUniform(propertyGroup.m_useTextureLocation, true);
 		}
 	}
 	else
 	{
-		pShader->UploadUniform(location.useTexture, false);
+		pShader->UploadUniform(propertyGroup.m_useTextureLocation, false);
 	}
 
-	pShader->UploadUniform(location.factor, propertyGroup.m_factor);
+	pShader->UploadUniform(propertyGroup.m_factorLocation, propertyGroup.m_factor);
 }
 
 }
@@ -157,12 +129,12 @@ void RendererLayer::BasePass()
 		pShader->Bind();
 		pShader->UploadUniform(0, transform.GetTransform());
 
-		UploadMaterial(pShader, MaterialPropertyGroupType::Albedo, pMaterialResource->m_albedoPropertyGroup);
-		UploadMaterial(pShader, MaterialPropertyGroupType::Normal, pMaterialResource->m_normalPropertyGroup);
-		UploadMaterial(pShader, MaterialPropertyGroupType::Emissive, pMaterialResource->m_emissivePropertyGroup);
-		UploadMaterial(pShader, MaterialPropertyGroupType::Occlusion, pMaterialResource->m_occlusionPropertyGroup);
-		UploadMaterial(pShader, MaterialPropertyGroupType::Roughness, pMaterialResource->m_roughnessPropertyGroup);
-		UploadMaterial(pShader, MaterialPropertyGroupType::Metallic, pMaterialResource->m_metallicPropertyGroup);
+		UploadMaterial(pShader, pMaterialResource->m_albedoPropertyGroup);
+		UploadMaterial(pShader, pMaterialResource->m_normalPropertyGroup);
+		UploadMaterial(pShader, pMaterialResource->m_emissivePropertyGroup);
+		UploadMaterial(pShader, pMaterialResource->m_occlusionPropertyGroup);
+		UploadMaterial(pShader, pMaterialResource->m_roughnessPropertyGroup);
+		UploadMaterial(pShader, pMaterialResource->m_metallicPropertyGroup);
 		
 		sl::RenderCore::Submit(pMeshResource->GetVertexArray(), pShader);
 	}

@@ -21,6 +21,7 @@ project("Editor")
 	-- Include paths
 	includedirs
 	{
+		path.join(RootPath, "Engine"),
 		EnginePath,
 		EditorPath,
 		ThirdPartyPath,
