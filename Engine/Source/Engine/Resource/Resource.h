@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 namespace sl
 {
@@ -29,13 +30,11 @@ enum class ResourcesType : uint8_t
 class Resource
 {
 public:
+	Resource() = default;
 	virtual	~Resource() = default;
 
-	void SetState(ResourceState state) { m_state = state; }
-	ResourceState GetState() const { return m_state; }
-	bool IsReady() { return m_state == ResourceState::Ready; }
-
 	void Update();
+	bool IsReady() { return m_state == ResourceState::Ready; }
 
 	// Import asset file in original format.
 	virtual void OnImport() = 0;
@@ -51,7 +50,8 @@ public:
 	virtual void OnDestroy() = 0;
 	virtual void DestroyCPUData() = 0;
 
-	ResourceState m_state;
+	ResourceState m_state = ResourceState::Importing;
+	uint8_t m_destroyDelay = 0;
 };
 
 } // namespace sl

@@ -30,8 +30,7 @@ SandboxLayer::SandboxLayer()
 	};
 	std::vector<uint32_t> indices = { 0, 1, 3, 1, 2, 3 };
 
-	auto pMeshResource = std::make_unique<sl::MeshResource>("TODO");
-	pMeshResource->m_state = sl::ResourceState::Uploading;
+	auto pMeshResource = std::make_unique<sl::MeshResource>();
 	pMeshResource->m_verticesRowData = std::move(vertices);
 	pMeshResource->m_indicesRowData = std::move(indices);
 	pMeshResource->m_layout = sl::VertexLayout
@@ -49,7 +48,7 @@ SandboxLayer::SandboxLayer()
 		sl::Path::FromeAsset("Texture/jc.png"), SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR);
 	sl::ResourceManager::AddTextureResource("JCTexture", std::move(pTextureResource));
 
-	auto pMaterialResource = std::make_unique<sl::MaterialResource>("TODO");
+	auto pMaterialResource = std::make_unique<sl::MaterialResource>();
 	pMaterialResource->m_albedoPropertyGroup.m_texture = "JCTexture";
 	pMaterialResource->m_albedoPropertyGroup.m_useTexture = true;
 	sl::ResourceManager::AddMaterialResource("AlbedoMaterial", std::move(pMaterialResource));

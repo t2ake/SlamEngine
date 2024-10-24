@@ -73,11 +73,11 @@ ShaderResource::ShaderResource(std::string_view vsPath, std::string_view fsPath)
 
 	if (Path::Exists(m_shaders[0].m_binaryPath) && Path::Exists(m_shaders[1].m_binaryPath))
 	{
-		SetState(ResourceState::Loading);
+		m_state = ResourceState::Loading;
 	}
 	else
 	{
-		SetState(ResourceState::Importing);
+		m_state = ResourceState::Importing;
 	}
 }
 
@@ -92,11 +92,11 @@ ShaderResource::ShaderResource(std::string_view path, ShaderProgramType type) :
 
 	if (Path::Exists(m_shaders[0].m_binaryPath))
 	{
-		SetState(ResourceState::Loading);
+		m_state = ResourceState::Loading;
 	}
 	else
 	{
-		SetState(ResourceState::Importing);
+		m_state = ResourceState::Importing;
 	}
 }
 
@@ -123,12 +123,12 @@ void ShaderResource::OnImport()
 		(m_programType == ShaderProgramType::Standard && m_shaders[1].m_source.empty()))
 	{
 		SL_LOG_ERROR("Failed to import shader!");
-		SetState(ResourceState::Destroying);
+		m_state = ResourceState::Destroying;
 		return;
 	}
 #endif
 
-	SetState(ResourceState::Building);
+	m_state = ResourceState::Building;
 }
 
 void ShaderResource::OnBuild()
@@ -161,12 +161,12 @@ void ShaderResource::OnBuild()
 		(m_programType == ShaderProgramType::Standard && m_shaders[1].m_source.empty()))
 	{
 		SL_LOG_ERROR("Failed to build shader!");
-		SetState(ResourceState::Destroying);
+		m_state = ResourceState::Destroying;
 		return;
 	}
 #endif
 
-	SetState(ResourceState::Uploading);
+	m_state = ResourceState::Uploading;
 }
 
 void ShaderResource::OnLoad()
@@ -189,12 +189,12 @@ void ShaderResource::OnLoad()
 		(m_programType == ShaderProgramType::Standard && m_shaders[1].m_source.empty()))
 	{
 		SL_LOG_ERROR("Failed to load shader binary cache!");
-		SetState(ResourceState::Destroying);
+		m_state = ResourceState::Destroying;
 		return;
 	}
 #endif
 
-	SetState(ResourceState::Uploading);
+	m_state = ResourceState::Uploading;
 }
 
 void ShaderResource::OnUpload()
@@ -220,18 +220,17 @@ void ShaderResource::OnUpload()
 	if (!m_pShaderProgram)
 	{
 		SL_LOG_ERROR("Failed to create shader GPU handle!");
-		SetState(ResourceState::Destroying);
+		m_state = ResourceState::Destroying;
 		return;
 	}
 #endif
 
-	SetState(ResourceState::Ready);
+	m_state = ResourceState::Ready;
 }
 
 void ShaderResource::OnReady()
 {
-	static uint8_t frameCount = 0;
-	if (frameCount <= 60 && frameCount++ == 60)
+	if (m_destroyDelay <= 60 && m_destroyDelay++ == 60)
 	{
 		DestroyCPUData();
 	}
@@ -244,7 +243,7 @@ void ShaderResource::OnDestroy()
 	DestroyCPUData();
 	m_pShaderProgram.reset();
 
-	SetState(ResourceState::Destroyed);
+	m_state = ResourceState::Destroyed;
 }
 
 void ShaderResource::DestroyCPUData()

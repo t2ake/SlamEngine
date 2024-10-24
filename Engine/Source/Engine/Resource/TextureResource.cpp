@@ -11,10 +11,10 @@
 namespace sl
 {
 
-TextureResource::TextureResource(std::string_view path, uint32_t flags) :
-	m_assetPath(path), m_flags(flags)
+TextureResource::TextureResource(std::string_view sourcePath, uint32_t flags) :
+	sourcePath(sourcePath), m_flags(flags)
 {
-	SetState(ResourceState::Importing);
+
 }
 
 TextureResource::~TextureResource()
@@ -26,8 +26,8 @@ void TextureResource::OnImport()
 {
 	SL_PROFILE;
 
-	SL_LOG_TRACE("Loading image: \"{}\"", m_assetPath.c_str());
-	const auto originalData = FileIO::ReadBinary(m_assetPath);
+	SL_LOG_TRACE("Loading image: \"{}\"", sourcePath.c_str());
+	const auto originalData = FileIO::ReadBinary(sourcePath);
 
 	// The first pixel should at the bottom left.
 	stbi_set_flip_vertically_on_load(true);
@@ -47,8 +47,8 @@ void TextureResource::OnImport()
 #if !defined(SL_FINAL)
 	if (!pTextureData || width <= 0 || height <= 0 || channels <= 0)
 	{
-		SL_LOG_ERROR("Invalid texture: \"{}\"", m_assetPath.c_str());
-		SetState(ResourceState::Destroying);
+		SL_LOG_ERROR("Invalid texture: \"{}\"", sourcePath.c_str());
+		m_state = ResourceState::Destroying;
 		return;
 	}
 #endif
@@ -63,21 +63,21 @@ void TextureResource::OnImport()
 	memcpy(m_rowData.data(), pTextureData, m_rowData.size());
 	stbi_image_free(pTextureData);
 
-	SetState(ResourceState::Building);
+	m_state = ResourceState::Building;
 }
 
 void TextureResource::OnBuild()
 {
 	SL_PROFILE;
 
-	SetState(ResourceState::Uploading);
+	m_state = ResourceState::Uploading;
 }
 
 void TextureResource::OnLoad()
 {
 	SL_PROFILE;
 
-	SetState(ResourceState::Uploading);
+	m_state = ResourceState::Uploading;
 }
 
 void TextureResource::OnUpload()
@@ -104,19 +104,18 @@ void TextureResource::OnUpload()
 	else
 	{
 		SL_LOG_ERROR("Unknown image texture format!");
-		SetState(ResourceState::Destroying);
+		m_state = ResourceState::Destroying;
 		return;
 	}
 
 	m_pTexture.reset(Texture2D::Create(m_width, m_height, true, format, m_flags, m_rowData.data()));
 
-	SetState(ResourceState::Ready);
+	m_state = ResourceState::Ready;
 }
 
 void TextureResource::OnReady()
 {
-	static uint8_t frameCount = 0;
-	if (frameCount <= 60 && frameCount++ == 60)
+	if (m_destroyDelay <= 60 && m_destroyDelay++ == 60)
 	{
 		DestroyCPUData();
 	}
@@ -129,7 +128,7 @@ void TextureResource::OnDestroy()
 	DestroyCPUData();
 	m_pTexture.reset();
 	
-	SetState(ResourceState::Destroyed);
+	m_state = ResourceState::Destroyed;
 }
 
 void TextureResource::DestroyCPUData()

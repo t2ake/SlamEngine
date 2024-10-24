@@ -215,15 +215,15 @@ void ImGuiLayer::ShowDebugPanel()
 	{
 		ImGui::Begin("ImGuizmo state", &m_debugImGuizmoState);
 
-		ImGui::Text("IsOver: ");
+		ImGui::TextUnformatted("IsOver: ");
 		ImGui::SameLine();
-		ImGui::Text(ImGuizmo::IsOver() ? "true" : "fasle");
-		ImGui::Text("IsUsing: ");
+		ImGui::TextUnformatted(ImGuizmo::IsOver() ? "true" : "fasle");
+		ImGui::TextUnformatted("IsUsing: ");
 		ImGui::SameLine();
-		ImGui::Text(ImGuizmo::IsUsing() ? "true" : "fasle");
-		ImGui::Text("IsUsingAny: ");
+		ImGui::TextUnformatted(ImGuizmo::IsUsing() ? "true" : "fasle");
+		ImGui::TextUnformatted("IsUsingAny: ");
 		ImGui::SameLine();
-		ImGui::Text(ImGuizmo::IsUsingAny() ? "true" : "fasle");
+		ImGui::TextUnformatted(ImGuizmo::IsUsingAny() ? "true" : "fasle");
 
 		ImGui::End();
 	}
@@ -347,7 +347,7 @@ void ImGuiLayer::ShowInfo(float deltaTime)
 	constexpr float Delay = 500.0f;
 
 	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Delta Time Multiplier:");
+	ImGui::TextUnformatted("Delta Time Multiplier:");
 	ImGui::SameLine();
 	ImGui::SetNextItemWidth(-1.0f);
 	ImGui::DragFloat("##DeltaTimeMultiplier", &s_deltaTimeMultiplier, 1.0f, 1.0f, 1000.0f);
@@ -704,7 +704,7 @@ void ImGuiLayer::ShowAssetBrowser()
 
 	// Display the current path.
 	ImGui::SameLine();
-	ImGui::Text(crtPath.c_str());
+	ImGui::TextUnformatted(crtPath.c_str());
 
 	// Select item size.
 	static size_t s_itemSizeIndex = 2;
@@ -944,7 +944,7 @@ void ImGuiLayer::StartWithText(std::string_view text)
 	float offset = ImGui::GetStyle().IndentSpacing + GetDPIFactor();
 	ImGui::SetCursorPosX(offset);
 	ImGui::AlignTextToFramePadding();
-	ImGui::Text(text.data());
+	ImGui::TextUnformatted(text.data());
 
 	ImGui::SameLine(m_maxTextSize + offset + GetDPIFactor());
 	ImGui::SetNextItemWidth(-GetDPIFactor());
@@ -1170,19 +1170,80 @@ void ImGuiLayer::ShowDetails()
 	// Draw Rendering component.
 	DrawComponent<sl::RenderingComponent>("Rendering", [this](sl::RenderingComponent *pComponent)
 	{
-		StartWithText("Mesh");
-		ImGui::Text(pComponent->m_optMeshResourceName ? pComponent->m_optMeshResourceName->c_str() : "");
+		if (ImGui::TreeNodeEx("##Mesh", DefaultSubTreeFlags, "Mesh"))
+		{
+			ImGui::Indent();
 
-		StartWithText("Material");
-		ImGui::Text(pComponent->m_optMaterialResourceName ? pComponent->m_optMaterialResourceName->c_str() : "");
+			StartWithText("Name");
+			const auto &optMeshResourceName = pComponent->m_optMeshResourceName;
+			ImGui::TextUnformatted(optMeshResourceName ? optMeshResourceName->c_str() : "");
+			if (optMeshResourceName)
+			{
+				if (auto *pMeshResource = sl::ResourceManager::GetMeshResource(optMeshResourceName.value()); pMeshResource)
+				{
+					StartWithText("Vertex");
+					ImGui::Text("%d", pMeshResource->m_vertexCount);
+					StartWithText("Index");
+					ImGui::Text("%d", pMeshResource->m_indexCount);
+				}
+			}
 
-		// TODOD: Textures
+			ImGui::Unindent();
+		}
+		ImGui::Separator();
 
-		StartWithText("Base Shader");
-		ImGui::Text(pComponent->m_optBaseShaderResourceName ? pComponent->m_optBaseShaderResourceName->c_str() : "");
+		if (ImGui::TreeNodeEx("##Material", DefaultSubTreeFlags, "Material"))
+		{
+			ImGui::Indent();
 
-		StartWithText("ID Shader");
-		ImGui::Text(pComponent->m_optIDShaderResourceName ? pComponent->m_optIDShaderResourceName->c_str() : "");
+			StartWithText("Name");
+			const auto &m_optMaterialResourceName = pComponent->m_optMaterialResourceName;
+			ImGui::TextUnformatted(m_optMaterialResourceName ? m_optMaterialResourceName->c_str() : "");
+
+			if (m_optMaterialResourceName)
+			{
+				if (auto *pMaterialResource = sl::ResourceManager::GetMaterialResource(m_optMaterialResourceName.value()); pMaterialResource)
+				{
+					// TODO: Show textures.
+					StartWithText("Albedo Texture");
+					ImGui::TextUnformatted(pMaterialResource->m_albedoPropertyGroup.m_texture.c_str());
+					StartWithText("Normal Texture");
+					ImGui::TextUnformatted(pMaterialResource->m_normalPropertyGroup.m_texture.c_str());
+					StartWithText("Roughness Texture");
+					ImGui::TextUnformatted(pMaterialResource->m_roughnessPropertyGroup.m_texture.c_str());
+					StartWithText("Metallic Texture");
+					ImGui::TextUnformatted(pMaterialResource->m_metallicPropertyGroup.m_texture.c_str());
+					StartWithText("Occlusion Texture");
+					ImGui::TextUnformatted(pMaterialResource->m_occlusionPropertyGroup.m_texture.c_str());
+					StartWithText("Emissive Texture");
+					ImGui::TextUnformatted(pMaterialResource->m_emissivePropertyGroup.m_texture.c_str());
+				}
+			}
+
+			ImGui::Unindent();
+		}
+		ImGui::Separator();
+
+		if (ImGui::TreeNodeEx("##BaseShader", DefaultSubTreeFlags, "Base Shader"))
+		{
+			ImGui::Indent();
+
+			StartWithText("Name");
+			ImGui::TextUnformatted(pComponent->m_optBaseShaderResourceName ? pComponent->m_optBaseShaderResourceName->c_str() : "");
+
+			ImGui::Unindent();
+		}
+		ImGui::Separator();
+
+		if (ImGui::TreeNodeEx("##IDShader", DefaultSubTreeFlags, "ID Shader"))
+		{
+			ImGui::Indent();
+
+			StartWithText("Name");
+			ImGui::TextUnformatted(pComponent->m_optIDShaderResourceName ? pComponent->m_optIDShaderResourceName->c_str() : "");
+
+			ImGui::Unindent();
+		}
 	});
 
 	// Draw Cornerstone component.

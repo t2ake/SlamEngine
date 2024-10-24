@@ -14,7 +14,7 @@ class Texture2D;
 class TextureResource : public Resource
 {
 public:
-	TextureResource(std::string_view path, uint32_t flags = 0);
+	TextureResource(std::string_view sourcePath, uint32_t flags = 0);
 	virtual ~TextureResource() override;
 
 	virtual void OnImport() override;
@@ -28,7 +28,7 @@ public:
 	void SetRowData(std::vector<std::byte> data) { m_rowData = std::move(data); }
 	Texture2D *GetTexture() const { return m_pTexture.get(); }
 
-	std::string m_assetPath;
+	std::string sourcePath;
 	std::vector<std::byte> m_rowData;
 	
 	uint32_t m_flags = 0;

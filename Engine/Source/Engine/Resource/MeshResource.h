@@ -15,7 +15,7 @@ class VertexArray;
 class MeshResource : public Resource
 {
 public:
-	MeshResource(std::string_view path);
+	MeshResource() = default;
 	virtual ~MeshResource() override;
 
 	virtual void OnImport() override;
@@ -26,13 +26,14 @@ public:
 	virtual void OnDestroy() override;
 	virtual void DestroyCPUData() override;
 
-	VertexArray *GetVertexArray() { return m_pVertexArray.get(); }
+	VertexArray *GetVertexArray() const { return m_pVertexArray.get(); }
 
-	std::string m_assetPath;
-
-	VertexLayout m_layout;
 	std::vector<float> m_verticesRowData;
 	std::vector<uint32_t> m_indicesRowData;
+	VertexLayout m_layout;
+
+	uint32_t m_vertexCount;
+	uint32_t m_indexCount;
 
 	std::unique_ptr<VertexArray> m_pVertexArray;
 };

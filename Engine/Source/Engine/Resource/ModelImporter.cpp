@@ -53,7 +53,7 @@ void ProcessTexture(std::string_view path)
 
 std::string ProcessMaterial(const aiMaterial *pMaterial, const aiScene *pScene, std::string_view path)
 {
-	auto pMaterialResource = std::make_unique<MaterialResource>("TODO");
+	auto pMaterialResource = std::make_unique<MaterialResource>();
 
 	// Albedo
 	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_BASE_COLOR, 0), textureStr) == AI_SUCCESS)
@@ -248,6 +248,7 @@ std::string ProcessMaterial(const aiMaterial *pMaterial, const aiScene *pScene, 
 #endif
 
 	std::string materialResourceName = path.data();
+	materialResourceName += "+";
 	materialResourceName += pMaterial->GetName().C_Str();
 	sl::ResourceManager::AddMaterialResource(materialResourceName, std::move(pMaterialResource));
 
@@ -274,16 +275,16 @@ void ProcessMesh(const aiMesh *pMesh, const aiScene *pScene, std::string_view pa
 		{ "UV0", sl::AttribType::Float, 2 },
 	};
 	uint32_t vertexCount = pMesh->mNumVertices;
-	uint32_t floatCount = layout.GetStride() / sizeof(float);
+	uint32_t layoutfloatCount = layout.GetStride() / sizeof(float);
 
 	std::vector<float> vertices;
-	vertices.resize(vertexCount * floatCount);
+	vertices.resize(vertexCount * layoutfloatCount);
 	for (size_t i = 0; i < vertexCount; ++i)
 	{
-		memcpy(&vertices[i * floatCount] + 0, &pMesh->mVertices[i], 3 * sizeof(float));
-		memcpy(&vertices[i * floatCount] + 3, &pMesh->mNormals[i], 3 * sizeof(float));
-		memcpy(&vertices[i * floatCount] + 6, &pMesh->mTangents[i], 3 * sizeof(float));
-		memcpy(&vertices[i * floatCount] + 9, &pMesh->mTextureCoords[0][i], 2 * sizeof(float));
+		memcpy(&vertices[i * layoutfloatCount] + 0, &pMesh->mVertices[i], 3 * sizeof(float));
+		memcpy(&vertices[i * layoutfloatCount] + 3, &pMesh->mNormals[i], 3 * sizeof(float));
+		memcpy(&vertices[i * layoutfloatCount] + 6, &pMesh->mTangents[i], 3 * sizeof(float));
+		memcpy(&vertices[i * layoutfloatCount] + 9, &pMesh->mTextureCoords[0][i], 2 * sizeof(float));
 		// TODO: Multi chanel UV.
 	}
 
@@ -300,13 +301,15 @@ void ProcessMesh(const aiMesh *pMesh, const aiScene *pScene, std::string_view pa
 	}
 
 	// 3. Mesh resource
-	auto pMeshResource = std::make_unique<sl::MeshResource>("TODO");
-	pMeshResource->m_state = sl::ResourceState::Uploading;
+	auto pMeshResource = std::make_unique<sl::MeshResource>();
 	pMeshResource->m_verticesRowData = std::move(vertices);
 	pMeshResource->m_indicesRowData = std::move(indices);
 	pMeshResource->m_layout = std::move(layout);
+	pMeshResource->m_vertexCount = vertexCount;
+	pMeshResource->m_indexCount = indexCount;
 
 	std::string MeshResourceName = path.data();
+	MeshResourceName += "+";
 	MeshResourceName += pMeshName;
 	sl::ResourceManager::AddMeshResource(MeshResourceName, std::move(pMeshResource));
 

@@ -110,7 +110,7 @@ struct MetallicPropertyGroup
 class MaterialResource : public Resource
 {
 public:
-	MaterialResource(std::string_view path);
+	MaterialResource() = default;
 	virtual ~MaterialResource() override;
 
 	virtual void OnImport() override;
@@ -121,7 +121,6 @@ public:
 	virtual void OnDestroy() override;
 	virtual void DestroyCPUData() override;
 
-	std::string m_assetPath;
 
 	// TODO: Only support PBR for now.
 	AlbedoPropertyGroup m_albedoPropertyGroup;
