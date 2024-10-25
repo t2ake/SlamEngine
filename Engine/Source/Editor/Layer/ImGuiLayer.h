@@ -49,7 +49,7 @@ private:
 	void DrawComponent(const char *label, auto drawParameters);
 	template<class T>
 	void AddComponentMenuItem(const char *label);
-	void StartWithText(std::string_view text);
+	float StartWithText(std::string_view text, float offset = 0.0f);
 	void ShowDetails();
 
 	void ShowImGuizmoOrientation();
@@ -79,6 +79,7 @@ private:
 
 	// Details
 	float m_maxTextSize = 0.0f;
+	std::string m_noResourceIconName;
 
 	// Scene viewport
 	uint32_t m_sceneViewportWindowPosX = 0;

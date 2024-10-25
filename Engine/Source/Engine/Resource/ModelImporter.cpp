@@ -248,7 +248,7 @@ std::string ProcessMaterial(const aiMaterial *pMaterial, const aiScene *pScene, 
 #endif
 
 	std::string materialResourceName = path.data();
-	materialResourceName += "+";
+	materialResourceName += "/";
 	materialResourceName += pMaterial->GetName().C_Str();
 	sl::ResourceManager::AddMaterialResource(materialResourceName, std::move(pMaterialResource));
 
@@ -309,7 +309,7 @@ void ProcessMesh(const aiMesh *pMesh, const aiScene *pScene, std::string_view pa
 	pMeshResource->m_indexCount = indexCount;
 
 	std::string MeshResourceName = path.data();
-	MeshResourceName += "+";
+	MeshResourceName += "/";
 	MeshResourceName += pMeshName;
 	sl::ResourceManager::AddMeshResource(MeshResourceName, std::move(pMeshResource));
 

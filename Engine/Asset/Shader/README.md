@@ -8,7 +8,7 @@
 
 ## Shared
 To ensure consistency between the CPU and GPU, properties such as sampler slots and uniform locations are defined in the header file and placed in the `Shared` folder.
-These files will be included in both shader and C++ code.
+These files will be included in both shader and CPP code.
 
 ## Include
 - `#include "..."` will start searching files based on the current path, which is `"/SlamEngine/Engine/Asset/Shader"`.

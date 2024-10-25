@@ -16,6 +16,7 @@
 #include "Window/Input.h"
 #include "Window/Window.h"
 
+#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui/imgui.h>
 #include <imguizmo/ImGuizmo.h>
@@ -133,13 +134,18 @@ ImGuiLayer::ImGuiLayer()
 	
 	auto pFileIconTextureResource = std::make_unique<sl::TextureResource>(
 		sl::Path::FromeAsset("Texture/FileIcon.png"), SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR);
-	sl::ResourceManager::AddTextureResource("FileIcon", std::move(pFileIconTextureResource));
-	m_fileIconName = "FileIcon";
+	sl::ResourceManager::AddTextureResource("EditorFileIcon", std::move(pFileIconTextureResource));
+	m_fileIconName = "EditorFileIcon";
 
 	auto pFolderIconTextureResource = std::make_unique<sl::TextureResource>(
 		sl::Path::FromeAsset("Texture/FolderIcon.png"), SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR);
-	sl::ResourceManager::AddTextureResource("FolderIcon", std::move(pFolderIconTextureResource));
-	m_folderIconName = "FolderIcon";
+	sl::ResourceManager::AddTextureResource("EditorFolderIcon", std::move(pFolderIconTextureResource));
+	m_folderIconName = "EditorFolderIcon";
+
+	auto pNoResourceIconResource = std::make_unique<sl::TextureResource>(
+		sl::Path::FromeAsset("Texture/NoResource.png"), SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR);
+	sl::ResourceManager::AddTextureResource("EditorNoResourceIcon", std::move(pNoResourceIconResource));
+	m_noResourceIconName = "EditorNoResourceIcon";
 }
 
 ImGuiLayer::~ImGuiLayer()
@@ -922,7 +928,7 @@ void ImGuiLayer::AddComponentMenuItem(const char *label)
 	}
 }
 
-void ImGuiLayer::StartWithText(std::string_view text)
+float ImGuiLayer::StartWithText(std::string_view text, float offset)
 {
 	static sl::Entity s_crtEntity;
 	if (s_crtEntity != m_selectedEntity)
@@ -936,18 +942,26 @@ void ImGuiLayer::StartWithText(std::string_view text)
 	}
 
 	float crtTextSize = ImGui::CalcTextSize(text.data()).x;
-	if (crtTextSize > m_maxTextSize)
+	float crtOffset;
+	if (offset)
 	{
-		m_maxTextSize = crtTextSize;
+		crtOffset = offset;
+	}
+	else
+	{
+		m_maxTextSize = std::max(m_maxTextSize, crtTextSize);
+		crtOffset = ImGui::GetStyle().IndentSpacing + GetDPIFactor();
 	}
 
-	float offset = ImGui::GetStyle().IndentSpacing + GetDPIFactor();
-	ImGui::SetCursorPosX(offset);
+	ImGui::SetCursorPosX(crtOffset);
 	ImGui::AlignTextToFramePadding();
 	ImGui::TextUnformatted(text.data());
 
-	ImGui::SameLine(m_maxTextSize + offset + GetDPIFactor());
+	float nextOffset = crtOffset + m_maxTextSize + GetDPIFactor();
+	ImGui::SameLine(nextOffset);
 	ImGui::SetNextItemWidth(-GetDPIFactor());
+
+	return nextOffset;
 }
 
 void ImGuiLayer::ShowDetails()
@@ -1176,9 +1190,9 @@ void ImGuiLayer::ShowDetails()
 
 			StartWithText("Name");
 			const auto &optMeshResourceName = pComponent->m_optMeshResourceName;
-			ImGui::TextUnformatted(optMeshResourceName ? optMeshResourceName->c_str() : "");
 			if (optMeshResourceName)
 			{
+				ImGui::TextUnformatted(sl::Path::NameWithoutExtension(optMeshResourceName.value()).c_str());
 				if (auto *pMeshResource = sl::ResourceManager::GetMeshResource(optMeshResourceName.value()); pMeshResource)
 				{
 					StartWithText("Vertex");
@@ -1186,6 +1200,10 @@ void ImGuiLayer::ShowDetails()
 					StartWithText("Index");
 					ImGui::Text("%d", pMeshResource->m_indexCount);
 				}
+			}
+			else
+			{
+				ImGui::TextUnformatted("");
 			}
 
 			ImGui::Unindent();
@@ -1197,27 +1215,70 @@ void ImGuiLayer::ShowDetails()
 			ImGui::Indent();
 
 			StartWithText("Name");
-			const auto &m_optMaterialResourceName = pComponent->m_optMaterialResourceName;
-			ImGui::TextUnformatted(m_optMaterialResourceName ? m_optMaterialResourceName->c_str() : "");
-
-			if (m_optMaterialResourceName)
+			if (const auto &m_optMaterialResourceName = pComponent->m_optMaterialResourceName; m_optMaterialResourceName)
 			{
+				ImGui::TextUnformatted(sl::Path::NameWithoutExtension(m_optMaterialResourceName.value()).c_str());
 				if (auto *pMaterialResource = sl::ResourceManager::GetMaterialResource(m_optMaterialResourceName.value()); pMaterialResource)
 				{
-					// TODO: Show textures.
-					StartWithText("Albedo Texture");
-					ImGui::TextUnformatted(pMaterialResource->m_albedoPropertyGroup.m_texture.c_str());
-					StartWithText("Normal Texture");
-					ImGui::TextUnformatted(pMaterialResource->m_normalPropertyGroup.m_texture.c_str());
-					StartWithText("Roughness Texture");
-					ImGui::TextUnformatted(pMaterialResource->m_roughnessPropertyGroup.m_texture.c_str());
-					StartWithText("Metallic Texture");
-					ImGui::TextUnformatted(pMaterialResource->m_metallicPropertyGroup.m_texture.c_str());
-					StartWithText("Occlusion Texture");
-					ImGui::TextUnformatted(pMaterialResource->m_occlusionPropertyGroup.m_texture.c_str());
-					StartWithText("Emissive Texture");
-					ImGui::TextUnformatted(pMaterialResource->m_emissivePropertyGroup.m_texture.c_str());
+					auto ShowPropertyGroup = [this](const char *propertyGroupName, auto &propertyGroup)
+					{
+						SL_ASSERT(requires{ propertyGroup.m_texture; propertyGroup.m_useTexture; propertyGroup.m_factor;
+						propertyGroup.m_offset; propertyGroup.m_scale; propertyGroup.m_rotation; });
+
+						ImGui::PushID(propertyGroupName);
+
+						float offset = StartWithText(propertyGroupName);
+						float textureSize = GetDPIFactor() * 3.0f;
+						std::string_view albedoName = propertyGroup.m_texture;
+						if (auto *pTexture = sl::ResourceManager::GetTextureResource(albedoName); pTexture)
+						{
+							ImGui::Image((void *)(uint64_t)pTexture->GetTexture()->GetHandle(),
+								ImVec2{ textureSize, textureSize }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
+						}
+						else
+						{
+							ImGui::Image((void *)(uint64_t)sl::ResourceManager::GetTextureResource(m_noResourceIconName)->GetTexture()->GetHandle(),
+								ImVec2{ textureSize, textureSize }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
+						}
+						ImGui::SameLine(offset + m_maxTextSize + GetDPIFactor());
+						ImGui::TextUnformatted(sl::Path::NameWithoutExtension(albedoName).c_str());
+
+						StartWithText("Use texture", offset);
+						ImGui::Checkbox("##UseTexture", &propertyGroup.m_useTexture);
+						StartWithText("Factor", offset);
+						if constexpr (std::is_same_v<decltype(propertyGroup.m_factor), glm::vec3>)
+						{
+							ImGui::DragFloat3("##Factor", &propertyGroup.m_factor.x, 0.005f, 0.0f, FLT_MAX);
+						}
+						else if constexpr (std::is_same_v<decltype(propertyGroup.m_factor), glm::vec2>)
+						{
+							ImGui::DragFloat2("##Factor", &propertyGroup.m_factor.x, 0.005f, 0.0f, FLT_MAX);
+						}
+						else if constexpr (std::is_same_v<decltype(propertyGroup.m_factor), float>)
+						{
+							ImGui::DragFloat("##Factor", &propertyGroup.m_factor, 0.005f, 0.0f, FLT_MAX);
+						}
+						StartWithText("Offset", offset);
+						ImGui::DragFloat2("##Offset", &propertyGroup.m_offset.x);
+						StartWithText("Scale", offset);
+						ImGui::DragFloat2("##Scale", &propertyGroup.m_scale.x);
+						StartWithText("Rotation", offset);
+						ImGui::DragFloat("##Rotation", &propertyGroup.m_rotation);
+
+						ImGui::PopID();
+					};
+
+					ShowPropertyGroup("Albedo", pMaterialResource->m_albedoPropertyGroup);
+					ShowPropertyGroup("Normal", pMaterialResource->m_normalPropertyGroup);
+					ShowPropertyGroup("Metallic", pMaterialResource->m_metallicPropertyGroup);
+					ShowPropertyGroup("Roughness", pMaterialResource->m_roughnessPropertyGroup);
+					ShowPropertyGroup("Occlusion", pMaterialResource->m_occlusionPropertyGroup);
+					ShowPropertyGroup("Emissive", pMaterialResource->m_emissivePropertyGroup);
 				}
+			}
+			else
+			{
+				ImGui::TextUnformatted("");
 			}
 
 			ImGui::Unindent();
@@ -1331,7 +1392,7 @@ void ImGuiLayer::ShowImGuizmoTransform()
 
 	bool useSnap = ImGui::IsKeyDown(ImGuiKey_LeftCtrl);
 	float snap = (m_imguizmoMode == ImGuizmo::OPERATION::ROTATE ? 45.0f : 0.5f);
-	float snaps[] = { snap, snap, snap };
+	float snaps[3] = { snap, snap, snap };
 
 	ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection),
 		(ImGuizmo::OPERATION)m_imguizmoMode, ImGuizmo::LOCAL, glm::value_ptr(manipulatedTransform),

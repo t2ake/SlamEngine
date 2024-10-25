@@ -2,7 +2,6 @@
 
 #include "LayerStack/Layer.h"
 
-// Just some temporary code here.
 class SandboxLayer : public sl::Layer
 {
 public:

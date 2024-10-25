@@ -13,6 +13,7 @@ SandboxLayer::SandboxLayer()
 {
 	SL_PROFILE;
 
+	// Just some temporary codes here.
 	auto &transform = sl::ECSWorld::GetMainCameraEntity().GetComponents<sl::TransformComponent>();
 	transform.m_position = glm::vec3{ 0.0f, 0.0f, 5.0f };
 	transform.m_rotation = glm::vec3{ 0.0f, -90.0f, 0.0f };
@@ -40,7 +41,9 @@ SandboxLayer::SandboxLayer()
 		{ "Tangent", sl::AttribType::Float, 3 },
 		{ "UV0", sl::AttribType::Float, 2 },
 	};
-	
+	pMeshResource->m_vertexCount = 4;
+	pMeshResource->m_indexCount = 6;
+
 	sl::ResourceManager::AddMeshResource("SquareMesh", std::move(pMeshResource));
 	rendering.m_optMeshResourceName = "SquareMesh";
 
