@@ -13,7 +13,7 @@ SandboxLayer::SandboxLayer()
 {
 	SL_PROFILE;
 
-	// Just some temporary codes here.
+	// Just some temporary code here.
 	auto &transform = sl::ECSWorld::GetMainCameraEntity().GetComponents<sl::TransformComponent>();
 	transform.m_position = glm::vec3{ 0.0f, 3.3f, 12.0f };
 	transform.m_rotation = glm::vec3{ 0.0f, glm::radians(-90.0f), 0.0f};
