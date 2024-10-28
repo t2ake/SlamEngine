@@ -127,7 +127,10 @@ void RendererLayer::BasePass()
 
 		auto *pShader = pShaderResource->GetShaderProgram();
 		pShader->Bind();
-		pShader->UploadUniform(0, transform.GetTransform());
+
+		glm::mat4 modelMat = transform.GetTransform();
+		pShader->UploadUniform(0, modelMat);
+		pShader->UploadUniform(1, glm::transpose(glm::inverse(modelMat)));
 
 		UploadMaterial(pShader, pMaterialResource->m_albedoPropertyGroup);
 		UploadMaterial(pShader, pMaterialResource->m_normalPropertyGroup);
@@ -136,6 +139,8 @@ void RendererLayer::BasePass()
 		UploadMaterial(pShader, pMaterialResource->m_roughnessPropertyGroup);
 		UploadMaterial(pShader, pMaterialResource->m_metallicPropertyGroup);
 		
+		pShader->UploadUniform(pMaterialResource->m_reflectanceLocation, pMaterialResource->m_reflectance);
+
 		sl::RenderCore::Submit(pMeshResource->GetVertexArray(), pShader);
 	}
 

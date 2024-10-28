@@ -8,5 +8,5 @@ layout(location = 1) uniform int u_entityID;
 
 void main()
 {
-	o_entityID = u_entityID;
+    o_entityID = u_entityID;
 }

@@ -1269,11 +1269,20 @@ void ImGuiLayer::ShowDetails()
 					};
 
 					ShowPropertyGroup("Albedo", pMaterialResource->m_albedoPropertyGroup);
+					ImGui::Separator();
 					ShowPropertyGroup("Normal", pMaterialResource->m_normalPropertyGroup);
+					ImGui::Separator();
 					ShowPropertyGroup("Metallic", pMaterialResource->m_metallicPropertyGroup);
+					ImGui::Separator();
 					ShowPropertyGroup("Roughness", pMaterialResource->m_roughnessPropertyGroup);
+					ImGui::Separator();
 					ShowPropertyGroup("Occlusion", pMaterialResource->m_occlusionPropertyGroup);
+					ImGui::Separator();
 					ShowPropertyGroup("Emissive", pMaterialResource->m_emissivePropertyGroup);
+					ImGui::Separator();
+
+					StartWithText("Reflectance");
+					ImGui::DragFloat("##Reflectance", &pMaterialResource->m_reflectance, 0.01f, 0.0f, 1.0f);
 				}
 			}
 			else

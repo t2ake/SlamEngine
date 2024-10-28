@@ -59,7 +59,7 @@ struct CameraComponent
 	// Camera Controller datas
 	float m_rotateSpeed = glm::radians(0.04f);
 
-	float m_maxMoveSpeed = 0.015f;
+	float m_maxMoveSpeed = 0.01f;
 	float m_maxSpeedToAcceleration = 0.004f;
 	float m_acceleration = 0.0f;
 	float m_moveSpeed = 0.0f;

@@ -1,6 +1,6 @@
 #version 450 core
 
-#include <Camera.glsl>
+#include "Lib/Camera.glsl"
 
 // input
 layout(location = 0) in vec3 a_position;
@@ -13,5 +13,5 @@ layout(location = 0) uniform mat4 u_model;
 
 void main()
 {
-	gl_Position = GetViewProjectionMat() * u_model * vec4(a_position, 1.0);
+    gl_Position = GetViewProjectionMat() * u_model * vec4(a_position, 1.0);
 }

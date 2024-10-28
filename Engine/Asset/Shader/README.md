@@ -13,6 +13,7 @@ These files will be included in both shader and CPP code.
 ## Include
 - `#include "..."` will start searching files based on the current path, which is `"/SlamEngine/Engine/Asset/Shader"`.
 - `#include <...>` will start searching files based on a specific path, which is `"/SlamEngine/Engine/Asset/Shader/Lib"`.
+- Can't use nested include, probably a shaderc bug, or some encoding issue.
 
 ## Version
 - The first line of shader must be `#version`.

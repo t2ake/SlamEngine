@@ -130,8 +130,11 @@ public:
 	RoughnessPropertyGroup m_roughnessPropertyGroup;
 	MetallicPropertyGroup m_metallicPropertyGroup;
 
-	float m_specular = 0.5f;
+	float m_reflectance = 0.5f;
 	bool m_twoSide = false;
+
+	int m_reflectanceLocation = SL_REFLECTANCE_LOCATION;
+	//int m_twoSideLocation = SL_TWO_SIDE_LOCATION;
 };
 
 } // namespace sl
