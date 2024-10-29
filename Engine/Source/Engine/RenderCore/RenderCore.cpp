@@ -16,22 +16,23 @@ void RenderCore::Init()
 	SL_LOG_TRACE("\tMax vertex uniform component count: {}", m_info.m_maxVertexUniformComponentCount);
 	SL_LOG_TRACE("\tMax fragment uniform component count: {}", m_info.m_maxFragmentUniformComponentCount);
 	SL_LOG_TRACE("\tMax uniform location: {}", m_info.m_maxUniformLocation);
+	SL_LOG_TRACE("\tMax uniform buffer binding: {}", m_info.m_maxUniformBufferBinding);
 }
 
-void RenderCore::SetUniformBuffer(uint32_t bindingPoint, UniformBuffer *pUniformBuffer)
+void RenderCore::SetUniformBuffer(std::string_view name, UniformBuffer *pUniformBuffer)
 {
-	if (auto it = m_UniformBuffers.find(bindingPoint); m_UniformBuffers.end() != it)
+	if (auto it = m_UniformBuffers.find(name.data()); m_UniformBuffers.end() != it)
 	{
 		SL_LOG_ERROR("Uniform buffer binding point already exists!");
 		return;
 	}
 
-	m_UniformBuffers[bindingPoint].reset(pUniformBuffer);
+	m_UniformBuffers[name.data()].reset(pUniformBuffer);
 }
 
-UniformBuffer *RenderCore::GetUniformBuffer(uint32_t bindingPoint)
+UniformBuffer *RenderCore::GetUniformBuffer(std::string_view name)
 {
-	auto it = m_UniformBuffers.find(bindingPoint);
+	auto it = m_UniformBuffers.find(name.data());
 	if (it == m_UniformBuffers.end())
 	{
 		SL_LOG_ERROR("Uniform buffer binding point does not exist!");

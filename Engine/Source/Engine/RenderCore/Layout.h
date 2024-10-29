@@ -3,6 +3,7 @@
 #include "Core/Defines.h"
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -28,7 +29,7 @@ public:
 	VertexLayout(std::initializer_list<VertexLayoutElement> elements);
 
 	uint32_t GetStride() const { return m_stride; }
-	size_t GetElementCount() const { return m_elements.size(); }
+	uint32_t GetElementCount() const { return (uint32_t)m_elements.size(); }
 
 	auto begin() { return m_elements.begin(); }
 	auto end() { return m_elements.end(); }
@@ -61,11 +62,8 @@ public:
 	UniformBufferLayout() = default;
 	UniformBufferLayout(std::initializer_list<UniformBufferLayoutElementInitor> initors);
 
-	void AddElement(std::string_view name, UniformBufferLayoutElement element);
-
-	uint32_t GetOffste(std::string_view name) const;
-	uint32_t GetSize(std::string_view name) const;
-	uint32_t GetStride() const { return m_stride; }
+	std::optional<UniformBufferLayoutElement> GetElement(std::string_view name) const;
+	uint32_t GetSize() const { return m_size; }
 
 	auto begin() { return m_elements.begin(); }
 	auto end() { return m_elements.end(); }
@@ -76,7 +74,7 @@ private:
 	// Will increase inside `AddElement`.
 	uint32_t m_offset = 0;
 
-	uint32_t m_stride = 0;
+	uint32_t m_size = 0;
 	std::map<std::string, UniformBufferLayoutElement> m_elements;
 };
 

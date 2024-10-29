@@ -36,8 +36,8 @@ public:
 	static void SetEntityIDFramebuffer(FrameBuffer *pBuffer) { m_pEntityIDFrameBuffer.reset(pBuffer); }
 	static FrameBuffer *GetEntityIDFramebuffer() { return m_pEntityIDFrameBuffer.get(); }
 
-	static void SetUniformBuffer(uint32_t bindingPoint, UniformBuffer *pUniformBuffer);
-	static UniformBuffer *GetUniformBuffer(uint32_t bindingPoint);
+	static void SetUniformBuffer(std::string_view name, UniformBuffer *pUniformBuffer);
+	static UniformBuffer *GetUniformBuffer(std::string_view name);
 
 	static void SetDefaultState();
 
@@ -57,7 +57,7 @@ private:
 	inline static std::unique_ptr<RenderAPI> m_pRenderAPI;
 	inline static std::unique_ptr<FrameBuffer> m_pMainFrameBuffer;
 	inline static std::unique_ptr<FrameBuffer> m_pEntityIDFrameBuffer;
-	inline static std::map<uint32_t, std::unique_ptr<UniformBuffer>> m_UniformBuffers;
+	inline static std::map<std::string, std::unique_ptr<UniformBuffer>> m_UniformBuffers;
 };
 
 } // namespace sl

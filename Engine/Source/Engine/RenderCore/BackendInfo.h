@@ -13,6 +13,7 @@ struct BackendInfo
 	uint32_t m_maxVertexUniformComponentCount = 0;
 	uint32_t m_maxFragmentUniformComponentCount = 0;
 	uint32_t m_maxUniformLocation = 0;
+	uint32_t m_maxUniformBufferBinding = 0;
 };
 
 } // namespace sl

@@ -46,7 +46,7 @@ Editor::Editor(EditorInitor initor)
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
 	}));
 
-	sl::RenderCore::SetUniformBuffer(0, sl::UniformBuffer::Create(0, sl::UniformBufferLayout
+	sl::RenderCore::SetUniformBuffer("CameraUniformBuffer", sl::UniformBuffer::Create(0, sl::UniformBufferLayout
 	{
 		{ "ub_cameraPos", sl::AttribType::vec4f },
 		{ "ub_viewProjection", sl::AttribType::mat4f },

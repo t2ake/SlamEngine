@@ -11,7 +11,7 @@
 namespace
 {
 
-void UploadMaterial(sl::Shader *pShader, const auto &propertyGroup)
+void UploadMaterialPropertyGroup(sl::Shader *pShader, const auto &propertyGroup)
 {
 	SL_ASSERT(requires{ propertyGroup.m_useTexture; propertyGroup.m_texture; propertyGroup.m_factor; });
 	SL_ASSERT(requires{ propertyGroup.m_textureSlot; propertyGroup.m_useTextureLocation; propertyGroup.m_factorLocation; });
@@ -33,7 +33,7 @@ void UploadMaterial(sl::Shader *pShader, const auto &propertyGroup)
 	pShader->UploadUniform(propertyGroup.m_factorLocation, propertyGroup.m_factor);
 }
 
-}
+} // namespace
 
 RendererLayer::RendererLayer()
 {
@@ -83,11 +83,12 @@ void RendererLayer::OnRender()
 {
 	SL_PROFILE;
 
-	sl::Entity mainCamera = sl::ECSWorld::GetMainCameraEntity();
-	sl::RenderCore::GetUniformBuffer(0)->Upload("ub_viewProjection",
-		mainCamera.GetComponents<sl::CameraComponent>().GetViewProjection());
-	sl::RenderCore::GetUniformBuffer(0)->Upload("ub_cameraPos",
-		glm::vec4{ mainCamera.GetComponents<sl::TransformComponent>().m_position, 1.0f });
+	if (auto *pCameraUniformBuffer = sl::RenderCore::GetUniformBuffer("CameraUniformBuffer"); pCameraUniformBuffer)
+	{
+		sl::Entity mainCamera = sl::ECSWorld::GetMainCameraEntity();
+		pCameraUniformBuffer->Upload("ub_viewProjection", mainCamera.GetComponents<sl::CameraComponent>().GetViewProjection());
+		pCameraUniformBuffer->Upload("ub_cameraPos", glm::vec4{ mainCamera.GetComponents<sl::TransformComponent>().m_position, 1.0f });
+	}
 	
 	BasePass();
 	EntityIDPass();
@@ -132,12 +133,12 @@ void RendererLayer::BasePass()
 		pShader->UploadUniform(0, modelMat);
 		pShader->UploadUniform(1, glm::transpose(glm::inverse(modelMat)));
 
-		UploadMaterial(pShader, pMaterialResource->m_albedoPropertyGroup);
-		UploadMaterial(pShader, pMaterialResource->m_normalPropertyGroup);
-		UploadMaterial(pShader, pMaterialResource->m_emissivePropertyGroup);
-		UploadMaterial(pShader, pMaterialResource->m_occlusionPropertyGroup);
-		UploadMaterial(pShader, pMaterialResource->m_roughnessPropertyGroup);
-		UploadMaterial(pShader, pMaterialResource->m_metallicPropertyGroup);
+		UploadMaterialPropertyGroup(pShader, pMaterialResource->m_albedoPropertyGroup);
+		UploadMaterialPropertyGroup(pShader, pMaterialResource->m_normalPropertyGroup);
+		UploadMaterialPropertyGroup(pShader, pMaterialResource->m_emissivePropertyGroup);
+		UploadMaterialPropertyGroup(pShader, pMaterialResource->m_occlusionPropertyGroup);
+		UploadMaterialPropertyGroup(pShader, pMaterialResource->m_roughnessPropertyGroup);
+		UploadMaterialPropertyGroup(pShader, pMaterialResource->m_metallicPropertyGroup);
 		
 		pShader->UploadUniform(pMaterialResource->m_reflectanceLocation, pMaterialResource->m_reflectance);
 
