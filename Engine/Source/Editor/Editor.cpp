@@ -34,7 +34,7 @@ Editor::Editor(EditorInitor initor)
 	sl::RenderCore::Init();
 	sl::RenderCore::SetDefaultState();
 
-	// Create frame buffers, Size is meaningless here.
+	// Create frame buffers, size is meaningless here.
 	sl::RenderCore::SetMainFramebuffer(sl::FrameBuffer::Create(
 	{
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::RGBA8, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),

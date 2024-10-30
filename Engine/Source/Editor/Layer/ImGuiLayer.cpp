@@ -684,6 +684,10 @@ void ImGuiLayer::ShowEntityList()
 			auto entity = sl::ECSWorld::CreateEntity("Directional Light");
 			auto &light = entity.AddComponent<sl::LightComponent>();
 			light.type = sl::LightType::Directional;
+			// light.intensity = 100000.0f;
+
+			auto &transform = entity.GetComponents<sl::TransformComponent>();
+			transform.m_rotation = glm::vec4{ 1.0, 0.0, 0.0, 1.0 } * sl::ECSWorld::GetMainCameraTransformComponent().GetRotate();
 		}
 		if (ImGui::MenuItem("Creat Point Light"))
 		{
@@ -696,6 +700,9 @@ void ImGuiLayer::ShowEntityList()
 			auto entity = sl::ECSWorld::CreateEntity("Spot Light");
 			auto &light = entity.AddComponent<sl::LightComponent>();
 			light.type = sl::LightType::Spot;
+
+			auto &transform = entity.GetComponents<sl::TransformComponent>();
+			transform.m_rotation = glm::vec4{ 1.0, 0.0, 0.0, 1.0 } *sl::ECSWorld::GetMainCameraTransformComponent().GetRotate();
 		}
 		ImGui::EndPopup();
 	}

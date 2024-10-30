@@ -31,6 +31,11 @@ CameraComponent &ECSWorld::GetMainCameraComponent()
 	return GetMainCameraEntity().GetComponents<CameraComponent>();
 }
 
+TransformComponent &ECSWorld::GetMainCameraTransformComponent()
+{
+	return GetMainCameraEntity().GetComponents<TransformComponent>();
+}
+
 void Entity::Destroy()
 {
 	if (!IsValid())

@@ -22,8 +22,8 @@ struct LightComponent
 	glm::vec3 color{ 1.0f };
 	float intensity = 1024.0f;
 	float range = 1024.0f;
-	float outer = glm::radians(45.0f);
-	float inner = glm::radians(30.0f);
+	float outer = glm::radians(45.0f); // Store in radiance
+	float inner = glm::radians(30.0f); // Store in radiance
 };
 
 // std140
@@ -32,8 +32,8 @@ struct LightUniformBuffer
 	uint32_t type;
 	float intensity;
 	float range;
-	float outer;
-	float inner;
+	float scale;
+	float offset;
 	float padding0, padding1, padding2;
 	glm::vec4 color;
 	glm::vec4 position;

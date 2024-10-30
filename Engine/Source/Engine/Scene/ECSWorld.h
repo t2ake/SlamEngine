@@ -30,6 +30,7 @@ public:
 
 	static Entity GetMainCameraEntity();
 	static CameraComponent &GetMainCameraComponent();
+	static TransformComponent &GetMainCameraTransformComponent();
 
 private:
 	inline static entt::registry m_registry;

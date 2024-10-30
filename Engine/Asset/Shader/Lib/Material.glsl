@@ -28,6 +28,7 @@ vec3 SampleAlbedoTexture(vec2 uv)
 }
 vec3 SampleNormalTexture(vec2 uv)
 {
+    // TODO: Support normal map.
     return texture(s_normal, uv).xyz;
 }
 vec3 SampleEmissiveTexture(vec2 uv)

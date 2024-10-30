@@ -85,6 +85,7 @@ void RendererLayer::OnRender()
 {
 	SL_PROFILE;
 
+	// upload camera uniform buffer.
 	if (auto *pCameraUniformBuffer = sl::RenderCore::GetUniformBuffer("CameraUniformBuffer"); pCameraUniformBuffer)
 	{
 		sl::Entity mainCamera = sl::ECSWorld::GetMainCameraEntity();
@@ -92,10 +93,11 @@ void RendererLayer::OnRender()
 		pCameraUniformBuffer->Upload("ub_cameraPos", glm::value_ptr(mainCamera.GetComponents<sl::TransformComponent>().m_position));
 	}
 	
+	// Upload light uniform buffer.
 	auto group = sl::ECSWorld::GetRegistry().group<sl::LightComponent>(entt::get<sl::TransformComponent>);
 	uint32_t lightCount = (uint32_t)group.size();
-	std::vector<sl::LightUniformBuffer> lightGPUData;
-	lightGPUData.reserve(lightCount);
+	static std::vector<sl::LightUniformBuffer> lightGPUData(LIGHT_MAX_COUNT);
+	lightGPUData.clear();
 	for (auto entity : group)
 	{
 		auto [light, transform] = group.get<sl::LightComponent, sl::TransformComponent>(entity);
@@ -104,8 +106,14 @@ void RendererLayer::OnRender()
 		uniformBuffer.type = (uint32_t)light.type;
 		uniformBuffer.intensity = light.intensity;
 		uniformBuffer.range = light.range;
-		uniformBuffer.outer = light.outer;
-		uniformBuffer.inner = light.inner;
+
+		float cosInner = std::cos(light.inner);
+		float cosOuter = std::cos(light.outer);
+		float scale = 1.0f / std::max(cosInner - cosOuter, 0.001f);
+		float offset =- cosOuter * scale;
+
+		uniformBuffer.scale = scale;
+		uniformBuffer.offset = offset;
 		uniformBuffer.color = glm::vec4{ light.color, 0.0f };
 		uniformBuffer.position = glm::vec4{ transform.m_position, 0.0f };
 		uniformBuffer.direction = glm::vec4{ transform.m_rotation, 0.0f };
