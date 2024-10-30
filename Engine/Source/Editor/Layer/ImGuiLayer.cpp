@@ -687,7 +687,7 @@ void ImGuiLayer::ShowEntityList()
 			// light.intensity = 100000.0f;
 
 			auto &transform = entity.GetComponents<sl::TransformComponent>();
-			transform.m_rotation = glm::vec4{ 1.0, 0.0, 0.0, 1.0 } * sl::ECSWorld::GetMainCameraTransformComponent().GetRotate();
+			transform.m_rotation = sl::ECSWorld::GetMainCameraTransformComponent().m_rotation;
 		}
 		if (ImGui::MenuItem("Creat Point Light"))
 		{
@@ -702,7 +702,7 @@ void ImGuiLayer::ShowEntityList()
 			light.type = sl::LightType::Spot;
 
 			auto &transform = entity.GetComponents<sl::TransformComponent>();
-			transform.m_rotation = glm::vec4{ 1.0, 0.0, 0.0, 1.0 } *sl::ECSWorld::GetMainCameraTransformComponent().GetRotate();
+			transform.m_rotation = sl::ECSWorld::GetMainCameraTransformComponent().m_rotation;
 		}
 		ImGui::EndPopup();
 	}

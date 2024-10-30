@@ -85,7 +85,7 @@ void RendererLayer::OnRender()
 {
 	SL_PROFILE;
 
-	// upload camera uniform buffer.
+	// Upload camera uniform buffer.
 	if (auto *pCameraUniformBuffer = sl::RenderCore::GetUniformBuffer("CameraUniformBuffer"); pCameraUniformBuffer)
 	{
 		sl::Entity mainCamera = sl::ECSWorld::GetMainCameraEntity();
@@ -116,7 +116,8 @@ void RendererLayer::OnRender()
 		uniformBuffer.offset = offset;
 		uniformBuffer.color = glm::vec4{ light.color, 0.0f };
 		uniformBuffer.position = glm::vec4{ transform.m_position, 0.0f };
-		uniformBuffer.direction = glm::vec4{ transform.m_rotation, 0.0f };
+		uniformBuffer.direction = glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f } * transform.GetRotate();
+		uniformBuffer.direction /= uniformBuffer.direction.w;
 		lightGPUData.emplace_back(std::move(uniformBuffer));
 	}
 	if (auto *pLightUniformBuffer = sl::RenderCore::GetUniformBuffer("LightUniformBuffer"); pLightUniformBuffer)
