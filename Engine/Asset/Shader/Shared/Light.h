@@ -1,0 +1,10 @@
+#ifndef SHARED_LIGHT_H
+#define SHARED_LIGHT_H
+
+#define LIGHT_MAX_COUNT 128
+
+#define LIGHT_TYPE_DIRECTIONAL 0
+#define LIGHT_TYPE_POINT 1
+#define LIGHT_TYPE_SPOT 2
+
+#endif

@@ -1,25 +1,25 @@
 // sampler
-layout(binding = SL_ALBEDO_SLOT) uniform sampler2D s_albedo;
-layout(binding = SL_NORMAL_SLOT) uniform sampler2D s_normal;
-layout(binding = SL_EMISSIVE_SLOT) uniform sampler2D s_emissive;
-layout(binding = SL_ORM_SLOT) uniform sampler2D s_ORM;
+layout(binding = SL_SLOT_ALBEDO) uniform sampler2D s_albedo;
+layout(binding = SL_SLOT_NORMAL) uniform sampler2D s_normal;
+layout(binding = SL_SLOT_EMISSIVE) uniform sampler2D s_emissive;
+layout(binding = SL_SLOT_ORM) uniform sampler2D s_ORM;
 
 // Uniform
-layout(location = SL_USE_ALBEDO_TEXTURE_LOCATION) uniform bool u_useAlbedoTexture;
-layout(location = SL_USE_NORMAL_TEXTURE_LOCATION) uniform bool u_useNormalTexture;
-layout(location = SL_USE_EMISSIVE_TEXTURE_LOCATION) uniform bool u_useEmissiveTexture;
-layout(location = SL_USE_OCCLUSION_TEXTURE_LOCATION) uniform bool u_useOcclusionTexture;
-layout(location = SL_USE_ROUGHNESS_TEXTURE_LOCATION) uniform bool u_useRoughnessTexture;
-layout(location = SL_USE_METALLIC_TEXTURE_LOCATION) uniform bool u_useMetallicTexture;
-layout(location = SL_ALBEDO_FACTOR_LOCATION) uniform vec3 u_albedoFactor;
-layout(location = SL_NORMAL_FACTOR_LOCATION) uniform vec3 u_normalFactor;
-layout(location = SL_EMISSIVE_FACTOR_LOCATION) uniform vec3 u_emissiveFactor;
-layout(location = SL_OCCLUSION_FACTOR_LOCATION) uniform float u_occlusionFactor;
-layout(location = SL_ROUGHNESS_FACTOR_LOCATION) uniform float u_roughnessFactor;
-layout(location = SL_METALLIC_FACTOR_LOCATION) uniform float u_metallicFactor;
+layout(location = SL_LOCATION_USE_ALBEDO_TEXTURE) uniform bool u_useAlbedoTexture;
+layout(location = SL_LOCATION_USE_NORMAL_TEXTURE) uniform bool u_useNormalTexture;
+layout(location = SL_LOCATION_USE_EMISSIVE_TEXTURE) uniform bool u_useEmissiveTexture;
+layout(location = SL_LOCATION_USE_OCCLUSION_TEXTURE) uniform bool u_useOcclusionTexture;
+layout(location = SL_LOCATION_USE_ROUGHNESS_TEXTURE) uniform bool u_useRoughnessTexture;
+layout(location = SL_LOCATION_USE_METALLIC_TEXTURE) uniform bool u_useMetallicTexture;
+layout(location = SL_LOCATION_ALBEDO_FACTOR) uniform vec3 u_albedoFactor;
+layout(location = SL_LOCATION_NORMAL_FACTOR) uniform vec3 u_normalFactor;
+layout(location = SL_LOCATION_EMISSIVE_FACTOR) uniform vec3 u_emissiveFactor;
+layout(location = SL_LOCATION_OCCLUSION_FACTOR) uniform float u_occlusionFactor;
+layout(location = SL_LOCATION_ROUGHNESS_FACTOR) uniform float u_roughnessFactor;
+layout(location = SL_LOCATION_METALLIC_FACTOR) uniform float u_metallicFactor;
 // TODO: Tilling uniforms
 
-layout(location = SL_REFLECTANCE_LOCATION) uniform float u_reflectance;
+layout(location = SL_LOCATION_REFLECTANCE) uniform float u_reflectance;
 
 vec3 SampleAlbedoTexture(vec2 uv)
 {

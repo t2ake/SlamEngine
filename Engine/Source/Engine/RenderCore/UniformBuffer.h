@@ -19,8 +19,7 @@ public:
 	virtual void Bind() const = 0;
 	virtual void Unbind() const = 0;
 
-	virtual void Upload(std::string_view name, const glm::vec4 &value) const = 0;
-	virtual void Upload(std::string_view name, const glm::mat4 &value) const = 0;
+	virtual void Upload(std::string_view name, const void *pData) const = 0;
 };
 
 } // namespace sl

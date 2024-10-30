@@ -21,9 +21,9 @@ struct AlbedoPropertyGroup
 	glm::vec2 m_scale{ 1.0f, 1.0f };
 	float m_rotation = 0.0f;
 
-	int m_textureSlot = SL_ALBEDO_SLOT;
-	int m_useTextureLocation = SL_USE_ALBEDO_TEXTURE_LOCATION;
-	int m_factorLocation = SL_ALBEDO_FACTOR_LOCATION;
+	int m_textureSlot = SL_SLOT_ALBEDO;
+	int m_useTextureLocation = SL_LOCATION_USE_ALBEDO_TEXTURE;
+	int m_factorLocation = SL_LOCATION_ALBEDO_FACTOR;
 	int m_tillingLocation;
 };
 
@@ -37,9 +37,9 @@ struct NormalPropertyGroup
 	glm::vec2 m_scale{ 1.0f, 1.0f };
 	float m_rotation = 0.0f;
 
-	int m_textureSlot = SL_NORMAL_SLOT;
-	int m_useTextureLocation = SL_USE_NORMAL_TEXTURE_LOCATION;
-	int m_factorLocation = SL_NORMAL_FACTOR_LOCATION;
+	int m_textureSlot = SL_SLOT_NORMAL;
+	int m_useTextureLocation = SL_LOCATION_USE_NORMAL_TEXTURE;
+	int m_factorLocation = SL_LOCATION_NORMAL_FACTOR;
 	int m_tillingLocation;
 };
 
@@ -53,9 +53,9 @@ struct EmissivePropertyGroup
 	glm::vec2 m_scale{ 1.0f, 1.0f };
 	float m_rotation = 0.0f;
 
-	int m_textureSlot = SL_EMISSIVE_SLOT;
-	int m_useTextureLocation = SL_USE_EMISSIVE_TEXTURE_LOCATION;
-	int m_factorLocation = SL_EMISSIVE_FACTOR_LOCATION;
+	int m_textureSlot = SL_SLOT_EMISSIVE;
+	int m_useTextureLocation = SL_LOCATION_USE_EMISSIVE_TEXTURE;
+	int m_factorLocation = SL_LOCATION_EMISSIVE_FACTOR;
 	int m_tillingLocation;
 };
 
@@ -69,9 +69,9 @@ struct OcclusionPropertyGroup
 	glm::vec2 m_scale{ 1.0f, 1.0f };
 	float m_rotation = 0.0f;
 
-	int m_textureSlot = SL_ORM_SLOT;
-	int m_useTextureLocation = SL_USE_OCCLUSION_TEXTURE_LOCATION;
-	int m_factorLocation = SL_OCCLUSION_FACTOR_LOCATION;
+	int m_textureSlot = SL_SLOT_ORM;
+	int m_useTextureLocation = SL_LOCATION_USE_OCCLUSION_TEXTURE;
+	int m_factorLocation = SL_LOCATION_OCCLUSION_FACTOR;
 	int m_tillingLocation;
 };
 
@@ -85,9 +85,9 @@ struct RoughnessPropertyGroup
 	glm::vec2 m_scale{ 1.0f, 1.0f };
 	float m_rotation = 0.0f;
 
-	int m_textureSlot = SL_ORM_SLOT;
-	int m_useTextureLocation = SL_USE_ROUGHNESS_TEXTURE_LOCATION;
-	int m_factorLocation = SL_ROUGHNESS_FACTOR_LOCATION;
+	int m_textureSlot = SL_SLOT_ORM;
+	int m_useTextureLocation = SL_LOCATION_USE_ROUGHNESS_TEXTURE;
+	int m_factorLocation = SL_LOCATION_ROUGHNESS_FACTOR;
 	int m_tillingLocation;
 };
 
@@ -101,9 +101,9 @@ struct MetallicPropertyGroup
 	glm::vec2 m_scale{ 1.0f, 1.0f };
 	float m_rotation = 0.0f;
 
-	int m_textureSlot = SL_ORM_SLOT;
-	int m_useTextureLocation = SL_USE_METALLIC_TEXTURE_LOCATION;
-	int m_factorLocation = SL_METALLIC_FACTOR_LOCATION;
+	int m_textureSlot = SL_SLOT_ORM;
+	int m_useTextureLocation = SL_LOCATION_USE_METALLIC_TEXTURE;
+	int m_factorLocation = SL_LOCATION_METALLIC_FACTOR;
 	int m_tillingLocation;
 };
 
@@ -121,7 +121,6 @@ public:
 	virtual void OnDestroy() override;
 	virtual void DestroyCPUData() override;
 
-
 	// TODO: Only support PBR for now.
 	AlbedoPropertyGroup m_albedoPropertyGroup;
 	NormalPropertyGroup m_normalPropertyGroup;
@@ -133,8 +132,8 @@ public:
 	float m_reflectance = 0.5f;
 	bool m_twoSide = false;
 
-	int m_reflectanceLocation = SL_REFLECTANCE_LOCATION;
-	//int m_twoSideLocation = SL_TWO_SIDE_LOCATION;
+	int m_reflectanceLocation = SL_LOCATION_REFLECTANCE;
+	int m_twoSideLocation = SL_LOCATION_TWO_SIDE;
 };
 
 } // namespace sl

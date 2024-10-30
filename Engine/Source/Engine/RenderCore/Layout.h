@@ -43,37 +43,25 @@ private:
 
 struct UniformBufferLayoutElement
 {
-	UniformBufferLayoutElement() = default;
-	UniformBufferLayoutElement(AttribType type);
-
 	uint32_t m_offset;
 	uint32_t m_size;
-};
-
-struct UniformBufferLayoutElementInitor
-{
-	std::string_view m_name;
-	AttribType m_type;
 };
 
 class UniformBufferLayout
 {
 public:
-	UniformBufferLayout() = default;
-	UniformBufferLayout(std::initializer_list<UniformBufferLayoutElementInitor> initors);
-
+	void AddElement(std::string_view name, UniformBufferLayoutElement element);
 	std::optional<UniformBufferLayoutElement> GetElement(std::string_view name) const;
+
+	void SetSize(uint32_t size) { m_size = size; }
 	uint32_t GetSize() const { return m_size; }
 
 	auto begin() { return m_elements.begin(); }
 	auto end() { return m_elements.end(); }
 	auto begin() const { return m_elements.cbegin(); }
-	auto end() const { return m_elements.end(); }
+	auto end() const { return m_elements.cend(); }
 
 private:
-	// Will increase inside `AddElement`.
-	uint32_t m_offset = 0;
-
 	uint32_t m_size = 0;
 	std::map<std::string, UniformBufferLayoutElement> m_elements;
 };

@@ -23,7 +23,7 @@ void RenderCore::SetUniformBuffer(std::string_view name, UniformBuffer *pUniform
 {
 	if (auto it = m_UniformBuffers.find(name.data()); m_UniformBuffers.end() != it)
 	{
-		SL_LOG_ERROR("Uniform buffer binding point already exists!");
+		SL_LOG_ERROR("Uniform buffer {} already exists!", name.data());
 		return;
 	}
 
@@ -35,7 +35,7 @@ UniformBuffer *RenderCore::GetUniformBuffer(std::string_view name)
 	auto it = m_UniformBuffers.find(name.data());
 	if (it == m_UniformBuffers.end())
 	{
-		SL_LOG_ERROR("Uniform buffer binding point does not exist!");
+		SL_LOG_ERROR("Uniform buffer {} does not exist!", name.data());
 		return nullptr;
 	}
 

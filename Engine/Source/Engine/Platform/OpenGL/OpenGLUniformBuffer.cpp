@@ -3,7 +3,6 @@
 #include "Core/Log.h"
 
 #include <glad/glad.h>
-#include <glm/gtc/type_ptr.hpp>
 
 namespace sl
 {
@@ -35,32 +34,13 @@ void OpenGLUniformBuffer::Unbind() const
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void OpenGLUniformBuffer::Upload(std::string_view name, const glm::vec4 &value) const
+void OpenGLUniformBuffer::Upload(std::string_view name, const void *pData) const
 {
-	auto optElement = m_layout.GetElement(name);
+	const auto &optElement = m_layout.GetElement(name);
 	if (optElement)
 	{
-		SL_ASSERT(optElement->m_size == sizeof(value));
-
 		glBindBuffer(GL_UNIFORM_BUFFER, m_handle);
-		glBufferSubData(GL_UNIFORM_BUFFER, optElement->m_offset, optElement->m_size, glm::value_ptr(value));
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	}
-	else
-	{
-		SL_LOG_ERROR("Element {} does not exist!", name.data());
-	}
-}
-
-void OpenGLUniformBuffer::Upload(std::string_view name, const glm::mat4 &value) const
-{
-	auto optElement = m_layout.GetElement(name);
-	if (optElement)
-	{
-		SL_ASSERT(optElement->m_size == sizeof(value));
-
-		glBindBuffer(GL_UNIFORM_BUFFER, m_handle);
-		glBufferSubData(GL_UNIFORM_BUFFER, optElement->m_offset, optElement->m_size, glm::value_ptr(value));
+		glBufferSubData(GL_UNIFORM_BUFFER, optElement->m_offset, optElement->m_size, pData);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 	else

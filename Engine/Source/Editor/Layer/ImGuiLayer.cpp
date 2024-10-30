@@ -1,7 +1,7 @@
 #include "ImGuiLayer.h"
 
-#include "Core//Path.hpp"
 #include "Core/Log.h"
+#include "Core/Path.hpp"
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 #include "Event/SceneViewportEvent.h"
@@ -679,6 +679,24 @@ void ImGuiLayer::ShowEntityList()
 		{
 			sl::ECSWorld::CreateEntity();
 		}
+		if (ImGui::MenuItem("Creat Directional Light"))
+		{
+			auto entity = sl::ECSWorld::CreateEntity("Directional Light");
+			auto &light = entity.AddComponent<sl::LightComponent>();
+			light.type = sl::LightType::Directional;
+		}
+		if (ImGui::MenuItem("Creat Point Light"))
+		{
+			auto entity = sl::ECSWorld::CreateEntity("Point Light");
+			auto &light = entity.AddComponent<sl::LightComponent>();
+			light.type = sl::LightType::Point;
+		}
+		if (ImGui::MenuItem("Creat Spot Light"))
+		{
+			auto entity = sl::ECSWorld::CreateEntity("Spot Light");
+			auto &light = entity.AddComponent<sl::LightComponent>();
+			light.type = sl::LightType::Spot;
+		}
 		ImGui::EndPopup();
 	}
 
@@ -1316,6 +1334,47 @@ void ImGuiLayer::ShowDetails()
 		}
 	});
 
+	DrawComponent<sl::LightComponent>("Light", [this](sl::LightComponent *pComponent)
+	{
+		constexpr size_t LightTypeCount = nameof::enum_count<sl::LightType>();
+		constexpr std::array<const char *, LightTypeCount> LightTypeNames =
+		{
+			nameof::nameof_enum(sl::LightType::Directional).data(),
+			nameof::nameof_enum(sl::LightType::Point).data(),
+			nameof::nameof_enum(sl::LightType::Spot).data(),
+		};
+
+		StartWithText("Type");
+		if (ImGui::BeginCombo("##Type", LightTypeNames[(size_t)pComponent->type], ImGuiComboFlags_WidthFitPreview))
+		{
+			for (size_t i = 0; i < LightTypeCount; ++i)
+			{
+				if (ImGui::Selectable(LightTypeNames[i], i == (size_t)pComponent->type))
+				{
+					pComponent->type = (sl::LightType)i;
+				}
+			}
+			ImGui::EndCombo();
+		}
+
+		StartWithText("Color");
+		ImGui::DragFloat3("##Color", &pComponent->color.x, 0.01f, 0.0f, 1.0f);
+		StartWithText("Intensity");
+		ImGui::DragFloat("##Intensity", &pComponent->intensity, 0.1f, 0.0f);
+		StartWithText("Range");
+		ImGui::DragFloat("##Range", &pComponent->range, 0.1f, 0.0f);
+		if (pComponent->type == sl::LightType::Spot)
+		{
+			StartWithText("Outer");
+			ImGui::DragFloat("##Outer", &pComponent->outer, 0.1f, 0.0f);
+			StartWithText("Inner");
+			ImGui::DragFloat("##Inner", &pComponent->inner, 0.1f, 0.0f);
+
+			pComponent->outer = std::max(pComponent->outer, pComponent->inner);
+			pComponent->inner = std::min(pComponent->inner, pComponent->outer);
+		}
+	});
+
 	// Draw Cornerstone component.
 	DrawComponent<sl::CornerstoneComponent>("Cornerstone", [this](sl::CornerstoneComponent *pComponent)
 	{
@@ -1334,6 +1393,7 @@ void ImGuiLayer::ShowDetails()
 		AddComponentMenuItem<sl::CameraComponent>("Camera");
 		AddComponentMenuItem<sl::CornerstoneComponent>("Cornerstone");
 		AddComponentMenuItem<sl::RenderingComponent>("Rendering");
+		AddComponentMenuItem<sl::LightComponent>("Light");
 		ImGui::EndPopup();
 	}
 

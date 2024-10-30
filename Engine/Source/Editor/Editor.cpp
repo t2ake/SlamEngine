@@ -34,7 +34,7 @@ Editor::Editor(EditorInitor initor)
 	sl::RenderCore::Init();
 	sl::RenderCore::SetDefaultState();
 
-	// Size is meaningless here.
+	// Create frame buffers, Size is meaningless here.
 	sl::RenderCore::SetMainFramebuffer(sl::FrameBuffer::Create(
 	{
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::RGBA8, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
@@ -46,24 +46,38 @@ Editor::Editor(EditorInitor initor)
 		sl::Texture2D::Create(1, 1, false, sl::TextureFormat::D32, SL_SAMPLER_CLAMP | SL_SAMPLER_BILINEAR),
 	}));
 
-	sl::RenderCore::SetUniformBuffer("CameraUniformBuffer", sl::UniformBuffer::Create(0, sl::UniformBufferLayout
-	{
-		{ "ub_cameraPos", sl::AttribType::vec4f },
-		{ "ub_viewProjection", sl::AttribType::mat4f },
-	}));
+	// Create camera uniform buffer.
+	sl::UniformBufferLayout cameraUniformBufferLayout;
+	cameraUniformBufferLayout.AddElement("ub_cameraPos", sl::UniformBufferLayoutElement{ 0, sizeof(glm::vec4) });
+	cameraUniformBufferLayout.AddElement("ub_viewProjection", sl::UniformBufferLayoutElement{ sizeof(glm::vec4), sizeof(glm::mat4) });
+	cameraUniformBufferLayout.SetSize(sizeof(glm::vec4) + sizeof(glm::mat4));
+	auto pCameraUniformBuffer = sl::UniformBuffer::Create(0, std::move(cameraUniformBufferLayout));
+	sl::RenderCore::SetUniformBuffer("CameraUniformBuffer", std::move(pCameraUniformBuffer));
 
+	// Create lights uniform buffer.
+	sl::UniformBufferLayout lightUniformBufferLayout;
+	lightUniformBufferLayout.AddElement("ub_lights", sl::UniformBufferLayoutElement{
+		0, sizeof(sl::LightUniformBuffer) * LIGHT_MAX_COUNT });
+	lightUniformBufferLayout.AddElement("ub_lightCount", sl::UniformBufferLayoutElement{
+		sizeof(sl::LightUniformBuffer) * LIGHT_MAX_COUNT, sizeof(uint32_t) });
+	lightUniformBufferLayout.SetSize(sizeof(sl::LightUniformBuffer) * LIGHT_MAX_COUNT + sizeof(uint32_t));
+	auto pLightUniformBuffer = sl::UniformBuffer::Create(1, std::move(lightUniformBufferLayout));
+	sl::RenderCore::SetUniformBuffer("LightUniformBuffer", std::move(pLightUniformBuffer));
+	
+	// Create main camera entity.
 	sl::Entity mainCameraEntity = sl::ECSWorld::CreateEntity("Main Camera");
 	auto &mainCameraComponent = mainCameraEntity.AddComponent<sl::CameraComponent>();
 	mainCameraComponent.m_isMainCamera = true;
 
+	// Create layers.
 	auto pRendererLayer = std::make_unique<RendererLayer>();
 	auto pResourceManagerLayer = std::make_unique<ResourceManagerLayer>();
 	auto pCameraControllerLayer = std::make_unique<CameraControllerLayer>();
 	auto pImGuiLayer = std::make_unique<ImGuiLayer>();
 	auto pSandboxLayer = std::make_unique<SandboxLayer>();
-
 	pImGuiLayer->SetEventCallback(BIND_EVENT_CALLBACK(Editor::OnEvent));
 
+	// Create layer stack.
 	m_pLayerStack = std::make_unique<sl::LayerStack>();
 	m_pLayerStack->PushLayer(std::move(pRendererLayer));
 	m_pLayerStack->PushLayer(std::move(pResourceManagerLayer));

@@ -20,8 +20,6 @@ constexpr uint32_t AttribTypeSize[nameof::enum_count<AttribType>()] =
 	2,  // AttribType::Half
 	4,  // AttribType::Float
 	8,  // AttribType::Double
-	16, // AttribType::vec4f
-	64, // AttribType::mat4f
 };
 
 } // namespace
@@ -44,26 +42,16 @@ VertexLayout::VertexLayout(std::initializer_list<VertexLayoutElement> elements) 
 	}
 }
 
-UniformBufferLayoutElement::UniformBufferLayoutElement(AttribType type) :
-	m_offset(0), m_size(AttribTypeSize[(size_t)type])
+void UniformBufferLayout::AddElement(std::string_view name, UniformBufferLayoutElement element)
 {
-
-}
-
-UniformBufferLayout::UniformBufferLayout(std::initializer_list<UniformBufferLayoutElementInitor> initors)
-{
-	uint32_t offset = 0;
-	for (const auto &initor : initors)
+	auto it = m_elements.find(name.data());
+	if (it == m_elements.end())
 	{
-		SL_ASSERT(m_elements.find(initor.m_name.data()) == m_elements.end(), "Uniform buffer element already exists!");
-
-		UniformBufferLayoutElement element;
-		element.m_size = AttribTypeSize[(size_t)initor.m_type];
-		element.m_offset = offset;
-		offset += element.m_size;
-		m_size += element.m_size;
-
-		m_elements[initor.m_name.data()] = std::move(element);
+		m_elements[name.data()] = std::move(element);
+	}
+	else
+	{
+		SL_LOG_ERROR("Uniform buffer element {} already exists!", name.data());
 	}
 }
 

@@ -15,8 +15,7 @@ public:
 	virtual void Bind() const override;
 	virtual void Unbind() const override;
 
-	virtual void Upload(std::string_view name, const glm::vec4 &value) const override;
-	virtual void Upload(std::string_view name, const glm::mat4 &value) const override;
+	virtual void Upload(std::string_view name, const void *pData) const override;
 
 private:
 	UniformBufferLayout m_layout;

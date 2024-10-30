@@ -1,46 +1,17 @@
-// TODO: Uniform buffer object array
-
 struct Light
 {
-    // 0. Point Light
-    // 1. Directional Light
-    // 2. Spot Light
-    int type;
-    vec3 color;
-    float intensity;
-    vec3 position;
-    vec3 direction;
-    float outer;
-    float inner;
-    float range;
+    uint type;       // 0  4
+    float intensity; // 4  4
+    float range;     // 8  4
+    float outer;     // 12 4
+    float inner;     // 16 4
+    vec4 color;      // 32 16
+    vec4 position;   // 48 16
+    vec4 direction;  // 64 16
 };
 
-struct DirectionalLight
+layout(std140, binding = 1) uniform UBLights
 {
-    int type;
-    vec3 color;
-    float intensity;
-    vec3 direction;
-    float range;
-};
-
-struct PointLight
-{
-    int type;
-    vec3 color;
-    float intensity;
-    vec3 position;
-    float range;
-};
-
-struct SpotLight
-{
-    int type;
-    vec3 color;
-    float intensity;
-    vec3 direction;
-    vec3 position;
-    float outer;
-    float inner;
-    float range;
+    Light ub_lights[LIGHT_MAX_COUNT];
+    uint ub_lightCount;
 };

@@ -8,6 +8,8 @@
 #include "Utils/EnumOf.hpp"
 #include "Utils/ProfilerCPU.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace
 {
 
@@ -86,10 +88,35 @@ void RendererLayer::OnRender()
 	if (auto *pCameraUniformBuffer = sl::RenderCore::GetUniformBuffer("CameraUniformBuffer"); pCameraUniformBuffer)
 	{
 		sl::Entity mainCamera = sl::ECSWorld::GetMainCameraEntity();
-		pCameraUniformBuffer->Upload("ub_viewProjection", mainCamera.GetComponents<sl::CameraComponent>().GetViewProjection());
-		pCameraUniformBuffer->Upload("ub_cameraPos", glm::vec4{ mainCamera.GetComponents<sl::TransformComponent>().m_position, 1.0f });
+		pCameraUniformBuffer->Upload("ub_viewProjection", glm::value_ptr(mainCamera.GetComponents<sl::CameraComponent>().GetViewProjection()));
+		pCameraUniformBuffer->Upload("ub_cameraPos", glm::value_ptr(mainCamera.GetComponents<sl::TransformComponent>().m_position));
 	}
 	
+	auto group = sl::ECSWorld::GetRegistry().group<sl::LightComponent>(entt::get<sl::TransformComponent>);
+	uint32_t lightCount = (uint32_t)group.size();
+	std::vector<sl::LightUniformBuffer> lightGPUData;
+	lightGPUData.reserve(lightCount);
+	for (auto entity : group)
+	{
+		auto [light, transform] = group.get<sl::LightComponent, sl::TransformComponent>(entity);
+
+		sl::LightUniformBuffer uniformBuffer;
+		uniformBuffer.type = (uint32_t)light.type;
+		uniformBuffer.intensity = light.intensity;
+		uniformBuffer.range = light.range;
+		uniformBuffer.outer = light.outer;
+		uniformBuffer.inner = light.inner;
+		uniformBuffer.color = glm::vec4{ light.color, 0.0f };
+		uniformBuffer.position = glm::vec4{ transform.m_position, 0.0f };
+		uniformBuffer.direction = glm::vec4{ transform.m_rotation, 0.0f };
+		lightGPUData.emplace_back(std::move(uniformBuffer));
+	}
+	if (auto *pLightUniformBuffer = sl::RenderCore::GetUniformBuffer("LightUniformBuffer"); pLightUniformBuffer)
+	{
+		pLightUniformBuffer->Upload("ub_lights", lightGPUData.data());
+		pLightUniformBuffer->Upload("ub_lightCount", &lightCount);
+	}
+
 	BasePass();
 	EntityIDPass();
 }

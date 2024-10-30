@@ -1,4 +1,4 @@
-layout(std140, binding = 0) uniform Camera
+layout(std140, binding = 0) uniform UBCamera
 {
     vec4 ub_cameraPos;
     mat4 ub_viewProjection;
