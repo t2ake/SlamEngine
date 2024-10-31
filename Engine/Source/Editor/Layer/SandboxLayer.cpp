@@ -55,8 +55,8 @@ SandboxLayer::SandboxLayer()
 	// sl::ResourceManager::AddMaterialResource("AlbedoMaterial", std::move(pMaterialResource));
 	// rendering.m_optMaterialResourceName = "AlbedoMaterial";
 
-	sl::ModelImporter importer("D:/Works/Model/venice_mask/scene.gltf");
-	importer.SetGlobalScale(glm::vec3{ 100.0f });
+	sl::ModelImporter importer("D:/Works/Model/zbrush_for_concept_-_mech_design_d.ver/scene.gltf");
+	//importer.SetGlobalScale(glm::vec3{ 100.0f });
 	importer.Import();
 }
 

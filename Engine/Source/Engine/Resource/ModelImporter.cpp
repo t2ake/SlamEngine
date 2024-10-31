@@ -84,11 +84,11 @@ void ModelImporter::Import()
 		{
 			SL_LOG_TRACE("\t\tRoughness: {}", texture.C_Str());
 		}
-		if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_AMBIENT_OCCLUSION, 0), texture) == AI_SUCCESS)
+		if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_LIGHTMAP, 0), texture) == AI_SUCCESS)
 		{
 			SL_LOG_TRACE("\t\tOcclusion: {}", texture.C_Str());
 		}
-		if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_EMISSION_COLOR, 0), texture) == AI_SUCCESS)
+		if (aiString texture; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_EMISSIVE, 0), texture) == AI_SUCCESS)
 		{
 			SL_LOG_TRACE("\t\tEmission: {}", texture.C_Str());
 		}
@@ -249,7 +249,7 @@ std::string ModelImporter::ProcessMaterial(const aiMaterial *pMaterial)
 	}
 
 	// Emissive
-	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_EMISSION_COLOR, 0), textureStr) == AI_SUCCESS)
+	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_EMISSIVE, 0), textureStr) == AI_SUCCESS)
 	{
 		if (const aiTexture *pEmbeddedTexture = GetEmbeddedTexture(textureStr.C_Str()); pEmbeddedTexture)
 		{
@@ -266,7 +266,7 @@ std::string ModelImporter::ProcessMaterial(const aiMaterial *pMaterial)
 	{
 		pMaterialResource->m_emissivePropertyGroup.m_factor = glm::vec3{ factor.r, factor.g , factor.b };
 	}
-	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_EMISSION_COLOR, 0), transform) == AI_SUCCESS)
+	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_EMISSIVE, 0), transform) == AI_SUCCESS)
 	{
 		pMaterialResource->m_emissivePropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
 		pMaterialResource->m_emissivePropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
@@ -274,7 +274,7 @@ std::string ModelImporter::ProcessMaterial(const aiMaterial *pMaterial)
 	}
 
 	// Occlusion
-	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_AMBIENT_OCCLUSION, 0), textureStr) == AI_SUCCESS)
+	if (aiString textureStr; pMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_LIGHTMAP, 0), textureStr) == AI_SUCCESS)
 	{
 		if (const aiTexture *pEmbeddedTexture = GetEmbeddedTexture(textureStr.C_Str()); pEmbeddedTexture)
 		{
@@ -287,7 +287,7 @@ std::string ModelImporter::ProcessMaterial(const aiMaterial *pMaterial)
 			pMaterialResource->m_occlusionPropertyGroup.m_useTexture = true;
 		}
 	}
-	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_AMBIENT_OCCLUSION, 0), transform) == AI_SUCCESS)
+	if (aiUVTransform transform; pMaterial->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_LIGHTMAP, 0), transform) == AI_SUCCESS)
 	{
 		pMaterialResource->m_occlusionPropertyGroup.m_offset = glm::vec2{ transform.mTranslation.x, transform.mTranslation.y };
 		pMaterialResource->m_occlusionPropertyGroup.m_scale = glm::vec2{ transform.mScaling.x, transform.mScaling.y };
