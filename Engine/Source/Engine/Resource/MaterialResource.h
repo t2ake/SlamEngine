@@ -3,7 +3,8 @@
 #include "Asset/Shader/Shared/PBRMaterial.h"
 #include "Resource/Resource.h"
 
-#include <glm/glm.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 #include <memory>
 #include <string>

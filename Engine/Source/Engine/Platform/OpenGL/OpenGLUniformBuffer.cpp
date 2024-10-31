@@ -34,13 +34,20 @@ void OpenGLUniformBuffer::Unbind() const
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void OpenGLUniformBuffer::Upload(std::string_view name, const void *pData) const
+void OpenGLUniformBuffer::Upload(std::string_view name, const void *pData, uint32_t size) const
 {
 	const auto &optElement = m_layout.GetElement(name);
 	if (optElement)
 	{
+		if (size > optElement->m_size)
+		{
+			SL_LOG_ERROR("Uniform buffer {} update size out of range!", name.data());
+			return;
+		}
+		uint32_t updateSize = size > 0 ? size : optElement->m_size;
+
 		glBindBuffer(GL_UNIFORM_BUFFER, m_handle);
-		glBufferSubData(GL_UNIFORM_BUFFER, optElement->m_offset, optElement->m_size, pData);
+		glBufferSubData(GL_UNIFORM_BUFFER, optElement->m_offset, updateSize, pData);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 	else

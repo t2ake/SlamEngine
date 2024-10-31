@@ -122,7 +122,7 @@ void RendererLayer::OnRender()
 	}
 	if (auto *pLightUniformBuffer = sl::RenderCore::GetUniformBuffer("LightUniformBuffer"); pLightUniformBuffer)
 	{
-		pLightUniformBuffer->Upload("ub_lights", lightGPUData.data());
+		pLightUniformBuffer->Upload("ub_lights", lightGPUData.data(), lightCount * sizeof(sl::LightUniformBuffer));
 		pLightUniformBuffer->Upload("ub_lightCount", &lightCount);
 	}
 

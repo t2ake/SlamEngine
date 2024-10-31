@@ -2,7 +2,8 @@
 
 #include "Event/Event.h"
 
-#include <glm/glm.hpp>
+#include <glm/vec2.hpp>
+
 #include <memory>
 
 struct SDL_WindowEvent;

@@ -7,8 +7,6 @@
 #include "Scene/ECSWorld.h"
 #include "Utils/ProfilerCPU.h"
 
-#include <glm/glm.hpp>
-
 SandboxLayer::SandboxLayer()
 {
 	SL_PROFILE;

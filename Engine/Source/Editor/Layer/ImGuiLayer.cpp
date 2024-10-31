@@ -16,7 +16,6 @@
 #include "Window/Input.h"
 #include "Window/Window.h"
 
-#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui/imgui.h>
 #include <imguizmo/ImGuizmo.h>
