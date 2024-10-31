@@ -33,7 +33,8 @@ vec3 SampleNormalTexture(vec2 uv)
 }
 vec3 SampleEmissiveTexture(vec2 uv)
 {
-    return texture(s_emissive, uv).xyz;
+    // TODO: Compile emissive textures to linear space before rendering.
+    return pow(texture(s_emissive, uv).xyz, vec3(2.2));
 }
 vec3 SampleORMTexture(vec2 uv)
 {

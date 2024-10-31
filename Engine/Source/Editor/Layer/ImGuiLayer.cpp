@@ -676,11 +676,13 @@ void ImGuiLayer::ShowEntityList()
 	{
 		if (ImGui::MenuItem("Creat Empty Entity"))
 		{
-			sl::ECSWorld::CreateEntity();
+			m_selectedEntity = sl::ECSWorld::CreateEntity();
 		}
 		if (ImGui::MenuItem("Creat Directional Light"))
 		{
 			auto entity = sl::ECSWorld::CreateEntity("Directional Light");
+			m_selectedEntity = entity;
+
 			auto &light = entity.AddComponent<sl::LightComponent>();
 			light.type = sl::LightType::Directional;
 			// light.intensity = 100000.0f;
@@ -691,12 +693,16 @@ void ImGuiLayer::ShowEntityList()
 		if (ImGui::MenuItem("Creat Point Light"))
 		{
 			auto entity = sl::ECSWorld::CreateEntity("Point Light");
+			m_selectedEntity = entity;
+
 			auto &light = entity.AddComponent<sl::LightComponent>();
 			light.type = sl::LightType::Point;
 		}
 		if (ImGui::MenuItem("Creat Spot Light"))
 		{
 			auto entity = sl::ECSWorld::CreateEntity("Spot Light");
+			m_selectedEntity = entity;
+
 			auto &light = entity.AddComponent<sl::LightComponent>();
 			light.type = sl::LightType::Spot;
 
