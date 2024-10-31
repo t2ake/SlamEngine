@@ -1,12 +1,24 @@
 #include "ECSWorld.h"
 
+#include <format>
+
 namespace sl
 {
 
-Entity ECSWorld::CreateEntity(std::string name)
+Entity ECSWorld::CreateEntity(std::string_view name)
 {
+	uint32_t index = 1;
+	std::string newName = name.data();
+	auto it = m_names.find(newName);
+	while (it != m_names.end())
+	{
+		newName = std::format("{} ({})", name.data(), index++);
+		it = m_names.find(newName);
+	}
+	m_names.insert(newName);
+
 	Entity entity{ m_registry.create() };
-	entity.AddComponent<TagComponent>(name);
+	entity.AddComponent<TagComponent>(std::move(newName));
 	entity.AddComponent<TransformComponent>();
 
 	return entity;

@@ -10,6 +10,8 @@
 
 #include <entt/entt.hpp>
 
+#include <set>
+
 namespace sl
 {
 
@@ -25,7 +27,7 @@ public:
 	ECSWorld &operator=(ECSWorld &&) = delete;
 	~ECSWorld() = delete;
 
-	static Entity CreateEntity(std::string name = "Empty Entity");
+	static Entity CreateEntity(std::string_view name = "Empty Entity");
 	static entt::registry &GetRegistry() { return m_registry; }
 
 	static Entity GetMainCameraEntity();
@@ -34,6 +36,7 @@ public:
 
 private:
 	inline static entt::registry m_registry;
+	inline static std::set<std::string> m_names;
 };
 
 // Basically, Entity is just a tool class that allows us to use ECS more intuitively.
