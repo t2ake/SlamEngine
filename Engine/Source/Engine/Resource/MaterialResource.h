@@ -16,10 +16,10 @@ struct AlbedoPropertyGroup
 {
 	std::string m_texture;
 	bool m_useTexture = false;
-	glm::vec3 m_factor{ 1.0f, 1.0f , 1.0f };
+	glm::vec3 m_factor{ 1.0f };
 
-	glm::vec2 m_offset{ 0.0f, 0.0f };
-	glm::vec2 m_scale{ 1.0f, 1.0f };
+	glm::vec2 m_offset{ 0.0f };
+	glm::vec2 m_scale{ 1.0f };
 	float m_rotation = 0.0f;
 
 	int m_textureSlot = SL_SLOT_ALBEDO;
@@ -32,10 +32,10 @@ struct NormalPropertyGroup
 {
 	std::string m_texture;
 	bool m_useTexture = false;
-	glm::vec3 m_factor{ 1.0f, 1.0f , 1.0f };
+	glm::vec3 m_factor{ 1.0f };
 
-	glm::vec2 m_offset{ 0.0f, 0.0f };
-	glm::vec2 m_scale{ 1.0f, 1.0f };
+	glm::vec2 m_offset{ 0.0f };
+	glm::vec2 m_scale{ 1.0f };
 	float m_rotation = 0.0f;
 
 	int m_textureSlot = SL_SLOT_NORMAL;
@@ -48,10 +48,10 @@ struct EmissivePropertyGroup
 {
 	std::string m_texture;
 	bool m_useTexture = false;
-	glm::vec3 m_factor{ 1.0f, 1.0f , 1.0f };
+	glm::vec3 m_factor{ 0.0f };
 
-	glm::vec2 m_offset{ 0.0f, 0.0f };
-	glm::vec2 m_scale{ 1.0f, 1.0f };
+	glm::vec2 m_offset{ 0.0f };
+	glm::vec2 m_scale{ 1.0f };
 	float m_rotation = 0.0f;
 
 	int m_textureSlot = SL_SLOT_EMISSIVE;
@@ -66,8 +66,8 @@ struct OcclusionPropertyGroup
 	bool m_useTexture = false;
 	float m_factor = 1.0f;
 
-	glm::vec2 m_offset{ 0.0f, 0.0f };
-	glm::vec2 m_scale{ 1.0f, 1.0f };
+	glm::vec2 m_offset{ 0.0f };
+	glm::vec2 m_scale{ 1.0f };
 	float m_rotation = 0.0f;
 
 	int m_textureSlot = SL_SLOT_ORM;
@@ -82,8 +82,8 @@ struct RoughnessPropertyGroup
 	bool m_useTexture = false;
 	float m_factor = 1.0f;
 
-	glm::vec2 m_offset{ 0.0f, 0.0f };
-	glm::vec2 m_scale{ 1.0f, 1.0f };
+	glm::vec2 m_offset{ 0.0f };
+	glm::vec2 m_scale{ 1.0f };
 	float m_rotation = 0.0f;
 
 	int m_textureSlot = SL_SLOT_ORM;
@@ -98,8 +98,8 @@ struct MetallicPropertyGroup
 	bool m_useTexture = false;
 	float m_factor = 1.0f;
 
-	glm::vec2 m_offset{ 0.0f, 0.0f };
-	glm::vec2 m_scale{ 1.0f, 1.0f };
+	glm::vec2 m_offset{ 0.0f };
+	glm::vec2 m_scale{ 1.0f };
 	float m_rotation = 0.0f;
 
 	int m_textureSlot = SL_SLOT_ORM;

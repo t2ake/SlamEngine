@@ -3,7 +3,9 @@
 // input
 layout(location = 0) in vec3 v_worldPos;
 layout(location = 1) in vec3 v_normal;
-layout(location = 2) in vec2 v_uv0;
+layout(location = 2) in vec3 v_tangent;
+layout(location = 3) in vec3 v_bitangent;
+layout(location = 4) in vec2 v_uv0;
 
 // output
 layout(location = 0) out vec4 o_color;
@@ -117,9 +119,10 @@ vec3 GetDirectLightContribute(vec3 worldPos, vec3 cameraPos, Material material)
 void main()
 {
     vec3 cameraPos = GetCameraPos();
-    Material material = GetMaterial(v_uv0);
-    material.normal = v_normal; // TMP
+    Material material = GetMaterial(v_uv0, v_normal, v_tangent, v_bitangent);
+
     vec3 directColor = GetDirectLightContribute(v_worldPos, cameraPos, material);
+    directColor *= material.occlusion;
 
     vec3 environmentColor = vec3(0.01);
 

@@ -260,6 +260,7 @@ std::string ModelImporter::ProcessMaterial(const aiMaterial *pMaterial)
 			std::string textureResourceName = ProcessTexture(textureStr.C_Str());
 			pMaterialResource->m_emissivePropertyGroup.m_texture = std::move(textureResourceName);
 			pMaterialResource->m_emissivePropertyGroup.m_useTexture = true;
+			pMaterialResource->m_emissivePropertyGroup.m_factor = glm::vec3{ 1.0f };
 		}
 	}
 	if (aiColor3D factor; pMaterial->Get(AI_MATKEY_EMISSIVE_INTENSITY, factor) == AI_SUCCESS)

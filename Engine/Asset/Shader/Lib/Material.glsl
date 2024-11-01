@@ -28,8 +28,7 @@ vec3 SampleAlbedoTexture(vec2 uv)
 }
 vec3 SampleNormalTexture(vec2 uv)
 {
-    // TODO: Support normal map.
-    return texture(s_normal, uv).xyz;
+    return normalize(texture(s_normal, uv).xyz * 2.0 - 1.0);
 }
 vec3 SampleEmissiveTexture(vec2 uv)
 {
@@ -52,11 +51,11 @@ struct Material
     vec3 F0;
 };
 
-Material GetMaterial(vec2 uv)
+Material GetMaterial(vec2 uv, vec3 normal, vec3 tangent, vec3 bitangent)
 {
     Material material;
     material.albedo = u_albedoFactor;
-    material.normal = u_normalFactor;
+    material.normal = normalize(normal * u_normalFactor);
     material.emissive = u_emissiveFactor;
     material.occlusion = u_occlusionFactor;
     material.roughness = u_roughnessFactor;
@@ -69,7 +68,10 @@ Material GetMaterial(vec2 uv)
     }
     if (u_useNormalTexture)
     {
-    	material.normal *= SampleNormalTexture(uv);
+        mat3 TBN = mat3(tangent, bitangent, normal);
+        vec3 normalMap = SampleNormalTexture(uv);
+        material.normal = normalize(TBN * normalMap);
+        material.normal = normalize(material.normal * u_normalFactor);
     }
     if (u_useEmissiveTexture)
     {
