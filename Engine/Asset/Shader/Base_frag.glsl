@@ -10,6 +10,7 @@ layout(location = 4) in vec2 v_uv0;
 // output
 layout(location = 0) out vec4 o_color;
 
+#include "Shared/UniformBuffer.h"
 #include "Shared/PBRMaterial.h"
 #include "Shared/Light.h"
 
@@ -79,7 +80,7 @@ vec3 GetDirectLightContribute(vec3 worldPos, vec3 cameraPos, Material material)
         float distanceAttenuation = GetDistanceAttenuation(distance2, light.range);
         float angleAttenuation = GetAngleAttenuation(lightDir, lightForward, light.scale, light.offset);
 
-        if(light.type == LIGHT_TYPE_DIRECTIONAL)
+        if(light.type == SL_LIGHT_TYPE_DIRECTIONAL)
         {
             // L_out = f * E * cosTheta
 
@@ -89,7 +90,7 @@ vec3 GetDirectLightContribute(vec3 worldPos, vec3 cameraPos, Material material)
 
             direct += BRDF * lightColor * light.intensity * NdotL;
         }
-        else if(light.type == LIGHT_TYPE_POINT)
+        else if(light.type == SL_LIGHT_TYPE_POINT)
         {
             // I = Phi / 4Pi
             // L_out = f * L_in * cosTheta
@@ -100,7 +101,7 @@ vec3 GetDirectLightContribute(vec3 worldPos, vec3 cameraPos, Material material)
 
             direct += BRDF * lightColor * L * NdotL;
         }
-        else if(light.type == LIGHT_TYPE_SPOT)
+        else if(light.type == SL_LIGHT_TYPE_SPOT)
         {
             // I = Phi / Pi
             // L_out = f * L_in * cosTheta

@@ -1,6 +1,7 @@
 #version 450 core
 
-#include <Camera.glsl>
+#include "Shared/UniformBuffer.h"
+#include "Lib/Camera.glsl"
 
 // input
 layout(location = 0) in vec3 a_position;

@@ -1,6 +1,4 @@
 ## File Name
-- Rule: `<ShaderProgram>_<Stage>.glsl`
-  - ex: `PBR_vert.glsl`
 - Shader file is named by its shader program and stage suffix.
   - ex: `AAA_vert.glsl`, `AAA_frag.glsl`, `BBB_comp.glsl`
 - A shader containing code shared with other shader files becomes a library file with **no suffix** and is placed in the `Lib` folder.

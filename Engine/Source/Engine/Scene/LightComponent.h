@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Asset/Shader/Shared/Light.h"
+#include "Asset/Shader/Shared/UniformBuffer.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -12,9 +13,9 @@ namespace sl
 
 enum class LightType : uint32_t
 {
-	Directional = LIGHT_TYPE_DIRECTIONAL,
-	Point = LIGHT_TYPE_POINT,
-	Spot = LIGHT_TYPE_SPOT,
+	Directional = SL_LIGHT_TYPE_DIRECTIONAL,
+	Point = SL_LIGHT_TYPE_POINT,
+	Spot = SL_LIGHT_TYPE_SPOT,
 };
 
 struct LightComponent

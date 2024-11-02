@@ -51,17 +51,17 @@ Editor::Editor(EditorInitor initor)
 	cameraUniformBufferLayout.AddElement("ub_cameraPos", sl::UniformBufferLayoutElement{ 0, sizeof(glm::vec4) });
 	cameraUniformBufferLayout.AddElement("ub_viewProjection", sl::UniformBufferLayoutElement{ sizeof(glm::vec4), sizeof(glm::mat4) });
 	cameraUniformBufferLayout.SetSize(sizeof(glm::vec4) + sizeof(glm::mat4));
-	auto pCameraUniformBuffer = sl::UniformBuffer::Create(0, std::move(cameraUniformBufferLayout));
+	auto pCameraUniformBuffer = sl::UniformBuffer::Create(SL_UBO_BINDING_POINT_CAMERA, std::move(cameraUniformBufferLayout));
 	sl::RenderCore::SetUniformBuffer("CameraUniformBuffer", std::move(pCameraUniformBuffer));
 
 	// Create lights uniform buffer.
 	sl::UniformBufferLayout lightUniformBufferLayout;
 	lightUniformBufferLayout.AddElement("ub_lights", sl::UniformBufferLayoutElement{
-		0, sizeof(sl::LightUniformBuffer) * LIGHT_MAX_COUNT });
+		0, sizeof(sl::LightUniformBuffer) * SL_LIGHT_MAX_COUNT });
 	lightUniformBufferLayout.AddElement("ub_lightCount", sl::UniformBufferLayoutElement{
-		sizeof(sl::LightUniformBuffer) * LIGHT_MAX_COUNT, sizeof(uint32_t) });
-	lightUniformBufferLayout.SetSize(sizeof(sl::LightUniformBuffer) * LIGHT_MAX_COUNT + sizeof(uint32_t));
-	auto pLightUniformBuffer = sl::UniformBuffer::Create(1, std::move(lightUniformBufferLayout));
+		sizeof(sl::LightUniformBuffer) * SL_LIGHT_MAX_COUNT, sizeof(uint32_t) });
+	lightUniformBufferLayout.SetSize(sizeof(sl::LightUniformBuffer) * SL_LIGHT_MAX_COUNT + sizeof(uint32_t));
+	auto pLightUniformBuffer = sl::UniformBuffer::Create(SL_UBO_BINDING_POINT_LIGHT, std::move(lightUniformBufferLayout));
 	sl::RenderCore::SetUniformBuffer("LightUniformBuffer", std::move(pLightUniformBuffer));
 	
 	// Create main camera entity.

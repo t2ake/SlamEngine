@@ -96,7 +96,7 @@ void RendererLayer::OnRender()
 	// Upload light uniform buffer.
 	auto group = sl::ECSWorld::GetRegistry().group<sl::LightComponent>(entt::get<sl::TransformComponent>);
 	uint32_t lightCount = (uint32_t)group.size();
-	static std::vector<sl::LightUniformBuffer> lightGPUData(LIGHT_MAX_COUNT);
+	static std::vector<sl::LightUniformBuffer> lightGPUData(SL_LIGHT_MAX_COUNT);
 	lightGPUData.clear();
 	for (auto entity : group)
 	{

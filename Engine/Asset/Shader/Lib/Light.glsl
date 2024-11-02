@@ -10,8 +10,8 @@ struct Light
     vec4 direction;  // 64 16
 };
 
-layout(std140, binding = 1) uniform UBLights
+layout(std140, binding = SL_UBO_BINDING_POINT_LIGHT) uniform UBLights
 {
-    Light ub_lights[LIGHT_MAX_COUNT];
+    Light ub_lights[SL_LIGHT_MAX_COUNT];
     uint ub_lightCount;
 };

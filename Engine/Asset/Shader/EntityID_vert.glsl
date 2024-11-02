@@ -1,5 +1,6 @@
 #version 450 core
 
+#include "Shared/UniformBuffer.h"
 #include "Lib/Camera.glsl"
 
 // input
