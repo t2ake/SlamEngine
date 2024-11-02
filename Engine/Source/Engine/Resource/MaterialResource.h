@@ -25,7 +25,7 @@ struct AlbedoPropertyGroup
 	int m_textureSlot = SL_SLOT_ALBEDO;
 	int m_useTextureLocation = SL_LOCATION_USE_ALBEDO_TEXTURE;
 	int m_factorLocation = SL_LOCATION_ALBEDO_FACTOR;
-	int m_tillingLocation;
+	int m_tillingLocation = SL_LOCATION_ALBEDO_TILLING;
 };
 
 struct NormalPropertyGroup
@@ -41,7 +41,7 @@ struct NormalPropertyGroup
 	int m_textureSlot = SL_SLOT_NORMAL;
 	int m_useTextureLocation = SL_LOCATION_USE_NORMAL_TEXTURE;
 	int m_factorLocation = SL_LOCATION_NORMAL_FACTOR;
-	int m_tillingLocation;
+	int m_tillingLocation = SL_LOCATION_NORMAL_TILLING;
 };
 
 struct EmissivePropertyGroup
@@ -57,7 +57,7 @@ struct EmissivePropertyGroup
 	int m_textureSlot = SL_SLOT_EMISSIVE;
 	int m_useTextureLocation = SL_LOCATION_USE_EMISSIVE_TEXTURE;
 	int m_factorLocation = SL_LOCATION_EMISSIVE_FACTOR;
-	int m_tillingLocation;
+	int m_tillingLocation = SL_LOCATION_EMISSIVE_TILLING;
 };
 
 struct OcclusionPropertyGroup
@@ -73,7 +73,7 @@ struct OcclusionPropertyGroup
 	int m_textureSlot = SL_SLOT_ORM;
 	int m_useTextureLocation = SL_LOCATION_USE_OCCLUSION_TEXTURE;
 	int m_factorLocation = SL_LOCATION_OCCLUSION_FACTOR;
-	int m_tillingLocation;
+	int m_tillingLocation = SL_LOCATION_OCCLUSION_TILLING;
 };
 
 struct RoughnessPropertyGroup
@@ -89,7 +89,7 @@ struct RoughnessPropertyGroup
 	int m_textureSlot = SL_SLOT_ORM;
 	int m_useTextureLocation = SL_LOCATION_USE_ROUGHNESS_TEXTURE;
 	int m_factorLocation = SL_LOCATION_ROUGHNESS_FACTOR;
-	int m_tillingLocation;
+	int m_tillingLocation = SL_LOCATION_ROUGHNESS_TILLING;
 };
 
 struct MetallicPropertyGroup
@@ -105,7 +105,7 @@ struct MetallicPropertyGroup
 	int m_textureSlot = SL_SLOT_ORM;
 	int m_useTextureLocation = SL_LOCATION_USE_METALLIC_TEXTURE;
 	int m_factorLocation = SL_LOCATION_METALLIC_FACTOR;
-	int m_tillingLocation;
+	int m_tillingLocation = SL_LOCATION_METALLIC_TILLING;
 };
 
 class MaterialResource : public Resource

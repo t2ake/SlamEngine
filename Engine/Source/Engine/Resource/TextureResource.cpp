@@ -84,8 +84,26 @@ void TextureResource::OnUpload()
 {
 	SL_PROFILE;
 
-	sl::TextureFormat format = sl::TextureFormat::RGB8;
-	if (m_channels == 3 && !m_isHDR)
+	sl::TextureFormat format;
+
+	// TODO: Perhaps we should expand the single channel to RGB.
+	if (m_channels == 1 && !m_isHDR)
+	{
+		format = sl::TextureFormat::R8;
+	}
+	else if (m_channels == 1 && m_isHDR)
+	{
+		format = sl::TextureFormat::R32F;
+	}
+	else if (m_channels == 2 && !m_isHDR)
+	{
+		format = sl::TextureFormat::RG8;
+	}
+	else if (m_channels == 2 && m_isHDR)
+	{
+		format = sl::TextureFormat::RG32F;
+	}
+	else if (m_channels == 3 && !m_isHDR)
 	{
 		format = sl::TextureFormat::RGB8;
 	}
@@ -103,7 +121,7 @@ void TextureResource::OnUpload()
 	}
 	else
 	{
-		SL_LOG_ERROR("Unknown image texture format!");
+		SL_LOG_ERROR("Unknown texture format: \"{}\"", sourcePath.c_str());
 		m_state = ResourceState::Destroying;
 		return;
 	}

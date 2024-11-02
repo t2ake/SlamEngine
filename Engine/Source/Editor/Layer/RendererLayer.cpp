@@ -32,7 +32,7 @@ void UploadMaterialPropertyGroup(sl::Shader *pShader, const auto &propertyGroup)
 		pShader->UploadUniform(propertyGroup.m_useTextureLocation, false);
 	}
 
-	pShader->UploadUniform(propertyGroup.m_factorLocation, propertyGroup.m_factor);
+	pShader->UploadUniform(propertyGroup.m_factorLocation, propertyGroup.m_factor); 
 }
 
 } // namespace

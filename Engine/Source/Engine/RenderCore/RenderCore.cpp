@@ -49,6 +49,9 @@ void RenderCore::SetDefaultState()
 
 	m_pRenderAPI->EnableBlend();
 	m_pRenderAPI->SetBlendFunc(BlendFunction::SrcAlpha, BlendFunction::OneMinusSrcAlpha);
+
+	m_pRenderAPI->EnableCullFace();
+	m_pRenderAPI->SetCullFace(CullingMode::Back);
 }
 
 void RenderCore::ClearColor(float r, float g, float b, float a)
