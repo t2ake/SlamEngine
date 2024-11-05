@@ -25,7 +25,7 @@ void ModelImporter::Import()
 	SL_PROFILE;
 	SL_LOG_TRACE("Importing model: \"{}\"", m_sourcePath.c_str());
 
-	constexpr int ImportFlags = aiProcess_Triangulate |
+	constexpr int ImportFlags = aiProcess_Triangulate | aiProcess_GlobalScale |
 		aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_GenUVCoords | aiProcess_GenBoundingBoxes |
 		aiProcess_FindInvalidData | aiProcess_FixInfacingNormals | aiProcess_DropNormals |
 		aiProcess_FindDegenerates | aiProcess_SortByPType |
@@ -34,6 +34,7 @@ void ModelImporter::Import()
 		aiProcess_PreTransformVertices; // TODO: Hierarchy
 
 	Assimp::Importer importer;
+	importer.SetPropertyFloat(AI_CONFIG_GLOBAL_SCALE_FACTOR_KEY, m_globalScale);
 	importer.SetPropertyInteger(AI_CONFIG_PP_SBP_REMOVE, aiPrimitiveType::aiPrimitiveType_LINE | aiPrimitiveType::aiPrimitiveType_POINT);
 
 	m_pScene = importer.ReadFile(m_sourcePath.c_str(), ImportFlags);
@@ -190,9 +191,6 @@ void ModelImporter::ProcessMesh(const aiMesh *pMesh)
 	auto &rendering = entity.AddComponent<sl::RenderingComponent>();
 	rendering.m_optMeshResourceName = std::move(MeshResourceName);
 	rendering.m_optMaterialResourceName = std::move(materialResourceName);
-
-	auto &transform = entity.GetComponents<TransformComponent>();
-	transform.m_scale = m_globalScale;
 	
 	// TODO: AABB
 	// TODO: Parent entity

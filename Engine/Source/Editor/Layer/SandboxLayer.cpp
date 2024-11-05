@@ -17,7 +17,7 @@ SandboxLayer::SandboxLayer()
 	transform.m_rotation = glm::vec3{ 0.0f, glm::radians(-90.0f), 0.0f};
 
 	sl::ModelImporter importer("D:/Works/Model/slum_house/scene.gltf");
-	importer.SetGlobalScale(glm::vec3{ 1.0f });
+	importer.SetGlobalScale(1.0f);
 	importer.Import();
 }
 

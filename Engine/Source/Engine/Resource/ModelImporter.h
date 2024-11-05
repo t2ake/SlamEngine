@@ -22,7 +22,12 @@ public:
 	ModelImporter(std::string_view sourcePath);
 
 	void SetParentEntity(sl::Entity entity) { m_parentEntity = entity; }
-	void SetGlobalScale(const glm::vec3 &scale) { m_globalScale = scale; }
+	sl::Entity GetParentEntity() const { return m_parentEntity; }
+	sl::Entity &GetParentEntity() { return m_parentEntity; }
+
+	void SetGlobalScale(float scale) { m_globalScale = scale; }
+	float GetGlobalScale() const { return m_globalScale; }
+	float &GetGlobalScale() { return m_globalScale; }
 
 	void Import();
 
@@ -36,7 +41,7 @@ private:
 	std::string m_sourcePath;
 
 	sl::Entity m_parentEntity;
-	glm::vec3 m_globalScale{ 1.0f };
+	float m_globalScale;
 
 	const aiScene *m_pScene;
 };
