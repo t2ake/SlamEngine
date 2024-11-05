@@ -27,27 +27,43 @@ void TextureResource::OnImport()
 	SL_PROFILE;
 
 	SL_LOG_TRACE("Loading image: \"{}\"", sourcePath.c_str());
-	const auto originalData = FileIO::ReadBinary(sourcePath);
+	auto originalData = FileIO::ReadBinary(sourcePath);
 
 	// The first pixel should at the bottom left.
 	stbi_set_flip_vertically_on_load(true);
 
 	void *pTextureData;
-	int width, height, channels;
+	int width, height, channel;
+	bool getInfoSuccess = stbi_info_from_memory((stbi_uc *)originalData.data(), (int)originalData.size(), &width, &height, &channel);
 	bool isHDR = stbi_is_hdr_from_memory((stbi_uc *)originalData.data(), (int)originalData.size());
+
+	int desired_channels = 0;
+	if (channel == 1)
+	{
+		desired_channels = 3;
+		SL_LOG_TRACE("\tExpand 'Grey' to 'RGB'");
+	}
+	else if (channel == 2)
+	{
+		desired_channels = 4;
+		SL_LOG_TRACE("\tExpand 'GreyAlpha' to 'RGBA'");
+	}
+
 	if (isHDR)
 	{
-		pTextureData = stbi_loadf_from_memory((stbi_uc *)originalData.data(), (int)originalData.size(), &width, &height, &channels, 0);
+		pTextureData = stbi_loadf_from_memory((stbi_uc *)originalData.data(), (int)originalData.size(),
+			&width, &height, &channel, desired_channels);
 	}
 	else
 	{
-		pTextureData = stbi_load_from_memory((stbi_uc *)originalData.data(), (int)originalData.size(), &width, &height, &channels, 0);
+		pTextureData = stbi_load_from_memory((stbi_uc *)originalData.data(), (int)originalData.size(),
+			&width, &height, &channel, desired_channels);
 	}
 
 #if !defined(SL_FINAL)
-	if (!pTextureData || width <= 0 || height <= 0 || channels <= 0)
+	if (!pTextureData || !getInfoSuccess || width <= 0 || height <= 0 || channel <= 0)
 	{
-		SL_LOG_ERROR("Invalid texture: \"{}\"", sourcePath.c_str());
+		SL_LOG_ERROR("Invalid texture: \"{}\"\n\t{}", sourcePath.c_str(), stbi_failure_reason());
 		m_state = ResourceState::Destroying;
 		return;
 	}
@@ -55,9 +71,48 @@ void TextureResource::OnImport()
 
 	m_width = (uint32_t)width;
 	m_height = (uint32_t)height;
-	m_channels = (uint32_t)channels;
+	m_channels = desired_channels ? (uint32_t)desired_channels : (uint32_t)channel;
 	m_isHDR = isHDR;
-	SL_LOG_TRACE("\tWidth: {}, Height: {}, Channels: {}, IsHDR: {}", m_width, m_height, m_channels, m_isHDR);
+	if (m_channels == 1 && !m_isHDR)
+	{
+		m_format = sl::TextureFormat::R8;
+	}
+	else if (m_channels == 1 && m_isHDR)
+	{
+		m_format = sl::TextureFormat::R32F;
+	}
+	else if (m_channels == 2 && !m_isHDR)
+	{
+		m_format = sl::TextureFormat::RG8;
+	}
+	else if (m_channels == 2 && m_isHDR)
+	{
+		m_format = sl::TextureFormat::RG32F;
+	}
+	else if (m_channels == 3 && !m_isHDR)
+	{
+		m_format = sl::TextureFormat::RGB8;
+	}
+	else if (m_channels == 3 && m_isHDR)
+	{
+		m_format = sl::TextureFormat::RGB32F;
+	}
+	else if (m_channels == 4 && !m_isHDR)
+	{
+		m_format = sl::TextureFormat::RGBA8;
+	}
+	else if (m_channels == 4 && m_isHDR)
+	{
+		m_format = sl::TextureFormat::RGBA32F;
+	}
+	else
+	{
+		SL_LOG_ERROR("Unknown texture format: \"{}\"", sourcePath.c_str());
+		m_state = ResourceState::Destroying;
+		return;
+	}
+	SL_LOG_TRACE("\tWidth: {}, Height: {}, Channels: {}, Format: {}, IsHDR: {}",
+		m_width, m_height, m_channels, nameof::nameof_enum<sl::TextureFormat>(m_format), m_isHDR);
 
 	m_rowData.resize(m_width * m_height * m_channels * (m_isHDR ? 4 : 1));
 	memcpy(m_rowData.data(), pTextureData, m_rowData.size());
@@ -84,49 +139,7 @@ void TextureResource::OnUpload()
 {
 	SL_PROFILE;
 
-	sl::TextureFormat format;
-
-	// TODO: Perhaps we should expand the single channel to RGB.
-	if (m_channels == 1 && !m_isHDR)
-	{
-		format = sl::TextureFormat::R8;
-	}
-	else if (m_channels == 1 && m_isHDR)
-	{
-		format = sl::TextureFormat::R32F;
-	}
-	else if (m_channels == 2 && !m_isHDR)
-	{
-		format = sl::TextureFormat::RG8;
-	}
-	else if (m_channels == 2 && m_isHDR)
-	{
-		format = sl::TextureFormat::RG32F;
-	}
-	else if (m_channels == 3 && !m_isHDR)
-	{
-		format = sl::TextureFormat::RGB8;
-	}
-	else if (m_channels == 3 && m_isHDR)
-	{
-		format = sl::TextureFormat::RGB32F;
-	}
-	else if (m_channels == 4 && !m_isHDR)
-	{
-		format = sl::TextureFormat::RGBA8;
-	}
-	else if (m_channels == 4 && m_isHDR)
-	{
-		format = sl::TextureFormat::RGBA32F;
-	}
-	else
-	{
-		SL_LOG_ERROR("Unknown texture format: \"{}\"", sourcePath.c_str());
-		m_state = ResourceState::Destroying;
-		return;
-	}
-
-	m_pTexture.reset(Texture2D::Create(m_width, m_height, true, format, m_flags, m_rowData.data()));
+	m_pTexture.reset(Texture2D::Create(m_width, m_height, true, m_format, m_flags, m_rowData.data()));
 
 	m_state = ResourceState::Ready;
 }

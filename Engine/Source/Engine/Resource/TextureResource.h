@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/Defines.h"
 #include "Resource/Resource.h"
 
 #include <memory>
@@ -35,6 +36,7 @@ public:
 	uint32_t m_width = 0;
 	uint32_t m_height = 0;
 	uint8_t m_channels = 0;
+	sl::TextureFormat m_format;
 	bool m_isHDR = false;
 
 	std::unique_ptr<Texture2D> m_pTexture;
