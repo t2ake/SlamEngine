@@ -72,6 +72,11 @@ Material GetMaterial(vec2 uv, vec3 normal, vec3 tangent, vec3 bitangent)
         vec3 normalMap = SampleNormalTexture(uv);
         material.normal = normalize(TBN * normalMap);
         material.normal = normalize(material.normal * u_normalFactor);
+
+        if(!gl_FrontFacing)
+        {
+            material.normal = -material.normal;
+        }
     }
     if (u_useEmissiveTexture)
     {

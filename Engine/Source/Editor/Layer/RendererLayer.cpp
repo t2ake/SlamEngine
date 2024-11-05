@@ -176,8 +176,18 @@ void RendererLayer::BasePass()
 		UploadMaterialPropertyGroup(pShader, pMaterialResource->m_occlusionPropertyGroup);
 		UploadMaterialPropertyGroup(pShader, pMaterialResource->m_roughnessPropertyGroup);
 		UploadMaterialPropertyGroup(pShader, pMaterialResource->m_metallicPropertyGroup);
-		
+
 		pShader->UploadUniform(pMaterialResource->m_reflectanceLocation, pMaterialResource->m_reflectance);
+
+		// TODO: Cache current rendering state.
+		if (pMaterialResource->m_twoSide)
+		{
+			sl::RenderCore::Culling(sl::CullingMode::FrontNitherBack);
+		}
+		else
+		{
+			sl::RenderCore::Culling(sl::CullingMode::Back);
+		}
 
 		sl::RenderCore::Submit(pMeshResource->GetVertexArray(), pShader);
 	}
@@ -203,14 +213,12 @@ void RendererLayer::EntityIDPass()
 			continue;
 		}
 
-		auto *pShaderResource = sl::ResourceManager::GetShaderResource(rendering.m_optIDShaderResourceName.value());
 		auto *pMeshResource = sl::ResourceManager::GetMeshResource(rendering.m_optMeshResourceName.value());
-		if (!pShaderResource ||!pMeshResource)
-		{
-			continue;
-		}
-
-		if (!pShaderResource->IsReady() || !pMeshResource->IsReady())
+		auto *pMaterialResource = sl::ResourceManager::GetMaterialResource(rendering.m_optMaterialResourceName.value());
+		auto *pShaderResource = sl::ResourceManager::GetShaderResource(rendering.m_optIDShaderResourceName.value());
+		if (!pMeshResource || !pMeshResource->IsReady() ||
+			!pMaterialResource || !pMaterialResource->IsReady() ||
+			!pShaderResource || !pShaderResource->IsReady())
 		{
 			continue;
 		}
@@ -219,6 +227,15 @@ void RendererLayer::EntityIDPass()
 		pShader->Bind();
 		pShader->UploadUniform(0, transform.GetTransform());
 		pShader->UploadUniform(1, (int)entity);
+
+		if (pMaterialResource->m_twoSide)
+		{
+			sl::RenderCore::Culling(sl::CullingMode::FrontNitherBack);
+		}
+		else
+		{
+			sl::RenderCore::Culling(sl::CullingMode::Back);
+		}
 
 		sl::RenderCore::Submit(pMeshResource->GetVertexArray(), pShader);
 	}

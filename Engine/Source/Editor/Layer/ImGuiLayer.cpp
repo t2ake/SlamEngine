@@ -1313,6 +1313,8 @@ void ImGuiLayer::ShowDetails()
 
 					StartWithText("Reflectance");
 					ImGui::DragFloat("##Reflectance", &pMaterialResource->m_reflectance, 0.01f, 0.0f, 1.0f);
+					StartWithText("TwoSide");
+					ImGui::Checkbox("##TwoSide", &pMaterialResource->m_twoSide);
 				}
 			}
 			else
