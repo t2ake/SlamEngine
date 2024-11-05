@@ -42,6 +42,11 @@ UniformBuffer *RenderCore::GetUniformBuffer(std::string_view name)
 	return it->second.get();
 }
 
+void RenderCore::ClearTextureSlot(uint32_t slot)
+{
+	m_pRenderAPI->SetTextureSlot(slot, 0);
+}
+
 void RenderCore::SetDefaultState()
 {
 	m_pRenderAPI->EnableDepthTest();

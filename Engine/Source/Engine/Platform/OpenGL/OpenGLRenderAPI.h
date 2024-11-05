@@ -19,6 +19,8 @@ public:
 	virtual void ClearDepth() override;
 	virtual void ClearStencil() override;
 
+	virtual void SetTextureSlot(uint32_t slot, uint32_t handle) override;
+
 	virtual void EnableDepthTest() override;
 	virtual void SetDepthBufferWriteable(bool writeable) override;
 	virtual void SetDepthFunc(CompareFunction func) override;

@@ -66,6 +66,11 @@ void OpenGLRenderAPI::ClearStencil()
 	glClear(GL_STENCIL_BUFFER_BIT);
 }
 
+void OpenGLRenderAPI::SetTextureSlot(uint32_t slot, uint32_t handle)
+{
+	glBindTextureUnit(slot, handle);
+}
+
 void OpenGLRenderAPI::EnableDepthTest()
 {
 	glEnable(GL_DEPTH_TEST);

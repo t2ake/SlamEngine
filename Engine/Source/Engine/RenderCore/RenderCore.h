@@ -39,6 +39,8 @@ public:
 	static void SetUniformBuffer(std::string_view name, UniformBuffer *pUniformBuffer);
 	static UniformBuffer *GetUniformBuffer(std::string_view name);
 
+	static void ClearTextureSlot(uint32_t slot);
+
 	static void SetDefaultState();
 
 	static void ClearColor(float r, float g, float b, float a);

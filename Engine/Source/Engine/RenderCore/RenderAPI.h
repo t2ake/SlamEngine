@@ -23,6 +23,8 @@ public:
 	virtual void ClearDepth() = 0;
 	virtual void ClearStencil() = 0;
 
+	virtual void SetTextureSlot(uint32_t slot, uint32_t handle) = 0;
+
 	virtual void EnableDepthTest() = 0;
 	virtual void SetDepthBufferWriteable(bool writeable) = 0;
 	virtual void SetDepthFunc(CompareFunction func) = 0;

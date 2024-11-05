@@ -29,6 +29,7 @@ void UploadMaterialPropertyGroup(sl::Shader *pShader, const auto &propertyGroup)
 	}
 	else
 	{
+		sl::RenderCore::ClearTextureSlot(propertyGroup.m_textureSlot);
 		pShader->UploadUniform(propertyGroup.m_useTextureLocation, false);
 	}
 
