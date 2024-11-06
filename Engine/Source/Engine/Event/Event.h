@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Core/Log.h"
+
 #include <concepts>
 #include <cstdint>
-#include <format>
 #include <functional>
 
 namespace sl
@@ -89,11 +90,15 @@ using EventCallback = std::function<void(Event &)>;
 
 } // namespace sl
 
+#if !defined(SL_FINAL)
+
 template<>
-struct std::formatter<sl::Event> : std::formatter<std::string>
+struct fmt::formatter<sl::Event> : fmt::formatter<std::string>
 {
-	auto format(const sl::Event &event, std::format_context &context) const
+	auto format(const sl::Event &event, format_context &ctx) const -> decltype(ctx.out())
 	{
-		return formatter<string>::format(event.ToString(), context);
+		return fmt::format_to(ctx.out(), "{}", event.ToString());
 	}
 };
+
+#endif

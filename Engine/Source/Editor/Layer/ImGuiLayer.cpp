@@ -537,10 +537,10 @@ void ImGuiLayer::ShowLog()
 			for (size_t i = 0; i < logInfos.size(); ++i)
 			{
 				const auto &info = logInfos[i];
-				if ((s_levelFilter & (uint8_t)info.m_level) && s_textFilter.PassFilter(info.m_text.data()))
+				if ((s_levelFilter & (uint8_t)info.m_level) && s_textFilter.PassFilter(info.m_content.data()))
 				{
 					ImGui::PushStyleColor(ImGuiCol_Text, LogLevelToColor(info.m_level));
-					ImGui::TextUnformatted(info.m_text.data());
+					ImGui::TextUnformatted(info.m_content.data());
 					ImGui::PopStyleColor();
 				}
 			}
@@ -555,7 +555,7 @@ void ImGuiLayer::ShowLog()
 				{
 					const auto &info = logInfos[i];
 					ImGui::PushStyleColor(ImGuiCol_Text, LogLevelToColor(info.m_level));
-					ImGui::TextUnformatted(info.m_text.data());
+					ImGui::TextUnformatted(info.m_content.data());
 					ImGui::PopStyleColor();
 				}
 			}

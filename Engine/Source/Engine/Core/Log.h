@@ -13,22 +13,16 @@ enum class LogLevel : uint8_t
 {
 	Trace = 1 << 0,
 	Debug = 1 << 1,
-	Info = 1 << 2,
-	Warn = 1 << 3,
+	Info  = 1 << 2,
+	Warn  = 1 << 3,
 	Error = 1 << 4,
 	Fatal = 1 << 5,
 };
 
 struct LogInfo
 {
-	LogInfo(LogLevel level, std::string_view text) :
-		m_level(level), m_text(text)
-	{
-
-	}
-
 	LogLevel m_level;
-	std::string m_text;
+	std::string m_content;
 };
 
 } // namespace sl
@@ -39,9 +33,9 @@ struct LogInfo
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <spdlog/spdlog.h>
+#include <spdlog/fmt/bundled/format.h>
 
 #include <memory>
-#include <sstream>
 
 namespace sl
 {
@@ -68,86 +62,56 @@ private:
 } // namespace sl
 
 template<>
-struct std::formatter<glm::vec2> : std::formatter<std::string>
+struct fmt::formatter<glm::vec2> : fmt::formatter<std::string>
 {
-	auto format(const glm::vec2 &vec, std::format_context &context) const
+	auto format(const glm::vec2 &vec, format_context &ctx) const -> decltype(ctx.out())
 	{
-		return formatter<string>::format(std::format("vec2({}, {})", vec.x, vec.y), context);
+		return fmt::format_to(ctx.out(), "vec2({}, {})", vec.x, vec.y);
 	}
 };
 
 template<>
-struct std::formatter<glm::vec3> : std::formatter<std::string>
+struct fmt::formatter<glm::vec3> : fmt::formatter<std::string>
 {
-	auto format(const glm::vec3 &vec, std::format_context &context) const
+	auto format(const glm::vec3 &vec, format_context &ctx) const -> decltype(ctx.out())
 	{
-		return formatter<string>::format(std::format("vec3({}, {}, {})", vec.x, vec.y, vec.z), context);
+		return fmt::format_to(ctx.out(), "vec3({}, {}, {})", vec.x, vec.y, vec.z);
 	}
 };
 
 template<>
-struct std::formatter<glm::vec4> : std::formatter<std::string>
+struct fmt::formatter<glm::vec4> : fmt::formatter<std::string>
 {
-	auto format(const glm::vec4 &vec, std::format_context &context) const
+	auto format(const glm::vec4 &vec, format_context &ctx) const -> decltype(ctx.out())
 	{
-		return formatter<string>::format(std::format("vec4({}, {}, {}, {})", vec.x, vec.y, vec.z, vec.w), context);
+		return fmt::format_to(ctx.out(), "vec4({}, {}, {}, {})", vec.x, vec.y, vec.z, vec.w);
 	}
 };
 
 template<>
-struct std::formatter<glm::ivec2> : std::formatter<std::string>
+struct fmt::formatter<glm::ivec2> : fmt::formatter<std::string>
 {
-	auto format(const glm::ivec2 &vec, std::format_context &context) const
+	auto format(const glm::ivec2 &vec, format_context &ctx) const -> decltype(ctx.out())
 	{
-		return formatter<string>::format(std::format("ivec2({}, {})", vec.x, vec.y), context);
+		return fmt::format_to(ctx.out(), "ivec2({}, {})", vec.x, vec.y);
 	}
 };
 
 template<>
-struct std::formatter<glm::ivec3> : std::formatter<std::string>
+struct fmt::formatter<glm::ivec3> : fmt::formatter<std::string>
 {
-	auto format(const glm::ivec3 &vec, std::format_context &context) const
+	auto format(const glm::ivec3 &vec, format_context &ctx) const -> decltype(ctx.out())
 	{
-		return formatter<string>::format(std::format("ivec3({}, {}, {})", vec.x, vec.y, vec.z), context);
+		return fmt::format_to(ctx.out(), "ivec3({}, {}, {})", vec.x, vec.y, vec.z);
 	}
 };
 
 template<>
-struct std::formatter<glm::ivec4> : std::formatter<std::string>
+struct fmt::formatter<glm::ivec4> : fmt::formatter<std::string>
 {
-	auto format(const glm::ivec4 &vec, std::format_context &context) const
+	auto format(const glm::ivec4 &vec, format_context &ctx) const -> decltype(ctx.out())
 	{
-		return formatter<string>::format(std::format("ivec4({}, {}, {}, {})", vec.x, vec.y, vec.z, vec.w), context);
-	}
-};
-
-// TODO: Such a dirty implementation, improve it.
-template<glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-struct std::formatter<glm::mat<C, R, T, Q>> : std::formatter<std::string>
-{
-	auto format(const glm::mat<C, R, T, Q> &mat, std::format_context &context) const
-	{
-		std::stringstream ss;
-		ss << "mat" << C << "x" << R << "(";
-		for (glm::length_t i = 0; i < C; ++i)
-		{
-			for (glm::length_t j = 0; j < R; ++j)
-			{
-				ss << mat[i][j];
-				if (j < R - 1)
-				{
-					ss << ", ";
-				}
-			}
-			if (i < C - 1)
-			{
-				// To approach [xx:xx:xx] Logger: matCxR(
-				ss << "\n" << "                          ";
-			}
-		}
-		ss << ")";
-
-		return formatter<string>::format(ss.str(), context);
+		return fmt::format_to(ctx.out(), "ivec4({}, {}, {}, {})", vec.x, vec.y, vec.z, vec.w);
 	}
 };
 

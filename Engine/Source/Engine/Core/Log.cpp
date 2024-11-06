@@ -18,10 +18,15 @@ namespace
 
 constexpr std::array<LogLevel, 6> SpdLevelToSLLevel =
 {
-	LogLevel::Trace, LogLevel::Debug, LogLevel::Info, LogLevel::Warn, LogLevel::Error, LogLevel::Fatal,
+	LogLevel::Trace,
+	LogLevel::Debug,
+	LogLevel::Info,
+	LogLevel::Warn,
+	LogLevel::Error,
+	LogLevel::Fatal,
 };
 
-}
+} // namespace
 
 void Log::Init()
 {
@@ -39,7 +44,11 @@ void Log::Init()
 	auto pCallbackSink = std::make_shared<spdlog::sinks::callback_sink_mt>([](const spdlog::details::log_msg &msg)
 	{
 		// TODO: Add time information to log buffer.
-		m_logInfos.emplace_back(SpdLevelToSLLevel[msg.level], msg.payload);
+		m_logInfos.emplace_back
+		(
+			SpdLevelToSLLevel[msg.level],
+			std::string{ msg.payload.data(), msg.payload.size() }
+		);
 	});
 
 	std::vector<spdlog::sink_ptr> sinks{ pConsoleSink, pFileSink, pCallbackSink };

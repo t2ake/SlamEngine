@@ -24,7 +24,7 @@
 # Third party
 [premake-core](https://github.com/premake/premake-core) v5.0.0-beta2
 
-[spdlog](https://github.com/gabime/spdlog) v1.13.0
+[spdlog](https://github.com/gabime/spdlog) v1.14.1
 
 [SDL](https://github.com/libsdl-org/SDL) v2.30.7
 
