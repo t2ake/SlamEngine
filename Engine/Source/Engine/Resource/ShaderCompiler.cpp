@@ -119,9 +119,10 @@ std::vector<uint32_t> ShaderCompiler::SourceToSpirv(const ShaderInfo &info)
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
 
+		// TODO: Inputs and outputs does not match when shader compiled without debug info. Don't know why.
+		options.SetGenerateDebugInfo();
 		if (info.m_debugMode)
 		{
-			options.SetGenerateDebugInfo();
 			options.SetOptimizationLevel(shaderc_optimization_level_zero);
 		}
 		else
