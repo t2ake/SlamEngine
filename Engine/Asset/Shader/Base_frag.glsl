@@ -53,7 +53,7 @@ vec3 GetBRDFDirect(vec3 lightDir, vec3 viewDir, Material material)
     float VdotH = max(dot(viewDir, harfDir), 0.0);
 
     float Dis = DistributionGGX(material.roughness, NdotH);
-    float Vis = VisibilitySchlick(material.roughness, NdotV, NdotL);
+    float Vis = VisibilitySchlickSmith(material.roughness, NdotV, NdotL);
     vec3 Fre = FresnelSchlick(material.F0, VdotH);
     vec3 KD = mix(vec3(1.0) - Fre, vec3(0.0), material.metallic);
     

@@ -9,7 +9,7 @@ float DistributionGGX(float roughness, float NdotH)
     return a2 / denom;
 }
 
-float GeometrySchlick(float roughness, float NdotV, float NdotL)
+float GeometrySchlickSmith(float roughness, float NdotV, float NdotL)
 {
     float r = (roughness + 1.0) * 0.5;
     float a = r * r;
@@ -19,7 +19,7 @@ float GeometrySchlick(float roughness, float NdotV, float NdotL)
     return (4.0 * NdotV * NdotL) / (denomV * denomL);
 }
 
-float VisibilitySchlick(float roughness, float NdotV, float NdotL)
+float VisibilitySchlickSmith(float roughness, float NdotV, float NdotL)
 {
     // BRDF = (D * G * F) / (4 * NdotV * NdotL) = D * V * F
     // V = G / (4 * NdotV * NdotL)
