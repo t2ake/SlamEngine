@@ -22,7 +22,7 @@
 |Shader debug info|On|On|Off|
 
 # Third party
-[premake-core](https://github.com/premake/premake-core) v5.0.0-beta2
+[premake-core](https://github.com/premake/premake-core) v5.0.0-beta3
 
 [spdlog](https://github.com/gabime/spdlog) v1.14.1
 
