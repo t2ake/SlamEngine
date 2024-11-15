@@ -2,7 +2,7 @@
 
 #include "Event.h"
 
-#include <sstream>
+#include <format>
 
 namespace sl
 {
@@ -24,9 +24,7 @@ public:
 
 	virtual std::string ToString() const override
 	{
-		std::stringstream ss;
-		ss << "SceneViewportResize: " << m_width << ", " << m_height;
-		return ss.str();
+		return std::format("SceneViewportResize: {}, {}", m_width, m_height);
 	}
 
 	virtual uint8_t GetCategories() const override

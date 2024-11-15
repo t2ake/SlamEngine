@@ -5,7 +5,7 @@
 
 #include <glm/vec2.hpp>
 
-#include <sstream>
+#include <format>
 
 namespace sl
 {
@@ -27,9 +27,7 @@ public:
 
 	virtual std::string ToString() const override
 	{
-		std::stringstream ss;
-		ss << "MouseButtonPress: " << m_button;
-		return ss.str();
+		return std::format("MouseButtonPress: {}", m_button);
 	}
 
 	virtual uint8_t GetCategories() const override
@@ -60,9 +58,7 @@ public:
 
 	virtual std::string ToString() const override
 	{
-		std::stringstream ss;
-		ss << "MouseButtonRelease: " << m_button;
-		return ss.str();
+		return std::format("MouseButtonRelease: {}", m_button);
 	}
 
 	virtual uint8_t GetCategories() const override
@@ -93,9 +89,7 @@ public:
 
 	virtual std::string ToString() const override
 	{
-		std::stringstream ss;
-		ss << "MouseMove: " << m_posX << ", " << m_posY;
-		return ss.str();
+		return std::format("MouseMove: {}, {}", m_posX, m_posY);
 	}
 
 	virtual uint8_t GetCategories() const override
@@ -128,9 +122,7 @@ public:
 
 	virtual std::string ToString() const override
 	{
-		std::stringstream ss;
-		ss << "MouseScroll: " << m_offsetX << ", " << m_offsetY;
-		return ss.str();
+		return std::format("MouseScroll: {}, {}", m_offsetX, m_offsetY);
 	}
 
 	virtual uint8_t GetCategories() const override

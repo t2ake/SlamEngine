@@ -3,7 +3,7 @@
 #include "Event.h"
 #include "Window/KeyCode.h"
 
-#include <sstream>
+#include <format>
 
 namespace sl
 {
@@ -26,9 +26,7 @@ public:
 
 	virtual std::string ToString() const override
 	{
-		std::stringstream ss;
-		ss << "KeyPress: " << m_key << (m_isRepeat ? ", repeat" : "");
-		return ss.str();
+		return std::format("KeyPress: {}{}", m_key, (m_isRepeat ? ", repeat" : ""));
 	}
 
 	virtual uint8_t GetCategories() const override
@@ -61,9 +59,7 @@ public:
 
 	virtual std::string ToString() const override
 	{
-		std::stringstream ss;
-		ss << "KeyRelease: " << m_key;
-		return ss.str();
+		return std::format("KeyRelease: {}", m_key);
 	}
 
 	virtual uint8_t GetCategories() const override
@@ -94,9 +90,7 @@ public:
 
 	virtual std::string ToString() const override
 	{
-		std::stringstream ss;
-		ss << "KeyType: " << m_key;
-		return ss.str();
+		return std::format("KeyType: {}", m_key);
 	}
 	virtual uint8_t GetCategories() const override
 	{
