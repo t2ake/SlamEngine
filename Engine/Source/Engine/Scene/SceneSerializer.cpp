@@ -159,7 +159,7 @@ bool SceneSerializer::DeserializeYAML(std::string_view sceneName)
 		return false;
 	}
 
-	SL_LOG_ERROR("Jest some test code here, will not actually open a new scene.");
+	SL_LOG_ERROR("Just some test code here, will not actually open a new scene.");
 	std::string scene = data["Scene"].as<std::string>();
 	SL_LOG_TRACE("Scene: {}", scene);
 
