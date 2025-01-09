@@ -299,6 +299,10 @@ void ImGuiLayer::ShowMenuBar()
 		{
 			sl::SceneSerializer::SerializeYAML("DemoScene");
 		}
+		if (ImGui::MenuItem("Save As..."))
+		{
+			SL_LOG_ERROR("TODO: New Save As... button");
+		}
 		ImGui::Separator();
 		if (ImGui::MenuItem("Exit"))
 		{
